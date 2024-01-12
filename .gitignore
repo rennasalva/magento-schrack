@@ -1234,5 +1234,6 @@
 /media/customer/.htaccess
 /media/.htaccess
 /var/cache
-/var/log
-/var/session
+/var/log/*
+/var/report/*
+/var/session/*
