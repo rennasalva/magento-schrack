@@ -1,0 +1,85 @@
+<?php
+/**
+ * Magento
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Academic Free License (AFL 3.0)
+ * that is bundled with this package in the file LICENSE_AFL.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/afl-3.0.php
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@magentocommerce.com so we can send you a copy immediately.
+ *
+ * DISCLAIMER
+ *
+ * Do not edit or add to this file if you wish to upgrade Magento to newer
+ * versions in the future. If you wish to customize Magento for your
+ * needs please refer to http://www.magentocommerce.com for more information.
+ *
+ * @category    design
+ * @package     base_default
+ * @copyright   Copyright (c) 2009 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @license     http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
+ */
+?>
+<?php
+/**
+ * Template for Mage_Page_Block_Html
+ */
+if (strtoupper(Mage::getStoreConfig('schrack/general/country')) == 'SI') {
+    $logo = 'schrack-SI-logo-30let.png';
+} else {
+    $logo = 'schrack-logo.png';
+}
+?>
+<!DOCTYPE html>
+<html lang="<?php echo substr(Mage::app()->getLocale()->getLocaleCode(), 0, 2);?>">
+<head>
+<?php echo $this->getChildHtml('head') ?>
+</head>
+
+<!-- app/design/frontend/schrack/default/template/page/2columns-left.phtml (Globalwrapper) -->
+
+<body<?php echo $this->getBodyClass()?' class="'.$this->getBodyClass().'"':'' ?> id="tmpl-2columns-left">
+<!-- 2columns-left.phtml (start) -->
+<?php echo $this->getChildHtml('after_body_start') ?>
+<?php echo $this->getChildHtml('header') ?>
+<div id="content-wrap" class="row">
+    <div class="large-3 columns hide-on-print">
+        <?php echo $this->getChildHtml('left') ?>
+    </div>
+	<div class="content-container large-9 columns">
+        <div class="print-only" style="padding-bottom: 20px">
+            <img src="<?php echo $this->getSkinUrl('schrackdesign/Public/Images/' . $logo)?>" style="float: left;"/>
+            <div style="float: right;"><?php echo $_SERVER['HTTP_HOST']?></div>
+        </div>
+        <div class="row breadcrumbs hide-on-print"><div class="large-12 columns">
+            <?php echo $this->getChildHtml('breadcrumbs') ?>
+        </div></div>
+		<div id="content" class="content row">
+			<?php echo $this->getChildHtml('global_messages') ?>
+			<?php echo $this->getChildHtml('content') ?>
+		</div>
+	</div>
+</div>
+<?php echo $this->getChildHtml('footer') ?>
+<?php echo $this->getChildHtml('before_body_end') ?>
+    
+<script type="text/javascript">//<![CDATA[
+    jQuery(document).ready(function() {
+        if (window.matchMedia('print').matches) {
+            jQuery('#content-wrap > .large-3').remove();
+
+        }
+    });
+    jQuery(window).load(function() {
+        window.setTimeout(function() {
+            jQuery(document).foundation();
+        }, 200);
+    });
+//]]></script>
+<!-- 2columns-left.phtml (end) -->
+</body>
+</html>

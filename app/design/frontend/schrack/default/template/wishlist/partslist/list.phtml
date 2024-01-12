@@ -1,0 +1,172 @@
+<!-- default/template/wishlist/partslist/list.phtml (start) -->
+<?php
+    $_partslistHelper = Mage::helper('schrackwishlist/partslist');
+    $_sortOrder = $this->getRequest()->getParam('sort_order', 'updated_at');
+    $_tableHelper = Mage::helper('schrackcore/table');
+    $ajaxLoaderGifPath = $this->getSkinUrl('schrackdesign/Public/Images/download_ajax_loader.gif');
+?>
+
+<style>
+.addtocart_button {
+    position: absolute !important;
+    bottom: 62px !important;
+    right: -5px !important;
+}
+</style>
+
+<?php echo $this->getMessagesBlock()->getGroupedHtml() ?>
+<script type="text/javascript">//<![CDATA[
+
+    var partslist = new ListRequestManager.List('<?php echo $_partslistHelper->getBaseUrl() ?>');
+    var partslistFE = new ListRequestManager.Frontend(partslist, ListRequestManager.Product);
+
+    function setOrderFields(formName, fieldName) {
+        if (document.forms[formName].elements['sort_order'].value === fieldName) {
+            document.forms[formName].elements['direction'].value =
+                document.forms[formName].elements['direction'].value === 'asc' ?
+                    'desc' : 'asc';
+        } else {
+            document.forms[formName].elements['sort_order'].value = fieldName;
+            document.forms[formName].elements['direction'].value = 'asc';
+        }
+        document.forms[formName].submit();
+    }
+
+    function setAllCheckboxes(className, el) {
+        jQuery('input[type="checkbox"].' + className).prop('checked', jQuery(el).is(':checked'));
+    }
+
+
+//]]></script>
+<div class="large-12 columns">
+    <div class="row partslist-header">
+        <div class="large-12 columns">
+            <div class="headline a"><?php echo $this->__('Partslists') ?></div>
+        </div>
+    </div>
+    <div class="row partslist-header info-box three-d">
+        <div class="large-12 columns" style="padding: 5px;">
+            <h1><?php echo $this->__('Partslists help you with your daily work!')?></h1>
+            <ul>
+                <li><?php echo $this->__('Save articles for later visits.')?></li>
+                <li><?php echo $this->__('Create parts lists for your most common projects.')?></li>
+                <li><?php echo $this->__('Save precious time.')?></li>
+            </ul>
+        </div>
+    </div>
+    <div class="row">
+        <div class="large-12 colums">
+            <button class="button-red small" onClick="createPartslist('<?php echo $this->__('Create partslist')?>', '<?php echo $this->__('Your partslist has been created.')?>');return false;"><?php echo $this->__('Create partslist')?></button>
+        </div>
+    </div>
+    <div class="row partslist-body partsListArea">
+        <div class="large-12 columns">
+            <div class="headline c1"><?php echo $this->__('My partslists')?></div>
+            <?php if (!$_partslistHelper->getPartslistCount()): ?>
+                <p><?php echo $this->__('You have no partslists.') ?></p>
+            <?php endif ?>
+            <form method="get" name="partslist_list_form">
+                <input type="hidden" name="sort_order" value="<?php echo $this->getSortOrder()?>" />
+                <input type="hidden" name="direction" value="<?php echo $this->getDirection()?>" />
+                <div class="wishlist-list table">
+                    <div class="header row-fine">
+                        <div class="large-fine-2 columns-fine">&nbsp;</div>
+                        <div class="large-fine-6 columns-fine <?php if ($_sortOrder === 'updated_at'): ?>active<?php endif; ?>">
+                            <a href="<?php echo $this->getUrl('*/*/*') ?>" onClick="setOrderFields('partslist_list_form', 'updated_at');return false;">
+                                <img class="icon" src="<?php echo $this->getDirectionImageSkinUrl('updated_at') ?>" /><?php echo $this->__('Date') ?>
+                            </a>                            
+                        </div>
+                        <div class="large-fine-6 columns-fine <?php if ($_sortOrder === 'description'): ?>active<?php endif; ?>">
+                            <a href="<?php echo $this->getUrl('*/*/*') ?>" onClick="setOrderFields('partslist_list_form', 'description');return false;">
+                                <img class="icon" src="<?php echo $this->getDirectionImageSkinUrl('description') ?>" /><?php echo $this->__('Description') ?>
+                            </a>                            
+                        </div>                            
+                        <div class="large-fine-6 columns-fine <?php if ($_sortOrder === 'comment'): ?>active<?php endif; ?>">
+                            <a href="<?php echo $this->getUrl('*/*/*') ?>" onClick="setOrderFields('partslist_list_form', 'comment');return false;">
+                                <img class="icon" src="<?php echo $this->getDirectionImageSkinUrl('comment') ?>" /><?php echo $this->__('Comment') ?>
+                            </a>                            
+                        </div>
+                        <div class="large-fine-4 columns-fine availability"><?php echo $this->__('Articles'); ?></div>
+                    </div>
+                    <?php $i = 0; foreach ($this->getPartslists() as $pl) : ?>
+                        <div class="row-fine body <?php echo $_tableHelper->getEvenOddClass();?>">
+                            <div id="selectbox_cube__<?php echo $i; ?>" class="large-fine-2 columns-fine">
+                                    <span class="checkbox-container"><input type="checkbox" class="rowId" id="rowId-<?php echo $i; ?>"/></span>
+                                    <input type="hidden" id="id-<?php echo $i ?>" name="plId-<?php echo $pl->getId() ?>" value="<?php echo $pl->getId() ?>"/>
+                            </div>
+                            <div style="min-height: 39px;" id="date_update_<?php echo $i; ?>" class="large-fine-6 columns-fine date_update_css_class"><?php echo $this->formatDate($pl->getUpdatedAt(), 'medium'); ?></div>
+                            <div style="min-height: 39px;" id="description_<?php echo $i; ?>" class="large-fine-6 columns-fine description_css_class"><a href="<?php echo Mage::getUrl('wishlist/partslist/view', array('id' => $pl->getId())) ?>"><?php echo $pl->getDescription(); ?></a></div>
+                            <div style="min-height: 39px; overflow: auto;" id="comment_<?php echo $i; ?>" class="large-fine-6 columns-fine comment_css_class"><?php echo $pl->getComment()?></div>
+                            <div style="min-height: 39px;" id="article_number_<?php echo $i; ?>" class="large-fine-4 columns-fine article_number_css_class"><?php echo $pl->getItemsCount()?></div>
+                        </div>
+                    <?php ++$i; endforeach; ?>
+                    <div class="row-fine body">
+                        <div class="large-fine-2 columns-fine"><span class="checkbox-container"><input type="checkbox" onClick="setAllCheckboxes('rowId', this);"/></span></div>
+                         <div class="large-fine-22 columns-fine action-row">
+                             <button id="add-selected-wishlist-items-to-cart-button" class="button-red small addtocart addtocart_button" title="<?php echo $this->__('Add to Cart') ?>"><?php echo $this->__('Add to Cart') ?></button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">//<![CDATA[
+
+    jQuery(document).ready(function() {
+        function confirmDeletePartslist() {
+            return confirm('<?php echo $this->__('Are you sure you want to delete this partslist?') ?>');
+        }
+
+        function addSelectedWItemsToCart() {
+            var url = '<?php echo $this->getAddSelectedPartlistsToCartUrl() ?>';
+            var separator = (url.indexOf('?') >= 0) ? '&' : '?';
+            separator += 'plIDs=';
+            var rows = jQuery('.rowId:checked');
+            if (rows.length == 0) {
+                // showOverlayMessage('error', '<?php echo $this->__('Please select an entry from the list, by selecting at least one checkbox first.')?>', '');
+                alert('<?php echo $this->__('Please select an entry from the list, by selecting at least one checkbox first.')?>');
+                unsetOverlayLoaderCentral('partsListArea');
+                return;
+            }
+            rows.each(function(i, e) {
+                var id = jQuery(this).prop('id');
+                var rowId = id.split('-')[1];
+                var hidden = jQuery('#id-' + rowId);
+                if (hidden) {
+                    var plId = hidden.attr('value');
+                    url += separator + plId;
+                    separator = ',';
+                }
+            });
+            setLocation(url);
+        }
+
+        jQuery('#add-selected-wishlist-items-to-cart-button').on('click', function() {
+            setOverlayLoader('partsListArea', '<?php echo $ajaxLoaderGifPath; ?>');
+            jQuery('.partsListArea').css({'left' : '10px'});
+            addSelectedWItemsToCart();
+            return false;
+        });
+
+
+        jQuery('.comment_css_class').each(function() {
+            var realHeight;
+            realHeight = jQuery(this)[0].scrollHeight;
+            console.log(realHeight);
+            if (realHeight > 39) {
+                var counterIndex = jQuery(this).prop("id").replace("comment_", "");
+                realHeight = realHeight - 18;
+                jQuery(this).css({"overflow" : "visible"});
+                jQuery(this).height(realHeight);
+                jQuery("#selectbox_cube__" + counterIndex).height(realHeight);
+                jQuery("#date_update_" + counterIndex).height(realHeight);
+                jQuery("#description_" + counterIndex).height(realHeight);
+                jQuery("#article_number_" + counterIndex).height(realHeight);
+            }
+        });
+    });
+
+//]]>
+</script>
+<!-- default/template/wishlist/partslist/list.phtml (end) -->

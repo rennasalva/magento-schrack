@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<config>
+	<modules>
+		<Schracklive_MockCrm>
+			<version>1.0.0</version>
+			<depends>
+				<Schracklive_Crm />
+			</depends>
+		</Schracklive_MockCrm>
+	</modules>
+	<global>
+		<models>
+			<crm>
+				<rewrite>
+					<connector>Schracklive_MockCrm_Model_Connector</connector>
+				</rewrite>
+			</crm>
+		</models>
+	</global>
+</config>

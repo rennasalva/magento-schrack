@@ -1,0 +1,59 @@
+<!-- default/template/checkout/onepage/shipping_method.phtml (start) -->
+
+<form id="co-shipping-method-form" action="">
+    <?php echo $this->getBlockHtml('formkey') ?>
+    <div id="shipping-method-warning" style="color: red; font-size: 1em; height: 15px; font-weight: bold; display: none;"></div>
+    <div id="checkout-shipping-method-load">
+        <?php echo $this->getChildHtml('available') ?>
+    </div>
+    <script type="text/javascript">
+    //<![CDATA[
+        var shippingMethod = new ShippingMethod('co-shipping-method-form', "<?php echo $this->getUrl('checkout/onepage/saveShippingMethod') ?>");
+    //]]>
+    </script>
+    <div id="onepage-checkout-shipping-method-additional-load" style="margin-left: 15px;">
+        <?php echo $this->getChildHtml('additional') ?>
+    </div>
+    <div class="checkout-back-link-container" style="display: none;">
+        <a class="back-link back-to-shipping-button" href="#"><small>&laquo; </small><?php echo $this->__('Back') ?></a>
+    </div>
+    <div class="buttons-set" id="shipping-method-buttons-container">
+        <button type="button" class="button-red small saveShippingMethodButton"><span id="shipping-method-please-wait" class="please-wait" style="display:none;float:left;padding-left:20px;text-align:left;background:url('<?php echo $this->getSkinUrl('images/opc-ajax-loader.gif') ?>') left center no-repeat;"><?php echo $this->__('Loading next step...') ?></span><?php echo $this->__('Continue') ?></button>
+    </div>
+</form>
+
+<script type="text/javascript">
+    //<![CDATA[
+
+    jQuery(document).ready(function() {
+
+        jQuery('.back-to-shipping-button').on('click', function() {
+            localStorage.newCheckoutProcessLastUpdateTime = Math.floor(Date.now() / 1000);
+            localStorage.newCheckoutProcessCurrentStep = 'opc-shipping';
+            jQuery('#change-back-to-edit-shipping-method').hide();
+            jQuery('#change-back-to-edit-shipping').hide();
+            checkout.back();
+            return false;
+        });
+
+        jQuery('#content-wrap').on('click', '#change-back-to-edit-shipping', function(event) {
+            event.preventDefault();
+            localStorage.newCheckoutProcessLastUpdateTime = Math.floor(Date.now() / 1000);
+            localStorage.newCheckoutProcessCurrentStep = 'opc-shipping';
+            checkout.accordion.openSection('opc-shipping');
+            jQuery('#change-back-to-edit-shipping').hide();
+            jQuery('#change-back-to-edit-shipping-method').hide();
+            jQuery('#change-back-to-edit-payment-method').hide();
+        });
+
+        jQuery('.saveShippingMethodButton').on('click', function() {
+            localStorage.newCheckoutProcessLastUpdateTime = Math.floor(Date.now() / 1000);
+            localStorage.newCheckoutProcessCurrentStep = 'opc-payment';
+            shippingMethod.save();
+        });
+
+    });
+
+    //]]>
+</script>
+<!-- default/template/checkout/onepage/shipping_method.phtml (end) -->

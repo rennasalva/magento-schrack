@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config>
+	<menu>
+		<system>
+			<children>
+				<wws_signal translate="title" module="wws">
+					<title>WWS Messages</title>
+					<sort_order>62</sort_order>
+					<action>wws/adminhtml_signal</action>
+				</wws_signal>
+			</children>
+		</system>
+	</menu>
+	<acl>
+		<resources>
+			<admin>
+				<children>
+					<system>
+						<children>
+							<wws_signal>
+								<title>WWS</title>
+								<sort_order>42</sort_order>
+							</wws_signal>
+						</children>
+					</system>
+				</children>
+			</admin>
+		</resources>
+	</acl>
+</config>

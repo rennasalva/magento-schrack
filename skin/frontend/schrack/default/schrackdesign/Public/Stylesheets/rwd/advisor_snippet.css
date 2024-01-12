@@ -1,0 +1,251 @@
+.clearboth {
+    clear: both;
+}
+.advisor_snippet {
+    padding-top: 0 !important;
+}
+.advisor_snippet_container {
+    background: #F5F5F5 !important;
+    padding-top: 22px !important;
+    padding-left: 5px !important;
+    padding-right: 5px !important;
+    width: 100% !important;
+    height: 431px!important;
+}
+.advisor_snippet_headline_big {
+    color: #00589D !important;
+    font-weight: bold !important;
+    font-family: robotobold,Helvetica,Arial,Sans-Serif !important;
+    text-transform: none !important;
+    margin-left: 20px !important;
+    font-size: 2em !important;
+    text-align: left !important;
+    margin-top: 0 !important;
+}
+.advisor_snippet_headline {
+    color: #00589D !important;
+    font-family: robotoregular,Helvetica,Arial,Sans-Serif !important;
+    margin-left: 20px !important;
+    font-size: 1.2em !important;
+}
+.advisor_image_container {
+    width: 33.33333333%;
+    height: 347px;
+    margin-top: 21px;
+    float: left;
+}
+.advisor_image_box {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    width: 66%;
+}
+.advisor_image {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    width: 66%;
+}
+.advisor_name {
+    color: #00589D;
+    font-family: robotobold,Helvetica,Arial,Sans-Serif;
+    text-align: center;
+    margin-top: 13px;
+    font-size: 1.2em;
+}
+.advisor_standard_text {
+    color: #00589D;
+    font-family: robotoregular,Helvetica,Arial,Sans-Serif;
+    text-align: center;
+    margin-top: 4px;
+    font-size: 1.2em;
+}
+.advisor_customerdata_container {
+    width: 33.33333333%;
+    height: 347px;
+    margin-top: 21px;
+    float: left;
+}
+.email_customerdata {
+    width: 90%;
+    margin-left: 10%;
+}
+.label_customer_email {
+    font-size: 12px;
+    color: #AAAAAA;
+    width: 100%;
+    font-weight: 500 !important;
+}
+.input_customer_email {
+    margin-top: 5px;
+    height: 48px;
+    width: 85%;
+    font-size: 17px;
+    padding-left: 8px;
+    border: 1px solid #AAAAAA;
+    color: black !important;
+    border-radius: 5px;
+}
+.firstname_customerdata {
+    width: 90%;
+    margin-left: 10%;
+    margin-top: 18px;
+}
+.label_customer_firstname {
+    font-size: 12px;
+    color: #AAAAAA;
+    font-weight: 500 !important;
+}
+.input_customer_firstname {
+    margin-top: 5px;
+    height: 48px;
+    width: 85%;
+    font-size: 17px;
+    padding-left: 8px;
+    border: 1px solid #AAAAAA;
+    color: black !important;
+    border-radius: 5px;
+}
+.lastname_customerdata {
+    width: 90%;
+    margin-left: 10%;
+    margin-top: 18px;
+}
+.label_customer_lastname {
+    font-size: 12px;
+    color: #AAAAAA;
+    font-weight: 500 !important;
+}
+.input_customer_lastname {
+    margin-top: 5px;
+    height: 48px;
+    width: 85%;
+    font-size: 17px;
+    padding-left: 8px;
+    border: 1px solid #AAAAAA;
+    color: black !important;
+    border-radius: 5px;
+}
+.advisor_customernotice_container {
+    width: 33.33333333%;
+    height: 347px;
+    margin-top: 21px;
+    float: left;
+}
+.notice_customerdata {
+    width: 90%;
+    margin-left: 10%;
+}
+.label_customer_notice {
+    font-size: 12px;
+    color: #AAAAAA;
+    font-weight: 500 !important;
+}
+.input_customer_notice {
+    margin-top: 5px;
+    height: 137px;
+    width: 85%;
+    border: 1px solid #AAAAAA;
+    color: black !important;
+    border-radius: 5px;
+    resize: none;
+}
+.advisor_form_submit {
+    width: 90%;
+    margin-left: 54%;
+    margin-top: 26px;
+}
+.advisor_form_submit_button {
+    background: #D1222B;
+    color: white;
+    width: 133px;
+    height: 47px;
+    cursor: pointer;
+    float: left;
+    border: 1px solid #80151a;
+}
+
+@media (min-width: 60px) and (max-width: 992px) {
+    .advisor_snippet_container {
+        height: 980px!important;
+        padding-top: 28px !important;
+    }
+    .advisor_image_container {
+        width: 100%;
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+        height: 224px;
+    }
+    .advisor_image_box {
+        width: 33%;
+    }
+    .advisor_customerdata_container {
+        width: 100%;
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+        height: 249px;
+    }
+    .advisor_customernotice_container {
+        width: 100%;
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+        margin-top: 0;
+    }
+    .advisor_image {
+        width: 100%;
+    }
+    .firstname_customerdata {
+        margin-top: 17px;
+    }
+    .lastname_customerdata {
+        margin-top: 17px;
+    }
+    .lastname_customerdata {
+        margin-top: 17px;
+    }
+    .notice_customerdata {
+        margin-top: 35px;
+    }
+    .advisor_form_submit {
+        width: 90%;
+        margin-left: 10%;
+        margin-top: 35px;
+    }
+    .advisor_form_submit_child {
+        width: 85%;
+    }
+}
+
+@media (min-width: 993px) and (max-width: 4000px) {
+    .advisor_image_container {
+        width: 33.33333333%;
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+    }
+    .advisor_customerdata_container {
+        width: 33.33333333%;
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+    }
+    .advisor_customernotice_container {
+        width: 33.33333333%;
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+    }
+    .advisor_image {
+        width: 52%;
+    }
+    .advisor_form_submit {
+        width: 90%;
+        margin-left: 10%;
+    }
+    .advisor_form_submit_child {
+        width: 85%;
+    }
+}

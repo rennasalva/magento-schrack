@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns:typens="urn:{{var wsdl.name}}" xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+             xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/"
+             xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns="http://schemas.xmlsoap.org/wsdl/"
+             targetNamespace="urn:{{var wsdl.name}}">
+    <types>
+        <schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="urn:Magento">
+			<import namespace="http://schemas.xmlsoap.org/soap/encoding/" schemaLocation="http://schemas.xmlsoap.org/soap/encoding/" />
+            <complexType name="accountAccountEntity">
+                <all>
+                    <element name="wws_branch_id" type="xsd:string" minOccurs="1" maxOccurs="1" />
+                    <element name="prefix" type="xsd:string" minOccurs="0" maxOccurs="1" />
+                    <element name="name1" type="xsd:string" minOccurs="1" maxOccurs="1" />
+                    <element name="name2" type="xsd:string" minOccurs="0" maxOccurs="1" />
+                    <element name="name3" type="xsd:string" minOccurs="0" maxOccurs="1" />
+                    <element name="match_code" type="xsd:string" minOccurs="0" maxOccurs="1" />
+                    <element name="street" type="xsd:string" minOccurs="0" maxOccurs="1" />
+                    <element name="postcode" type="xsd:string" minOccurs="0" maxOccurs="1" />
+                    <element name="city" type="xsd:string" minOccurs="0" maxOccurs="1" />
+                    <element name="country_id" type="xsd:string" minOccurs="0" maxOccurs="1" />
+                    <element name="description" type="xsd:string" minOccurs="0" maxOccurs="1" />
+                    <element name="information" type="xsd:string" minOccurs="0" maxOccurs="1" />
+                    <element name="advisor_principal_name" type="xsd:string" minOccurs="0" maxOccurs="1" />
+                    <element name="advisors_principal_names" type="xsd:string" minOccurs="0" maxOccurs="1" />
+                    <element name="gtc_accepted" type="xsd:boolean" minOccurs="0" maxOccurs="1" />
+                    <element name="email" type="xsd:string" minOccurs="0" maxOccurs="1" />
+                    <element name="telephone" type="xsd:string" minOccurs="0" maxOccurs="1" />
+                    <element name="fax" type="xsd:string" minOccurs="0" maxOccurs="1" />
+                    <element name="homepage" type="xsd:string" minOccurs="0" maxOccurs="1" />
+                    <element name="delivery_block" type="xsd:boolean" minOccurs="0" maxOccurs="1" />
+                    <element name="currency_code" type="xsd:string" minOccurs="0" maxOccurs="1" />
+                    <element name="vat_identification_number" type="xsd:string" minOccurs="0" maxOccurs="1" />
+                    <element name="company_registration_number" type="xsd:string" minOccurs="0" maxOccurs="1" />
+                    <element name="sales_area" type="xsd:string" minOccurs="0" maxOccurs="1" />
+                    <element name="rating" type="xsd:string" minOccurs="0" maxOccurs="1" />
+                    <element name="enterprise_size" type="xsd:string" minOccurs="0" maxOccurs="1" />
+                    <element name="account_type" type="xsd:string" minOccurs="0" maxOccurs="1" />
+                </all>
+            </complexType>
+            <complexType name="accountAccountEntityArray">
+                <complexContent>
+                    <restriction base="soapenc:Array">
+                        <attribute ref="soapenc:arrayType" wsdl:arrayType="typens:accountAccountEntity[]" />
+                    </restriction>
+                </complexContent>
+            </complexType>
+        </schema>
+    </types>
+	<!--
+    <message name="accountAccountCreateRequest">
+        <part name="sessionId" type="xsd:string" />
+        <part name="accountData" type="typens:accountAccountEntity" />
+    </message>
+	-->
+    <message name="accountAccountCreateResponse">
+        <part name="result" type="xsd:int" />
+    </message>
+    <message name="accountAccountReplaceCustomerRequest">
+        <part name="sessionId" type="xsd:string" />
+        <part name="wwsCustomerId" type="xsd:string" />
+        <part name="accountData" type="typens:accountAccountEntity" />
+    </message>
+	<!--
+    <message name="accountAccountDeleteRequest">
+        <part name="sessionId" type="xsd:string" />
+        <part name="accountId" type="xsd:string" />
+    </message>
+	-->
+    <message name="accountAccountDeleteResponse">
+        <part name="result" type="xsd:boolean" />
+    </message>
+    <message name="accountAccountGetResponse">
+        <part name="accountData" type="typens:accountAccountEntity" />
+    </message>
+    <message name="accountAccountSingleCustomerRequest">
+        <part name="sessionId" type="xsd:string" />
+        <part name="wwsCustomerId" type="xsd:string" />
+    </message>
+    <portType name="{{var wsdl.handler}}PortType">
+       <operation name="accountAccountReplaceCustomer">
+            <documentation>Replace account by WWS customer id</documentation>
+            <input message="typens:accountAccountReplaceCustomerRequest" />
+            <output message="typens:accountAccountCreateResponse" />
+        </operation>
+       <operation name="accountAccountDeleteCustomer">
+            <documentation>Delete account by WWS customer id</documentation>
+            <input message="typens:accountAccountSingleCustomerRequest" />
+            <output message="typens:accountAccountDeleteResponse" />
+        </operation>
+       <operation name="accountAccountGetCustomer">
+            <documentation>Retrieve account by WWS customer id</documentation>
+            <input message="typens:accountAccountSingleCustomerRequest" />
+            <output message="typens:accountAccountGetResponse" />
+        </operation>
+    </portType>
+    <binding name="{{var wsdl.handler}}Binding" type="typens:{{var wsdl.handler}}PortType">
+        <operation name="accountAccountReplaceCustomer">
+            <soap:operation soapAction="urn:{{var wsdl.handler}}Action" />
+            <input>
+                <soap:body namespace="urn:{{var wsdl.name}}" use="encoded" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+            </input>
+            <output>
+                <soap:body namespace="urn:{{var wsdl.name}}" use="encoded" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+            </output>
+        </operation>
+        <operation name="accountAccountDeleteCustomer">
+            <soap:operation soapAction="urn:{{var wsdl.handler}}Action" />
+            <input>
+                <soap:body namespace="urn:{{var wsdl.name}}" use="encoded" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+            </input>
+            <output>
+                <soap:body namespace="urn:{{var wsdl.name}}" use="encoded" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+            </output>
+        </operation>
+        <operation name="accountAccountGetCustomer">
+            <soap:operation soapAction="urn:{{var wsdl.handler}}Action" />
+            <input>
+                <soap:body namespace="urn:{{var wsdl.name}}" use="encoded" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+            </input>
+            <output>
+                <soap:body namespace="urn:{{var wsdl.name}}" use="encoded" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+            </output>
+        </operation>
+    </binding>
+</definitions>

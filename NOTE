@@ -1,0 +1,26 @@
+moduli da copiare
+
+1) copiare il modulo
+2) abilitare il modulo in ?etc
+3) verificare i file di template da cpioare adminhtml / font-end
+
+
+1) Mudolo OpenStream
+
+path http://localhost/index.php/admin/system_config/edit/section/general/key/8f55941a1395af991a745ed7770889d8/
+copiare templeta file sotto
+app/design/adminhtml/default/default/template/openstream/geoip/system/config/synchronize.phtml
+
+copiare Layout openstream/geoip.xml in
+/Users/rsalvatori/Projects/Php/DevelopArea/Docker/WorkAreaSchrack/app-openmage-20/app/design/adminhtml/default/default/layout/openstream/geoip.xml
+
+2) Orcamultimedia
+Copiare cartella template emodulo
+
+3) Copy SezameLinb and Andraid  valutare sopstamento in vendor
+
+4)
+Copy Customweb e libreria sotto Lib (Customweb)
+
+
+5)Copy  Anowave  non abibilare dipend da schark module

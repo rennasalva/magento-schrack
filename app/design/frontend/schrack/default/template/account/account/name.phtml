@@ -1,0 +1,14 @@
+<?php
+/**
+ * Edit account template
+ */
+/* @var $this Schracklive_Account_Block_Address_Name */
+?>
+<?php
+$_account = $this->getAccount()
+?>
+<p><?php echo $this->renderLine($_account->getPrefix()); ?>
+<?php echo $this->renderLine($_account->getName1()); ?>
+<?php echo $this->renderLine($_account->getName2()); ?>
+<?php echo $this->renderLine($_account->getName3()); ?></p>
+

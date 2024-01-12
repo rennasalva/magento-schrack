@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+<config>
+    <modules>
+        <Nagarro_PHP7>
+            <version>0.1.0</version>
+        </Nagarro_PHP7>
+    </modules>
+
+    <global>
+        <models>
+            <nagarro_php7>
+                <class>Nagarro_PHP7_Model</class>
+            </nagarro_php7>
+            <!-- Rewriting these models for PHP 7 compatibility -->
+            <core>
+                <rewrite>
+                    <layout>Nagarro_PHP7_Model_Layout</layout>
+                </rewrite>
+            </core>
+            <importexport>
+                <rewrite>
+                    <import_uploader>Nagarro_PHP7_Model_Import_Uploader</import_uploader>
+                    <export_entity_product_type_configurable>Nagarro_PHP7_Model_Export_Entity_Product_Type_Configurable</export_entity_product_type_configurable>
+                    <export_entity_product_type_grouped>Nagarro_PHP7_Model_Export_Entity_Product_Type_Grouped</export_entity_product_type_grouped>
+                    <export_entity_product_type_simple>Nagarro_PHP7_Model_Export_Entity_Product_Type_Simple</export_entity_product_type_simple>
+                    <export_entity_customer>Nagarro_PHP7_Model_Export_Entity_Customer</export_entity_customer>
+                </rewrite>
+            </importexport>
+            <catalog>
+                <rewrite>
+                    <product_link_api_v2>Nagarro_PHP7_Model_Product_Link_Api_V2</product_link_api_v2>
+                </rewrite>
+            </catalog>
+        </models>
+        <helpers>
+            <nagarro_php7>
+                <class>Nagarro_PHP7_Helper_Data</class>
+            </nagarro_php7>
+        </helpers>
+    </global>
+</config>

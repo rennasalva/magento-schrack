@@ -1,0 +1,144 @@
+@import "sprites/downloadcenter";
+@import "sprites/service-menu";
+select option[value="icon-downloadcenter"] {
+	@include sprite($icon-downloadcenter);
+	padding-left: 30px;
+	height: 30px;
+	margin-left: 5px;
+}
+
+select option[value="icon-schrack-store"] {
+	@include sprite($icon-schrack-store);
+	padding-left: 30px;
+	height: 30px;
+	margin-left: 5px;
+}
+select option[value="icon-universal-icon2"] {
+	@include sprite($icon-universal-icon2);
+	padding-left: 30px;
+	height: 30px;
+	margin-left: 5px;
+}
+select option[value="icon-pickup-spool"] {
+	@include sprite($icon-pickup-spool);
+	padding-left: 30px;
+	height: 30px;
+	margin-left: 5px;
+}
+select option[value="icon-schrack-digital"] {
+	@include sprite($icon-schrack-digital);
+	padding-left: 30px;
+	height: 30px;
+	margin-left: 5px;
+}
+select option[value="icon-schrack-live-app"] {
+	@include sprite($icon-schrack-live-app);
+	padding-left: 30px;
+	height: 30px;
+	margin-left: 5px;
+}
+select option[value="icon-datanorm-download"] {
+	@include sprite($icon-datanorm-download);
+	padding-left: 30px;
+	height: 30px;
+	margin-left: 5px;
+}
+select option[value="icon-ad-material"] {
+	@include sprite($icon-ad-material);
+	padding-left: 30px;
+	height: 30px;
+	margin-left: 5px;
+}
+select option[value="icon-archive"] {
+	@include sprite($icon-archive);
+	padding-left: 30px;
+	height: 30px;
+	margin-left: 5px;
+}
+select option[value="icon-campaign"] {
+	@include sprite($icon-campaign);
+	padding-left: 30px;
+	height: 30px;
+	margin-left: 5px;
+}
+select option[value="icon-catalogue"] {
+	@include sprite($icon-catalogue);
+	padding-left: 30px;
+	height: 30px;
+	margin-left: 5px;
+}
+select option[value="icon-password"] {
+	@include sprite($icon-password);
+	padding-left: 30px;
+	height: 30px;
+	margin-left: 5px;
+}
+select option[value="icon-video"] {
+	@include sprite($icon-video);
+	padding-left: 30px;
+	height: 30px;
+	margin-left: 5px;
+}
+
+select option[value="icon-data-connection"] {
+	@include sprite($icon-data-connection);
+	padding-left: 30px;
+	height: 30px;
+	margin-left: 5px;
+}
+
+select option[value="icon-intercom-tool"] {
+	@include sprite($icon-intercom-tool);
+	padding-left: 30px;
+	height: 30px;
+	margin-left: 5px;
+}
+
+select option[value="icon-online-functions"] {
+	@include sprite($icon-online-functions);
+	padding-left: 30px;
+	height: 30px;
+	margin-left: 5px;
+}
+
+select option[value="icon-power-dissipation"] {
+	@include sprite($icon-power-dissipation);
+	padding-left: 30px;
+	height: 30px;
+	margin-left: 5px;
+}
+
+select option[value="icon-pv-calculator"] {
+	@include sprite($icon-pv-calculator);
+	padding-left: 30px;
+	height: 30px;
+	margin-left: 5px;
+}
+
+select option[value="icon-schrack-design"] {
+	@include sprite($icon-schrack-design);
+	padding-left: 30px;
+	height: 30px;
+	margin-left: 5px;
+}
+
+select option[value="icon-outlet-center"] {
+	@include sprite($icon-outlet-center);
+	padding-left: 30px;
+	height: 30px;
+	margin-left: 5px;
+}
+
+select option[value="icon-knx-datadownload"] {
+	@include sprite($icon-knx-datadownload);
+	padding-left: 30px;
+	height: 30px;
+	margin-left: 5px;
+}
+
+select option[value="icon-cad-drawing"] {
+	@include sprite($icon-cad-drawing);
+	padding-left: 30px;
+	height: 30px;
+	margin-left: 5px;
+}

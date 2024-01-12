@@ -1,0 +1,12 @@
+<?php
+$_sku = $this->getRequest()->getParam('sku');
+$_ref = $this->getRequest()->getParam('ref');
+if (isset($_sku)):?>
+<script type="text/javascript">//<![CDATA[
+
+    jQuery(document).ready(function() {
+        window.parent.addToPartslist('<?php echo $_sku?>', '<?php echo $_ref?>');
+    });
+
+//]]></script>
+<?php endif;?>

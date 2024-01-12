@@ -1,0 +1,222 @@
+// SCSS variables are information about icon's compiled state, stored under its original file name
+//
+// .icon-home {
+//   width: $icon-home-width;
+// }
+//
+// The large array-like variables contain all information about a single icon
+// $icon-home: x y offset_x offset_y width height total_width total_height image_path;
+//
+// At the bottom of this section, we provide information about the spritesheet itself
+// $spritesheet: width height image $spritesheet-sprites;
+$icon-downloadcenter-cad-drawing-name: 'icon-downloadcenter-cad-drawing';
+$icon-downloadcenter-cad-drawing-x: 0px;
+$icon-downloadcenter-cad-drawing-y: 29px;
+$icon-downloadcenter-cad-drawing-offset-x: 0px;
+$icon-downloadcenter-cad-drawing-offset-y: -29px;
+$icon-downloadcenter-cad-drawing-width: 24px;
+$icon-downloadcenter-cad-drawing-height: 24px;
+$icon-downloadcenter-cad-drawing-total-width: 24px;
+$icon-downloadcenter-cad-drawing-total-height: 372px;
+$icon-downloadcenter-cad-drawing-image: '../Images/icons-downloadcenter.png';
+$icon-downloadcenter-cad-drawing: (0px, 29px, 0px, -29px, 24px, 24px, 24px, 372px, '../Images/icons-downloadcenter.png', 'icon-downloadcenter-cad-drawing', );
+$icon-downloadcenter-catalogue-name: 'icon-downloadcenter-catalogue';
+$icon-downloadcenter-catalogue-x: 0px;
+$icon-downloadcenter-catalogue-y: 174px;
+$icon-downloadcenter-catalogue-offset-x: 0px;
+$icon-downloadcenter-catalogue-offset-y: -174px;
+$icon-downloadcenter-catalogue-width: 24px;
+$icon-downloadcenter-catalogue-height: 24px;
+$icon-downloadcenter-catalogue-total-width: 24px;
+$icon-downloadcenter-catalogue-total-height: 372px;
+$icon-downloadcenter-catalogue-image: '../Images/icons-downloadcenter.png';
+$icon-downloadcenter-catalogue: (0px, 174px, 0px, -174px, 24px, 24px, 24px, 372px, '../Images/icons-downloadcenter.png', 'icon-downloadcenter-catalogue', );
+$icon-downloadcenter-ce-certificate-name: 'icon-downloadcenter-ce-certificate';
+$icon-downloadcenter-ce-certificate-x: 0px;
+$icon-downloadcenter-ce-certificate-y: 58px;
+$icon-downloadcenter-ce-certificate-offset-x: 0px;
+$icon-downloadcenter-ce-certificate-offset-y: -58px;
+$icon-downloadcenter-ce-certificate-width: 24px;
+$icon-downloadcenter-ce-certificate-height: 24px;
+$icon-downloadcenter-ce-certificate-total-width: 24px;
+$icon-downloadcenter-ce-certificate-total-height: 372px;
+$icon-downloadcenter-ce-certificate-image: '../Images/icons-downloadcenter.png';
+$icon-downloadcenter-ce-certificate: (0px, 58px, 0px, -58px, 24px, 24px, 24px, 372px, '../Images/icons-downloadcenter.png', 'icon-downloadcenter-ce-certificate', );
+$icon-downloadcenter-checklist-name: 'icon-downloadcenter-checklist';
+$icon-downloadcenter-checklist-x: 0px;
+$icon-downloadcenter-checklist-y: 87px;
+$icon-downloadcenter-checklist-offset-x: 0px;
+$icon-downloadcenter-checklist-offset-y: -87px;
+$icon-downloadcenter-checklist-width: 24px;
+$icon-downloadcenter-checklist-height: 24px;
+$icon-downloadcenter-checklist-total-width: 24px;
+$icon-downloadcenter-checklist-total-height: 372px;
+$icon-downloadcenter-checklist-image: '../Images/icons-downloadcenter.png';
+$icon-downloadcenter-checklist: (0px, 87px, 0px, -87px, 24px, 24px, 24px, 372px, '../Images/icons-downloadcenter.png', 'icon-downloadcenter-checklist', );
+$icon-downloadcenter-com-certificate-name: 'icon-downloadcenter-com-certificate';
+$icon-downloadcenter-com-certificate-x: 0px;
+$icon-downloadcenter-com-certificate-y: 116px;
+$icon-downloadcenter-com-certificate-offset-x: 0px;
+$icon-downloadcenter-com-certificate-offset-y: -116px;
+$icon-downloadcenter-com-certificate-width: 24px;
+$icon-downloadcenter-com-certificate-height: 24px;
+$icon-downloadcenter-com-certificate-total-width: 24px;
+$icon-downloadcenter-com-certificate-total-height: 372px;
+$icon-downloadcenter-com-certificate-image: '../Images/icons-downloadcenter.png';
+$icon-downloadcenter-com-certificate: (0px, 116px, 0px, -116px, 24px, 24px, 24px, 372px, '../Images/icons-downloadcenter.png', 'icon-downloadcenter-com-certificate', );
+$icon-downloadcenter-data-connection-name: 'icon-downloadcenter-data-connection';
+$icon-downloadcenter-data-connection-x: 0px;
+$icon-downloadcenter-data-connection-y: 145px;
+$icon-downloadcenter-data-connection-offset-x: 0px;
+$icon-downloadcenter-data-connection-offset-y: -145px;
+$icon-downloadcenter-data-connection-width: 24px;
+$icon-downloadcenter-data-connection-height: 24px;
+$icon-downloadcenter-data-connection-total-width: 24px;
+$icon-downloadcenter-data-connection-total-height: 372px;
+$icon-downloadcenter-data-connection-image: '../Images/icons-downloadcenter.png';
+$icon-downloadcenter-data-connection: (0px, 145px, 0px, -145px, 24px, 24px, 24px, 372px, '../Images/icons-downloadcenter.png', 'icon-downloadcenter-data-connection', );
+$icon-downloadcenter-data-sheet-name: 'icon-downloadcenter-data-sheet';
+$icon-downloadcenter-data-sheet-x: 0px;
+$icon-downloadcenter-data-sheet-y: 0px;
+$icon-downloadcenter-data-sheet-offset-x: 0px;
+$icon-downloadcenter-data-sheet-offset-y: 0px;
+$icon-downloadcenter-data-sheet-width: 24px;
+$icon-downloadcenter-data-sheet-height: 24px;
+$icon-downloadcenter-data-sheet-total-width: 24px;
+$icon-downloadcenter-data-sheet-total-height: 372px;
+$icon-downloadcenter-data-sheet-image: '../Images/icons-downloadcenter.png';
+$icon-downloadcenter-data-sheet: (0px, 0px, 0px, 0px, 24px, 24px, 24px, 372px, '../Images/icons-downloadcenter.png', 'icon-downloadcenter-data-sheet', );
+$icon-downloadcenter-datanorm-name: 'icon-downloadcenter-datanorm';
+$icon-downloadcenter-datanorm-x: 0px;
+$icon-downloadcenter-datanorm-y: 203px;
+$icon-downloadcenter-datanorm-offset-x: 0px;
+$icon-downloadcenter-datanorm-offset-y: -203px;
+$icon-downloadcenter-datanorm-width: 24px;
+$icon-downloadcenter-datanorm-height: 24px;
+$icon-downloadcenter-datanorm-total-width: 24px;
+$icon-downloadcenter-datanorm-total-height: 372px;
+$icon-downloadcenter-datanorm-image: '../Images/icons-downloadcenter.png';
+$icon-downloadcenter-datanorm: (0px, 203px, 0px, -203px, 24px, 24px, 24px, 372px, '../Images/icons-downloadcenter.png', 'icon-downloadcenter-datanorm', );
+$icon-downloadcenter-knx-datadownload-name: 'icon-downloadcenter-knx-datadownload';
+$icon-downloadcenter-knx-datadownload-x: 0px;
+$icon-downloadcenter-knx-datadownload-y: 232px;
+$icon-downloadcenter-knx-datadownload-offset-x: 0px;
+$icon-downloadcenter-knx-datadownload-offset-y: -232px;
+$icon-downloadcenter-knx-datadownload-width: 24px;
+$icon-downloadcenter-knx-datadownload-height: 24px;
+$icon-downloadcenter-knx-datadownload-total-width: 24px;
+$icon-downloadcenter-knx-datadownload-total-height: 372px;
+$icon-downloadcenter-knx-datadownload-image: '../Images/icons-downloadcenter.png';
+$icon-downloadcenter-knx-datadownload: (0px, 232px, 0px, -232px, 24px, 24px, 24px, 372px, '../Images/icons-downloadcenter.png', 'icon-downloadcenter-knx-datadownload', );
+$icon-downloadcenter-press-name: 'icon-downloadcenter-press';
+$icon-downloadcenter-press-x: 0px;
+$icon-downloadcenter-press-y: 261px;
+$icon-downloadcenter-press-offset-x: 0px;
+$icon-downloadcenter-press-offset-y: -261px;
+$icon-downloadcenter-press-width: 24px;
+$icon-downloadcenter-press-height: 24px;
+$icon-downloadcenter-press-total-width: 24px;
+$icon-downloadcenter-press-total-height: 372px;
+$icon-downloadcenter-press-image: '../Images/icons-downloadcenter.png';
+$icon-downloadcenter-press: (0px, 261px, 0px, -261px, 24px, 24px, 24px, 372px, '../Images/icons-downloadcenter.png', 'icon-downloadcenter-press', );
+$icon-downloadcenter-software-name: 'icon-downloadcenter-software';
+$icon-downloadcenter-software-x: 0px;
+$icon-downloadcenter-software-y: 290px;
+$icon-downloadcenter-software-offset-x: 0px;
+$icon-downloadcenter-software-offset-y: -290px;
+$icon-downloadcenter-software-width: 24px;
+$icon-downloadcenter-software-height: 24px;
+$icon-downloadcenter-software-total-width: 24px;
+$icon-downloadcenter-software-total-height: 372px;
+$icon-downloadcenter-software-image: '../Images/icons-downloadcenter.png';
+$icon-downloadcenter-software: (0px, 290px, 0px, -290px, 24px, 24px, 24px, 372px, '../Images/icons-downloadcenter.png', 'icon-downloadcenter-software', );
+$icon-downloadcenter-technician-name: 'icon-downloadcenter-technician';
+$icon-downloadcenter-technician-x: 0px;
+$icon-downloadcenter-technician-y: 319px;
+$icon-downloadcenter-technician-offset-x: 0px;
+$icon-downloadcenter-technician-offset-y: -319px;
+$icon-downloadcenter-technician-width: 24px;
+$icon-downloadcenter-technician-height: 24px;
+$icon-downloadcenter-technician-total-width: 24px;
+$icon-downloadcenter-technician-total-height: 372px;
+$icon-downloadcenter-technician-image: '../Images/icons-downloadcenter.png';
+$icon-downloadcenter-technician: (0px, 319px, 0px, -319px, 24px, 24px, 24px, 372px, '../Images/icons-downloadcenter.png', 'icon-downloadcenter-technician', );
+$icon-downloadcenter-video-name: 'icon-downloadcenter-video';
+$icon-downloadcenter-video-x: 0px;
+$icon-downloadcenter-video-y: 348px;
+$icon-downloadcenter-video-offset-x: 0px;
+$icon-downloadcenter-video-offset-y: -348px;
+$icon-downloadcenter-video-width: 24px;
+$icon-downloadcenter-video-height: 24px;
+$icon-downloadcenter-video-total-width: 24px;
+$icon-downloadcenter-video-total-height: 372px;
+$icon-downloadcenter-video-image: '../Images/icons-downloadcenter.png';
+$icon-downloadcenter-video: (0px, 348px, 0px, -348px, 24px, 24px, 24px, 372px, '../Images/icons-downloadcenter.png', 'icon-downloadcenter-video', );
+$icons-downloadcenter-width: 24px;
+$icons-downloadcenter-height: 372px;
+$icons-downloadcenter-image: '../Images/icons-downloadcenter.png';
+$icons-downloadcenter-sprites: ($icon-downloadcenter-cad-drawing, $icon-downloadcenter-catalogue, $icon-downloadcenter-ce-certificate, $icon-downloadcenter-checklist, $icon-downloadcenter-com-certificate, $icon-downloadcenter-data-connection, $icon-downloadcenter-data-sheet, $icon-downloadcenter-datanorm, $icon-downloadcenter-knx-datadownload, $icon-downloadcenter-press, $icon-downloadcenter-software, $icon-downloadcenter-technician, $icon-downloadcenter-video, );
+$icons-downloadcenter: (24px, 372px, '../Images/icons-downloadcenter.png', $icons-downloadcenter-sprites, );
+
+// The provided mixins are intended to be used with the array-like variables
+//
+// .icon-home {
+//   @include sprite-width($icon-home);
+// }
+//
+// .icon-email {
+//   @include sprite($icon-email);
+// }
+//
+// Example usage in HTML:
+//
+// `display: block` sprite:
+// <div class="icon-home"></div>
+//
+// To change `display` (e.g. `display: inline-block;`), we suggest using a common CSS class:
+//
+// // CSS
+// .icon {
+//   display: inline-block;
+// }
+//
+// // HTML
+// <i class="icon icon-home"></i>
+@mixin sprite-width($sprite) {
+  width: nth($sprite, 5);
+}
+
+@mixin sprite-height($sprite) {
+  height: nth($sprite, 6);
+}
+
+@mixin sprite-position($sprite) {
+  $sprite-offset-x: nth($sprite, 3);
+  $sprite-offset-y: nth($sprite, 4);
+  background-position: $sprite-offset-x  $sprite-offset-y;
+}
+
+@mixin sprite-image($sprite) {
+  $sprite-image: nth($sprite, 9);
+  background-image: url(#{$sprite-image});
+}
+
+@mixin sprite($sprite) {
+  @include sprite-image($sprite);
+  @include sprite-position($sprite);
+  @include sprite-width($sprite);
+  @include sprite-height($sprite);
+}
+
+// The `sprites` mixin generates identical output to the CSS template
+//   but can be overridden inside of SCSS
+//
+// @include sprites($spritesheet-sprites);
+@mixin sprites($sprites) {
+  @each $sprite in $sprites {
+    $sprite-name: nth($sprite, 10);
+    .#{$sprite-name} {
+      @include sprite($sprite);
+    }
+  }
+}

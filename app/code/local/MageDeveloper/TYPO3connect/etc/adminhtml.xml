@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+<config>
+    	<menu>
+        <cms>
+            <children>
+                <typo3connect translate="title" module="typo3connect">
+					<title>TYPO3</title>
+                	<children>
+                		<import_pages>
+							<title>Import Pages from TYPO3</title>
+							<action>adminhtml/typo3connect/index</action>
+                		</import_pages>
+                	</children>
+                </typo3connect>
+            </children>
+        </cms>
+    </menu>
+	<acl>
+        <resources>
+            <all>
+                <title>Allow Everything</title>
+            </all>
+            <admin>
+                <children>
+                	<cms>
+                		<children>
+		                    <typo3connect>
+								<title>TYPO3connect Module</title>
+								<sort_order>10</sort_order>
+		                    </typo3connect>
+						</children>
+                    </cms>
+                </children>
+            </admin>
+        </resources>
+    </acl> 
+</config>

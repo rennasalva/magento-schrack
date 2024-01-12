@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<layout version="0.1.0">
+    <default>
+        <reference name="after_body_start" after="-">
+            <block type="ec/track" name="ec_noscript" as="ec_noscript" template="ec/noscript.phtml"></block>
+        </reference>
+        <reference name="head" after="-">
+        	<block type="ec/track" name="ec_header" as="ec_header" template="ec/header.phtml" />
+            <block type="ec/track" name="ec_purchase" as="ec_purchase" template="ec/purchase.phtml">
+            	<block type="ec/track" name="ec_datalayer" as="ec_datalayer" template="ec/datalayer.phtml" />
+            	<block type="ec/track" name="ec_visitor" as="ec_visitor" template="ec/visitor.phtml" />
+            	<block type="ec/track" name="ec_dimensions" as="ec_dimensions" template="ec/dimensions.phtml" />
+            	<block type="ec/track" name="ec_adroll" as="ec_adroll" template="ec/adroll.phtml" />
+            	<block type="ec/experiments" name="ec_experiments" as="ec_experiments" template="ec/experiments.phtml" />
+            	<block type="ec/track" name="ec_promotions" as="ec_promotions" template="ec/promotions.phtml" />
+            	<block type="ec/track" name="ec_impression" as="ec_impression" template="ec/impression.phtml" />
+            	<block type="ec/track" name="ec_details" as="ec_details" template="ec/details.phtml" />
+            	<block type="ec/track" name="ec_search" as="ec_search" template="ec/search.phtml" />
+            	<block type="ec/track" name="ec_perfectaudience" as="ec_perfectaudience" template="ec/perfectaudience.phtml" />
+            </block>
+        </reference>
+        <reference name="before_body_end" after="-">
+        	<block type="ec/events" name="ec_events" as="ec_events" template="ec/events.phtml" />
+        </reference>
+    </default>
+    <checkout_onepage_index translate="label">
+        <reference name="head" after="-">
+            <block type="ec/track" name="ec_track" as="ec_track" template="ec/checkout.phtml" />
+        </reference>
+    </checkout_onepage_index>
+    
+</layout>

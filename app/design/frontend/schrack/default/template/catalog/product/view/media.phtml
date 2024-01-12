@@ -1,0 +1,214 @@
+<!-- template\catalog\product\view\media.phtml (start) -->
+<?php
+/**
+ * Magento
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Academic Free License (AFL 3.0)
+ * that is bundled with this package in the file LICENSE_AFL.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/afl-3.0.php
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@magentocommerce.com so we can send you a copy immediately.
+ *
+ * DISCLAIMER
+ *
+ * Do not edit or add to this file if you wish to upgrade Magento to newer
+ * versions in the future. If you wish to customize Magento for your
+ * needs please refer to http://www.magentocommerce.com for more information.
+ *
+ * @category    design
+ * @package     base_default
+ * @copyright   Copyright (c) 2009 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @license     http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
+ */
+
+/**
+ * Product media data template
+ *
+ * @see Mage_Catalog_Block_Product_View_Media
+ */
+?>
+<?php
+    $_customer = Mage::getSingleton('customer/session')->getCustomer();
+    $_product = $this->getProduct();
+    $_productHelper = Mage::helper('schrackcatalog/product');
+    $_helper = $this->helper('catalog/output');
+    $_imgHelper = $this->helper('catalog/image');
+?>
+
+<style>
+    .carousel {
+        height: 100% !important;
+    }
+</style>
+
+<div class="product-images">
+    <?php $_image = $_product->getImage();
+        if (!$_image) {
+            $_image = $this->helper('catalog/image')->init($_product, 'image');
+        }
+    ?>
+
+    <?php if ($_product->getImage() != 'no_selection' && $_image): ?>
+        <div class="large-image">
+            <div class="image-container">
+                <div class="middle-align-dummy"></div>
+                <?php
+                    $_img_obj = $_imgHelper->init($_product, 'image')->constrainOnly(true)->resize(200);
+
+                    $printLimitWidth  = 150;
+                    $printLimitHeight = 200;
+                    if (stristr($_img_obj, '.jpg') || stristr($_img_obj, '.jpeg')) $image = imagecreatefromjpeg($_img_obj);
+                    if (stristr($_img_obj, '.png')) $image = imagecreatefrompng($_img_obj);
+                    $imageWidth = imagesx($image);
+                    $imageHeight = imagesy($image);
+
+                    // First shrink (width):
+                    if ($imageWidth > $printLimitWidth) {
+                        $aspectRatio = $printLimitWidth / $imageWidth;
+                        $imageWidth  = $printLimitWidth;
+                        $imageHeight = $aspectRatio * $imageHeight;
+                    }
+
+                    // Second shrink (height):
+                    if ($imageHeight > $printLimitHeight) {
+                        $aspectRatio = $printLimitHeight / $imageHeight;
+                        $imageHeight = $printLimitHeight;
+                        $imageWidth  = $aspectRatio * $imageWidth;
+                    }
+
+                    if ($imageWidth < $printLimitWidth) {
+                        $distanceLeft = ($printLimitWidth - $imageWidth) / 2 + 20;
+                    } else {
+                        $distanceLeft = 25;
+                    }
+
+                    if ($imageHeight < $printLimitHeight) {
+                        $distanceTop = 230 - ($printLimitHeight - $imageHeight) / 2;
+                    } else {
+                        $distanceTop = 210;
+                    }
+
+                    // Removes protocol:
+                    $imageFileURL = $_img_obj->__toString();
+                    $imageFileURL = str_replace(array('http:', 'https:'), '', $imageFileURL);
+                    $_img = '<img id="image" ' . ( $_product->isDead() ? ' class="grayscale" ' : '' ) .'src="'.$imageFileURL.'" alt="'.$this->htmlEscape($this->getImageLabel()).'" title="'.$this->htmlEscape($this->getImageLabel()).'" width="'.$_img_obj->getWidth().'" height="'.$_img_obj->getHeight().'" property="image" />';
+                    echo '<a class="hide-on-print" href="'.$imageFileURL.'" title="'.htmlspecialchars($_product->getName()).'" rel="shadowbox[Images]" target="_blank">'.$_helper->productAttribute($_product, $_img, 'image').'</a>';
+                    echo '<img style="margin-left: ' . $distanceLeft . 'px; margin-top: -' . $distanceTop . 'px; width: ' . $imageWidth . 'px; height: ' . $imageHeight . 'px;" class="print-only" id="image" src="'.$imageFileURL.'" alt="'.$this->htmlEscape($this->getImageLabel()).'" title="'.$this->htmlEscape($this->getImageLabel()).'" property="image" />';
+                ?>
+                <meta property="og:image" content="<?php echo $imageFileURL; ?>" />
+            </div>
+            <?php if ( $_product->isDead() ) : ?>
+                <div class="sale_mark gray"><?php echo $this->__('NOT AVAILABLE'); ?></div>
+            <?php else : /* Mistding intellij findet hier bei elseif einen Syntaxfehler der keiner ist! Argh! */ ?>
+                <?php if ( $_productHelper->isSale($_product,$_customer) ) : ?>
+                    <div class="sale_mark red_white"><?php echo $this->__('SALE'); ?></div>
+                <?php elseif ( $_productHelper->isPromotion($_product,$_customer) ) : ?>
+                    <div class="sale_mark full_red"><?php echo $this->__('PROMOTION'); ?></div>
+                <?php endif; ?>
+            <?php endif; ?>
+            <div class="text" style="font-size: 12px;">
+                <a class="zoom-notice hide-on-print" style="margin-left: 0px; color: #555; text-decoration: none;" href="<?php echo $imageFileURL; ?>" title="<?php echo htmlspecialchars($_product->getName()); ?>" rel="shadowbox[Images]" target="_blank">
+                    <?php echo $this->__('Click on the image to view full picture')?>
+                </a>
+            </div>
+        </div>
+    <?php else: ?>
+        <p><?php echo $this->__('No product image available'); ?></p>
+    <?php endif; ?>
+    <?php $_images = $_product->getImageAttachments(true);?>
+    <?php if (count($_images) > 1): ?>
+        <ul class="more-views clearing-thumbs hide-on-print" id="more-views" data-clearing>
+        </ul>
+        <script type="text/javascript">
+            jQuery(document).ready(function() {
+                var imageLoaders = [];
+                <?php $i = 0; foreach ($_images as $_image):
+                    $tn = $_image['thumbnail'];
+                    $foto = $_image['foto'];
+                    $baseUrl = Mage::getStoreConfig('schrack/general/imageserver');
+                    if ($tn) {
+                        $tn_img_url = $baseUrl . $tn->getUrl();
+                        $tn_label = $tn->getLabel();
+                        $tn_width = $tn->getWidth();
+                    } else {
+                        $tn_img_url =  $baseUrl . $foto->getUrl();
+                        $tn_width = 150;
+                        $tn_label = $foto->getLabel();
+                    }
+                    if ($foto) {
+                        $large_img_url = $baseUrl . $foto->getUrl();
+                        $foto_label = $foto->getLabel();
+                    } else {
+                        $large_img_url = '';
+                        $foto_label = '';
+                    }
+                ?>
+                <?php if (isset($tn_img_url)):?>
+                imageLoaders.push(function () {
+                    var dfd = jQuery.Deferred();
+                    jQuery('<img/>').attr('src', '<?php echo $large_img_url?>').load(function () {
+                        dfd.resolve(this);
+                    });
+                    return dfd;
+                }());
+                <?php endif?>
+                <?php ++$i; endforeach; ?>
+
+                jQuery.when.apply(jQuery, imageLoaders).then(function() {
+                    var images = [];
+                    for (var i = 0; i < arguments.length; ++i) {
+                        images.push(arguments[i]);
+                    }
+                    images.sort(function(i1, i2) {
+                        var quot1 = i1.height / i1.width;
+                        var quot2 = i2.height / i2.width;
+                        return quot1 < quot2 ? 1 : quot1 === quot2 ? 0 : -1;
+                    });
+                    var liRow = [];
+                    var imgRow = [];
+                    jQuery(images).each(function(ind) {
+                        var img = jQuery('<img data-caption src="' + jQuery(this).attr('src') + '" style="width: 66px !important; height: auto !important;" ind="' + ind + '"/>');
+                        var clearFix = '';
+                        if ( ind > 0 && ind % 3 === 0 ) {
+                            clearFix = ' style="clear: left;"';
+                        }
+                        var li = jQuery('<li ' + clearFix + '></li>');
+                        var a = jQuery('<a></a>').appendTo(li);
+                        a.append(img);
+                        jQuery('ul#more-views').append(li);
+                        imgRow.push(img);
+                        liRow.push(li);
+                        if ( (ind > 0 && ind % 3 === 2) || ind === <?php echo 2000;?> ) {
+                            var maxHeight = 0;
+                            imgRow.each(function(img) {
+                                maxHeight = Math.max(maxHeight, img.height());
+                            });
+                            liRow.each(function(li) {
+                                li.height((maxHeight + 5) + 'px');
+                            });
+                            imgRow = [];
+                            liRow = [];
+                        }
+                    });
+                });
+            });
+        </script>
+    <?php endif; ?>
+</div>
+<script type="text/javascript" src="<?php echo $this->getSkinUrl('schrackdesign/Public/Javascript/carouFredSel-6.2.1/jquery.carouFredSel-6.2.1-packed.js')?>"></script>
+<script type="text/javascript">
+   //<![CDATA[
+    jQuery(document).ready(function() {
+        scaleImage(jQuery('#image'), 200, 200);
+        window.setTimeout(function(){
+            scaleImage(jQuery('#image'), 200, 200);
+            jQuery('#image').css('display', 'inline-block');
+        }, 500);
+    });
+   //]]>
+</script>
+<!-- template\catalog\product\view\media.phtml (end) -->

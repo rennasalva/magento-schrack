@@ -1,0 +1,26 @@
+<?php
+$product = Mage::registry('product');
+$imageBaseUrl = Mage::getStoreConfig('schrack/general/imageserver');
+$downloadAttachment = $product->getDownloadFile();
+$downLoadLink = $imageBaseUrl . $downloadAttachment->getUrl();
+$downloadFileType = $downloadAttachment->getHumanFiletype();
+$downloadFileSize = $downloadAttachment->getHumanFilesize();
+$onlineCatalogAttachment = $product->getOnlineCatalog();
+$onlineCatalogAttachmentUrl = $onlineCatalogAttachment ? $imageBaseUrl . $onlineCatalogAttachment->getUrl() : false;
+?>
+
+<div class="download large">
+    <a href="<?php echo $downLoadLink; ?>" target="_blank"><button class="button" type="button" title="<?php echo $this->__('Download') ?>"><?php echo $this->__('Download') ?></button></a>
+</div>
+<div class="row-fine after-addtocart">
+    <div class="large-fine-11 columns-fine font-small">
+        <div><spawn><?php echo $downloadFileType ?></spawn>,&nbsp;<spawn><?php echo $downloadFileSize ?></spawn></div>
+
+        <?php if ( $onlineCatalogAttachmentUrl ) : ?>
+            <div class="link-onlinecatalog">
+                <a href="<?php echo $onlineCatalogAttachmentUrl; ?>" target="_blank"><?php echo $this->__('Read catalog online'); ?></a>
+            </div>
+        <?php endif; ?>
+    </div>
+</div>
+

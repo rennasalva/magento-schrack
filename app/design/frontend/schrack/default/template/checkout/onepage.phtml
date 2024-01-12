@@ -1,0 +1,119 @@
+<!-- default/template/checkout/onepage.phtml (start) -->
+<?php
+    $customer = $this->getCustomer();
+    if ($customer) {
+        $customerType = $customer->getSchrackCustomerType(); // ProspectTypes: 'light-prospect' / 'full-prospect'
+    }
+
+    $prospectFull  = false;
+    $prospectLight = false;
+
+    if ($customerType == 'light-prospect') {
+        $prospectLight = true;
+    }
+
+    if ($customerType == 'full-prospect') {
+        $prospectFull = true;
+    }
+
+    $customerIsLoggedIn = $this->helper('customer')->isLoggedIn();
+?>
+
+<style>
+    #headline-commercial-warning {
+        background: #00589D;
+        color: white;
+        font-weight: bold;
+        font-size: 1.2em;
+        padding-top: 10px;
+        padding-bottom: 10px;
+        padding-left: 15px;
+        padding-right: 25px;
+        width: 905px;
+        margin-left: -10px;
+    }
+</style>
+
+<div class="row">
+    <div class="large-12 columns">
+        <div class="headline a">
+            <?php echo $this->__('Checkout') ?>
+        </div>
+    </div>
+</div>
+
+<?php if ($prospectLight == true) : ?>
+<div>
+    <header id="headline-commercial-warning"><?php echo $this->__('login.popup.registration-hint-only') ?></header>
+</div>
+<?php endif; ?>
+
+<script type="text/javascript" src="<?php echo $this->getJsUrl('varien/accordion.js') ?>"></script>
+<script type="text/javascript">//<![CDATA[
+countryRegions = <?php echo $this->helper('directory')->getRegionJson() ?>
+//]]></script>
+
+<div class="opc" id="checkoutSteps">
+<?php $i=0; foreach($this->getSteps() as $_stepId => $_stepInfo): ?>
+<?php if (!$this->getChild($_stepId) || !$this->getChild($_stepId)->isShow()): continue; endif; $i++ ?>
+    <div id="opc-<?php echo $_stepId ?>" class="row section<?php echo !empty($_stepInfo['allow'])?' allow':'' ?><?php echo !empty($_stepInfo['complete'])?' saved':'' ?>">
+        <div class="headline c1">
+            <?php echo $i ?> / <?php echo $_stepInfo['label'] ?>
+        </div>
+        <div id="checkout-step-<?php echo $_stepId ?>" class="step a-item" style="display:none;">
+            <?php echo $this->getChildHtml($_stepId) ?>
+        </div>
+    </div>
+<?php endforeach ?>
+</div>
+<script type="text/javascript">
+//<![CDATA[
+    var jsdebug = 0;
+    <?php if ($this->getRequest()->getParam('jsdebug') == 1) : ?>
+        jsdebug = 1;
+        console.log(">>> JS-Debug-Mode ENABLED <<<");
+    <?php endif; ?>
+
+    localStorage.newCheckoutProspectRole = 'none';
+
+<?php if ($customerIsLoggedIn) : ?>
+    localStorage.newCheckoutProcessCurrentRole = 'login-user';
+    localStorage.newCheckoutRunningProcess     = 'processCheckoutAsLoggedInUser';
+    localStorage.customerNotLoggedIn = "0";
+    <?php if ($prospectLight || $prospectFull) : ?>
+        localStorage.newCheckoutProcessCurrentRole = 'prospect-user';
+    <?php endif; ?>
+    <?php if ($prospectLight) : ?>
+        localStorage.newCheckoutProspectRole = 'prospect-light';
+    <?php endif; ?>
+    <?php if ($prospectFull) : ?>
+        localStorage.newCheckoutProspectRole = 'prospect-full';
+    <?php endif; ?>
+<?php else : ?>
+    localStorage.newCheckoutRunningProcess     = 'processCheckoutAsNonLoggedInUser';
+    // guest = non-registering-user
+    //localStorage.newCheckoutProcessCurrentRole = 'guest';
+    localStorage.customerNotLoggedIn = "1";
+<?php endif; ?>
+
+    if (localStorage.newCheckoutProspectRole == 'prospect-light' ||
+        localStorage.newCheckoutProcessSpecialAction == 'full-register-prospect-application') {
+        localStorage.newCheckoutProcessSpecialAction = 'full-register-prospect-application';
+    } else {
+        localStorage.newCheckoutProcessSpecialAction = 'none';
+    }
+
+    var accordion = new Accordion('checkoutSteps', '.step-title', true);
+    <?php if($this->getActiveStep()): ?>
+    Element.addClassName($('opc-<?php echo $this->getActiveStep() ?>'), 'allow');
+    accordion.openSection('opc-<?php echo $this->getActiveStep() ?>');
+    <?php endif ?>
+    var checkout = new Checkout(accordion,{
+        progress: '<?php echo $this->getUrl('checkout/onepage/progress') ?>',
+        review: '<?php echo $this->getUrl('checkout/onepage/review') ?>',
+        saveMethod: '<?php echo $this->getUrl('checkout/onepage/saveMethod') ?>',
+        failure: '<?php echo $this->getUrl('checkout/cart') ?>'}
+    );
+//]]>
+</script>
+<!-- default/template/checkout/onepage.phtml (end) -->

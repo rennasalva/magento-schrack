@@ -1,0 +1,70 @@
+<?php /* @var $this Schracklive_SchrackCheckout_Block_Cart_Item_Renderer */ ?>
+<?php $_item = $this->getItem() ?>
+<?php $_product = $_item->getProduct(); ?>
+<?php
+if ( Mage::getStoreConfig('schrack/shop/show_green_stamp') && $_product->getSchrackStsGreenStamp() != null && $_product->getSchrackStsGreenStamp() > '' ) {
+	$greenStampVal = $this->__('green_stamp_value_' . $_product->getSchrackStsGreenStamp());
+} else {
+	$greenStampVal = false;
+}
+?>
+<tr>
+	<td><span class="catalog-nr"><?php echo $_item->getProduct()->getSku(); ?></span><br/>
+		<span><?php echo $this->htmlEscape($this->getProductName()) ?></span>
+		<?php if ( $greenStampVal ) : ?>
+			<br/><span><?php echo $this->htmlEscape($greenStampVal); ?></span>
+		<?php endif; ?>
+		<?php if ($_options = $this->getOptionList()): ?>
+			<dl class="item-options">
+				<?php foreach ($_options as $_option) : ?>
+				<?php $_formatedOptionValue = $this->getFormatedOptionValue($_option) ?>
+				<dt><?php echo $this->htmlEscape($_option['label']) ?></dt>
+				<dd<?php if (isset($_formatedOptionValue['full_view'])): ?>
+						class="truncated"<?php endif; ?>><?php echo $_formatedOptionValue['value'] ?>
+					<?php if (isset($_formatedOptionValue['full_view'])): ?>
+						<div class="truncated_full_value">
+							<dl class="item-options">
+								<dt><?php echo $this->htmlEscape($_option['label']) ?></dt>
+								<dd><?php echo $_formatedOptionValue['full_view'] ?></dd>
+							</dl>
+						</div>
+					<?php endif; ?>
+				</dd>
+				<?php endforeach; ?>
+			</dl>
+		<?php endif;?>
+	</td>
+	<td class="a-right"><?php echo $_item->getSchrackBackorderQty() ?></td>
+	<td class="a-right">
+		<?php echo $_item->getQty() ?>
+		<?php if (strlen($this->htmlEscape($this->getDrumDescription()))):?><span><br/><?php echo $this->htmlEscape($this->getDrumDescription()) ?>&nbsp;</span><?php endif;?>
+	</td>
+	<td><?php echo $this->getSchrackProductQtyunit() ?></td>
+    <?php if ( Mage::helper('geoip')->maySeePrices() ):?>
+        <td>
+            <span class="cart-price">
+                <?php echo $this->helper('checkout')->formatPrice($_item->getSchrackBasicPrice()) ?>
+            </span>
+            <?php if ($_item->getSchrackSurcharge() > 0): ?>
+                <br/>
+                <span class="cart-price">
+                    <?php echo $this->helper('checkout')->formatPrice($_item->getSchrackSurcharge()) ?>
+                </span>
+            <?php endif; ?>
+            <span class="cart-price"><br/><?php echo $this->__('per').' '.($_product->getSchrackPriceunit() > 1 ? $_product->getSchrackPriceunit().' ' : '').$_product->getSchrackQtyunit(); ?><br/></span>
+        </td>
+        <td><span class="cart-price"></span></td>
+        <td class="a-right">
+            <span class="cart-price">
+                <?php echo $this->helper('checkout')->formatPrice($_item->getSchrackRowTotalExclSurcharge()) ?>
+            </span>
+            <?php if ($_item->getSchrackSurcharge() > 0): ?>
+                <br/>
+                <?php echo $this->__('Surcharge'); ?>
+                <span class="cart-price">
+                    <?php echo $this->helper('checkout')->formatPrice($_item->getSchrackRowTotalSurcharge()) ?>
+                </span>
+            <?php endif;?>
+        </td>
+    <?php endif;?>
+</tr>

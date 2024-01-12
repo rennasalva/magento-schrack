@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<config>
+    <modules>
+        <Anowave_Package>
+            <active>true</active>
+            <codePool>local</codePool>
+        </Anowave_Package>
+    </modules>
+</config>

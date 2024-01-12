@@ -1,0 +1,30 @@
+<?php
+  $msg = $this->__("Customer '%s' (email %s) has inquiried product %s and requests personal contact.");
+  $msg = sprintf($msg,$name,$email,$sku);
+?>
+<?php echo $msg; ?>
+
+
+<?php echo $this->__('Customer form fields:') ?>
+
+<?php echo $this->__('Company:') . ' ' . $company; ?>
+
+<?php echo $this->__('Customer#:') . ' ' . $customerNo; ?>
+
+<?php echo $this->__('Name:') . ' ' . $name; ?>
+
+<?php echo $this->__('Email:') . ' ' . $email; ?>
+
+<?php echo $this->__('Telephone:') . ' ' . $phone; ?>
+
+<?php echo $this->__('Country2:') . ' ' . $country; ?>
+
+<?php echo $this->__('Text:') ?>
+
+<?php echo $text ?>
+
+<?php if ( $branch > '' ) : ?>
+
+<?php echo $this->__('Branch:') . ' ' . $branch; ?>
+
+<?php endif; ?>

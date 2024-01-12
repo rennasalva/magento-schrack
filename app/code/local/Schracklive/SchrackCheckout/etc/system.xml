@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<config>
+    <sections>
+        <schrack translate="label" module="schrack">
+            <groups>
+                <typo3 translate="label">
+                    <fields>
+                        <uploadcsvtext_url translate="label">
+                            <label>URL of help Text for CSV Upload (relative)</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>24</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                            <default>service/schrack-digital/csv-uploadinfo/</default>
+                        </uploadcsvtext_url>
+                    </fields>
+                </typo3>
+            </groups>
+        </schrack>
+    </sections>
+</config>

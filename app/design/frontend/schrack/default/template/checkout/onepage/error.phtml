@@ -1,0 +1,5 @@
+<div class="page-title">
+    <h1><?php echo $this->__('An error occurred in the checkout process') ?></h1>
+</div>
+<div id="messages"><?php echo $this->getMessagesBlock()->getGroupedHtml() ?></div>
+<p><?php echo $this->__('Please <a href="%s">continue shopping</a>.',Mage::helper('core')->quoteEscape($this->getContinueShoppingUrl())) ?></p>

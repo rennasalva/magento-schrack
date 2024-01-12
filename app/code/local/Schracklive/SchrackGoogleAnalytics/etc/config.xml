@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<config>
+    <modules>
+        <Schracklive_SchrackGoogleAnalytics>
+            <version>1.0.0</version>
+        </Schracklive_SchrackGoogleAnalytics>
+    </modules>
+    <global>
+        <blocks>
+            <googleanalytics>
+                <rewrite>
+                    <ga>Schracklive_SchrackGoogleAnalytics_Block_Ga</ga>
+                </rewrite>
+            </googleanalytics>
+        </blocks>
+        <helpers>
+            <googleanalytics>
+                <rewrite>
+                    <data>Schracklive_SchrackGoogleAnalytics_Helper_Data</data>
+                </rewrite>
+            </googleanalytics>
+        </helpers>
+    </global>
+</config>

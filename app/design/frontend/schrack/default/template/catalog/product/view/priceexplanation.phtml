@@ -1,0 +1,119 @@
+<!-- template/catalog/product/view/priceexplanation.phtml (start) -->
+<?php
+    $product = Mage::registry('product');
+    $customer = Mage::getSingleton('customer/session')->getCustomer();
+
+    $_productHelper = Mage::helper('schrackcatalog/product');
+    $_coreHelper = Mage::helper('core');
+    $_infoHelper = Mage::helper('schrackcatalog/info');
+    $replacingProduct = Mage::registry('replacingProduct');
+    $replacingProductURL = $replacingProduct ? $replacingProduct->getProductUrl() : null;
+
+    $precedingProduct = $precedingProductURL = null;
+    if (!$product->isDiscontinuation() && !$product->isDead()) {
+        $precedingProduct = $product->getLastAlivePrecedingProduct();
+        $precedingProductURL = $precedingProduct ? $precedingProduct->getProductUrl() : null;
+    }
+
+    $maySeePrices = Mage::helper('geoip/data')->maySeePrices();
+    $isPromotion = $_productHelper->isPromotion($product, $customer);
+    $salesUnit = $product->calculateMinimumQuantityPackageToDisplay();
+    $priceUnit = $product->getSchrackPriceunit();
+    $priceHelper = Mage::helper('schrackcatalog/price');
+
+    $productSupplierMinQty = $product->getMinQtyFromSupplier();
+    $productStockAvailableQty = $product->getCumulatedPickupableAndDeliverableQuantities();
+    $stockAvailable = $productStockAvailableQty > 0;
+
+    $sessionCustomerId = Mage::getSingleton('customer/session')->getCustomer()->getId();
+    $aclRoleId = Mage::getModel('customer/customer')->load($sessionCustomerId)->getSchrackAclRoleId();
+    $isProjectant = Mage::helper('schrack/acl')->isProjectantRoleId($aclRoleId);
+?>
+
+<div class="row-fine after-addtocart">
+    <div class="large-fine-11 columns-fine font-small<?php if ( doubleval($salesUnit) > 1 ) {?> emphasized<?php }?>">
+        <?php if ( $maySeePrices && !$isProjectant ) : ?>
+            <?php if (!$product->isDead() && (! $isPromotion || $product->getSchrackPriceunit() > 1) ) :
+                $priceUnit =  $product->getSchrackPriceunit();
+                $qtyUnit = $product->getSchrackQtyunit();
+            ?>
+                <div style="padding-bottom: 8px"><?php echo $this->__('Your price') ?> <?php echo $this->__('per') . ' ' . ( doubleval($priceUnit) > 1.0 ? $priceUnit . ' ' : '' ) . $qtyUnit; ?></div>
+                <?php /* >1, == */ if ( doubleval($priceUnit) !== 1.0 && doubleval($priceUnit) === doubleval($salesUnit) ):?>
+                    <?php
+                        list($price, $currency) = $priceHelper->getBasicPriceAndCurrencyForProductAndCustomer($product, $customer, false);
+                        $formattedPrice = Mage::helper('core')->formatPrice( Mage::helper('schrackcore/string')->safeDivision(doubleval($price), doubleval($salesUnit) ) );
+                    ?>
+                    <div style="padding-bottom: 8px"><?php echo $this->__('Your price') ?> <?php echo $this->__('per') . ' 1 ' . $qtyUnit . ': ' . $currency . ' ' . $formattedPrice; ?></div>
+                <?php /* =1, != */ elseif ( doubleval($priceUnit) === 1.0 && doubleval($priceUnit) !== doubleval($salesUnit) ):?>
+                    <?php
+                        list($price, $currency) = $priceHelper->getBasicPriceAndCurrencyForProductAndCustomer($product, $customer, false);
+                        $formattedPrice = Mage::helper('core')->formatPrice( doubleval($price) * doubleval($salesUnit) );
+                    ?>
+                    <div style="padding-bottom: 8px"><?php echo $this->__('Your price') ?> <?php echo $this->__('per') . ' ' . $salesUnit . ' ' . $qtyUnit . ': ' . $currency . ' ' . $formattedPrice; ?></div>
+                <?php /* >1, != */ elseif ( doubleval($priceUnit) !== 1.0 && doubleval($priceUnit) !== doubleval($salesUnit) ):?>
+                    <?php
+                    list($price, $currency) = $priceHelper->getBasicPriceAndCurrencyForProductAndCustomer($product, $customer, false);
+                    $formattedPrice = Mage::helper('core')->formatPrice( Mage::helper('schrackcore/string')->safeDivision(doubleval($price), doubleval($priceUnit)) * $salesUnit );
+                    ?>
+                    <div style="padding-bottom: 8px"><?php echo $this->__('Your price') ?> <?php echo $this->__('per') . ' ' . $salesUnit . ' ' . $qtyUnit . ': ' . $currency . ' ' . $formattedPrice; ?></div>
+                <?php endif;?>
+            <?php endif; ?>
+            <?php if ( $isPromotion ) : ?>
+                <?php
+                    $currency = Mage::app()->getLocale()->currency(Mage::app()->getStore()->getCurrentCurrencyCode())->getSymbol();
+                    $diffPrice = $_coreHelper->currency($_productHelper->getPromotionPriceDiff($product, $customer), true, false);
+                    if ( Mage::getStoreConfig('schrack/shop/show_currency_after_price') ) {
+                        $diffPriceWitCurrency = $diffPrice . '&nbsp;' . $currency;
+                    } else {
+                        $diffPriceWitCurrency = $currency . '&nbsp;' . $diffPrice;
+                    }
+                ?>
+                <div>
+                    <span class="striked-price-label"><?php echo $this->__('instead of') . '&nbsp;'; ?></span>
+                    <span class="striked-price"><?php echo $_coreHelper->currency($_productHelper->getRegularPrice($product, $customer), true, false); ?></span>
+                </div>
+                <div class="price-diff-margin">
+                    <span class="price-diff-label""><?php echo $this->__('you save') . '&nbsp;'; ?></span>
+                    <span class="price-diff"><?php echo $diffPriceWitCurrency; ?></span>
+                </div>
+                <?php $promotionEndDate = $_productHelper->getPromotionEndDate($product, $customer); ?>
+                <?php if ( $promotionEndDate !== null && $promotionEndDate > '' ) : ?>
+                    <div class="promotion-valid-until"><?php echo $this->__('Promotion valid until') . '&nbsp;' . $promotionEndDate; ?><br/></div>
+                <?php endif; ?>
+            <?php endif; ?>
+        <?php endif; ?>
+        <?php if ( $replacingProductURL ) : ?>
+            <div class="just-margin_top">
+                <button class="button-arrow small" onclick="location.href='<?php echo $replacingProductURL; ?>'" name="nextProd"><?php echo $this->__('TO REPLACING PRODUCT') ?></button>
+            </div>
+        <?php endif; ?>
+        <?php if ( $precedingProductURL ) : ?>
+            <div class="just-margin_top">
+                <button class="button-arrow small" onclick="location.href='<?php echo $precedingProductURL; ?>'" name="prevProd"><?php echo $this->__('TO PRECEDING PRODUCT') ?></button>
+            </div>
+        <?php endif; ?>
+    </div>
+    <?php if ( ! $product->isDead() && !$isProjectant ) :?>
+        <div class="large-fine-9 columns-fine">
+            <div class="font-small surcharges">
+                <?php echo $this->__('excl. surcharges, net of VAT'); ?>,<br/>
+                <?php if ($stockAvailable == false && $productSupplierMinQty > 0 && $product->isBestellArtikel()) : ?>
+                   <span id="quantityMinimumSupplier" class="emphasized">
+                       <?php echo $this->__('Minimum Quantity') . ': ' . $productSupplierMinQty . ' ' . $product->getSchrackQtyunit(); ?>
+                   </span>
+                <?php endif; ?>
+                <span id="quantityPackageInfo" name="value <?php echo $product->calculateMinimumQuantityPackageToDisplay(); ?>" <?php if (doubleval($product->calculateMinimumQuantityPackage()) > 1 ) {?>  class="emphasized"<?php }?>>
+                    <?php echo $this->__('Sales unit') . ': '; ?>
+                    <?php if ( $product->hasMainProduct() ) : ?>
+                        <?php echo $this->__($product->getSchrackStsMainVpeType()); ?>
+                    <?php else: ?>
+                        <?php echo $salesUnit . ' ' . $product->getSchrackQtyunit(); ?>
+                    <?php endif; ?>
+                </span>
+            </div>
+        </div>
+        <div class="large-fine-4 columns-fine"></div>
+    <?php else : ?>
+        <div class="large-fine-13 columns-fine"></div>
+    <?php endif; ?>
+</div>

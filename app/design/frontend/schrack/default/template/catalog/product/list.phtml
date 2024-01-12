@@ -1,0 +1,78 @@
+<?php
+/**
+ * Product list template
+ */
+?>
+<?php /* @var $this Schracklive_SolrSearch_Block_Catalog_Product_List */ ?>
+<?php
+/* @var $_infoHelper Schracklive_SchrackCatalog_Helper_Info */
+$_infoHelper = Mage::helper('schrackcatalog/info');
+/* @var $_productHelper Schracklive_SchrackCatalog_Helper_Product */
+$_productHelper = Mage::helper('schrackcatalog/product');
+/* @var $_stockListToolbar Schracklive_SchrackcatalogInventory_Helper_Stock */
+$_stockHelper = Mage::helper('schrackcataloginventory/stock');
+$_partslistHelper = Mage::helper('schrackwishlist/partslist');
+$_wishlistHelper = Mage::helper('schrackwishlist');
+/* @var $_productListToolbar Mage_Catalog_Block_Product_List_Toolbar */
+$_productListToolbar = Mage::getSingleton('Mage_Catalog_Block_Product_List_Toolbar');
+
+$_customer = Mage::getSingleton('customer/session')->getCustomer();
+
+$_imgCartUrl = $this->getSkinUrl('images/cart_raute1.png');
+$_imgTruckUrl = $this->getSkinUrl('images/truck_white_diamond.png');
+$_imgInvisUrl = $this->getSkinUrl('images/no_truck_no_cart.png');
+?>
+<?php $_productCollection = $this->getLoadedProductCollection() ?>
+<script type="text/javascript">//<![CDATA[
+    function checkCompare() {
+        var items = <?php echo $this->helper('catalog/product_compare')->getItemCount(); ?>;
+        if (items >= 5) {
+            // showOverlayMessage('error', '<?php echo $this->__('Compare Error'); ?>', '');
+            alert('<?php echo $this->__('Compare Error'); ?>');
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    var partslist = null;
+    var partslistFE = null;
+    var cart = null;
+    var cartFE = null;
+    var compare = null;
+    var compareFE = null;
+    
+    function initLRMs() {
+        partslist = new ListRequestManager.List('<?php echo $_partslistHelper->getBaseUrl() ?>');
+        partslist.setProductAddUrl('<?php echo Mage::helper('schrackcore/url')->getUrlWithCurrentProtocol('checkout/cart/addProductToPartslist') ?>');
+        partslistFE = new ListRequestManager.Frontend(partslist, ListRequestManager.Product);
+
+        cart = new ListRequestManager.List('<?php echo $this->getUrl('checkout/cart/') ?>', true);
+        cartFE = new ListRequestManager.Frontend(cart, ListRequestManager.Product);
+
+        compare = new ListRequestManager.List('<?php echo $this->getUrl('catalog/product_compare') ?>', true);
+        compareFE = new ListRequestManager.Frontend(compare, ListRequestManager.Product);        
+    }
+    function initProductList() {
+        decorateTable('products-list', 'none-recursive');
+        initLRMs();
+        jQuery('select.dropdown-menu').dropdown({activateOnClick: false});
+        imagePreview();
+    }
+
+    jQuery(document).ready(function() {
+        initProductList();
+    });
+    //]]></script>
+
+<div class="product-list-frame row">
+    <div class="large-12 columns">
+        <div id="solrsearch-container">
+            <?php echo $this->getSearchHtml(); ?>
+        </div>
+        <div id="solrlist-container"><a name="solrlist"></a>
+            <?php echo $this->getChildHtml('product_list_table')?>
+        </div>
+    </div>
+</div>
+

@@ -1,0 +1,14 @@
+<?php
+/* @var $this Mage_Core_Block_Template */
+?>
+<div class="sloped-box">
+	<div class="page-title">
+		<h1><?php echo Mage::helper('customer')->__("You're now Logged Out") ?></h1>
+	</div>
+	<p><?php echo Mage::helper('customer')->__('You have been successfully logged out and will be redirected to our homepage in 5 seconds.') ?></p>
+</div>
+<script type="text/javascript">
+//<![CDATA[
+    setTimeout(function(){ location.href = '<?php echo $this->getUrl('', array('_nosid'=>true)) ?>'},5000);
+//]]>
+</script>

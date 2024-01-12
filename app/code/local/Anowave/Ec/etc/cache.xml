@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config>
+	<placeholders>
+		<ec>
+			<block>ec/track</block>
+			<name>ec_purchase</name>
+			<template>ec/purchase.phtml</template>
+			<placeholder>EC_HOLEPUNCH</placeholder>
+			<container>Anowave_Ec_Model_Placeholder</container>
+			<cache_lifetime>1</cache_lifetime>
+		</ec>
+	</placeholders>
+</config>

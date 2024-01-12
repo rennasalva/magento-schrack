@@ -1,0 +1,227 @@
+header {
+	height: 66px;
+	padding-top: 15px;
+}
+
+.logoCont {
+	margin-left: 20px;
+	float: left;
+}
+
+.anchor-link {
+	opacity: 0;
+	margin-left: 5px;
+
+	&:before {
+		content: "#";
+		display: block;
+	}
+}
+
+@media (min-width: 1px) and (max-width: 992px) {
+	header {
+		.container:nth-of-type(1) {
+			display: none;
+		}
+	}
+	.sandwichMenuQuadrant {
+		display: none;
+	}
+	#id-scan-button {
+		display: none;
+	}
+	#quick_add_button {
+		display: none;
+	}
+}
+
+.sandwichMenuQuadrant {
+	position: relative;
+	float: left;
+	padding: 9px 0px;
+	margin-left: 15px;
+
+	&:focus {
+		outline: 0;
+	}
+
+	button {
+		background: none;
+		box-shadow: none;
+		border: 0;
+	}
+
+	.icon-bar {
+		display: block;
+		width: 32px;
+		height: 3px;
+		border-radius: 0px;
+		background-color: #00589d;
+
+		&+.icon-bar {
+			margin-top: 4px;
+		}
+	}
+}
+
+.userLogdIn {
+
+	border: 1px solid #9f9f9f;
+	border-radius: 20px;
+	overflow: hidden;
+	padding: 20px;
+	width: 40px;
+	position: relative;
+	height: 39px;
+
+	img {
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 100%;
+	}
+
+	.agentFrm {
+		position: absolute;
+		background: url(../Images/rwd/agentFrm.png) left top;
+		top: 5px;
+		right: -2px;
+		z-index: 1;
+		width: 26px;
+		height: 27px;
+	}
+}
+
+.hdRgtSec {
+
+	float: right;
+	margin-right: 0;
+
+	.partListLbl {
+		padding: 7px 10px 0px 7px;
+		display: inline-block;
+	}
+
+	.userLoginLbl {
+		padding: 7px 10px 0px 7px;
+		display: inline-block;
+		cursor: pointer;
+		color: #23527c;
+	}
+
+	.customerLbl {
+		padding: 2px 12px 0px 7px;
+		display: inline-block;
+		cursor: pointer;
+		color: #23527c;
+		float: left;
+	}
+
+	li {
+		float: left;
+		margin-left: 9px;
+		position: relative;
+		&:first-child {
+			margin-left: 0;
+		}
+	}
+
+	ul.dropdown-menu {
+		padding: 0;
+
+		li {
+			float: none;
+			margin-left: 0px;
+			position: relative;
+		}
+
+		> li > a {
+			padding: 7px 30px 7px 15px;
+			line-height: normal;
+			color: #555;
+			font-size: 14px;
+		}
+	}
+}
+
+//
+//  Responsive
+//  ---------------------------------------------
+
+@media (min-width: $breakpoint-up-xs) and (max-width: $breakpoint-down-md) {
+	header {
+		height: 55px;
+		padding-top: 10px;
+
+		.sandwichMenuQuadrant {
+			margin-left: -25px;
+		}
+
+		.hdRgtSec {
+			margin-right: -15px;
+		}
+
+		.container .row {
+			padding: 0;
+			margin: 0;
+		}
+	}
+
+	.logoCont {
+		margin-left: 23px;
+		float: none;
+		margin-top: 5px;
+
+		img {
+			width: 86px;
+			height: 100%;
+		}
+	}
+
+	.sandwichMenuQuadrant {
+		padding: 7px 0;
+
+		.icon-bar {
+			width: 25px;
+		}
+	}
+
+}
+
+/*Product list Media Query*/
+@media (min-width: $breakpoint-up-lg) {
+	.header_menu_logo_container_left {
+		width: 33.666667%;
+	}
+
+	.header_menu_links_container_right {
+		width: 66.333333%;
+	}
+}
+
+
+@media (min-width: $breakpoint-up-md) and (max-width: $breakpoint-down-lg) {
+	.header_menu_logo_container_left {
+		width: 44.666667%;
+	}
+
+	.header_menu_links_container_right {
+		width: 55.333333%;
+	}
+}
+
+@media (max-width: $breakpoint-down-md) {
+	.header_menu_logo_container_left {
+		width: 51.666667%;
+	}
+
+	.header_menu_links_container_right {
+		width: 47.333333%;
+	}
+}
+
+@media (min-width: 290px) and (max-width: 350px) {
+	.logoCont img {
+		width: 92px;
+	}
+}

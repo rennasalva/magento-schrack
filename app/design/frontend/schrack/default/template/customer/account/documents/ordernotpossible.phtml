@@ -1,0 +1,108 @@
+<?php
+    $msg3 = $this->__('Please contact me because problems ordering offer #%s (order #%s).',$this->getOrder()->getSchrackWwsOfferNumber(), $this->getOrder()->getSchrackWwsOrderNumber());
+    $msg3 .= PHP_EOL;
+    $msg3 .= PHP_EOL;
+
+     if ( $this->getMessages() != null && $this->getMessages()->count(Mage_Core_Model_Message::ERROR) > 0 ) {
+         $msg3 .= $this->__('Errormessage(s):') . PHP_EOL;
+         foreach ( $this->getMessages()->getErrors() as $message ) {
+             $msg3 .= $message->getText() . PHP_EOL;
+         }
+     }
+?>
+<div>
+    <div class="row hl">
+        <div class="large-12 columns hl">
+            <h1 class="headline b1"><?php echo $this->__('Offer Confirmation Problem'); ?></h1>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="large-12 columns msg" style="font-size: 15px; padding-top: 0">
+            <?php echo $this->__('A problem occurred while trying to order this offer. Please contact your contact person.'); ?>
+        </div>
+    </div>
+
+    <form id="formular" method="post" action="<?php echo Mage::helper('schrackcore/url')->getUrlWithCurrentProtocol('customer/account/sendOfferWentWrong'); ?>" >
+        <div class="row">
+            <div class="large-3 columns">
+                <div class="row">
+                    <div class="large-12 columns">
+                        <img class="foto" src="<?php echo $this->getAdvisor()->getPhotoUrl(); ?>"/>
+                    </div>
+                </div>
+                <div class="row">
+                    <input type="hidden" name="form_key" value="<?php echo Mage::getSingleton('core/session')->getFormKey(); ?>" />
+                    <div class="large-12 columns">
+                        <div class="row contact bold bottompadding"><?php echo $this->__('Your Contact Person'); ?></div>
+                        <div class="row contact bold"><?php echo $this->getAdvisor()->getName(); ?></div>
+                        <div class="row contact"><?php echo $this->getAdvisor()->getSchrackTitle(); ?></div>
+                        <div class="row contact blue"><a href="tel:<?php echo $this->getAdvisor()->getSchrackTelephone(); ?>"><?php echo $this->getAdvisor()->getSchrackTelephone(); ?></a></div>
+                        <div class="row contact blue"><a href="mailto:<?php echo $this->getAdvisor()->getEmail(); ?>"><?php echo $this->getAdvisor()->getEmail(); ?></a></div>
+                    </div>
+                </div>
+            </div>
+            <div class="large-9 columns" style="background-color: #f6f6f6">
+                <div class="bold bottompadding" style="padding-left: 10px"><?php echo $this->__('Your request'); ?></div>
+                <div style="padding-left: 10px; padding-right: 10px">
+                    <div class="row contact">
+                        <div class="large-3 columns"><div class="in-line-label"><label for="company"><?php echo '*&nbsp;' . $this->__('Company:') ?></label></div></div>
+                        <div class="large-9 columns"><div class="align-right"><input class="field-size" id="company" name="company" type="text" value="<?php echo $this->getCustomer() ? $this->getCustomer()->getAccount()->getName() : ''; ?>" title="<?php echo $this->__('Name:') ?>"/></div></div>
+                    </div>
+                    <div class="row contact">
+                        <div class="large-3 columns"><div class="in-line-label"><label for="customer-no"><?php echo $this->__('Customer#:') ?></label></div></div>
+                        <div class="large-9 columns"><div class="align-right"><input class="field-size" id="customer-no" name="customer-no" type="text" value="<?php echo $this->getCustomer() ? $this->getCustomer()->getSchrackWwsCustomerId() : ''; ?>" title="<?php echo $this->__('Name:') ?>"/></div></div>
+                    </div>
+                    <div class="row contact">
+                        <div class="large-3 columns"><div class="in-line-label"><label for="name"><?php echo '*&nbsp;' . $this->__('Name:') ?></label></div></div>
+                        <div class="large-9 columns"><div class="align-right"><input class="field-size" id="name" name="name" type="text" value="<?php echo $this->getCustomer() ? $this->getCustomer()->getName() : ''; ?>" title="<?php echo $this->__('Name:') ?>"/></div></div>
+                    </div>
+                    <div class="row contact">
+                        <div class="large-3 columns"><div class="in-line-label"><label for="email"><?php echo '*&nbsp;' . $this->__('Email:') ?></label></div></div>
+                        <div class="large-9 columns"><div class="align-right"><input class="field-size" id="email" name="email" type="text" value="<?php echo $this->getCustomer() ? $this->getCustomer()->getEmail() : ''; ?>" title="<?php echo $this->__('Email:') ?>"/></div></div>
+                    </div>
+                    <div class="row contact">
+                        <div class="large-3 columns"><div class="in-line-label"><label for="phone"><?php echo $this->__('Telephone:') ?></label></div></div>
+                        <div class="large-9 columns"><div class="align-right"><input class="field-size" id="phone" name="phone" type="text" value="<?php echo $this->getCustomer() ? $this->getCustomer()->getSchrackTelephone() : ''; ?>" title="<?php echo $this->__('Telephone:') ?>"/></div></div>
+                    </div>
+
+                    <div class="row contact">
+                        <div class="large-3 columns"><div class="in-line-label"><label for="country"><?php echo '*&nbsp;' . $this->__('Country2:') ?></label></div></div>
+                        <div class="large-9 columns"><div class="align-right"><input class="field-size" id="country" name="country" type="text" value="<?php echo strtoupper(Mage::helper('schrack')->getCountryTld()); ?>" title="<?php echo $this->__('Name:') ?>"/></div></div>
+                    </div>
+                    <div class="row contact">
+                        <div class="columns">
+                            <label for="text" class="in-line-label"><?php echo '*&nbsp;' . $this->__('Text:') ?></label><br/><br/>
+                            <textarea id="text" name="text" cols="58" rows="3" title="<?php echo $this->__('Text:') ?>"><?php echo $msg3; ?></textarea>
+                        </div>
+                    </div>
+                    <button class="button-small inquiry-button" onClick="validationFunc(); return false;"><?php echo $this->__('Get in contact'); ?></button>
+                </div>
+            </div>
+        </div>
+    </form>
+    <div id="error" style="color: red;"></div>
+</div>
+
+<script type="text/javascript">
+    var validationFunc = function () {
+        if ( jQuery('#formular #company').val() == '' ) {
+            jQuery('#error').html("<?php echo $this->__('Please insert your company name.'); ?>");
+            jQuery('#formular #company').focus();
+        }else if ( jQuery('#formular #name').val() == '' ) {
+            jQuery('#error').html("<?php echo $this->__('Please insert your name.'); ?>");
+            jQuery('#formular #name').focus();
+        } else if ( jQuery('#formular #email').val() == '' ) {
+            jQuery('#error').html("<?php echo $this->__('Please insert your email address.'); ?>");
+            jQuery('#formular #email').focus();
+        } else if ( jQuery('#formular #country').val() == '' ) {
+            jQuery('#error').html("<?php echo $this->__('Please insert your country.'); ?>");
+            jQuery('#formular #country').focus();
+        } else if ( jQuery('#formular #text').val() == '' ) {
+            jQuery('#error').html("<?php echo $this->__('Please insert a message.'); ?>");
+            jQuery('#formular #text').focus();
+        } else {
+            jQuery('#formular').submit();
+        }
+    };
+</script>

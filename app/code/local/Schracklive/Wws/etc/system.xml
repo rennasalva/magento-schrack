@@ -1,0 +1,117 @@
+<?xml version="1.0"?>
+<config>
+  <sections>
+    <schrack translate="label" module="schrack">
+      <groups>
+        <wws translate="label">
+          <label>WWS</label>
+          <frontend_type>text</frontend_type>
+          <sort_order>11</sort_order>
+          <show_in_default>1</show_in_default>
+          <show_in_website>0</show_in_website>
+          <show_in_store>0</show_in_store>
+          <fields>
+            <wsdl translate="label">
+              <label>WSDL</label>
+              <frontend_type>text</frontend_type>
+              <sort_order>1</sort_order>
+              <show_in_default>1</show_in_default>
+              <show_in_website>0</show_in_website>
+              <show_in_store>0</show_in_store>
+            </wsdl>
+            <socket_timeout translate="label">
+              <label>Socket Timeout</label>
+              <frontend_type>text</frontend_type>
+              <sort_order>2</sort_order>
+              <show_in_default>1</show_in_default>
+              <show_in_website>0</show_in_website>
+              <show_in_store>0</show_in_store>
+            </socket_timeout>
+            <sender_id translate="label">
+              <label>WWS Sender Id</label>
+              <frontend_type>text</frontend_type>
+              <sort_order>20</sort_order>
+              <show_in_default>1</show_in_default>
+              <show_in_website>0</show_in_website>
+              <show_in_store>0</show_in_store>
+            </sender_id>
+            <user translate="label">
+              <label>WWS User</label>
+              <frontend_type>text</frontend_type>
+              <sort_order>21</sort_order>
+              <show_in_default>1</show_in_default>
+              <show_in_website>0</show_in_website>
+              <show_in_store>0</show_in_store>
+            </user>
+            <password translate="label">
+              <label>WWS Password</label>
+              <frontend_type>text</frontend_type>
+              <sort_order>22</sort_order>
+              <show_in_default>1</show_in_default>
+              <show_in_website>0</show_in_website>
+              <show_in_store>0</show_in_store>
+            </password>
+            <email translate="label">
+              <label>Admin Email</label>
+              <frontend_type>text</frontend_type>
+              <sort_order>20</sort_order>
+              <show_in_default>1</show_in_default>
+              <show_in_website>0</show_in_website>
+              <show_in_store>0</show_in_store>
+            </email>
+            <limit_email_template translate="label">
+              <label>Limit Exceeded E-Mail</label>
+              <frontend_type>select</frontend_type>
+              <source_model>adminhtml/system_config_source_email_template</source_model>
+              <sort_order>30</sort_order>
+              <show_in_default>1</show_in_default>
+              <show_in_website>0</show_in_website>
+              <show_in_store>0</show_in_store>
+            </limit_email_template>
+            <limit_email_identity translate="label">
+              <label>Limit Exceeded E-Mail Sender</label>
+              <frontend_type>select</frontend_type>
+              <source_model>adminhtml/system_config_source_email_identity</source_model>
+              <sort_order>31</sort_order>
+              <show_in_default>1</show_in_default>
+              <show_in_website>0</show_in_website>
+              <show_in_store>0</show_in_store>
+            </limit_email_identity>
+            <pullMeinhartQty translate="label">
+              <label>Pull Meinhart Quantities</label>
+              <frontend_type>select</frontend_type>
+              <source_model>adminhtml/system_config_source_yesno</source_model>
+              <sort_order>40</sort_order>
+              <show_in_default>1</show_in_default>
+              <show_in_website>0</show_in_website>
+              <show_in_store>0</show_in_store>
+            </pullMeinhartQty>
+          </fields>
+        </wws>
+      </groups>
+    </schrack>
+    <schrackdev translate="label" module="schrack">
+      <groups>
+        <wws translate="label">
+          <label>WWS</label>
+          <frontend_type>text</frontend_type>
+          <sort_order>11</sort_order>
+          <show_in_default>1</show_in_default>
+          <show_in_website>0</show_in_website>
+          <show_in_store>0</show_in_store>
+          <fields>
+            <log translate="label">
+              <label>Log full XML transfer</label>
+              <frontend_type>select</frontend_type>
+              <source_model>adminhtml/system_config_source_yesno</source_model>
+              <sort_order>1</sort_order>
+              <show_in_default>1</show_in_default>
+              <show_in_website>0</show_in_website>
+              <show_in_store>0</show_in_store>
+            </log>
+          </fields>
+        </wws>
+      </groups>
+    </schrackdev>
+  </sections>
+</config>

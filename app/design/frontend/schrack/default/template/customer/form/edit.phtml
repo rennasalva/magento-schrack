@@ -1,0 +1,242 @@
+<!-- app/design/frontend/schrack/default/template/customer/form/edit.phtml (start) -->
+
+<?php
+    $_helper = $this->helper('schrackcustomer');
+    $customer = $this->getCustomer();
+
+    if (is_object($customer) && !$customer->getId() > 0) {
+        $customer = Mage::getSingleton('customer/session')->getCustomer();
+    }
+    if (!is_object($customer)) {
+        $customer = Mage::getSingleton('customer/session')->getCustomer();
+    }
+    $customerType = $customer->getSchrackCustomerType(); // ProspectTypes: 'light-prospect' / 'full-prospect'
+
+    $currentUrl = Mage::helper('core/url')->getCurrentUrl();
+?>
+<?php echo $this->getMessagesBlock()->getGroupedHtml() ?>
+<div class="row">
+    <div class="large-12 columns">
+        <div class="headline a">
+            <?php echo $this->__('Edit Account Information') ?>
+        </div>
+        <form action="<?php echo $this->getUrl('customer/account/editPost') ?>" method="post" id="form-validate">
+            <input type="hidden" name="email" id="email" value="<?php echo $this->htmlEscape($this->getCustomer()->getEmail()) ?>" />
+            <div class="gray-form">
+<?php if ( !in_array($customerType, array('light-prospect', 'full-prospect')) ) : ?>
+                <div class="headline c1"><?php echo $this->__('Account Information') ?></div>
+<?php endif; ?>
+                <div>
+                    <?php echo $this->getBlockHtml('formkey')?>
+                        <div <?php if (in_array($customerType, array('light-prospect', 'full-prospect')) ) : ?> style="display: none;" <?php endif; ?> >
+                        <?php $_gender = $this->getLayout()->createBlock('customer/widget_gender') ?>
+                        <?php if ($_gender->isEnabled()): ?>
+                            <?php echo $_gender->setGender($this->getCustomer()->getGender())->toHtml() ?>
+                        <?php endif ?>
+                        <?php echo $this->getLayout()->createBlock('schrackcustomer/widget_addressname')->setObject($this->getCustomer())->toHtml() ?>
+
+                        <table>
+                            <tr>
+                                <td>
+                                    <label for="schrack_salutatory"><?php echo $this->__('Salutation') ?></label>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <input type="text" name="schrack_salutatory" value="<?php echo $this->getCustomer()->getSchrackSalutatory() ?>" title="<?php echo $this->__('Salutation') ?>" id="schrack_salutatory" class="input-text" maxlength="50" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <label for="schrack_department"><?php echo $this->__('Department') ?></label>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <input type="text" name="schrack_department" value="<?php echo $this->getCustomer()->getSchrackDepartment() ?>" title="<?php echo $this->__('Department') ?>" id="schrack_department" class="input-text" maxlength="50" />
+                                </td>
+                            </tr>
+                        </table>
+
+                        <?php echo $this->getLayout()->createBlock('schrackcustomer/widget_phonenumber')->setObject($this->getCustomer())->toHtml() ?>
+
+                        <?php $_dob = $this->getLayout()->createBlock('customer/widget_dob') ?>
+                        <?php if ($_dob->isEnabled() && false): ?>
+                            <li><?php echo $_dob->setDate($this->getCustomer()->getDob())->toHtml() ?></li>
+                        <?php endif ?>
+                        <?php $_taxvat = $this->getLayout()->createBlock('customer/widget_taxvat') ?>
+                        <?php if ($_taxvat->isEnabled()): ?>
+                            <li><?php echo $_taxvat->setTaxvat($this->getCustomer()->getTaxvat())->toHtml() ?></li>
+                        <?php endif ?>
+                        </ul>
+                        <br/>
+                        <br/>
+                        <p><input type="checkbox" name="change_password" id="change_password" value="1" onclick="setPasswordForm(this.checked)" title="<?php echo $this->__('Change Password') ?>"
+                            <?php if($this->getCustomer()->getChangePassword()==1): ?> checked="checked"<?php endif; ?> class="checkbox" />
+                            <label for="change_password" style="display: inline; font-weight: bold;">&nbsp;<?php echo $this->__('Change Password') ?></label>
+                        </p>
+                    </div>
+                </div>
+                <div style="display:none;" id="passwordForm">
+                    <div class="headline c1"><?php echo $this->__('Change Password') ?></div>
+                    <table>
+                        <tr>
+                            <td>
+                                <label for="current_password" class="required"><?php echo $this->__('Current Password') ?><em> *</em></label>
+                            </td>
+                        </tr>
+                        <tr>                            
+                            <td class="input-box">
+                                <input type="password" title="<?php echo $this->__('Current Password') ?>" class="input-text" name="current_password" id="current_password" />
+                            </td>
+                        </tr>
+                        <tr class="fields">
+                            <td class="field">
+                                <label for="password" class="required"><?php echo $this->__('New Password') ?><em> *</em></label>
+                            </td>
+                        </tr>
+                        <tr>                            
+                            <td class="input-box">
+                                <input type="password" title="<?php echo $this->__('New Password') ?>" class="input-text validate-password" name="password" id="password" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="field">
+                                <label for="confirmation" class="required"><?php echo $this->__('Confirm New Password') ?><em> *</em></label>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="input-box">
+                                <input type="password" title="<?php echo $this->__('Confirm New Password') ?>" class="input-text validate-cpassword" name="confirmation" id="confirmation" />
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+                <?php if (!in_array($customerType, array('light-prospect', 'full-prospect')) ) : ?>
+                    <?php if ($_helper->getWarehouseCount() > 0):?>
+                    <div style="margin-left: 7px;">
+                        <div style="height: 28px;">
+                            <label style="font-weight: bold;"><?php echo $this->__('Default Pickup Location') ?></label>
+                        </div>
+                        <div>
+                            <?php echo $this->getBlockHtml('formkey')?>
+                            <?php $_helper->getWarehouseRadioOptions('<div style="padding: 5px; height: 24px;"><div>', '</div></div>');?>
+                        </div>
+                    </div>
+                    <?php endif; ?>
+                <div style="margin-left: 7px;">
+                    <?php if (Mage::getStoreConfig('carriers/schrackpickup/active')) : ?>
+                        <div style="float: left; width: 50%;">
+                            <div>
+                                <label style="font-weight: bold; height: 35px;"><?php echo $this->__('Default Payment Method (Store Pickup)') ?></label>
+                            </div>
+                            <div>
+                                <?php
+                                    $visaAlreadyFound       = false;
+                                    $mastercardAlreadyFound = false;
+
+                                    if ($customer) {
+                                        $schrackDefaultPaymentPickup = $customer->getSchrackDefaultPaymentPickup();
+                                    }
+                                    $checked = '';
+                                    $allActivePaymentMethods = Mage::getModel('payment/config')->getActiveMethods();
+                                    foreach ($allActivePaymentMethods as $_method) {
+                                        if ($_method->getCode() != 'free' && $_method->getCode() != 'schrackcod') {
+                                            if($_method->getCode() == 'payunitycw_visa') $visaAlreadyFound = true;
+                                            if($_method->getCode() == 'payunitycw_mastercard') $mastercardAlreadyFound = true;
+                                            if($schrackDefaultPaymentPickup == $_method->getCode()) $checked = ' checked="checked"'; else $checked = '';
+                                            echo '<div style="height: 24px;"><input type="radio" style="margin-right: 5px;" name="default_payment_method_pickup" ' . $checked . ' value="' . $_method->getCode() . '" />' . ($_method->getTitle() . '</div>');
+                                        }
+                                    }
+                                    if (Mage::getStoreConfig('payment/payunitycw_visa/active') && $visaAlreadyFound == false) {
+                                        if($schrackDefaultPaymentPickup == 'payunitycw_visa') $checked = ' checked="checked"'; else $checked = '';
+                                        echo '<div style="height: 24px;"><input type="radio" style="margin-right: 5px;" name="default_payment_method_pickup" ' . $checked . ' value="payunitycw_visa" />' . $this->__('Visa') . '</div>';
+                                    }
+                                    if (Mage::getStoreConfig('payment/payunitycw_mastercard/active') && $mastercardAlreadyFound == false) {
+                                        if($schrackDefaultPaymentPickup == 'payunitycw_mastercard') $checked = ' checked="checked"'; else $checked = '';
+                                        echo '<div style="height: 24px;"><input type="radio" style="margin-right: 5px;" name="default_payment_method_pickup" ' . $checked . ' value="payunitycw_mastercard" />' . $this->__('MasterCard') . '</div>';
+                                    }
+                                ?>
+                            </div>
+                        </div>
+                    <?php endif; ?>
+                    <?php if (Mage::getStoreConfig('carriers/schrackdelivery/active')) : ?>
+                        <div style="float: left; width: 50%;">
+                            <div>
+                                <label style="font-weight: bold; height: 35px;"><?php echo $this->__('Default Payment Method (Shipping)') ?></label>
+                            </div>
+                            <div>
+                                <?php
+                                    $visaAlreadyFound       = false;
+                                    $mastercardAlreadyFound = false;
+
+                                    if ($customer) {
+                                        $schrackDefaultPaymentShipping = $customer->getSchrackDefaultPaymentShipping();
+                                    }
+                                    $checked = '';
+                                    $allActivePaymentMethods = Mage::getModel('payment/config')->getActiveMethods();
+                                    foreach ($allActivePaymentMethods as $_method) {
+                                        if ($_method->getCode() != 'free' && $_method->getCode() != 'schrackcash') {
+                                            if($_method->getCode() == 'payunitycw_visa') $visaAlreadyFound = true;
+                                            if($_method->getCode() == 'payunitycw_mastercard') $mastercardAlreadyFound = true;
+                                            if($schrackDefaultPaymentShipping == $_method->getCode()) $checked = ' checked="checked"'; else $checked = '';
+                                            echo '<div style="height: 24px;"><input type="radio" style="margin-right: 5px;" name="default_payment_method_shipping" ' . $checked . ' value="' . $_method->getCode() . '" />' . ($_method->getTitle()) . '</div>';
+                                        }
+                                    }
+                                    if (Mage::getStoreConfig('payment/payunitycw_visa/active') && $visaAlreadyFound == false) {
+                                        if($schrackDefaultPaymentShipping == 'payunitycw_visa') $checked = ' checked="checked"'; else $checked = '';
+                                        echo '<div style="height: 24px;"><input type="radio" style="margin-right: 5px;" name="default_payment_method_shipping" ' . $checked . ' value="payunitycw_visa" />' . $this->__('Visa') . '</div>';
+                                    }
+                                    if (Mage::getStoreConfig('payment/payunitycw_mastercard/active') && $mastercardAlreadyFound == false) {
+                                        if($schrackDefaultPaymentShipping == 'payunitycw_mastercard') $checked = ' checked="checked"'; else $checked = '';
+                                        echo '<div style="height: 24px;"><input type="radio" style="margin-right: 5px;" name="default_payment_method_shipping" ' . $checked . ' value="payunitycw_mastercard" />' . $this->__('MasterCard') . '</div>';
+                                    }
+                                ?>
+                            </div>
+                        </div>
+                    <?php endif; ?>
+                    <div style="clear: both;"></div>
+                </div>
+                <?php endif; ?>
+                <?php if ( !in_array($customerType, array('light-prospect', 'full-prospect')) ) : ?>
+                <div style="margin-top: 10px;">
+                    <p class="required" id="required-info" style="font-weight: bold;"><?php echo $this->__('* Required Fields') ?></p>
+                </div>
+                <?php endif; ?>
+            </div>
+            <div class="row">
+                <div class="large-2 columns large-offset-10" style="padding-top: 10px;">
+                <?php if ( stristr($currentUrl, 'changepass') || !in_array($customerType, array('light-prospect', 'full-prospect')) ) : ?>
+                    <button class="button-arrow small" title="<?php echo $this->__('Save') ?>"><?php echo $this->__('Save') ?></button>
+                <?php endif; ?>
+                </div>
+            </div>
+            <div class="row">
+                <div class="large-12 columns">
+                    <?php if ( !in_array($customerType, array('light-prospect', 'full-prospect')) ) : ?>
+                        <p class="back-link"><a href="<?php echo $this->getBackUrl() ?>"><small>&laquo; </small><?php echo $this->__('Back') ?></a></p>
+                    <?php endif; ?>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<script type="text/javascript">
+//<![CDATA[
+
+    var dataForm = new VarienForm('form-validate', true);
+
+    function setPasswordForm(arg){
+        if(arg){
+            jQuery('#passwordForm').show();
+        }else{
+            jQuery('#passwordForm').hide();
+        }
+    }
+    <?php if($this->getCustomer()->getChangePassword()): ?>
+        setPasswordForm(true);
+    <?php endif; ?>
+//]]>
+</script>
+
+<!-- app/design/frontend/schrack/default/template/customer/form/edit.phtml (start) -->

@@ -1,0 +1,129 @@
+<!-- ordernowpopup.phtml (start) -->
+<style>
+    .zip-download-animation {
+        margin-left: -42px !important;
+        margin-top: -61px !important;
+        width: 231px !important;
+    }
+</style>
+
+<div>
+    <div id="ajax-loader" style="display: none; width: 100px;">
+        <img src="<?php echo $this->getSkinUrl('schrackdesign/Public/Images/download_ajax_loader.gif'); ?>" class="zip-download-animation"/>
+    </div>
+    <div class="table">
+        <input type="hidden" name="order_no" value="<?php echo $this->getOrder()->getSchrackWwsOrderNumber() ?>">
+        <div class="row">
+            <div class="large-3 columns">
+                <input type="radio" name="pickup_delivery" value="delivery" checked onclick="disableAddresses(false);"><?php echo ' ' . $this->__('Delivery') ?><br>
+            </div>
+            <div class="large-9 columns input-box">
+                <?php echo $this->getAddressesHtmlSelect() ?>
+            </div>
+        </div>
+        <div class="row">
+            <div class="large-3 columns">
+                <input type="radio" name="pickup_delivery" value="pickup" onclick="disableAddresses(true);" ><?php echo ' ' . $this->__('Pickup') ?><br>
+            </div>
+            <div class="large-9 columns input-box">
+                <?php echo $this->getPickupStocksHtmlSelect() ?>
+            </div>
+        </div>
+        <div class="row">
+            <div class="large-3 columns"><?php echo $this->__('Meine Bestellangabe') . ':'; ?></div>
+            <div class="large-9 columns">
+                <input type="text" id="do-order-customer-description-text" style="width: 302px; color: #00589D; font-weight: 700;" value="<?php echo $this->getOrder()->getSchrackWwsReference(); ?>" maxlength="20" />
+            </div>
+            <div class="large-3 columns">&nbsp;</div>
+            <div class="large-9 columns" style="font-size: 10px;"><?php echo $this->__('Purchase Order Number'); ?></div>
+        </div>
+        <div class="row">
+            <div class="large-3 columns"><?php echo $this->__('Payment') . ':'; ?></div>
+            <div class="large-9 columns"><?php echo $this->__('Invoice'); ?></div>
+        </div>
+        <div class="buttonarea">
+            <button id="button-ok" class="button-small"><?php echo $this->__('Order Now!') ?></button>
+            <button id="button-cancel" class="button-small" style="margin-left: 20px" type="reset" ><?php echo $this->__('Cancel dialog') ?></button>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    //<![CDATA[
+
+    jQuery(document).ready(function() {
+        jQuery('.messages').hide();
+
+        jQuery('#pickup-address-select').disabled = true;
+
+        jQuery('#button-cancel').on('click', function(){
+            jQuery('#ordernowpopup').dialog('close');
+        });
+
+        jQuery('#button-ok').on('click', function() {
+            jQuery("#ajax-loader").show();
+            doOrderNow();
+        });
+    });
+
+    var disableAddresses = function(pickup) {
+        jQuery('#shipping-address-select').disabled = pickup;
+        jQuery('#pickup-address-select').disabled = ! pickup;
+    }
+
+    var doOrderNow = function() {
+        mustReload = jQuery('#order-button').get(0) ? false : true;
+        document.getElementById('button-ok').disabled = true;
+        document.getElementById('button-cancel').disabled = true;
+        var pickupDelivery = jQuery("input:radio[name='pickup_delivery']:checked").val();
+        var shippingAddress = jQuery('#shipping-address-select').val();
+        var pickupAddress = jQuery('#pickup-address-select').val();
+        var doOrderCustomerDescription = jQuery('#do-order-customer-description-text').val();
+
+        var doOrderURL = "<?php echo Mage::helper('schrackcore/url')->getUrlWithCurrentProtocol('customer/account/doOrderNow'); ?>";
+        jQuery.ajax(doOrderURL, {
+            'type' : 'POST',
+             dataType : 'json',
+            'data' : {
+                'order_no'            : '<?php echo $this->getOrder()->getSchrackWwsOrderNumber() ?>',
+                'pickup_delivery'     : pickupDelivery,
+                'shipping_address_id' : shippingAddress,
+                'pickup_address_id'   : pickupAddress,
+                'customer_reference'  : doOrderCustomerDescription,
+                'must_reload'         : mustReload
+            },
+            'success' : function (data) {
+                //var datax = JSON.parse(data);
+                if (data) {
+                    if (data.html) {
+                        jQuery('.messages').show();
+                        jQuery("#ajax-loader").hide();
+                        jQuery('#ordernowpopup').html(data.html);
+                        jQuery('#ordernowpopup').dialog('close');
+                    } else {
+                        jQuery('.messages').hide();
+                        if (mustReload) {
+                            location.reload(true);
+                        } else {
+                            jQuery('#ordernowpopup').html('<br><br><span style="color: #00589D; font-weight: bold; margin-top: 20px;">' + data.message + '</span>');
+                        }
+                    }
+                } else {
+                    jQuery('.messages').hide();
+                    jQuery("#ajax-loader").hide();
+                    jQuery('#ordernowpopup').html('<br><br><span style="color: #00589D; font-weight: bold; margin-top: 20px;"><?php echo $this->__('A problem occurred while trying to order this offer. Please contact your contact person.') . ' (#1001)'; ?></span>');
+                }
+            },
+            error: function (e) {
+                jQuery('.messages').hide();
+                jQuery("#ajax-loader").hide();
+                jQuery('#ordernowpopup').html('<br><br><span style="color: #00589D; font-weight: bold; margin-top: 20px;"><?php echo $this->__('A problem occurred while trying to order this offer. Please contact your contact person.') . ' (#1002)'; ?></span>');
+            }
+        });
+
+        return false;
+    };
+
+    //]]>
+</script>
+<!-- ordernowpopup.phtml (end) -->

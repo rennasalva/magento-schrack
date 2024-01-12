@@ -1,0 +1,45 @@
+<?xml version="1.0"?>
+<layout version="0.1.0">
+    <customer_account_loginconnect translate="label">
+        <label>Customer Account Login Connect Template</label>
+        <!-- Mage_Customer -->
+        <remove name="right"/>
+        <remove name="left"/>
+
+        <reference name="root">
+            <action method="setTemplate"><template>page/1column.phtml</template></action>
+        </reference>
+        <reference name="content">
+            <block type="typo3connect/login" name="typo3connect_login" template="typo3connect/login.phtml" />
+        </reference>
+    </customer_account_loginconnect>
+    
+    <customer_account_loginpost translate="label">
+        <label>Customer Account Login Post Template</label>
+        <!-- Mage_Customer -->
+        <remove name="right"/>
+        <remove name="left"/>
+
+        <reference name="root">
+            <action method="setTemplate"><template>page/1column.phtml</template></action>
+        </reference>
+    </customer_account_loginpost>
+    
+    <typo3_category_view translate="label">
+        <label>Catalog Category (Non-Anchor)</label>
+        <reference name="root">
+            <block type="catalog/navigation" name="catalog.leftnav" template="catalog/navigation/vert_nav.phtml"/>
+        </reference>
+    </typo3_category_view>
+    
+    <typo3_header_customermenu translate="label">
+        <label>Customer Menu</label>
+    </typo3_header_customermenu>   
+    
+    <typo3_header_startmenu translate="label">
+        <label>Startmenu</label>
+        <reference name="root">
+            <block type="core/template" name="startmenu" template="page/html/startmenu.phtml"/>
+        </reference>
+    </typo3_header_startmenu>   
+</layout>

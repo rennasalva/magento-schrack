@@ -1,0 +1,12 @@
+<div class="row">
+    <div class="large-6 columns">
+        <div class="headline c1"><div class="middle-align-container"><?php echo $this->__('My latest Orders') ?></div></div>
+    </div>
+    <div class="large-6 columns">
+        <div class="header-icon"><div class="middle-align-container"><a class="link-arrow small" href="<?php echo $this->getUrl('customer/account/orders', array('reset' => 1))?>"><?php echo $this->__('All of my orders')?></a></div></div>
+    </div>
+</div>
+<form action="<?php echo $this->getUrl('*/*/*') ?>" method="get" id="documents_form">
+    <?php echo $this->getChildHtml('documents_results_table') ?>
+    <?php echo $this->getChildHtml('documents_results_table_bottom') ?>
+</form>

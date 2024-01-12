@@ -1,0 +1,937 @@
+﻿<?xml version="1.0" ?>
+<!--
+/**
+ *
+ * @package		Orcamultimedia_Ids
+ * 
+**/
+-->
+<config>
+    <tabs>
+        <orcamultimedia translate="label">
+            <label>orcamultimedia</label> 
+            <sort_order>500</sort_order>
+        </orcamultimedia>
+    </tabs>
+	<sections>
+        <ids module="ids" translate="label">
+            <label>IDS</label>
+            <sort_order>100</sort_order>
+            <show_in_default>1</show_in_default>
+            <show_in_website>1</show_in_website>
+            <show_in_store>1</show_in_store>
+            <tab>orcamultimedia</tab>
+            <groups>
+                <configuration translate="label">
+                    <label>Configuration</label>
+                    <comment></comment>
+                    <sort_order>5</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>1</show_in_store>
+                    <fields>
+                        <logging translate="label tooltip comment">
+                            <label>Logging</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>10</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>Use for debugging only. Do not use on productive systems. </comment>
+                        </logging>
+                        <transliteration translate="label tooltip comment">
+                            <label>Transliteration</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>20</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>Convert German öüä... to oeueae.</comment>
+                        </transliteration>
+                    </fields>
+                </configuration>
+                <matnr translate="label">
+                    <comment>SRM product number of the item</comment>
+                    <label>MATNR</label>
+                    <sort_order>10</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>1</show_in_store>
+                    <fields>
+                        <enabled translate="label tooltip comment">
+                            <label>Is Enabled</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>0</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+							<comment>Enable this field.</comment>
+                        </enabled>
+                        <value translate="label tooltip comment">
+                            <label>Value</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>1</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>Use 'product.attribute_name' for product attributes or 'customer.attribute_name' for customer attributes.</comment>
+                        </value>
+                    </fields>
+                </matnr>
+                <unit translate="label">
+                    <comment>Quantity unit for item quantity</comment>
+                    <label>UNIT</label>
+                    <sort_order>20</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>1</show_in_store>
+                    <fields>
+                        <enabled translate="label tooltip comment">
+                            <label>Is Enabled</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>0</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+							<comment>Enable this field.</comment>
+                        </enabled>
+                        <value translate="label tooltip comment">
+                            <label>Value</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>1</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>Must be maintained as ISO code in the SRM Server. Use 'product.attribute_name' for product attributes or 'customer.attribute_name' for customer attributes.</comment>
+                        </value>
+                    </fields>
+                </unit>
+                <priceunit translate="label">
+                    <comment>Price unit of the item (if empty, 1 is used)</comment>
+                    <label>PRICEUNIT</label>
+                    <sort_order>30</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>1</show_in_store>
+                    <fields>
+                        <enabled translate="label tooltip comment">
+                            <label>Is Enabled</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>0</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+							<comment>Enable this field.</comment>
+                        </enabled>
+                        <value translate="label tooltip comment">
+                            <label>Value</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>1</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>In whole numbers. Use 'product.attribute_name' for product attributes or 'customer.attribute_name' for customer attributes.</comment>
+                        </value>
+                    </fields>
+                </priceunit>
+                <leadtime translate="label">
+                    <comment>Delivery time of the item in days</comment>
+                    <label>LEADTIME</label>
+                    <sort_order>40</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>1</show_in_store>
+                    <fields>
+                        <enabled translate="label tooltip comment">
+                            <label>Is Enabled</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>0</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+							<comment>Enable this field.</comment>
+                        </enabled>
+                        <value translate="label tooltip comment">
+                            <label>Value</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>1</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>In whole numbers. Use 'product.attribute_name' for product attributes or 'customer.attribute_name' for customer attributes.</comment>
+                        </value>
+                    </fields>
+                </leadtime>
+                <vendor translate="label">
+                    <comment>SRM vendor number (business partner) for the item</comment>
+                    <label>VENDOR</label>
+                    <sort_order>50</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>1</show_in_store>
+                    <fields>
+                        <enabled translate="label tooltip comment">
+                            <label>Is Enabled</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>0</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+							<comment>Enable this field.</comment>
+                        </enabled>
+                        <value translate="label tooltip comment">
+                            <label>Value</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>1</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>Use 'product.attribute_name' for product attributes or 'customer.attribute_name' for customer attributes.</comment>
+                        </value>
+                    </fields>
+                </vendor>
+                <vendormat translate="label">
+                    <comment>Vendor product number for the item</comment>
+                    <label>VENDORMAT</label>
+                    <sort_order>60</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>1</show_in_store>
+                    <fields>
+                        <enabled translate="label tooltip comment">
+                            <label>Is Enabled</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>0</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+							<comment>Enable this field.</comment>
+                        </enabled>
+                        <value translate="label tooltip comment">
+                            <label>Value</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>1</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>Use 'product.attribute_name' for product attributes or 'customer.attribute_name' for customer attributes.</comment>
+                        </value>
+                    </fields>
+                </vendormat>
+                <manufactcode translate="label">
+                    <comment>SRM manufacturer number of the item</comment>
+                    <label>MANUFACTCODE</label>
+                    <sort_order>70</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>1</show_in_store>
+                    <fields>
+                        <enabled translate="label tooltip comment">
+                            <label>Is Enabled</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>0</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+							<comment>Enable this field.</comment>
+                        </enabled>
+                        <value translate="label tooltip comment">
+                            <label>Value</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>1</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>Use 'product.attribute_name' for product attributes or 'customer.attribute_name' for customer attributes.</comment>
+                        </value>
+                    </fields>
+                </manufactcode>
+                <manufactmat translate="label">
+                    <comment>Item’s manufacturer part number</comment>
+                    <label>MANUFACTMAT</label>
+                    <sort_order>80</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>1</show_in_store>
+                    <fields>
+                        <enabled translate="label tooltip comment">
+                            <label>Is Enabled</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>0</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>Enable this field.</comment>
+                        </enabled>
+                        <value translate="label tooltip comment">
+                            <label>Value</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>1</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>Use 'product.attribute_name' for product attributes or 'customer.attribute_name' for customer attributes.</comment>
+                        </value>
+                    </fields>
+                </manufactmat>
+                <matgroup translate="label">
+                    <comment>SRM material group for the item</comment>
+                    <label>MATGROUP</label>
+                    <sort_order>90</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>1</show_in_store>
+                    <fields>
+                        <enabled translate="label tooltip comment">
+                            <label>Is Enabled</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>0</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>Enable this field.</comment>
+                        </enabled>
+                        <value translate="label tooltip comment">
+                            <label>Value</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>1</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>Use 'product.attribute_name' for product attributes or 'customer.attribute_name' for customer attributes.</comment>
+                        </value>
+                    </fields>
+                </matgroup>
+                <ext_product_id translate="label">
+                    <comment>External product number for the item</comment>
+                    <label>EXT_PRODUCT_ID</label>
+                    <sort_order>91</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>1</show_in_store>
+                    <fields>
+                        <enabled translate="label tooltip comment">
+                            <label>Is Enabled</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>0</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>Enable this field.</comment>
+                        </enabled>
+                        <value translate="label tooltip comment">
+                            <label>Value</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>1</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>Use 'product.attribute_name' for product attributes or 'customer.attribute_name' for customer attributes.</comment>
+                        </value>
+                    </fields>
+                </ext_product_id>
+                <service translate="label">
+                    <comment>Flag: the item is a service.</comment>
+                    <label>SERVICE</label>
+                    <sort_order>100</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>1</show_in_store>
+                    <fields>
+                        <enabled translate="label tooltip comment">
+                            <label>Is Enabled</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>0</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>Enable this field.</comment>
+                        </enabled>
+                        <value translate="label tooltip comment">
+                            <label>Value</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>1</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>Use 'product.attribute_name' for product attributes or 'customer.attribute_name' for customer attributes.</comment>
+                        </value>
+                    </fields>
+                </service>
+                <contract translate="label">
+                    <comment>SRM contract to which the item refers</comment>
+                    <label>CONTRACT</label>
+                    <sort_order>100</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>1</show_in_store>
+                    <fields>
+                        <enabled translate="label tooltip comment">
+                            <label>Is Enabled</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>0</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>Enable this field.</comment>
+                        </enabled>
+                        <value translate="label tooltip comment">
+                            <label>Value</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>1</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>Use 'product.attribute_name' for product attributes or 'customer.attribute_name' for customer attributes.</comment>
+                        </value>
+                    </fields>
+                </contract>
+                <contract_item translate="label">
+                    <comment>Item within the SRM contract</comment>
+                    <label>CONTRACT_ITEM</label>
+                    <sort_order>110</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>1</show_in_store>
+                    <fields>
+                        <enabled translate="label tooltip comment">
+                            <label>Is Enabled</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>0</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>Enable this field.</comment>
+                        </enabled>
+                        <value translate="label tooltip comment">
+                            <label>Value</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>1</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>Use 'product.attribute_name' for product attributes or 'customer.attribute_name' for customer attributes.</comment>
+                        </value>
+                    </fields>
+                </contract_item>
+                <ext_quote_id translate="label">
+                    <comment>Number of an external bid for this item (as reference for a subsequent purchase order)</comment>
+                    <label>EXT_QUOTE_ID</label>
+                    <sort_order>120</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>1</show_in_store>
+                    <fields>
+                        <enabled translate="label tooltip comment">
+                            <label>Is Enabled</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>0</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>Enable this field.</comment>
+                        </enabled>
+                        <value translate="label tooltip comment">
+                            <label>Value</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>1</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>Use 'product.attribute_name' for product attributes or 'customer.attribute_name' for customer attributes.</comment>
+                        </value>
+                    </fields>
+                </ext_quote_id>
+                <ext_quote_item translate="label">
+                    <comment>Item of external bid</comment>
+                    <label>EXT_QUOTE_ITEM</label>
+                    <sort_order>130</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>1</show_in_store>
+                    <fields>
+                        <enabled translate="label tooltip comment">
+                            <label>Is Enabled</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>0</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>Enable this field.</comment>
+                        </enabled>
+                        <value translate="label tooltip comment">
+                            <label>Value</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>1</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>Use 'product.attribute_name' for product attributes or 'customer.attribute_name' for customer attributes.</comment>
+                        </value>
+                    </fields>
+                </ext_quote_item>
+                <attachment translate="label">
+                    <comment>URL of the attachment (the attachment must be accessible for downloading under this URL)</comment>
+                    <label>ATTACHMENT</label>
+                    <sort_order>140</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>1</show_in_store>
+                    <fields>
+                        <enabled translate="label tooltip comment">
+                            <label>Is Enabled</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>0</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>Enable this field.</comment>
+                        </enabled>
+                        <value translate="label tooltip comment">
+                            <label>Value</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>1</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>Use 'product.attribute_name' for product attributes or 'customer.attribute_name' for customer attributes.</comment>
+                        </value>
+                    </fields>
+                </attachment>
+                <attachment_title translate="label">
+                    <comment>Title of the attachment (if this is empty the file name from the URL above is used)</comment>
+                    <label>ATTACHMENT_TITLE</label>
+                    <sort_order>150</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>1</show_in_store>
+                    <fields>
+                        <enabled translate="label tooltip comment">
+                            <label>Is Enabled</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>0</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>Enable this field.</comment>
+                        </enabled>
+                        <value translate="label tooltip comment">
+                            <label>Value</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>1</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>Use 'product.attribute_name' for product attributes or 'customer.attribute_name' for customer attributes.</comment>
+                        </value>
+                    </fields>
+                </attachment_title>
+                <attachment_purpose translate="label">
+                    <comment>Purpose of the attachment. C corresponds here to configuration.</comment>
+                    <label>ATTACHMENT_PURPOSE</label>
+                    <sort_order>160</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>1</show_in_store>
+                    <fields>
+                        <enabled translate="label tooltip comment">
+                            <label>Is Enabled</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>0</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>Enable this field.</comment>
+                        </enabled>
+                        <value translate="label tooltip comment">
+                            <label>Value</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>1</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>Use 'product.attribute_name' for product attributes or 'customer.attribute_name' for customer attributes.</comment>
+                        </value>
+                    </fields>
+                </attachment_purpose>
+                <ext_schema_type translate="label">
+                    <comment>Name of a schema via which it was imported in the SRM Server</comment>
+                    <label>EXT_SCHEMA_TYPE</label>
+                    <sort_order>160</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>1</show_in_store>
+                    <fields>
+                        <enabled translate="label tooltip comment">
+                            <label>Is Enabled</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>0</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>Enable this field.</comment>
+                        </enabled>
+                        <value translate="label tooltip comment">
+                            <label>Value</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>1</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>Use 'product.attribute_name' for product attributes or 'customer.attribute_name' for customer attributes.</comment>
+                        </value>
+                    </fields>
+                </ext_schema_type>
+                <ext_category_id translate="label">
+                    <comment>Unique key for an external category from the schema above, independent of the version of the schema</comment>
+                    <label>EXT_CATEGORY_ID</label>
+                    <sort_order>170</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>1</show_in_store>
+                    <fields>
+                        <enabled translate="label tooltip comment">
+                            <label>Is Enabled</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>0</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>Enable this field.</comment>
+                        </enabled>
+                        <value translate="label tooltip comment">
+                            <label>Value</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>1</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>Use 'product.attribute_name' for product attributes or 'customer.attribute_name' for customer attributes.</comment>
+                        </value>
+                    </fields>
+                </ext_category_id>
+                <ext_category translate="label">
+                    <comment>Unique key for an external category from the schema above, dependent on the version of the schema</comment>
+                    <label>EXT_CATEGORY</label>
+                    <sort_order>180</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>1</show_in_store>
+                    <fields>
+                        <enabled translate="label tooltip comment">
+                            <label>Is Enabled</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>0</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>Enable this field.</comment>
+                        </enabled>
+                        <value translate="label tooltip comment">
+                            <label>Value</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>1</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>Use 'product.attribute_name' for product attributes or 'customer.attribute_name' for customer attributes.</comment>
+                        </value>
+                    </fields>
+                </ext_category>
+                <sld_sys_name translate="label">
+                    <comment>Name of a system in the System Landscape Directory (SLD)</comment>
+                    <label>SLD_SYS_NAME</label>
+                    <sort_order>190</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>1</show_in_store>
+                    <fields>
+                        <enabled translate="label tooltip comment">
+                            <label>Is Enabled</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>0</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>Enable this field.</comment>
+                        </enabled>
+                        <value translate="label tooltip comment">
+                            <label>Value</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>1</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>Use 'product.attribute_name' for product attributes or 'customer.attribute_name' for customer attributes.</comment>
+                        </value>
+                    </fields>
+                </sld_sys_name>
+                <cust_field1 translate="label">
+                    <comment>User-defined field 1</comment>
+                    <label>CUST_FIELD1</label>
+                    <sort_order>200</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>1</show_in_store>
+                    <fields>
+                        <enabled translate="label tooltip comment">
+                            <label>Is Enabled</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>0</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>Enable this field.</comment>
+                        </enabled>
+                        <value translate="label tooltip comment">
+                            <label>Value</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>1</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>Use 'product.attribute_name' for product attributes or 'customer.attribute_name' for customer attributes.</comment>
+                        </value>
+                    </fields>
+                </cust_field1>
+                <cust_field2 translate="label">
+                    <comment>User-defined field 2</comment>
+                    <label>CUST_FIELD2</label>
+                    <sort_order>210</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>1</show_in_store>
+                    <fields>
+                        <enabled translate="label tooltip comment">
+                            <label>Is Enabled</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>0</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>Enable this field.</comment>
+                        </enabled>
+                        <value translate="label tooltip comment">
+                            <label>Value</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>1</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>Use 'product.attribute_name' for product attributes or 'customer.attribute_name' for customer attributes.</comment>
+                        </value>
+                    </fields>
+                </cust_field2>
+                <cust_field3 translate="label">
+                    <comment>User-defined field 3</comment>
+                    <label>CUST_FIELD3</label>
+                    <sort_order>220</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>1</show_in_store>
+                    <fields>
+                        <enabled translate="label tooltip comment">
+                            <label>Is Enabled</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>0</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>Enable this field.</comment>
+                        </enabled>
+                        <value translate="label tooltip comment">
+                            <label>Value</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>1</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>Use 'product.attribute_name' for product attributes or 'customer.attribute_name' for customer attributes.</comment>
+                        </value>
+                    </fields>
+                </cust_field3>
+                <cust_field4 translate="label">
+                    <comment>User-defined field 4</comment>
+                    <label>CUST_FIELD4</label>
+                    <sort_order>230</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>1</show_in_store>
+                    <fields>
+                        <enabled translate="label tooltip comment">
+                            <label>Is Enabled</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>0</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>Enable this field.</comment>
+                        </enabled>
+                        <value translate="label tooltip comment">
+                            <label>Value</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>1</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>Use 'product.attribute_name' for product attributes or 'customer.attribute_name' for customer attributes.</comment>
+                        </value>
+                    </fields>
+                </cust_field4>
+                <cust_field5 translate="label">
+                    <comment>User-defined field 5</comment>
+                    <label>CUST_FIELD5</label>
+                    <sort_order>240</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>1</show_in_store>
+                    <fields>
+                        <enabled translate="label tooltip comment">
+                            <label>Is Enabled</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>0</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>Enable this field.</comment>
+                        </enabled>
+                        <value translate="label tooltip comment">
+                            <label>Value</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>1</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>Use 'product.attribute_name' for product attributes or 'customer.attribute_name' for customer attributes.</comment>
+                        </value>
+                    </fields>
+                </cust_field5>
+                <item_type translate="label">
+                    <comment>Item type Root, Outline, Leaf. Introduced since SRM 7.0 onwards.</comment>
+                    <label>ITEM_TYPE</label>
+                    <sort_order>241</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>1</show_in_store>
+                    <fields>
+                        <enabled translate="label tooltip comment">
+                            <label>Is Enabled</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>0</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>Enable this field.</comment>
+                        </enabled>
+                        <value translate="label tooltip comment">
+                            <label>Value</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>1</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>Use 'product.attribute_name' for product attributes or 'customer.attribute_name' for customer attributes.</comment>
+                        </value>
+                    </fields>
+                </item_type>
+                <parent_id translate="label">
+                    <comment>An integer field that defines what the parent of the current item is in the Hierarchy structure. This field will be blank for an item which does not have any parent. Introduced since SRM 7.0 onwards.</comment>
+                    <label>PARENT_ID</label>
+                    <sort_order>242</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>1</show_in_store>
+                    <fields>
+                        <enabled translate="label tooltip comment">
+                            <label>Is Enabled</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>0</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>Enable this field.</comment>
+                        </enabled>
+                        <value translate="label tooltip comment">
+                            <label>Value</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>1</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>Use 'product.attribute_name' for product attributes or 'customer.attribute_name' for customer attributes.</comment>
+                        </value>
+                    </fields>
+                </parent_id>
+                <custom translate="label">
+                    <comment></comment>
+                    <label>Custom field</label>
+                    <sort_order>250</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>1</show_in_store>
+                    <fields>
+                        <enabled translate="label tooltip comment">
+                            <label>Is Enabled</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>0</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>Enable this field.</comment>
+                        </enabled>
+                        <name translate="label tooltip comment">
+                            <label>Name</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>1</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>Usa a composite and unique word.</comment>
+                        </name>
+                        <value translate="label tooltip comment">
+                            <label>Value</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>2</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>Use 'product.attribute_name' for product attributes or 'customer.attribute_name' for customer attributes.</comment>
+                        </value>
+                    </fields>
+                </custom>
+            </groups>
+        </ids>
+    </sections>
+</config>

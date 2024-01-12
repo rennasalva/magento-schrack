@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<config>
+	<modules>
+		<Schracklive_MockWws>
+			<version>1.0.0</version>
+			<depends>
+				<Schracklive_Wws />
+			</depends>
+		</Schracklive_MockWws>
+	</modules>
+	<global>
+		<models>
+			<wws>
+				<rewrite>
+					<connector>Schracklive_MockWws_Model_Connector</connector>
+				</rewrite>
+			</wws>
+		</models>
+	</global>
+</config>

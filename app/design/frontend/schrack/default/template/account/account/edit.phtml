@@ -1,0 +1,147 @@
+<?php
+/**
+ * Edit account template
+ *
+ * @see Schracklive_Account_Block_Address_Edit
+ */
+?>
+<!-- default/template/account/account/edit.phtml (start) -->
+<style>
+input[type=text] {
+    width: 331px;
+    padding-left: 2px;
+}
+</style>
+<?php echo $this->getMessagesBlock()->getGroupedHtml();?>
+<div class="row address-edit data">
+    <div class="large-12 columns">
+        <div class="row">
+            <div class="large-12 columns">
+                <?php if($this->getTitle()): ?>
+                    <div class="headline b1"><?php echo $this->getTitle() ?></div>
+                    <div class="headline c1"><?php echo $this->__('Change Request') ?></div>
+                <?php endif; ?>
+            </div>
+        </div>
+        <?php if ($this->mayEdit()): ?>        
+            <form action="<?php echo $this->getUrl('account/account/editPost') ?>" method="post" id="form-validate">
+                <?php echo $this->getBlockHtml('formkey')?>
+                <div class="row content">
+                    <div class="large-12 columns">
+                        <div class="row">
+                            <div class="large-12 columns">
+                                <h2 class="legend"><?php echo $this->__('Company Information') ?></h2>
+                                <ul class="form-list">
+                                    <li>
+                                        <fieldset style="border: 1px solid #d6d6d6; color: black; width: 350px; float: left; margin-right: 25px; margin-bottom: 20px; margin-top: 14px; margin-left: 33px; height: 161px;">
+                                            <legend><em> *</em> <?php echo $this->__('Name') ?>&nbsp;&nbsp;</legend>
+                                            <div class="input-box">
+                                                <input type="text" name="name1" id="name1" value="<?php echo $this->htmlEscape($this->getAccount()->getName1()) ?>" title="<?php echo $this->__('Name 1') ?>" class="input-text required-entry" maxlength="30"/><br/><br/>
+                                                <input type="text" name="name2" id="name2" value="<?php echo $this->htmlEscape($this->getAccount()->getName2()) ?>" title="<?php echo $this->__('Name 2') ?>" class="input-text" maxlength="30"/><br/><br/>
+                                                <input type="text" name="name3" id="name3" value="<?php echo $this->htmlEscape($this->getAccount()->getName3()) ?>" title="<?php echo $this->__('Name 3') ?>" class="input-text" maxlength="30"/>
+                                            </div>
+                                        </fieldset>
+                                    </li>
+                                    <li>
+                                        <fieldset style="border: 1px solid #d6d6d6; color: black; width: 350px; float: left; margin-right: 25px; margin-bottom: 20px; margin-top: 14px; margin-left: 33px; height: 69px;">
+                                            <legend> <?php echo $this->__('Website') ?>&nbsp;&nbsp;</legend>
+                                            <div class="input-box">
+                                                <input type="text" name="homepage" id="homepage" value="<?php echo $this->htmlEscape($this->getAccount()->getHomepage()) ?>" title="<?php echo $this->__('Website') ?>" class="input-text"  maxlength="30" />
+                                            </div>
+                                        </fieldset>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="large-12 columns">
+                                <h2 class="legend"><?php echo $this->__('Billing Address') ?></h2>
+                                <ul class="form-list">
+                                    <li>
+                                        <fieldset style="border: 1px solid #d6d6d6; color: black; width: 350px; float: left; margin-right: 25px; margin-bottom: 20px; margin-top: 14px; margin-left: 33px; height: 69px;">
+                                            <legend><em> *</em> <?php echo $this->__('Street Address') ?>&nbsp;&nbsp;</legend>
+                                            <div class="input-box">
+                                                <input type="text" name="street" id="street" value="<?php echo $this->htmlEscape($this->getAccount()->getStreet1()) ?>" title="<?php echo $this->__('Street') ?>" class="input-text required-entry" maxlength="30" />
+                                            </div>
+                                        </fieldset>
+                                    </li>
+                                    <li>
+                                        <div class="field">
+                                            <fieldset style="border: 1px solid #d6d6d6; color: black; width: 350px; float: left; margin-right: 25px; margin-bottom: 20px; margin-top: 14px; margin-left: 33px; height: 69px;">
+                                                <legend><em> *</em> <?php echo $this->__('Zip/Postal Code') ?>&nbsp;&nbsp;</legend>
+                                                <div class="input-box">
+                                                    <input type="text" name="postcode" id="postcode" value="<?php echo $this->htmlEscape($this->getAccount()->getPostcode()) ?>" title="<?php echo $this->__('Post Code') ?>" class="input-text validate-zip-international required-entry" maxlength="6" />
+                                                </div>
+                                            </fieldset>
+                                        </div>
+                                        <div class="field">
+                                            <fieldset style="border: 1px solid #d6d6d6; color: black; width: 350px; float: left; margin-right: 25px; margin-bottom: 20px; margin-top: 14px; margin-left: 33px; height: 69px;">
+                                                <legend><em> *</em> <?php echo $this->__('City') ?>&nbsp;&nbsp;</legend>
+                                                <div class="input-box">
+                                                    <input type="text" name="city" id="city" value="<?php echo $this->htmlEscape($this->getAccount()->getCity()) ?>" title="<?php echo $this->__('City') ?>" class="input-text required-entry" maxlength="30" />
+                                                </div>
+                                            </fieldset>
+                                            <div style="clear: both;"></div>
+                                        </div>
+                                    </li>
+                                    <li>
+                                        <fieldset style="border: 1px solid #d6d6d6; color: black; width: 350px; float: left; margin-right: 25px; margin-bottom: 20px; margin-top: 14px; margin-left: 33px; height: 69px;">
+                                            <legend> <?php echo $this->__('Telephone') ?>&nbsp;&nbsp;</legend>
+                                            <div class="input-box">
+                                                <input type="text" name="telephone" id="telephone" value="<?php echo $this->htmlEscape($this->getAccount()->getTelephone()) ?>" title="<?php echo $this->__('Telephone') ?>" class="input-text" maxlength="30" />
+                                            </div>
+                                        </fieldset>
+                                    </li>
+                                    <li>
+                                        <fieldset style="border: 1px solid #d6d6d6; color: black; width: 350px; float: left; margin-right: 25px; margin-bottom: 20px; margin-top: 14px; margin-left: 33px; height: 69px;">
+                                            <legend> <?php echo $this->__('Fax') ?>&nbsp;&nbsp;</legend>
+                                            <div class="input-box">
+                                                <input type="text" name="fax" id="fax" value="<?php echo $this->htmlEscape($this->getAccount()->getFax()) ?>" title="<?php echo $this->__('Fax') ?>" class="input-text" maxlength="30" />
+                                            </div>
+                                        </fieldset>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="large-12 columns">
+                                <h2 class="legend"><?php echo $this->__('Other') ?></h2>
+                                <ul class="form-list">
+                                    <li>
+                                        <fieldset style="border: 1px solid #d6d6d6; color: black; width: 350px; float: left; margin-right: 25px; margin-bottom: 20px; margin-top: 14px; margin-left: 33px; height: 128px;">
+                                            <legend> <?php echo $this->__('Comment') ?>&nbsp;&nbsp;</legend>
+                                            <div class="input-box">
+                                                <textarea name="comment" id="comment" cols="44" rows="6"></textarea>
+                                            </div>
+                                        </fieldset>
+                                    </li>
+                                    <p style="float: left; width: 120px; margin-left: 33px; margin-top: 125px;" class="required"><b><?php echo $this->__('* Required Fields') ?></b></p>
+                                </ul>
+                            </div>
+                        </div>                        
+                        <div class="row">
+                            <div class="large-3 columns large-offset-9">
+                                <button type="submit" title="<?php echo $this->__('Send request') ?>" class="button-red small gray fixed-width"><span><span><?php echo $this->__('Send request') ?></span></span></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="large-12 columns">
+                        <p class="back-link"><a href="<?php echo Mage::getUrl('customer/account') ?>"><small>&laquo; </small><?php echo $this->__('Back') ?></a></p>
+                    </div>
+                </div>                
+            </form>
+        <?php else: ?>
+            <p><?php echo $this->__('No company information is available.') ?></p>
+        <?php endif; ?>
+    </div>
+</div>
+<script type="text/javascript">
+    //<![CDATA[
+    jQuery(document).ready(function() {
+        var shippingForm = new VarienForm('form-validate');
+    });
+    //]]>
+</script>
+<!-- default/template/account/account/edit.phtml (end) -->

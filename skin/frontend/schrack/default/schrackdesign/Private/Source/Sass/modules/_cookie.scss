@@ -1,0 +1,48 @@
+.cc-cookies {
+    background-color: rgba(0,0,0,.4);
+    height: 100%;
+    left: 0;
+    overflow: auto;
+    position: fixed;
+    top: 0;
+    max-width: 100%;
+    width: 100%;
+    z-index: 222;
+    padding: 0;
+    display: block;
+}
+
+.cookie-content {
+
+    background-color: #fefefe;
+    border: 1px solid #888;
+    margin: 15% 2rem;
+    padding: 20px;
+    max-width: 800px;
+
+    @media (min-width: $breakpoint-up-md) {
+        margin: 15% auto;
+    }
+
+    h1 {
+        margin: 40px 0 20px 0;
+    }
+
+    .cookie-buttons {
+        display: flex;
+        justify-content: flex-end;
+        margin-top: 30px;
+    }
+
+    .internal-link, .cc-cookie-decline {
+        margin-right: 30px;
+    }
+
+    .cc-cookie-decline {
+        line-height: 30px;
+
+        //@media (min-width: $breakpoint-up-md) {
+        //    line-height: 40px;
+        //}
+    }
+}

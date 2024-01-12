@@ -1,0 +1,704 @@
+<!-- frontend/schrack/default/template/checkout/onepage/shipping.phtml (start) -->
+
+<?php
+// @var $this Schracklive_SchrackCheckout_Block_Onepage_Shipping
+    $emailData         = "";
+    $telephoneData     = "";
+    $defaultShippingId = "";
+
+    $customer = $this->getCustomer();
+    if ($customer) {
+        $customerType      = $customer->getSchrackCustomerType(); // ProspectTypes: 'light-prospect' / 'full-prospect'
+        $emailData         = $customer->getEmail();
+        $telephoneData     = $customer->getSchrackTelephone();
+        $lastnameData      = $customer->getLastname();
+        $defaultShipping   = $customer->getDefaultShippingAddress();
+        if ($defaultShipping) {
+            $defaultShippingId = $defaultShipping->getData('entity_id');
+        }
+    }
+
+    $prospectFull  = false;
+    $prospectLight = false;
+
+    if ($customerType == 'light-prospect') {
+        $prospectLight = true;
+    }
+
+    if ($customerType == 'full-prospect') {
+        $prospectFull = true;
+    }
+
+    $_requestReceivers = $this->getRequestreceivers();
+    $customerIsLoggedIn = $this->helper('customer')->isLoggedIn();
+
+    $localeCode = strtolower(Mage::getStoreConfig('schrack/general/country'));
+?>
+
+<style>
+    .validate-select {
+        width: 342px !important;
+    }
+</style>
+
+<form action="" id="co-shipping-form">
+    <?php echo $this->getBlockHtml('formkey') ?>
+
+    <input type="hidden" id="hidden_email" value="<?php echo $emailData; ?>">
+    <input type="hidden" id="hidden_telephone" value="<?php echo $telephoneData; ?>">
+    <input type="hidden" id="hidden_lastname" value="<?php echo $lastnameData; ?>">
+    <input type="hidden" id="hidden_default_shipping_id" value="<?php echo $defaultShippingId; ?>">
+
+	<div class="box-content">
+    <ul class="form-list">
+    <?php if ($this->customerHasAddresses() && $prospectLight == false): ?>
+       <li class="wide">
+		   <?php if ($this->mayUseNewAddress()): ?>
+	           <label for="shipping-address-select"><?php echo $this->__('Select a shipping address from your address book or enter a new address.') ?></label>
+		   <?php else: ?>
+	           <label for="shipping-address-select"><?php echo $this->__('Select a shipping address from your address book.') ?></label>
+		   <?php endif; ?>
+           <div class="input-box">
+               <?php echo $this->getAddressesHtmlSelect('shipping') ?>
+           </div>
+       </li>
+    <?php endif ?>
+        <div id="fieldAreaShipping"></div>
+        <li id="shipping-new-address-form"<?php if ($this->customerHasAddresses()): ?> style="display:none;"<?php endif ?>>
+            <fieldset class="adressFieldset">
+                <input type="hidden" name="shipping[address_id]" value="<?php echo $this->getAddress()->getId() ?>" id="shipping:address_id" />
+                <ul>
+                    <li class="fields">
+                    <?php
+                        // app/design/frontend/schrack/default/template/customer/widget/addressname.phtml
+                        $completeHTMLElements = $this->getLayout()->createBlock('schrackcustomer/widget_addressname')->setObject($this->getAddress())->setFieldIdFormat('shipping:%s')->setFieldNameFormat('shipping[%s]')->setFieldParams('onchange="shipping.setSameAsBilling(false)"')->toHtml();
+                        $completeHTMLElements = str_replace('onchange="shipping.setSameAsBilling(false)"', '', $completeHTMLElements); // Removes inline onchange event from input field
+                        $completeHTMLElements = preg_replace('/value="*"/', '', $completeHTMLElements);  // Removes value from input field
+                        //echo $completeHTMLElements;
+                    ?>
+                    </li>
+                    <li class="fields">
+                        <fieldset style="border: 1px solid #d6d6d6; color: black; width: 350px; float: left; margin-right: 25px; margin-bottom: 20px; margin-top: 14px; margin-left: 33px; height: 195px;">
+                            <legend><em> *</em> <?php echo $this->__('Company') ?>&nbsp;&nbsp;</legend>
+                            <div class="fields" style="margin-bottom: 15px;"">
+                                <label for="shipping:lastname" class="required"></label>
+                                <div class="input-box">
+                                    <input style="width: 342px;" type="text" id="shipping:lastname" name="shipping[lastname]" value="" title="<?php echo $this->__('Company') ?>" class="input-text required-entry" maxlength="30" />
+                                </div>
+                            </div>
+                            <div class="fields">
+                                <div class="input-box">
+                                    <input style="width: 342px !important;" type="text" id="shipping:company" name="shipping[company]" value="" title="<?php echo $this->__('Company') ?>" class="input-text" maxlength="30" />
+                                </div>
+                            </div>
+                            <div class="fields" style="margin-top: 12px;">
+                                <div class="customHeightDistance"></div>
+                                <label for="shipping:firstname"><?php echo $this->__('Contact') ?></label>
+                                <div class="input-box">
+                                    <input style="width: 342px;" type="text" id="shipping:firstname" name="shipping[firstname]" value="" title="<?php echo $this->__('Contact') ?>" class="input-text" maxlength="30" />
+                                </div>
+                            </div>
+                        </fieldset>
+
+                        <?php if(!$this->isCustomerLoggedIn()): ?>
+                        <fieldset style="border: 1px solid #d6d6d6; color: black; width: 350px; float: left; margin-bottom: 21px; margin-top: 14px;">
+                            <legend><em> *</em> <?php echo $this->__('Email Address') ?>&nbsp;&nbsp;</legend>
+                            <div class="fields">
+                                <label for="shipping:email" class="required"></label>
+                                <div class="input-box">
+                                    <input style="width: 342px !important;" type="text" name="shipping[email]" id="shipping:email" value="" title="<?php echo $this->__('Email Address') ?>" class="input-text validate-email required-entry" maxlength="30" />
+                                </div>
+                            </div>
+                        </fieldset>
+                        <?php endif ?>
+
+                        <fieldset id="fieldsetStreet" style="border: 1px solid #d6d6d6; color: black; width: 350px; float: left; margin-bottom: 21px; margin-top: 6px; height: 87px;">
+                            <legend><em> *</em> <?php echo $this->__('Street Address') ?>&nbsp;&nbsp;</legend>
+                            <div class="fields">
+                                <label for="shipping:street1" class="required"></label>
+                                <div class="input-box">
+                                    <input style="width: 342px !important;" type="text" name="shipping[street][]" id="shipping:street1" value="" title="<?php echo $this->__('Street Address') ?>" class="input-text required-entry" maxlength="30"/>
+                                </div>
+                            </div>
+                            <?php for ($_i=2, $_n=$this->helper('customer/address')->getStreetLines(); $_i<=$_n; $_i++): ?>
+                                <div class="fields">
+                                    <label for="shipping:street1" class="required"></label>
+                                    <div class="input-box">
+                                        <input style="width: 342px !important;" type="text" name="shipping[street]" id="shipping:street<?php echo $_i?>" value="" title="<?php echo $this->__('Street Address') . $_i ?>" class="input-text required-entry" maxlength="30"/>
+                                    </div>
+                                </div>
+                            <?php endfor ?>
+                        </fieldset>
+
+                        <fieldset id="fieldsetPostcodeLegendShipping" style="border: 1px solid #d6d6d6; color: black; width: 350px; float: left; margin-left: 2px; margin-bottom: 20px; height: 87px;">
+                            <legend id="postcodeLegendShipping"><em> *</em> <?php echo $this->__('Zip/Postal Code') ?>&nbsp;&nbsp;</legend>
+                            <div class="fields">
+                                <label for="shipping:postcode" class="required"></label>
+                                <div class="input-box">
+                                    <input style="width: 342px !important;" type="text" name="shipping[postcode]" id="shipping:postcode" value="" title="<?php echo $this->__('Zip/Postal Code') ?>" class="input-text validate-zip-international required-entry" maxlength="10" />
+                                </div>
+                            </div>
+                        </fieldset>
+
+                        <div style="clear: both;"></div>
+                        <fieldset style="border: 1px solid #d6d6d6; color: black; width: 350px; float: left; margin-left: 33px; margin-right: 25px; height: 87px;">
+                            <legend><em> *</em> <?php echo $this->__('City') ?>&nbsp;&nbsp;</legend>
+                            <div class="fields">
+                                <label for="shipping:city" class="required"></label>
+                                <div class="input-box">
+                                    <input style="width: 342px !important;" type="text" name="shipping[city]" id="shipping:city" value="" title="<?php echo $this->__('City') ?>" class="input-text required-entry" maxlength="30" />
+                                </div>
+                            </div>
+                        </fieldset>
+
+                        <?php if(false): ?>
+                            <div class="field">
+                                <div class="customHeightDistance"></div>
+                                <label for="shipping:region" class="required"><em>*</em><?php echo $this->__('State/Province') ?></label>
+                                <div class="input-box">
+                                    <select id="shipping:region_id" name="shipping[region_id]" title="<?php echo $this->__('State/Province') ?>" class="validate-select" style="display:none;">
+                                        <option value=""><?php echo $this->__('Please select region, state or province') ?></option>
+                                    </select>
+                                    <script type="text/javascript">
+                                        //<![CDATA[
+                                        $('shipping:region_id').setAttribute('defaultValue',  "<?php echo $this->getAddress()->getRegionId() ?>");
+                                        //]]>
+                                    </script>
+                                    <input type="text" id="shipping:region" name="shipping[region]" value="" title="<?php echo $this->__('State/Province') ?>" class="input-text" style="display:none;" />
+                                </div>
+                            </div>
+                        <?php endif ?>
+
+                        <fieldset style="border: 1px solid #d6d6d6; color: black; width: 350px; float: left; height: 87px;">
+                            <legend><em> *</em> <?php echo $this->__('Country') ?>&nbsp;&nbsp;</legend>
+                            <div class="fields">
+                                <label for="shipping:country_id" class="required"></label>
+                                <div class="input-box">
+                                <?php if(!Mage::getStoreConfig('schrack/vatcheck/contry_selectable')): ?>
+                                    <?php if ($prospectFull || $prospectLight) : ?>
+                                        <?php // Case 1: Prospect Order: ?>
+                                        <input type="hidden" id="shipping:country_id" name="shipping[country_id]" value="<?php echo Mage::helper('core')->getDefaultCountry(); ?>">
+                                        <input type="text" value=" <?php echo Mage::app()->getLocale()->getCountryTranslation(Mage::helper('core')->getDefaultCountry()) ?>" style="width: 342px !important; background: #d3d3d3" readonly="readonly">
+                                    <?php else : ?>
+                                        <?php if ($customerIsLoggedIn) : ?>
+                                            <?php // Case 2: Normal Customer Order: ?>
+                                            <?php echo str_replace('onchange="shipping.setSameAsBilling(false);">', '', $this->getCountryHtmlSelect('shipping')); ?>
+                                        <?php else : ?>
+                                            <?php // Case 3: Guest Order or New Register Prospect: ?>
+                                            <input type="hidden" id="shipping:country_id" name="shipping[country_id]" value="<?php echo Mage::helper('core')->getDefaultCountry(); ?>">
+                                            <input type="text" value=" <?php echo Mage::app()->getLocale()->getCountryTranslation(Mage::helper('core')->getDefaultCountry()) ?>" style="width: 342px !important; background: #d3d3d3" readonly="readonly">
+                                        <?php endif ?>
+                                    <?php endif ?>
+                                <?php else : ?>
+                                    <?php echo str_replace('onchange="shipping.setSameAsBilling(false);">', '', $this->getCountryHtmlSelect('shipping')); ?>
+                                <?php endif ?>
+                                </div>
+                            </div>
+                        </fieldset>
+
+                        <fieldset id="fieldsetVATIdentificationNumberLegendShipping" style="border: 1px solid #d6d6d6; color: black; width: 358px; float: left; margin-left: 34px; margin-bottom: 20px; height: 255px; margin-top: 26px;">
+                            <?php if(Mage::getStoreConfig('schrack/new_self_registration/triggerLocalVat')) : ?>
+                                <div id="vat_identification_number_local_selector">
+                                    <input type="radio" name="vat_special_shipping" value="vat_normal" checked="checked"> <?php echo $this->__('VAT Normal') ?><br>
+                                    <input type="radio" name="vat_special_shipping" value="vat_local"> <?php echo $this->__('VAT Local') ?>
+                                </div>
+                            <?php endif; ?>
+                            <div id="vat_identification_number-field" style="margin-top: 10px;">
+                                <?php if (Mage::getStoreConfig('schrack/vatcheck/required')): ?>
+                                    <label for="vat_identification_number" style="color: #000;" class="required"><em> *</em>
+                                <?php else: ?>
+                                    <label for="vat_identification_number">
+                                <?php endif; ?>
+                                <?php echo $this->__('VAT Identification Number') ?>
+                                <div class="input-box">
+                                    <input type="text" style="width: 339px;" name="vat_identification_number" id="vat_identification_number" value="" title="" class="textInput input-text<?php if (Mage::getStoreConfig('schrack/vatcheck/required')) echo ' required-entry'; ?>" />
+                                </div>
+                                <div id="resultingErrorMessageVATShipping" style="position: absolute; font-size: 1em; color: red; margin-top: -61px; margin-left: 0px; width: 410px;"></div>
+                            </div>
+                            <div id="company-registration-number-field" style="margin-top: 10px;">
+                                <?php if (Mage::getStoreConfig('schrack/vatcheck/comregrequired')): ?>
+                                    <label for="company_registration_number" style="color: #000;" class="required"><em> *</em>
+                                <?php else: ?>
+                                    <label for="company_registration_number">
+                                <?php endif ?>
+                                <?php echo $this->__('Company Registration Number') ?>
+                                </label>
+                                <div class="input-box">
+                                    <input type="text" style="width: 339px;" name="company_registration_number" id="company_registration_number" maxlength="14" value="" title="<?php echo $this->__('Company Registration Number') ?>" class="textInput input-text<?php if (Mage::getStoreConfig('schrack/vatcheck/comregrequired')) echo ' required-entry'; ?>" />
+                                </div>
+                            </div>
+                            <div id="website-field" style="margin-top: 10px;">
+                                <label for="homepage"><?php echo $this->__('Website') ?></label>
+                                <div class="input-box">
+                                    <input type="text" style="width: 339px;" name="homepage" id="homepage" value="" title="<?php echo $this->__('Website') ?>" class="textInput input-text" />
+                                </div>
+                            </div>
+                            <div class="field" style="margin-top: 10px;">
+                                <label for="shipping:telephone_company"><?php echo $this->__('Telephone Company') ?></label>
+                                <div class="input-box">
+                                    <input style="width: 342px !important;" type="text" name="shipping[telephone_company]" id="shipping:telephone_company" value="" title="<?php echo $this->__('Telephone Company') ?>" class="input-text" />
+                                </div>
+                            </div>
+                        </fieldset>
+                        <div style="clear: both;"></div>
+
+                        <?php if(false): ?>
+                            <li class="fields">
+                                <div class="field">
+                                    <label for="shipping:telephone"><?php echo $this->__('Telephone') ?></label>
+                                    <div class="input-box">
+                                        <input type="text" name="shipping[telephone]" id="shipping:telephone" value="" title="<?php echo $this->__('Telephone') ?>" class="input-text" />
+                                    </div>
+                                </div>
+                                <div class="field">
+                                    <label for="shipping:fax"><?php echo $this->__('Fax') ?></label>
+                                    <div class="input-box">
+                                        <input type="text" name="shipping[fax]" id="shipping:fax" value="" title="<?php echo $this->__('Fax') ?>" class="input-text" />
+                                    </div>
+                                </div>
+                            </li>
+                        <?php endif ?>
+                        <p style="float: left; width: 120px; margin-left: 33px; margin-top: 20px; color: #000;" class="required"><b><?php echo $this->__('* Required Fields') ?></b></p>
+                    </li>
+                    <div class="customHeightDistance"></div>
+                    <div class="customHeightDistance"></div>
+                    <?php if ($this->isCustomerLoggedIn() && $this->customerHasAddresses()):?>
+                        <!-- <li class="control"><input type="checkbox" name="shipping[save_in_address_book]" value="1" title="<?php //echo $this->__('Save in address book') ?>" id="shipping:save_in_address_book" onchange="shipping.setSameAsBilling(false);"<?php //if ($this->getAddress()->getSaveInAddressBook()):?> checked="checked"<?php //endif;?> class="checkbox" /><label for="shipping:save_in_address_book" style="display:inline">&nbsp;<?php //echo $this->__('Save in address book') ?></label></li> -->
+                        <li class="no-display">
+                            <p>
+                                <?php //echo $this->__('This new address will be saved in the address book'); ?>
+                            </p>
+                        </li>
+                        <input type="hidden" name="shipping[save_in_address_book]" value="1" />
+                    <?php endif;?>
+                </ul>
+                <br/>
+        </li>
+        <?php if ( $_requestReceivers && $_requestReceivers->count() > 0 ):?>
+            <li>
+                <div class="input-box">
+                    <label for="billing:receiver"><?php echo $this->__('Receiver')?>&nbsp;<em> *</em></label><br/>
+                    <select id="billing:receiver" name="billing[receiver]">
+                        <?php foreach ($_requestReceivers as $receiver):?>
+                            <option value="<?php echo $receiver->getId()?>"><?php echo $receiver->getName()?></option>
+                        <?php endforeach;?>
+                    </select>
+                </div>
+            </li>
+        <?php endif;?>
+        <br/>
+
+        </fieldset>
+    </ul>
+    <?php if (!$this->isCustomerLoggedIn() || !($this->getCustomer()->isContact() || $this->getCustomer()->isProspect())): ?>
+        <?php if (false): ?>
+            <p class="required"><?php echo $this->__('* Required Fields') ?></p>
+         <?php endif;?>
+    <?php endif;?>
+	</div>
+    <div class="buttons-set" id="shipping-buttons-container">
+        <div>
+            <?php if (!$this->isCustomerLoggedIn() || !($this->getCustomer()->isContact() || $this->getCustomer()->isProspect())): ?>
+                <div class="checkout-back-link-container">
+                    <a class="back-link back-to-billing-button" href="#"><small>&laquo; </small><?php echo $this->__('Back') ?></a>
+                </div>
+            <?php endif;?>
+            <?php if ($this->mayUseNewAddress()): ?>
+                <div>
+                    <button type="button" id="new_address_button" title="<?php echo $this->__('New Address') ?>" class="button-blue arrow small btn-makeoffer" onclick="" style="cursor: auto;"><?php echo $this->__('New Address') ?></button>
+                </div>
+            <?php endif; ?>
+        </div>
+        <button type="button" class="button-red small saveShippingButton" title="<?php echo $this->__('Continue') ?>"><span id="shipping-please-wait" class="please-wait" style="display:none;float:left;padding-left:20px;text-align:left;background:url('<?php echo $this->getSkinUrl('images/opc-ajax-loader.gif') ?>') left center no-repeat;"><?php echo $this->__('Loading next step...') ?></span><?php echo $this->__('Continue') ?></button>
+    </div>
+    <div class="customHeightDistance"></div>
+</form>
+
+
+<script type="text/javascript">
+//<![CDATA[
+    <?php if ( Mage::helper('geoip')->mayPerformCheckout() ):?>
+        var shipping = new Shipping('co-shipping-form', '<?php echo $this->getUrl('checkout/onepage/getAddress') ?>address/', '<?php echo $this->getUrl('checkout/onepage/saveShipping') ?>',
+            '<?php echo $this->getUrl('checkout/onepage/shippingMethod') ?>');
+    <?php else:?>
+        var shipping = new Shipping('co-shipping-form', '<?php echo $this->getUrl('checkout/onepage/getAddress') ?>address/', '<?php echo $this->getUrl('checkout/onepage/saveShipping') ?>',
+            '<?php echo $this->getUrl('checkout/onepage/review') ?>');
+    <?php endif;?>
+    var shippingForm = new VarienForm('co-shipping-form');
+    //shippingForm.extraChildParams = ' onchange="shipping.setSameAsBilling(false);"';
+    //shippingForm.setElementsRelation('shipping:country_id', 'shipping:region', '<?php echo $this->getUrl('directory/json/childRegion') ?>', '<?php echo $this->__('Select State/Province...') ?>');
+    if ( typeof(jQuery('#shipping-address-select')) !== 'undefined' ) {
+        jQuery('#shipping-address-select').change(function() {
+            shipping.newAddress(!jQuery('#shipping-address-select').val());
+            if (!jQuery('#shipping-address-select').val()) {
+                jQuery('#new_address_button').hide();
+            } else {
+                jQuery('#new_address_button').show();
+            }
+        });
+    }
+
+    jQuery(document).ready(function() {
+
+    if (jQuery('#hidden_default_shipping_id').val() != '') {
+        var defaultShippingId = jQuery('#hidden_default_shipping_id').val();
+        jQuery('#shipping-address-select option[value=' + defaultShippingId + ']').attr('selected','selected');
+    }
+
+    var localeCode = '<?php echo $localeCode; ?>';
+
+    jQuery('#shipping\\:telephone').on('paste', function() {
+        return false;
+    });
+
+    jQuery('#shipping\\:fax').on('paste', function() {
+        return false;
+    });
+
+    jQuery('#shipping\\:telephone_company').on('paste', function() {
+        return false;
+    });
+
+    function ignoreInvalidPhoneCharacters (elementId) {
+        console.log('catched');
+        var telCoValue = jQuery('#' + elementId).val();
+        var telCoValueLength = telCoValue.length;
+        var checkedValue = '';
+        var allowedCharacters = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', ' ', '+', '-'];
+        for (var i = 0; i < telCoValueLength; i++) {
+            if (jQuery.inArray(telCoValue[i], allowedCharacters) != -1) {
+                checkedValue = checkedValue + telCoValue[i];
+            }
+        }
+        jQuery('#' + elementId).val(checkedValue);
+
+        telCoValue = checkedValue;
+        telCoValue = telCoValue.replace(/ /g,'');
+        telCoValue = telCoValue.replace(/\+0000/, '+');
+        telCoValue = telCoValue.replace(/\+000/, '+');
+        telCoValue = telCoValue.replace(/\+00/, '+');
+        telCoValue = telCoValue.replace(/\+0/, '+');
+        telCoValue = telCoValue.replace(/\+/g, '');
+        telCoValueLength = telCoValue.length;
+
+        if (telCoValueLength >= 0 && telCoValueLength <= 3) {
+            telCoValue = '+' + telCoValue;
+        } else if (telCoValueLength > 3 && telCoValueLength <= 6) {
+            telCoValue = '+' + telCoValue.substring(0, 2) + ' ' + telCoValue.substring(2, telCoValueLength);
+        } else if (telCoValueLength > 6 && telCoValueLength <= 10) {
+            telCoValue = '+' + telCoValue.substring(0, 2) + ' ' + telCoValue.substring(2, 6) + ' ' + telCoValue.substring(6, telCoValueLength) ;
+        } else if (telCoValueLength > 10 && telCoValueLength <= 14) {
+            telCoValue = '+' + telCoValue.substring(0, 2) + ' ' + telCoValue.substring(2, 6) + ' ' + telCoValue.substring(6, 10) + ' ' + telCoValue.substring(10, telCoValueLength) ;
+        } else if (telCoValueLength > 14 && telCoValueLength <= 18) {
+            telCoValue = '+' + telCoValue.substring(0, 2) + ' ' + telCoValue.substring(2, 6) + ' ' + telCoValue.substring(6, 10) + ' ' + telCoValue.substring(10, 14) + ' ' + telCoValue.substring(14, telCoValueLength) ;
+        } else if (telCoValueLength > 18) {
+            telCoValue = '+' + telCoValue.substring(0, 2) + ' ' + telCoValue.substring(2, 6) + ' ' + telCoValue.substring(6, 10) + ' ' + telCoValue.substring(10, 14) + ' ' + telCoValue.substring(14, 18) + ' ' + telCoValue.substring(18, telCoValueLength) ;
+        }
+        jQuery('#' + elementId).val(telCoValue);
+
+    }
+
+    jQuery('#shipping\\:telephone').on('keyup', function() {
+        ignoreInvalidPhoneCharacters('shipping\\:telephone');
+    });
+
+    jQuery('#shipping\\:fax').on('keyup', function() {
+        ignoreInvalidPhoneCharacters('shipping\\:fax');
+    });
+
+    jQuery('#shipping\\:telephone_company').on('keyup', function() {
+        ignoreInvalidPhoneCharacters('shipping\\:telephone_company');
+    });
+
+    var setOverlayLoaderShipping = function() {
+        // Set overlay for
+        jQuery('#fieldAreaShipping').css({  "position": "absolute",
+            "height": "100%",
+            "width": "100%",
+            "background": "url(<?php echo $this->getSkinUrl('schrackdesign/Public/Images/download_ajax_loader.gif'); ?>) no-repeat center center",
+            "top": "-15px",
+            "left": "0",
+            "opacity": "0.4",
+            "z-index": "99"});
+        }
+
+    var checkUIDShipping = function () {
+        var checkData = {
+            'vat_identification_number' : jQuery('#vat_identification_number').val(),
+            'email' : jQuery('#hidden_email').val(),
+            'name1' : jQuery('#billing\\:lastname').val(),
+            'name2' : jQuery('#billing\\:company').val(),
+            'name3' : jQuery('#billing\\:firstname').val(),
+            'schrack_telephone' : jQuery('#hidden_telephone').val()
+        }
+        if (jQuery('input[name="vat_special_shipping"]') && jQuery('input[name="vat_special_shipping"]:checked').val() == 'vat_local') {
+            // Don't check VAT intensively (just execute normal success actions)!
+            jQuery('#fieldAreaShipping').removeAttr('style');
+            jQuery('#vat_identification_number').removeClass('validation-failed');
+            shipping.save();
+        } else {
+            jQuery.ajax({
+                url: '<?php echo Mage::getUrl('customer/account/checkUid'); ?>',
+                type: 'post',
+                dataType: 'json',
+                data: checkData,
+                success: function(data) {
+                    if (data.errormsg) {
+                        jQuery('#resultingErrorMessageVATShipping').text(data.errormsg);
+                        jQuery('#resultingErrorMessageVATShipping').show();
+                        jQuery('#vat_identification_number').addClass('validation-failed');
+                    } else {
+                        jQuery('#vat_identification_number').removeClass('validation-failed');
+                        shipping.save();
+                    }
+                },
+                error: function (data) {
+                    // console.log('error');
+                },
+                complete: function () {
+                    jQuery('#fieldAreaShipping').removeAttr('style');
+                    //console.log('complete');
+                }
+            });
+        }
+    }
+
+    var checkLocalVATShipping = function () {
+        // Special route for option of local VAT:
+        // Check, if partial HTML-Snippet with radio-buttons existing:
+        if (jQuery('input[name="vat_special_shipping"]')) {
+            if (jQuery('input[name="vat_special_shipping"]:checked').val() == 'vat_local') {
+                // Only check number of characters (= 8) and type of chars (must be integer):
+                if (localeCode == 'sk') {
+                    var reg = new RegExp('^[0-9]{10}$');
+                    var errorMessage = '<?php echo $this->__('Please Enter 10 Numbers'); ?>';
+                } else {
+                    var reg = new RegExp('^[0-9]{8}$');
+                    var errorMessage = '<?php echo $this->__('Please Enter 8 Numbers'); ?>';
+                }
+                if (!reg.test(jQuery('#vat_identification_number').val())) {
+                    if (jQuery('#vat_identification_number').val() != '') {
+                        // Show error and do nothing
+                        jQuery('#resultingErrorMessageVATShipping').text('');
+                        jQuery('#resultingErrorMessageVATShipping').text(errorMessage);
+                        jQuery('#resultingErrorMessageVATShipping').show();
+                        jQuery('#vat_identification_number').addClass('validation-failed');
+                        return false;
+                    }
+                } else {
+                    // Now check form for other issues:
+                    jQuery('#vat_identification_number').removeClass('validation-failed');
+                    jQuery('#resultingErrorMessageVATShipping').text('');
+                    jQuery('#resultingErrorMessageVATShipping').hide();
+                    localStorage.newCheckoutLocalVAT = 1;
+                    return true;
+                }
+            } else {
+                localStorage.newCheckoutLocalVAT = 0;
+                return true;
+            }
+        } else {
+            localStorage.newCheckoutLocalVAT = 0;
+            return true;
+        }
+    }
+
+    jQuery('#new_address_button').click(function() {
+        shipping.newAddress(1);
+        jQuery('#new_address_button').hide();
+    });
+
+    //localStorage.newCheckoutProcessCurrentStep = 'processCheckoutShipping';
+    jQuery('#postcodeLegendShipping').text(jQuery('#postcodeLegendShipping').text().replace('* *','* '));
+
+    jQuery('.back-to-billing-button').on('click', function() {
+        localStorage.newCheckoutProcessLastUpdateTime = Math.floor(Date.now() / 1000);
+        localStorage.newCheckoutProcessCurrentStep = 'opc-billing';
+        jQuery('#change-back-to-edit-shipping-method').hide();
+        jQuery('#change-back-to-edit-shipping').hide();
+        checkout.back();
+        return false;
+    });
+
+    if (localStorage.customerNotLoggedIn == "1") {
+        jQuery('#new_address_button').hide();
+    }
+
+    localStorage.newCheckoutProspectRole = 'none';
+
+<?php if ($customerIsLoggedIn) : ?>
+    localStorage.newCheckoutProcessCurrentRole = 'login-user';
+    localStorage.newCheckoutRunningProcess     = 'processCheckoutAsLoggedInUser';
+    localStorage.customerNotLoggedIn = "0";
+    <?php if ($prospectLight || $prospectFull) : ?>
+        localStorage.newCheckoutProcessCurrentRole = 'prospect-user';
+    <?php else : ?>
+        jQuery('#fieldsetVATIdentificationNumberLegendShipping').css({'display' : 'none'});
+    <?php endif; ?>
+    <?php if ($prospectLight) : ?>
+        localStorage.newCheckoutProspectRole = 'prospect-light';
+    <?php endif; ?>
+    <?php if ($prospectFull) : ?>
+        localStorage.newCheckoutProspectRole = 'prospect-full';
+        jQuery('#new_address_button').hide();
+    <?php endif; ?>
+<?php else : ?>
+    localStorage.newCheckoutRunningProcess = 'processCheckoutAsNonLoggedInUser';
+    jQuery('#fieldsetVATIdentificationNumberLegendShipping').css({'display' : 'none'});
+    // guest = non-registering-user
+    //localStorage.newCheckoutProcessCurrentRole = 'guest';
+    localStorage.customerNotLoggedIn = "1";
+<?php endif; ?>
+
+    jQuery('.saveShippingButton').on('click', function() {
+        if (jQuery('#shipping\\:postcode').val() != '') {
+            jQuery('#shipping\\:postcode').removeClass('required-entry');
+            jQuery('#advice-required-entry-shipping\\:postcode').hide();
+
+            var validateShippingPostcode = jQuery('#shipping\\:postcode').val();
+            var postcodeRegexes = <?php echo Mage::helper('geoip')->getZipCodeRegexes()?>;
+            var countryID = '<?php echo Mage::getStoreConfig('schrack/general/country'); ?>';
+            var regexPostcode = '';
+
+            if (regexes[countryID]) {
+                regexPostcode = new RegExp(postcodeRegexes[countryID]);
+            } else {
+                regexPostcode = /\w+/;
+            }
+
+            if (regexPostcode.match(validateShippingPostcode) == false && countryID != 'at') {
+               jQuery('#shipping\\:postcode').addClass('validation-failed');
+               jQuery( '<div class="validation-advice" id="validate-must-be-zip-shipping:postcode" ><?php echo $this->__('Please enter a valid zip code.')?></div>' ).insertAfter( "#shipping\\:postcode" );
+               jQuery('#shipping\\:street1').removeClass('validation-failed');
+               jQuery('#advice-required-entry-shipping\\:street1').hide();
+               jQuery('#shipping\\:city').removeClass('validation-failed');
+               jQuery('#advice-required-entry-shipping\\:city').hide();
+               jQuery('#shipping\\:lastname').removeClass('validation-failed');
+               jQuery('#advice-required-entry-shipping\\:lastname').hide();
+               return;
+           } else {
+               jQuery('#validate-must-be-zip-shipping\\:postcode').hide();
+           }
+        } else{
+            jQuery('#validate-must-be-zip-shipping\\:postcode').hide();
+            jQuery('#shipping\\:postcode').addClass('required-entry');
+            jQuery('#advice-required-entry-shipping\\:postcode').show();
+        }
+
+        localStorage.newCheckoutProcessLastUpdateTime = Math.floor(Date.now() / 1000);
+        jQuery('#change-back-to-edit-shipping-method').show();
+
+        localStorage.newCheckoutProcessVATIdentificationNumber   = jQuery('#vat_identification_number').val();
+        localStorage.newCheckoutProcessCompanyRegistrationNumber = jQuery('#company_registration_number').val();
+        localStorage.newCheckoutProcessName1                     = jQuery('#shipping\\:lastname').val();
+        localStorage.newCheckoutProcessName2                     = jQuery('#shipping\\:company').val();
+        localStorage.newCheckoutProcessName3                     = jQuery('#shipping\\:firstname').val();
+        localStorage.newCheckoutProcessStreet1                   = jQuery('#shipping\\:street1').val();
+        localStorage.newCheckoutProcessPostcode                  = jQuery('#shipping\\:postcode').val();
+        localStorage.newCheckoutProcessCity                      = jQuery('#shipping\\:city').val();
+        localStorage.newCheckoutProcessCountryId                 = jQuery('#shipping\\:country_id').val();
+        localStorage.newCheckoutProcessTelephoneCompany          = jQuery('#shipping\\:telephone_company').val();
+        localStorage.newCheckoutHomepage                         = jQuery('#homepage').val();
+        if (!localStorage.newCheckoutProcessEmail || localStorage.newCheckoutProcessEmail == '') {
+            localStorage.newCheckoutProcessEmail = jQuery('#hidden_email').val();
+        }
+        if (!localStorage.newCheckoutProcessTelephone || localStorage.newCheckoutProcessTelephone == '') {
+            localStorage.newCheckoutProcessTelephone = jQuery('#hidden_telephone').val();
+        }
+        if (!localStorage.newCheckoutProcessPersonLastname || localStorage.newCheckoutProcessPersonLastname == '') {
+            localStorage.newCheckoutProcessPersonLastname = jQuery('#hidden_lastname').val();
+        }
+
+        if (localStorage.newCheckoutProcessCurrentRole == 'guest' || localStorage.newCheckoutProcessSpecialAction == 'full-register-prospect-application') {
+            function checkPhonenumberMinCountryData(elementId, required) {
+                var pattRegexCountry = /^\+{0,1}([1-9]\d*)[0-9]{4,17}(-\d+)?$/;
+                var result           = false;
+                var htmlElementValue = jQuery('#' + elementId).val();
+                htmlElementValue     = htmlElementValue.replace(/\s/g,''); // Remove all whitespaces
+
+                if (htmlElementValue) {
+                    if(htmlElementValue.match(pattRegexCountry)) {
+                        result = true;
+                    }
+                }
+
+                if (result == false) {
+                    jQuery('#' + elementId).removeClass();
+                    jQuery('#' + elementId).val('');
+                    if (required == true) {
+                        jQuery('#' + elementId).addClass('input-text required required-entry validation-failed');
+                    } else {
+                        jQuery('#' + elementId).addClass('input-text validation-failed');
+                    }
+
+                } else {
+                    jQuery('#' + elementId).removeClass();
+                    if (required == true) {
+                        jQuery('#' + elementId).addClass('input-text required required-entry validation-passed');
+                    } else {
+                        jQuery('#' + elementId).addClass('input-text validation-passed');
+                    }
+                }
+
+                jQuery('#' + elementId).css({'color' : 'black'});
+
+                return result;
+            }
+
+            if (jQuery('#billing\\:telephone').length) {
+                checkPhonenumberMinCountryData('billing\\:telephone', true);
+            }
+            if (jQuery('#billing\\:fax').length) {
+                checkPhonenumberMinCountryData('billing\\:fax', false);
+            }
+            if (jQuery('#billing\\:telephone_company').length) {
+                checkPhonenumberMinCountryData('billing\\:telephone_company', false);
+            }
+        }
+
+        <?php if (Mage::getStoreConfig('schrack/vatcheck/enabled') && $prospectLight == true): ?>
+        if (localStorage.newCheckoutProspectRole == 'prospect-light') {
+            jQuery('#resultingErrorMessageVATShipping').text('');
+            if (jQuery('#vat_identification_number').val() != '') {
+                jQuery('#vat_identification_number').removeClass('validation-failed');
+                jQuery('#advice-required-entry-vat_identification_number').remove();
+                if (jQuery('#shipping\\:lastname').val() != '') {
+                    jQuery('#shipping\\:lastname').removeClass('validation-failed');
+                    jQuery('#advice-required-entry-shipping\\:lastname').remove();
+                }
+                if (jQuery('#shipping\\:street1').val() != '') {
+                    jQuery('#shipping\\:street1').removeClass('validation-failed');
+                    jQuery('#advice-required-entry-shipping\\:street1').remove();
+                }
+                if (jQuery('#shipping\\:postcode').val() != '') {
+                    jQuery('#shipping\\:postcode').removeClass('validation-failed');
+                    jQuery('#advice-required-entry-shipping\\:postcode').remove();
+                }
+                if (jQuery('#shipping\\:city').val() != '') {
+                    jQuery('#shipping\\:city').removeClass('validation-failed');
+                    jQuery('#advice-required-entry-shipping\\:city').remove();
+                }
+
+                if (checkLocalVATShipping()) {
+                    setOverlayLoaderShipping();
+                    checkUIDShipping();
+                }
+            } else {
+                shipping.save();
+            }
+        } else {
+            shipping.save();
+        }
+        <?php else: ?>
+            shipping.save();
+        <?php endif; ?>
+    });
+
+     if (localStorage.newCheckoutProspectRole == 'prospect-light') {
+        jQuery('#fieldsetStreet').css({'margin-top' : '14px'});
+     }
+});
+
+//]]>
+</script>
+<!-- frontend/schrack/default/template/checkout/onepage/shipping.phtml (end) -->

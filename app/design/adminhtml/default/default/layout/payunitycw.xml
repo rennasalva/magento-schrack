@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<layout>
+	<default>
+		<reference name="head">
+			<action method="addItem"><type>skin_css</type><name>customweb/payunitycw/updates.css</name></action>
+		</reference>
+	</default>
+	
+	<adminhtml_customer_edit>
+		<reference name="customer_edit_tabs">
+			<action method="addTab" ><name>payunitycw_alias</name><block>payunitycw/adminhtml_customer_alias</block></action>
+		</reference>
+	</adminhtml_customer_edit>
+	
+	<adminhtml_sales_order_invoice_new>
+		<reference name="content">
+			<block type="payunitycw/adminhtml_sales_order_invoice_create" name="payunitycw_invoice_create" template="customweb/payunitycw/sales/order/invoice/create.phtml" />
+		</reference>
+	</adminhtml_sales_order_invoice_new>
+	
+	<adminhtml_sales_order_creditmemo_view>
+		<reference name="content">
+			<reference name="sales_creditmemo_view">
+				<reference name="form">
+                    <action method="setTemplate"><template>customweb/payunitycw/sales/order/creditmemo/view/form.phtml</template></action>
+                    <block type="payunitycw/adminhtml_sales_order_creditmemo_view_invoiceitems" name="payunitycw_invoiceitems" template="customweb/payunitycw/sales/order/creditmemo/view/invoiceitems.phtml" />
+                </reference>
+			</reference>
+		</reference>
+	</adminhtml_sales_order_creditmemo_view>
+	
+	<adminhtml_editpayunitycw_index>
+        <reference name="content">
+            <block type="payunitycw/adminhtml_sales_order_invoice_edit" name="sales_invoice_edit">
+                <block type="payunitycw/adminhtml_sales_order_invoice_edit_form" name="form" template="customweb/payunitycw/sales/order/invoice/edit/form.phtml">
+                    <block type="adminhtml/sales_order_view_info" name="order_info" template="sales/order/view/info.phtml"></block>
+                    <block type="adminhtml/sales_order_payment" name="order_payment"></block>
+                    <block type="payunitycw/adminhtml_sales_order_invoice_edit_items" name="order_items" template="customweb/payunitycw/sales/order/invoice/edit/items.phtml">
+                        <action method="addItemRender"><type>default</type><block>adminhtml/sales_items_renderer_default</block><template>customweb/payunitycw/sales/order/invoice/edit/items/renderer/default.phtml</template></action>
+                        <action method="addColumnRender"><column>qty</column><block>adminhtml/sales_items_column_qty</block><template>sales/items/column/qty.phtml</template></action>
+                        <action method="addColumnRender"><column>name</column><block>adminhtml/sales_items_column_name</block><template>sales/items/column/name.phtml</template></action>
+                        <action method="addColumnRender"><column>name</column><block>adminhtml/sales_items_column_name_grouped</block><template>sales/items/column/name.phtml</template><type>grouped</type></action>
+                        <block type="core/text_list" name="order_item_extra_info"></block>
+                        <block type="adminhtml/sales_order_totalbar" name="order_totalbar" template="sales/order/totalbar.phtml"></block>
+
+                        <block type="adminhtml/sales_order_invoice_totals" name="invoice_totals" template="sales/order/totals.phtml">
+                            <block type="adminhtml/sales_order_totals_tax" name="tax" template="sales/order/totals/tax.phtml" />
+                        </block>
+                    </block>
+                </block>
+            </block>
+        </reference>
+    </adminhtml_editpayunitycw_index>
+    
+    <adminhtml_editpayunitycw_updateqty>
+        <block type="payunitycw/adminhtml_sales_order_invoice_edit_items" name="order_items" template="customweb/payunitycw/sales/order/invoice/edit/items.phtml">
+            <action method="addItemRender"><type>default</type><block>adminhtml/sales_items_renderer_default</block><template>customweb/payunitycw/sales/order/invoice/edit/items/renderer/default.phtml</template></action>
+            <action method="addColumnRender"><column>qty</column><block>adminhtml/sales_items_column_qty</block><template>sales/items/column/qty.phtml</template></action>
+            <action method="addColumnRender"><column>name</column><block>adminhtml/sales_items_column_name</block><template>sales/items/column/name.phtml</template></action>
+            <action method="addColumnRender"><column>name</column><block>adminhtml/sales_items_column_name_grouped</block><template>sales/items/column/name.phtml</template><type>grouped</type></action>
+            <block type="core/text_list" name="order_item_extra_info"></block>
+            <block type="adminhtml/sales_order_totalbar" name="order_totalbar" template="sales/order/totalbar.phtml"></block>
+            <block type="adminhtml/sales_order_invoice_totals" name="invoice_totals" template="sales/order/totals.phtml">
+                <block type="adminhtml/sales_order_totals_tax" name="tax" template="sales/order/totals/tax.phtml" />
+            </block>
+        </block>
+    </adminhtml_editpayunitycw_updateqty>
+    
+    <adminhtml_configpayunitycw_index>
+        <reference name="content">
+            <block type="payunitycw/adminhtml_backendForm_edit" name="payunitycw_backendform_edit" template="customweb/payunitycw/backendform/edit.phtml" />
+        </reference>
+        <reference name="left">
+            <block type="payunitycw/adminhtml_backendForm_switcher" name="payunitycw_backendform_switcher" before="-"/>
+            <block type="payunitycw/adminhtml_backendForm_tabs" name="payunitycw_backendform_tabs" />
+        </reference>
+    </adminhtml_configpayunitycw_index>
+    
+   <adminhtml_configpayunitycw_view>
+        <reference name="content">
+            <block type="payunitycw/adminhtml_backendForm_edit" name="payunitycw_backendform_edit" template="customweb/payunitycw/backendform/edit.phtml" />
+        </reference>
+        <reference name="left">
+            <block type="payunitycw/adminhtml_backendForm_switcher" name="payunitycw_backendform_switcher" before="-"/>
+            <block type="payunitycw/adminhtml_backendForm_tabs" name="payunitycw_backendform_tabs" />
+        </reference>
+    </adminhtml_configpayunitycw_view>
+    
+    <default>
+	    <reference name="notifications">
+	        <block type="adminhtml/template" name="payunitycw_notification" acl="system/adminnotification/show_toolbar" template="customweb/payunitycw/notification.phtml" />
+	    </reference>
+	</default>
+</layout>

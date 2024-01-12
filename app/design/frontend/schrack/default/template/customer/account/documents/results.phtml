@@ -1,0 +1,31 @@
+<!-- results.phtml (start) -->
+<script type="text/javascript">//<![CDATA[
+
+    function openUrl(url, itemId) {
+        var request = jQuery.ajax(url,
+            {
+                method: 'get',
+                success: function(response) {
+                    window.location.href = url;
+                }.bind(this),
+                error: function(response) {
+                    // console.log(response);
+                    // console.log(response.responseText);
+                    // Info message that no item is selected for print action:
+                    jQuery('#notice-message-overview').text('<?php echo $this->__('Can not retrieve document.')?>: ' + itemId);
+                    jQuery('#notice-message-container-overview').show();
+                    jQuery("html, body").animate({ scrollTop: 0 }, "slow");
+                    jQuery('#notice-message-container-overview').delay(5000).fadeOut(1000);
+                    return;
+                }
+            });
+        return false;
+    }
+
+//]]></script>
+<?php
+echo $this->getChildHtml('documents_results_table_top');
+echo $this->getChildHtml('documents_results_table');
+echo $this->getChildHtml('documents_results_table_bottom');
+?>
+<!-- results.phtml (end) -->

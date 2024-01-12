@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<layout version="0.1.0">
+    <default></default>
+    <checkout_cart_makeoffer>
+        <reference name="root"> 
+            <action method="setTemplate">
+                <template>page/1column.phtml</template>
+            </action>
+        </reference>         
+        <reference name="content">
+            <block type="core/template" name="makeoffer" template="checkout/makeoffer.phtml" />
+        </reference>
+    </checkout_cart_makeoffer>
+</layout>

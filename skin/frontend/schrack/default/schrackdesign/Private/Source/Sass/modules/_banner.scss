@@ -1,0 +1,83 @@
+.staticBnr {
+	position: relative;
+	margin-bottom: 25px;
+	width: 100%;
+	background-size: cover !important;
+	background-position: right !important;
+	overflow: hidden;
+	height: 183px;
+
+	img {
+		float: right;
+		height: 183px;
+	}
+
+	&.bg {
+		background: url(../Images/rwd/lightingBnr.jpg) no-repeat;
+		width: auto;
+		overflow: hidden;
+		height: 198px;
+	}
+
+	.overTxt {
+		position: absolute;
+		color: #fff;
+		font-size: 20px;
+		top: 17%;
+		left: 5%;
+		line-height: 30px;
+		width: 60%;
+
+		h2 {
+			font-size: 24px;
+			color: #fff;
+		}
+
+		.description {
+			background: #02a4d9;
+			padding: 4px 9px;
+			margin-top: 5px;
+			display: inline-block;
+		}
+	}
+}
+
+.staticBnrSimple {
+	margin-bottom: 10px;
+}
+
+//
+//  Responsive
+//  ---------------------------------------------
+
+@media (min-width: $breakpoint-up-xs) and (max-width: $breakpoint-down-md) {
+	.staticBnr .overTxt {
+		font-size: 20px;
+		width: 60%;
+		line-height: normal;
+	}
+
+	.staticBnr .overTxt h2 {
+		font-size: 16px;
+	}
+}
+
+@media (max-width: $breakpoint-down-md) {
+	.staticBnr {
+		height: 175px;
+	}
+
+	.staticBnr img {
+		height: 150px;
+	}
+}
+
+@media (max-width: $breakpoint-down-lg) {
+	.staticBnr .overTxt {
+		position: static;
+	}
+
+	.staticBnr .overTxt h1 {
+		color: #00589d;
+	}
+}

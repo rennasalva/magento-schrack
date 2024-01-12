@@ -1,0 +1,87 @@
+<jstranslator>
+    <client-schrackjs001-required translate="message" module="core"><message>Price Information</message>                            </client-schrackjs001-required>
+    <client-schrackjs002-required translate="message" module="core"><message>List Price</message>                                   </client-schrackjs002-required>
+    <client-schrackjs003-required translate="message" module="core"><message>Your Regular Price</message>                           </client-schrackjs003-required>
+    <client-schrackjs004-required translate="message" module="core"><message>Your Promotion Price</message>                         </client-schrackjs004-required>
+    <client-schrackjs005-required translate="message" module="core"><message>Saving</message>                                       </client-schrackjs005-required>
+    <client-schrackjs006-required translate="message" module="core"><message>valid till</message>                                   </client-schrackjs006-required>
+    <client-schrackjs007-required translate="message" module="core"><message>Sales Price</message>                                  </client-schrackjs007-required>
+    <client-schrackjs008-required translate="message" module="core"><message>Your Price</message>                                   </client-schrackjs008-required>
+    <client-schrackjs009-required translate="message" module="core"><message>Price Scale</message>                                  </client-schrackjs009-required>
+    <client-schrackjs010-required translate="message" module="core"><message>Surcharges</message>                                   </client-schrackjs010-required>
+    <client-schrackjs011-required translate="message" module="core"><message>Price incl. surcharge</message>                        </client-schrackjs011-required>
+    <client-schrackjs012-required translate="message" module="core"><message>All Categories</message>                               </client-schrackjs012-required>
+    <client-schrackjs013-required translate="message" module="core"><message>See More</message>                                     </client-schrackjs013-required>
+    <client-schrackjs014-required translate="message" module="core"><message>Clear Filters</message>                                </client-schrackjs014-required>
+    <client-schrackjs015-required translate="message" module="core"><message>Add to new parts list</message>                        </client-schrackjs015-required>
+    <client-schrackjs016-required translate="message" module="core"><message>My Account</message>                                   </client-schrackjs016-required>
+    <client-schrackjs017-required translate="message" module="core"><message>Logout</message>                                       </client-schrackjs017-required>
+    <client-schrackjs018-required translate="message" module="core"><message>Login</message>                                        </client-schrackjs018-required>
+    <client-schrackjs019-required translate="message" module="core"><message>On Request</message>                                   </client-schrackjs019-required>
+    <client-schrackjs020-required translate="message" module="core"><message>Ready For Shipment</message>                           </client-schrackjs020-required>
+    <client-schrackjs021-required translate="message" module="core"><message>Ready For Pickup</message>                             </client-schrackjs021-required>
+    <client-schrackjs022-required translate="message" module="core"><message>Deliverable</message>                                  </client-schrackjs022-required>
+    <client-schrackjs023-required translate="message" module="core"><message>Pickupable</message>                                   </client-schrackjs023-required>
+    <client-schrackjs024-required translate="message" module="core"><message>Search in:</message>                                   </client-schrackjs024-required>
+    <client-schrackjs025-required translate="message" module="core"><message>Search Suggestions</message>                           </client-schrackjs025-required>
+    <client-schrackjs026-required translate="message" module="core"><message>Catagory</message>                                     </client-schrackjs026-required>
+    <client-schrackjs027-required translate="message" module="core"><message>Product Suggestions</message>                          </client-schrackjs027-required>
+    <client-schrackjs028-required translate="message" module="core"><message>in store</message>                                     </client-schrackjs028-required>
+    <client-schrackjs029-required translate="message" module="core"><message>For</message>                                          </client-schrackjs029-required>
+    <client-schrackjs030-required translate="message" module="core"><message>Price</message>                                        </client-schrackjs030-required>
+    <client-schrackjs031-required translate="message" module="core"><message>on request</message>                                   </client-schrackjs031-required>
+    <client-schrackjs032-required translate="message" module="core"><message>In</message>                                           </client-schrackjs032-required>
+    <client-schrackjs033-required translate="message" module="core"><message>promotion</message>                                    </client-schrackjs033-required>
+    <client-schrackjs034-required translate="message" module="core"><message>sales</message>                                        </client-schrackjs034-required>
+    <client-schrackjs035-required translate="message" module="core"><message>See Less</message>                                     </client-schrackjs035-required>
+    <client-schrackjs036-required translate="message" module="core"><message>Customer ID</message>                                  </client-schrackjs036-required>
+    <client-schrackjs037-required translate="message" module="core"><message>In Stock</message>                                     </client-schrackjs037-required>
+    <client-schrackjs038-required translate="message" module="core"><message>from</message>                                         </client-schrackjs038-required>
+    <client-schrackjs039-required translate="message" module="core"><message>Your Contact Person</message>                          </client-schrackjs039-required>
+    <client-schrackjs040-required translate="message" module="core"><message>Ready packaging</message>                              </client-schrackjs040-required>
+    <client-schrackjs041-required translate="message" module="core"><message>Product Thumbnail Itself</message>                     </client-schrackjs041-required>
+    <client-schrackjs042-required translate="message" module="core"><message>Possible cutting costs</message>                       </client-schrackjs042-required>
+    <client-schrackjs043-required translate="message" module="core"><message>There are no products matching the selection.</message></client-schrackjs043-required>
+    <client-schrackjs044-required translate="message" module="core"><message>No data for table available</message>                  </client-schrackjs044-required>
+    <client-schrackjs045-required translate="message" module="core"><message>to</message>                                           </client-schrackjs045-required>
+    <client-schrackjs046-required translate="message" module="core"><message>entries</message>                                      </client-schrackjs046-required>
+    <client-schrackjs047-required translate="message" module="core"><message>Add to</message>                                       </client-schrackjs047-required>
+    <client-schrackjs048-required translate="message" module="core"><message>Add to new partslist</message>                         </client-schrackjs048-required>
+    <client-schrackjs049-required translate="message" module="core"><message>Back to Top</message>                                  </client-schrackjs049-required>
+    <client-schrackjs050-required translate="message" module="core"><message>Please login first!</message>                          </client-schrackjs050-required>
+    <client-schrackjs051-required translate="message" module="core"><message>Back</message>                                         </client-schrackjs051-required>
+    <client-schrackjs052-required translate="message" module="core"><message>Temporarily unavailable</message>                      </client-schrackjs052-required>
+    <client-schrackjs053-required translate="message" module="core"><message>instead</message>                                      </client-schrackjs053-required>
+    <client-schrackjs054-required translate="message" module="core"><message>Act As Customer</message>                              </client-schrackjs054-required>
+    <client-schrackjs055-required translate="message" module="core"><message>Favourites</message>                                   </client-schrackjs055-required>
+    <client-schrackjs056-required translate="message" module="core"><message>Actually you have no favourites defined. If you´d like to define one, use the [+] icon in the result list of the customer search.</message></client-schrackjs056-required>
+    <client-schrackjs057-required translate="message" module="core"><message>Login with selected user?</message>                    </client-schrackjs057-required>
+    <client-schrackjs058-required translate="message" module="core"><message>not supervised</message>                               </client-schrackjs058-required>
+    <client-schrackjs059-required translate="message" module="core"><message>Add all customers to favourites</message>              </client-schrackjs059-required>
+    <client-schrackjs060-required translate="message" module="core"><message>Customer(s) added to favourites</message>              </client-schrackjs060-required>
+    <client-schrackjs061-required translate="message" module="core"><message>Customer(s) allready in favourites</message>           </client-schrackjs061-required>
+    <client-schrackjs062-required translate="message" module="core"><message>Search my customers only</message>                     </client-schrackjs062-required>
+    <client-schrackjs063-required translate="message" module="core"><message>Search for customer name or number</message>           </client-schrackjs063-required>
+    <client-schrackjs064-required translate="message" module="core"><message>Customer Search</message>                              </client-schrackjs064-required>
+    <client-schrackjs065-required translate="message" module="core"><message>Only Show My Contacts</message>                        </client-schrackjs065-required>
+    <client-schrackjs066-required translate="message" module="core"><message>Cancel</message>                                       </client-schrackjs066-required>
+    <client-schrackjs067-required translate="message" module="core"><message>from offer</message>                                   </client-schrackjs067-required>
+    <client-schrackjs068-required translate="message" module="core"><message>deliverable</message>                                  </client-schrackjs068-required>
+    <client-schrackjs069-required translate="message" module="core"><message>Availability</message>                                 </client-schrackjs069-required>
+    <client-schrackjs070-required translate="message" module="core"><message>Add to partslist</message>                             </client-schrackjs070-required>
+    <client-schrackjs071-required translate="message" module="core"><message>Currently in production</message>                      </client-schrackjs071-required>
+    <client-schrackjs072-required translate="message" module="core"><message>Address check input failure recognized</message>       </client-schrackjs072-required>
+    <client-schrackjs073-required translate="message" module="core"><message>Proceed Anyway</message>                               </client-schrackjs073-required>
+    <client-schrackjs074-required translate="message" module="core"><message>NOT AVAILABLE</message>                                </client-schrackjs074-required>
+    <client-schrackjs075-required translate="message" module="core"><message>Currently not orderable</message>                      </client-schrackjs075-required>
+    <client-schrackjs076-required translate="message" module="core"><message>Your selected quantity may result in a longer delivery time. Please select the available quantity currently in stock or pick an alternative item. Get in touch if you would like us to recommend a suitable article.</message></client-schrackjs076-required>
+    <client-schrackjs077-required translate="message" module="core"><message>Pickup</message>                                       </client-schrackjs077-required>
+    <client-schrackjs078-required translate="message" module="core"><message>Delivery</message>                                     </client-schrackjs078-required>
+    <client-schrackjs079-required translate="message" module="core"><message>Datasheet</message>                                    </client-schrackjs079-required>
+    <client-schrackjs080-required translate="message" module="core"><message>PickUp Station</message>                                    </client-schrackjs080-required>
+    <client-schrackjs081-required translate="message" module="core"><message>Inpost</message>                                    </client-schrackjs081-required>
+    <client-schrackjs082-required translate="message" module="core"><message>Choose your Inpost Station</message>                </client-schrackjs082-required>
+    <client-schrackjs083-required translate="message" module="core"><message>Schrack DataProtection Checkbox Confirm Text</message>  </client-schrackjs083-required>
+    <client-schrackjs084-required translate="message" module="core"><message>Additional transport costs are due for this product</message>  </client-schrackjs084-required>
+</jstranslator>
+

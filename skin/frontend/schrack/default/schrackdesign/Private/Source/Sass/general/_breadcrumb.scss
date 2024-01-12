@@ -1,0 +1,67 @@
+.breadcrumb {
+	border-bottom: 1px solid #e2e2e2;
+	border-top: 1px solid #e2e2e2;
+	background: #fafafa;
+	border-radius: 0;
+	padding: 10px 15px;
+
+	li {
+		font-size: 16px;
+		float: left;
+		color: #00589d;
+
+		a {
+			color: #888888;
+		}
+	}
+
+	>li+li:before {
+		padding: 0 5px;
+		color: #7c7c7c;
+		content: "\e258";
+		font-family: 'Glyphicons Halflings';
+		vertical-align: middle;
+	}
+
+	.manage_account {
+		display: none;
+	}
+}
+
+//
+//  Responsive
+//  ---------------------------------------------
+
+@media (min-width: $breakpoint-up-md) and (max-width: $breakpoint-down-lg) {
+
+	.breadcrumb {
+
+		.manage_account {
+			display: block;
+		}
+
+		.customer-account-index & {
+			display: none;
+		}
+	}
+}
+
+@media (min-width: $breakpoint-up-xs) and (max-width: $breakpoint-down-md) {
+	.breadcrumb {
+		margin: 0 -15px 20px;
+		padding: 5px 15px;
+
+		li {
+			font-size: 14px;
+		}
+
+		.manage_account {
+			display: block;
+		}
+	}
+
+
+	.catalog-category-view .breadcrumb, .catalog-product-view .breadcrumb {
+		margin: 0 -15px 20px;
+	}
+}

@@ -1,0 +1,11 @@
+<?php echo $this->getChildHtml('cms_page')?>
+<?php echo $this->getChildHtml('cms_content')?>
+
+<script type="text/javascript">
+    //<![CDATA[
+
+    jQuery(document).ready(function() {
+        showLoginForm('<?php echo $this->getUrl('customer/account/loginPopup')?>', '<?php echo $this->getUrl('customer/account/loginPost').'?form_key='.Mage::getSingleton('core/session')->getFormKey() ?>', '<?php echo $this->__('Login') ?>', '<?php echo Mage::app()->getRequest()->getParam('referer')?>', '<?php echo $this->getUrl('customer/account/loginLogAuth')?>');
+    });
+    //]]>
+</script>

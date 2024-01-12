@@ -1,0 +1,38 @@
+<!-- customer\account\dashboard\mycompany.phtml (start) -->
+
+<?php
+    $customerType = $this->getCustomer()->getSchrackCustomerType(); // ProspectTypes: 'light-prospect' / 'full-prospect'
+    $wwsCustomerId = $this->getCustomer()->getSchrackWwsCustomerId();
+?>
+
+
+<?php if ( !in_array($customerType, array('light-prospect')) ) : ?>
+    <div class="row name">
+        <div class="large-12 columns">
+            <div class="headline copy-bold-8"><?php echo $this->__('My Company'); ?></div>
+        </div>
+    </div>
+    <div class="row content">
+        <div class="large-12 columns">
+            <div class="row">
+                <div class="large-12 columns">
+                    <?php echo $this->getLayout()->createBlock('account/account_name')->toHtml(); ?>
+                    <?php if ($wwsCustomerId && !in_array($customerType, array('light-prospect', 'full-prospect'))) : ?>
+                        <p><?php echo $this->__('Customer Id'), ': ', $wwsCustomerId; ?></p>
+                    <?php endif; ?>
+                </div>
+            </div>
+            <?php if ( !in_array($customerType, array('full-prospect')) ) : ?>
+                <div class="row">
+                    <div class="large-3 large-offset-9 columns">
+                        <?php //Customer Group ID = 12 (Prospect Light) ID = 11 (Full Register Prospect) ?>
+                        <?php if ( !in_array($customerType, array('light-prospect', 'full-prospect')) ) : ?>
+                            <a class="link-arrow small" href="<?php echo Mage::getUrl('account/account/edit') ?>"><?php echo $this->__('Edit') ?></a>
+                        <?php endif; ?>
+                    </div>
+                </div>
+            <?php endif; ?>
+        </div>
+    </div>
+<?php endif; ?>
+<!-- customer\account\dashboard\mycompany.phtml (end) -->

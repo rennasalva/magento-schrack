@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<config>
+	<sections>
+		<schrack translate="label" module="schrack">
+			<groups>
+				<shop translate="label">
+					<fields>
+						<paypal_fraud_email_templateid translate="label">
+							<label>Paypal Fraud Email TemplateID</label>
+							<frontend_type>text</frontend_type>
+							<sort_order>26</sort_order>
+							<show_in_default>1</show_in_default>
+							<show_in_website>0</show_in_website>
+							<show_in_store>0</show_in_store>
+						</paypal_fraud_email_templateid>
+					</fields>
+				</shop>
+			</groups>
+		</schrack>
+	</sections>
+</config>

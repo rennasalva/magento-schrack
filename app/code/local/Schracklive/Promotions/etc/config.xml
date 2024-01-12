@@ -1,0 +1,54 @@
+<?xml version="1.0"?>
+<config>
+    <modules>
+        <Schracklive_Promotions>
+            <version>1.1.1</version>
+        </Schracklive_Promotions>
+    </modules>
+
+    <frontend>
+        <layout>
+            <updates>
+                <promotions module="Schracklive_Promotions">
+                    <file>promotions.xml</file>
+                </promotions>
+            </updates>
+        </layout>
+
+        <routers>
+            <promotions>
+                <use>standard</use>
+                <args>
+                    <module>Schracklive_Promotions</module>
+                    <frontName>promotions</frontName>
+                </args>
+            </promotions>
+        </routers>
+    </frontend>
+
+    <global>
+        <blocks>
+            <promotions>
+                <class>Schracklive_Promotions_Block</class>
+            </promotions>
+        </blocks>
+        <resources>
+            <promotions_setup>
+                <setup>
+                    <module>Schracklive_Promotions</module>
+                    <class>Mage_Customer_Model_Entity_Setup</class>
+                </setup>
+            </promotions_setup>
+        </resources>
+        <models>
+            <promotions>
+                <class>Schracklive_Promotions_Model</class>
+            </promotions>
+        </models>
+        <helpers>
+            <promotions>
+                <class>Schracklive_Promotions_Helper</class>
+            </promotions>
+        </helpers>
+    </global>
+</config>

@@ -1,0 +1,61 @@
+.smackbar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: table;
+  margin: 1.5rem auto;
+  padding: 1.5rem 2rem;
+  width: 70%;
+  z-index: 1000000000;
+  transform: translateY(200%);
+  transition: .5s transform;
+  opacity: 0;
+  background: #ebf8fc;
+  color: #01a3d9;
+  user-select: none;
+  border: 1px solid #01a3d9;
+}
+
+.smackbar.smackbar--shown {
+  transform: translateY(0);
+  opacity: 1;
+}
+.smackbar .smackbar-close {
+  float: right;
+  cursor: pointer;
+  margin-left: 1em;
+}
+
+@media (max-width: 480px) {
+  .smackbar {
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
+@media (min-width: 481px) and (max-width: 690px) {
+  .smackbar {
+    width: 97%;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
+@media (min-width: 691px) and (max-width: 920px) {
+  .smackbar {
+    width: 92%;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
+@media (min-width: 921px) and (max-width: 1023px) {
+  .smackbar {
+    width: 87%;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+

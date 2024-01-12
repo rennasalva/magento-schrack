@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<config>
+    <modules>
+        <Schracklive_MetaTag>
+            <version>1.0.0</version>
+        </Schracklive_MetaTag>
+    </modules>
+    <frontend>
+        <translate>
+            <modules>
+                <Schracklive_MetaTag>
+                    <files>
+                        <default>local/MetaTag.csv</default>
+                    </files>
+                </Schracklive_MetaTag>
+            </modules>
+        </translate>
+    </frontend>
+</config>

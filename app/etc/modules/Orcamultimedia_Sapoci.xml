@@ -1,0 +1,20 @@
+﻿<?xml version="1.0"?>
+<!--
+/**
+ * orcamultimedia
+ * http://www.orca-multimedia.de
+ * 
+ * @author		Thomas Wild
+ * @package		Orcamultimedia_Sapoci
+ * @copyright	Copyright (c) 2017 orcamultimedia Thomas Wild (http://www.orca-multimedia.de)
+ * 
+**/
+-->
+<config>
+  <modules>
+	  <Orcamultimedia_Sapoci>
+		  <active>true</active>
+		  <codePool>local</codePool>
+	  </Orcamultimedia_Sapoci>
+  </modules>
+</config>

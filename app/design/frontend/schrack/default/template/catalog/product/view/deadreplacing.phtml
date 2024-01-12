@@ -1,0 +1,69 @@
+<?php
+$customer = Mage::getSingleton('customer/session')->getCustomer();
+$priceHelper = Mage::helper('schrackcatalog/price');
+$replacingProduct = Mage::registry('replacingProduct');
+
+$product_image = $this->helper('catalog/image')->init($replacingProduct, 'small_image')->constrainOnly(true)->resize(66, 66);
+$product_image_url = (string)$product_image;
+$product_image_width = $product_image->getWidth();
+$product_image_height = $product_image->getHeight();
+$hover_product_image = $this->helper('catalog/image')->init($replacingProduct, 'image');
+$hover_product_image_url = (string)$hover_product_image;
+$hover_product_image_width = $hover_product_image->getWidth();
+$hover_product_image_height = $hover_product_image->getHeight();
+$_geoipHelper = Mage::helper('geoip/data');
+$_maySeePrices = $_geoipHelper->maySeePrices();
+
+$prices = array_reverse(Mage::helper('schrackcatalog/info')->getGraduatedPricesForCustomer($replacingProduct, $customer));
+$price = null;
+$currency = null;
+if (count($prices) > 0) {
+    try {
+        $price = Mage::helper('core')->formatPrice($prices[0]['price']);
+        $currency = $priceHelper->getCurrencyForCustomer($replacingProduct, $customer);
+    } catch (Schracklive_SchrackCatalog_Helper_Info_Exception $e) {
+        if ($e->getCode() != Schracklive_SchrackCatalog_Helper_Info_Exception::PRICE_UNAVAILABLE) {
+            throw $e;
+        }
+    }
+} else {
+    try {
+        $price = $priceHelper->getFormattedBasicPriceForCustomer($replacingProduct, $customer);
+        $currency = $priceHelper->getCurrencyForCustomer($replacingProduct, $customer);
+    } catch (Schracklive_SchrackCatalog_Helper_Info_Exception $e) {
+        if ($e->getCode() != Schracklive_SchrackCatalog_Helper_Info_Exception::PRICE_UNAVAILABLE) {
+            throw $e;
+        }
+    }
+}
+?>
+
+<div class="large-9 product-detail-main-bar columns ">
+    <div class="table">
+        <div class="row dead-table-header"><?php echo $this->__('Replaced by following product'); ?></div>
+        <div class="row-fine product-list dead-table">
+            <div class="large-fine-3 columns-fine dead-table-image-cell">
+                <table width="100%" height="100%" align="center" valign="center">
+                    <tr>
+                        <td>
+                            <img src="<?php echo $product_image_url; ?>"
+                                 width="<?php echo $product_image_width; ?>"
+                                 height="<?php echo $product_image_height; ?>"/>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div class="large-fine-15 columns-fine dead-table-main-cell">
+                <h2 class="product-name">
+                    <a href="<?php echo $replacingProduct->getProductUrl() ?>" title="<?php echo $this->htmlEscape($replacingProduct->getName()) ?>"><?php echo $this->htmlEscape($replacingProduct->getName()) ?></a>
+                </h2>
+                <div class="catalog-nr"><?php echo $this->__('Art.Nr.') ?> <?php echo $this->htmlEscape($replacingProduct->getSku()); ?></div>
+            </div>
+            <?php if ( $_maySeePrices ) :?>
+                <div class="large-fine-2 columns-fine currency dead-table-currency-cell"><?php echo $currency; ?></div>
+                <div class="large-fine-4 columns-fine price large dead-table-price-cell" style="text-align: right;"><?php echo $price; ?></div>
+            <?php endif; ?>
+        </div>
+    </div>
+</div>
+<!-- div class="large-fine-2 columns-fine"></div -->

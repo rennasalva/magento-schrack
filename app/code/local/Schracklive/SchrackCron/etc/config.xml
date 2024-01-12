@@ -1,0 +1,42 @@
+<?xml version="1.0"?>
+<!-- 150218 YCA Disable default cronjobs -->
+<config>
+    <modules>
+        <Schracklive_SchrackCron>
+	    <version>0.1</version>
+	    <depends>
+            </depends>
+        </Schracklive_SchrackCron>
+    </modules>
+    <crontab>
+        <jobs>
+            <aggregate_sales_report_shipment_data>
+                <run><model>sales/observer::aggregateSalesReportShipmentData</model></run>
+            </aggregate_sales_report_shipment_data>
+            <aggregate_sales_report_invoiced_data>
+                <run><model>sales/observer::aggregateSalesReportInvoicedData</model></run>
+            </aggregate_sales_report_invoiced_data>
+            <aggregate_sales_report_refunded_data>
+                <run><model>sales/observer::aggregateSalesReportRefundedData</model></run>
+            </aggregate_sales_report_refunded_data>
+            <aggregate_sales_report_bestsellers_data>
+                <run><model>sales/observer::aggregateSalesReportBestsellersData</model></run>
+            </aggregate_sales_report_bestsellers_data>
+            <newsletter_send_all>
+                <run><model>newsletter/observer::scheduledSend</model></run>
+            </newsletter_send_all>
+            <aggregate_sales_report_tax_data>
+                <run><model>tax/observer::aggregateSalesReportTaxData</model></run>
+            </aggregate_sales_report_tax_data>
+            <catalog_product_index_price_reindex_all>
+                <run><model>catalog/product_indexer_price::reindexAll</model></run>
+            </catalog_product_index_price_reindex_all>
+            <aggregate_sales_report_coupons_data>
+                <run><model>salesrule/observer::aggregateSalesReportCouponsData</model></run>
+            </aggregate_sales_report_coupons_data>
+            <catalog_product_index_price_reindex_all>
+                <run><model>catalog/product_indexer_price::reindexAll</model></run>
+            </catalog_product_index_price_reindex_all>
+        </jobs>
+    </crontab>
+</config>

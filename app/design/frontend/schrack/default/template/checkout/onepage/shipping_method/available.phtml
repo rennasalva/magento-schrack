@@ -1,0 +1,191 @@
+<!-- app/design/frontend/schrack/default/template/checkout/onepage/shipping_method/available.phtml (start) -->
+
+<?php // @var $this Mage_Checkout_Block_Onepage_Shipping_Method_Available ?>
+<?php if (!($_shippingRateGroups = array_reverse($this->getShippingRates()))): ?>
+    <p><?php echo $this->__('Sorry, no quotes are available for this order at this time.') ?></p>
+<?php else: ?>
+    <?php
+        $arrLockedStock            = array();
+        $strTimestampFromLocaltime = '';
+        $boolFoundLockedStock      = false;
+
+        $helper = Mage::helper('schrackcataloginventory/stock');
+
+        $deliveryStock = $helper->getLocalDeliveryStock();
+        if ($deliveryStock->getLockedUntil()) {
+            // Expiration time calculation:
+            $lockedDeliveryStockDateTime = strtotime($deliveryStock->getLockedUntil());
+            $lockedDeliveryStockDateWithoutTime = date('Y-m-d', $lockedDeliveryStockDateTime);
+            $lockedDeliveryStockDateTimestamp = strtotime($lockedDeliveryStockDateWithoutTime . ' 23:59:59');
+            $currentDateTimestamp = strtotime(date('Y-m-d') . ' 23:59:59');
+
+            // Current time is lower than locked time (--> show disabled):
+            if ($currentDateTimestamp < $lockedDeliveryStockDateTimestamp) {
+                $arrLockedStock['schrackdelivery_warehouse' . $deliveryStock->getStockNumber()] = $deliveryStock->getLockedUntil();
+                $boolFoundLockedStock = true;
+            }
+        }
+
+        $pickupStocks = $helper->getPickupStocks();
+        foreach ($pickupStocks as $stockNumber => $pickupStock) {
+            if ($pickupStock->getLockedUntil()) {
+                // Expiration time calculation:
+                $lockedPickupStockDateTime = strtotime($pickupStock->getLockedUntil());
+                $lockedPickupStockDateWithoutTime = date('Y-m-d', $lockedPickupStockDateTime);
+                $lockedPickupStockDateTimestamp = strtotime($lockedPickupStockDateWithoutTime . ' 23:59:59');
+                $currentDateTimestamp = strtotime(date('Y-m-d') . ' 23:59:59');
+
+                // Current time is lower than locked time (--> show disabled):
+                if ($currentDateTimestamp < $lockedPickupStockDateTimestamp) {
+                    $arrLockedStock['schrackpickup_warehouse' . $pickupStock->getStockNumber()] = $pickupStock->getLockedUntil();
+                    $boolFoundLockedStock = true;
+                }
+            }
+        }
+
+    ?>
+	<div style="margin:0 15px 15px 15px;overflow:hidden">
+    <?php
+        $_sole = count($_shippingRateGroups) == 1;
+
+        foreach ($_shippingRateGroups as $code => $_rates) :
+
+    ?>
+		<div style="width:250px;float:left;overflow:hidden">
+        <h3><?php echo $this->getCarrierName($code) ?></h3>
+            <ul>
+            <?php
+                $_sole = $_sole && count($_rates) == 1; foreach ($_rates as $_rate) :
+            ?>
+                <?php
+                    $deactivateShippingMethodOption = false;
+                    $disabled = '';
+                    $labelStyle = '';
+                    $lockedSign = '';
+
+                    if ( $boolFoundLockedStock && (array_key_exists($_rate->getCode(), $arrLockedStock)) ) {
+                        $deactivateShippingMethodOption = true;
+                    }
+                    ?>
+                <li>
+                   <?php if ($_rate->getErrorMessage()): ?>
+                    <ul class="messages"><li class="error-msg"><ul><li><?php echo $_rate->getErrorMessage() ?></li></ul></li></ul>
+                   <?php else: ?>
+                        <?php if ($_sole) : ?>
+                            <span class="no-display"><input name="shipping_method[type]" type="radio" value="<?php echo $_rate->getCode() ?>" id="s_method_<?php echo $_rate->getCode() ?>" checked="checked" /></span>
+                        <?php else: ?>
+                            <input name="shipping_method[type]"
+                            type="radio" value="<?php echo $_rate->getCode() ?>"
+                            id="s_method_<?php echo $_rate->getCode() ?>"
+                            <?php if ($_rate->getCode()=== $this->getAddressShippingMethod() && $deactivateShippingMethodOption == false) : ?>
+                                checked="checked"
+                            <?php endif; ?>
+                            <?php if ($deactivateShippingMethodOption == true) {$disabled = 'disabled="disabled"'; $labelStyle = 'style="color: grey;"'; $lockedSign = '*';} ?>
+                            <?php echo $disabled; ?>
+                            class="radio" />
+                        <?php endif; ?>
+                            <label for="s_method_<?php echo $_rate->getCode() ?>" <?php if ($disabled) echo $labelStyle; ?>>
+                                <?php echo $_rate->getMethodTitle() . ' ' . $lockedSign?>
+                            </label>
+                   <?php endif ?>
+                </li>
+            <?php endforeach; ?>
+            </ul>
+		</div>
+    <?php endforeach; ?>
+	</div>
+    <?php if ($boolFoundLockedStock) : ?>
+        <div stype="margin-left: 20px;">* <?php echo $this->__('This Stock Is Temporarily Locked'); ?></div>
+    <?php endif; ?>
+
+    <?php if (Mage::getStoreConfig('general/locale/code') == 'cs_CZ') : ?>
+        <div id="research_block" style="background: lightgrey; padding: 9px; display: none;">
+            <div id="research_field">
+                <span><?php echo $this->__('Geis Point Research Question Descritption'); ?></span>
+                <button style="margin-left: 5px; width: 40px;" id="research_agree"><?php echo $this->__('Yes'); ?></button>
+                <button style="margin-left: 5px; width: 40px;" id="research_deny"><?php echo $this->__('No'); ?></button><br>
+            </div>
+            <div>
+                <span><?php echo $this->__('More About Geis Project'); ?></span>
+                <a href="<?php echo Mage::getStoreConfig('schrack/research/geis/externallink'); ?>" target="_blank"><?php echo $this->__('Here'); ?></a> !
+            </div>
+        </div>
+    <?php endif; ?>
+<?php endif; ?>
+
+
+<script type="text/javascript">
+    //<![CDATA[
+
+    jQuery(document).ready(function() {
+        <?php if (Mage::getStoreConfig('general/locale/code') == 'cs_CZ') : ?>
+            checkCustomerAlreadyAnsweredResearchQuestion();
+
+            jQuery('#research_agree').on('click', function(evt) {
+                evt.preventDefault();
+                sendResearchAnswer('research_agree');
+
+                console.log('research_agree');
+            });
+
+            jQuery('#research_deny').on('click', function(evt) {
+                evt.preventDefault();
+                sendResearchAnswer('research_deny');
+
+                console.log('research_deny');
+            });
+
+            function sendResearchAnswer (researchAnswer){
+                jQuery.ajax({
+                    url: '<?php echo $this->getUrl('checkout/onepage/saveResearchResult'); ?>',
+                    type: 'post',
+                    dataType: 'json',
+                    data: {
+                        'customer_type' : localStorage.newCheckoutProcessCurrentRole,
+                        'reseachAnswer' : researchAnswer},
+                    success: function(data) {
+                        if (data.errormsg) {
+                            console.log('response received');
+                        } else {
+                            console.log('success');
+                            jQuery('#research_field').hide();
+                        }
+                    },
+                    error: function (data) {
+                        console.log('error');
+                    },
+                    complete: function () {
+                        console.log('complete');
+                    }
+                });
+            }
+
+            function checkCustomerAlreadyAnsweredResearchQuestion () {
+                jQuery.ajax({
+                    url: '<?php echo $this->getUrl('checkout/onepage/checkCustomerAlreadyAnsweredResearch'); ?>',
+                    type: 'post',
+                    dataType: 'json',
+                    success: function(data) {
+                        if (data.errormsg) {
+                            console.log('response received but errors occurred');
+                        } else {
+                            console.log('success');
+                            if (data.msg == 'done') {
+                                jQuery('#research_block').show();
+                            }
+                        }
+                    },
+                    error: function (data) {
+                        console.log('error');
+                    },
+                    complete: function () {
+                        console.log('complete');
+                    }
+                });
+            }
+        <?php endif; ?>
+    });
+    //]]>
+</script>
+
+<!-- app/design/frontend/schrack/default/template/checkout/onepage/shipping_method/available.phtml (end) -->

@@ -1,0 +1,355 @@
+{
+  "version": 2,
+  "holidays": [
+    {
+      "id": 1687,
+      "urlid": "romania/new-year-day",
+      "url": "http://www.timeanddate.com/holidays/romania/new-year-day",
+      "country": {
+        "id": "ro",
+        "name": "Romania"
+      },
+      "name": "New Year's Day",
+      "oneliner": "New Year’s Day (Anul Nou) and the following day, on January 1 and 2 respectively, are annual holidays in Romania.",
+      "types": [
+        "National holiday"
+      ],
+      "date": {
+        "iso": "2019-01-01",
+        "datetime": {
+          "year": 2019,
+          "month": 1,
+          "day": 1
+        }
+      },
+      "uid": "00069700000007e3"
+    },
+    {
+      "id": 1688,
+      "urlid": "romania/new-year-day-2",
+      "url": "http://www.timeanddate.com/holidays/romania/new-year-day-2",
+      "country": {
+        "id": "ro",
+        "name": "Romania"
+      },
+      "name": "Day after New Year's Day",
+      "oneliner": "Both New Year’s Day (Anul Nou) and the following day, on January 1 and 2 respectively, are annual holidays in Romania.",
+      "types": [
+        "National holiday"
+      ],
+      "date": {
+        "iso": "2019-01-02",
+        "datetime": {
+          "year": 2019,
+          "month": 1,
+          "day": 2
+        }
+      },
+      "uid": "00069800000007e3"
+    },
+    {
+      "id": 3239,
+      "urlid": "romania/unification-day",
+      "url": "http://www.timeanddate.com/holidays/romania/unification-day",
+      "country": {
+        "id": "ro",
+        "name": "Romania"
+      },
+      "name": "Unification Day",
+      "oneliner": "Unification Day celebrates the political union between Wallachia and Moldavia, which is deemed as the foundation of modern Romania.",
+      "types": [
+        "National holiday"
+      ],
+      "date": {
+        "iso": "2019-01-24",
+        "datetime": {
+          "year": 2019,
+          "month": 1,
+          "day": 24
+        }
+      },
+      "uid": "000ca700000007e3"
+    },
+    {
+      "id": 6132,
+      "urlid": "romania/good-friday",
+      "url": "http://www.timeanddate.com/holidays/romania/good-friday",
+      "country": {
+        "id": "ro",
+        "name": "Romania"
+      },
+      "name": "Orthodox Good Friday",
+      "oneliner": "Millions of Orthodox Christians around the world annually observe Good Friday to commemorate the events leading up to Jesus Christ's crucifixion.",
+      "types": [
+        "National holiday",
+        "Orthodox"
+      ],
+      "date": {
+        "iso": "2019-04-26",
+        "datetime": {
+          "year": 2019,
+          "month": 4,
+          "day": 26
+        }
+      },
+      "uid": "0017f400000007e3"
+    },
+    {
+      "id": 1695,
+      "urlid": "romania/easter-sunday",
+      "url": "http://www.timeanddate.com/holidays/romania/easter-sunday",
+      "country": {
+        "id": "ro",
+        "name": "Romania"
+      },
+      "name": "Orthodox Easter Day",
+      "oneliner": "Easter (Paștele) is both a religious and a national holiday in Romania. The Easter date is based on the Orthodox Christian Church’s calendar.",
+      "types": [
+        "National holiday",
+        "Orthodox"
+      ],
+      "date": {
+        "iso": "2019-04-28",
+        "datetime": {
+          "year": 2019,
+          "month": 4,
+          "day": 28
+        }
+      },
+      "uid": "00069f00000007e3"
+    },
+    {
+      "id": 1696,
+      "urlid": "romania/easter-monday",
+      "url": "http://www.timeanddate.com/holidays/romania/easter-monday",
+      "country": {
+        "id": "ro",
+        "name": "Romania"
+      },
+      "name": "Orthodox Easter Monday",
+      "oneliner": "The Day after Easter (Paștele) is both a religious and a national holiday in Romania. The Easter date is based on the Orthodox Christian Church’s calendar.",
+      "types": [
+        "National holiday",
+        "Orthodox"
+      ],
+      "date": {
+        "iso": "2019-04-29",
+        "datetime": {
+          "year": 2019,
+          "month": 4,
+          "day": 29
+        }
+      },
+      "uid": "0006a000000007e3"
+    },
+    {
+      "id": 1689,
+      "urlid": "romania/labor-day",
+      "url": "http://www.timeanddate.com/holidays/romania/labor-day",
+      "country": {
+        "id": "ro",
+        "name": "Romania"
+      },
+      "name": "Labor Day / May Day",
+      "oneliner": "Labor Day (Ziua muncii) is a national public holiday in Romania on May 1 each year.",
+      "types": [
+        "National holiday"
+      ],
+      "date": {
+        "iso": "2019-05-01",
+        "datetime": {
+          "year": 2019,
+          "month": 5,
+          "day": 1
+        }
+      },
+      "uid": "00069900000007e3"
+    },
+    {
+      "id": 1699,
+      "urlid": "romania/children-day",
+      "url": "http://www.timeanddate.com/holidays/romania/children-day",
+      "country": {
+        "id": "ro",
+        "name": "Romania"
+      },
+      "name": "Children's Day",
+      "oneliner": "Children’s Day (Ziua Copilului) is annually celebrated on June 1 in Romania.",
+      "types": [
+        "National holiday"
+      ],
+      "date": {
+        "iso": "2019-06-01",
+        "datetime": {
+          "year": 2019,
+          "month": 6,
+          "day": 1
+        }
+      },
+      "uid": "0006a301000007e3"
+    },
+    {
+      "id": 1693,
+      "urlid": "romania/pentecost-sunday",
+      "url": "http://www.timeanddate.com/holidays/romania/pentecost-sunday",
+      "country": {
+        "id": "ro",
+        "name": "Romania"
+      },
+      "name": "Orthodox Pentecost",
+      "oneliner": "Many Christians in Romania celebrate the Pentecost (Rusalii or Rusaliile) public holiday, also known as Whitsunday or Whit Sunday.",
+      "types": [
+        "National holiday",
+        "Orthodox"
+      ],
+      "date": {
+        "iso": "2019-06-16",
+        "datetime": {
+          "year": 2019,
+          "month": 6,
+          "day": 16
+        }
+      },
+      "uid": "00069d00000007e3"
+    },
+    {
+      "id": 1694,
+      "urlid": "romania/pentecost-monday",
+      "url": "http://www.timeanddate.com/holidays/romania/pentecost-monday",
+      "country": {
+        "id": "ro",
+        "name": "Romania"
+      },
+      "name": "Orthodox Pentecost Monday",
+      "oneliner": "Many Christians celebrate the Whit Monday (Rusalii or Rusaliile) public holiday in Romania.",
+      "types": [
+        "National holiday",
+        "Orthodox"
+      ],
+      "date": {
+        "iso": "2019-06-17",
+        "datetime": {
+          "year": 2019,
+          "month": 6,
+          "day": 17
+        }
+      },
+      "uid": "00069e00000007e3"
+    },
+    {
+      "id": 2218,
+      "urlid": "romania/st-mary-day",
+      "url": "http://www.timeanddate.com/holidays/romania/st-mary-day",
+      "country": {
+        "id": "ro",
+        "name": "Romania"
+      },
+      "name": "St Mary's Day",
+      "oneliner": "The feast day of the Assumption of Mary is a national holiday in Romania on August 15 every year.",
+      "types": [
+        "National holiday"
+      ],
+      "date": {
+        "iso": "2019-08-15",
+        "datetime": {
+          "year": 2019,
+          "month": 8,
+          "day": 15
+        }
+      },
+      "uid": "0008aa00000007e3"
+    },
+    {
+      "id": 2343,
+      "urlid": "romania/st-andrew-day",
+      "url": "http://www.timeanddate.com/holidays/romania/st-andrew-day",
+      "country": {
+        "id": "ro",
+        "name": "Romania"
+      },
+      "name": "St Andrew's Day",
+      "oneliner": "St Andrew’s Day (Ziua Sfântului Andrei) is a national holiday in Romania on November 30 every year.",
+      "types": [
+        "National holiday"
+      ],
+      "date": {
+        "iso": "2019-11-30",
+        "datetime": {
+          "year": 2019,
+          "month": 11,
+          "day": 30
+        }
+      },
+      "uid": "00092700000007e3"
+    },
+    {
+      "id": 2217,
+      "urlid": "romania/ziua-nationala",
+      "url": "http://www.timeanddate.com/holidays/romania/ziua-nationala",
+      "country": {
+        "id": "ro",
+        "name": "Romania"
+      },
+      "name": "National holiday",
+      "oneliner": "National Day in Romania, also called Unification Day, is an annual public holiday to remember when the country’s provinces became united on December 1, 1918.",
+      "types": [
+        "National holiday"
+      ],
+      "date": {
+        "iso": "2019-12-01",
+        "datetime": {
+          "year": 2019,
+          "month": 12,
+          "day": 1
+        }
+      },
+      "uid": "0008a900000007e3"
+    },
+    {
+      "id": 1691,
+      "urlid": "romania/christmas-day",
+      "url": "http://www.timeanddate.com/holidays/romania/christmas-day",
+      "country": {
+        "id": "ro",
+        "name": "Romania"
+      },
+      "name": "Christmas Day",
+      "oneliner": "Christmas Day is a Christian holiday to celebrate Jesus Christ’s birth in Romania and falls on December 25 every year.",
+      "types": [
+        "National holiday"
+      ],
+      "date": {
+        "iso": "2019-12-25",
+        "datetime": {
+          "year": 2019,
+          "month": 12,
+          "day": 25
+        }
+      },
+      "uid": "00069b00000007e3"
+    },
+    {
+      "id": 1692,
+      "urlid": "romania/boxing-day",
+      "url": "http://www.timeanddate.com/holidays/romania/boxing-day",
+      "country": {
+        "id": "ro",
+        "name": "Romania"
+      },
+      "name": "Second day of Christmas",
+      "oneliner": "The second day of Christmas falls on December 26 and is part of a two-day Christian holiday in Romania to celebrate Jesus Christ’s birth.",
+      "types": [
+        "National holiday"
+      ],
+      "date": {
+        "iso": "2019-12-26",
+        "datetime": {
+          "year": 2019,
+          "month": 12,
+          "day": 26
+        }
+      },
+      "uid": "00069c00000007e3"
+    }
+  ]
+}

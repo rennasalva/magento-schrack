@@ -1,0 +1,183 @@
+<?xml version="1.0"?>
+<config>
+  <sections>
+		<schrack>
+			<groups>
+				<solr4orders translate="label">
+					<label>solr 4 Orders</label>
+					<frontend_type>text</frontend_type>
+					<sort_order>21</sort_order>
+					<show_in_default>1</show_in_default>
+					<show_in_website>1</show_in_website>
+					<show_in_store>1</show_in_store>
+					<fields>
+						<solrserver translate="label">
+							<label>solr Server URL</label>
+							<frontend_type>text</frontend_type>
+							<sort_order>10</sort_order>
+							<show_in_default>1</show_in_default>
+							<show_in_website>1</show_in_website>
+							<show_in_store>1</show_in_store>
+						</solrserver>
+						<solruser translate="label">
+							<label>solr Authentication User</label>
+							<frontend_type>text</frontend_type>
+							<sort_order>20</sort_order>
+							<show_in_default>1</show_in_default>
+							<show_in_website>1</show_in_website>
+							<show_in_store>1</show_in_store>
+						</solruser>
+						<solrpassword translate="label">
+							<label>solr Authentication Password</label>
+							<frontend_type>text</frontend_type>
+							<sort_order>30</sort_order>
+							<show_in_default>1</show_in_default>
+							<show_in_website>1</show_in_website>
+							<show_in_store>1</show_in_store>
+						</solrpassword>
+					</fields>
+				</solr4orders>
+			</groups>
+        </schrack>
+    <sales>
+      <groups>
+        <links translate="label" module="sales">
+          <label>Additional Links</label>
+          <frontend_type>text</frontend_type>
+          <sort_order>110</sort_order>
+          <show_in_default>1</show_in_default>
+          <show_in_website>1</show_in_website>
+          <show_in_store>1</show_in_store>
+          <fields>
+            <paymentlink translate="label">
+              <label>Payment/Shipping Info Link</label>
+              <frontend_type>text</frontend_type>
+              <sort_order>1</sort_order>
+              <show_in_default>1</show_in_default>
+              <show_in_website>1</show_in_website>
+              <show_in_store>1</show_in_store>
+            </paymentlink>
+          </fields>
+        </links>
+      </groups>
+    </sales>
+        <schrack translate="label" module="schrack">
+            <groups>
+                <mdoc translate="label">
+                    <label>MDoc</label>
+                    <frontend_type>text</frontend_type>
+                    <sort_order>12</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>0</show_in_website>
+                    <show_in_store>0</show_in_store>
+                    <fields>
+                        <use_mdoc translate="label">
+                            <label>Do use MDoc</label>
+							<frontend_type>select</frontend_type>
+							<source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>0</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </use_mdoc>
+                        <mdoc_country translate="label">
+                            <label>MDoc country</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>1</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </mdoc_country>
+                        <wsdl translate="label">
+                            <label>WSDL</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>2</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </wsdl>
+                        <doctype_name_offer translate="label">
+                            <label>Doctype name offer</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>3</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </doctype_name_offer>
+                        <doctype_name_order translate="label">
+                            <label>Doctype name order</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>4</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </doctype_name_order>
+                        <doctype_name_shipment translate="label">
+                            <label>Doctype name shipment</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>5</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </doctype_name_shipment>
+                        <doctype_name_invoice translate="label">
+                            <label>Doctype name invoice</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>6</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </doctype_name_invoice>
+                        <doctype_name_creditmemo translate="label">
+                            <label>Doctype name creditmemo</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>7</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </doctype_name_creditmemo>
+                        <doctype_name_collective_invoice translate="label">
+                            <label>Doctype name collective invoice</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>8</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </doctype_name_collective_invoice>
+                        <doctype_name_collective_creditmemo translate="label">
+                            <label>Doctype name collective creditmemo</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>9</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </doctype_name_collective_creditmemo>
+                    </fields>
+                </mdoc>
+            </groups>
+        </schrack>
+        <schrackdev translate="label" module="schrack">
+            <groups>
+                <mdoc translate="label">
+                    <label>Mdoc</label>
+                    <frontend_type>text</frontend_type>
+                    <sort_order>12</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>0</show_in_website>
+                    <show_in_store>0</show_in_store>
+                    <fields>
+                        <log translate="label">
+                            <label>Log full XML transfer</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>1</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </log>
+                    </fields>
+                </mdoc>
+            </groups>
+        </schrackdev>
+  </sections>
+</config>

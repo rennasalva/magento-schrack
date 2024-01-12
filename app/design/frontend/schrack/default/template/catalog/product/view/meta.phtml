@@ -1,0 +1,19 @@
+<?php
+$product = Mage::registry('product');
+$qty = Mage::registry('qty');
+$currency = Mage::registry('currency');
+$price = Mage::registry('price');
+?>
+
+<div property="offers" typeof="Offer" class="hide-on-print">
+    <span property="inventoryLevel" typeof="QuantitativeValue"><meta property="value" content="23"/></span>
+    <meta property="v:quantity" content="<?php echo $qty; ?>"/>
+    <meta property="availability" content="<?php echo $qty ? 'InStock' : 'OutOfStock'; ?>"/>
+    <meta property="v:availability" content="<?php echo $qty ? 'out_of_stock' : 'OutOfStock'; ?>"/>
+    <meta property="itemCondition" content="NewCondition"/>
+    <meta property="v:condition" content="new"/>
+    <meta property="priceCurrency" content="<?php echo $currency; ?>"/>
+    <meta property="v:currency" content="<?php echo $currency; ?>"/>
+    <meta property="price" content="<?php echo $price; ?>"/>
+    <meta property="sku" content="<?php echo $this->htmlEscape($product->getSku()); ?>"/>
+</div>

@@ -1,0 +1,469 @@
+section {
+	&.inner {
+		margin-top: 30px;
+
+		h2 {
+			margin-bottom: 20px;
+			font-size: 24px;
+			color: #00589d;
+			font-family: 'robotoregular', Helvetica, Arial, Sans-Serif;
+		}
+	}
+}
+
+.leftNavSec {
+	font-size: 16px;
+	color: #555555;
+
+	.leftNav {
+		margin: 0 0 15px;
+
+		li {
+
+			position: relative;
+
+			a {
+				background-color: #f5f5f5;
+				color: #555555;
+				padding: 8px 15px;
+				display: block;
+				border-bottom: 1px solid #e5ebef;
+			}
+
+			&.hd {
+				cursor: default;
+				color: #00589d;
+				text-decoration: none;
+				padding: 10px 10px 5px 0;
+				font-weight: bold;
+			}
+
+			&.active {
+				a {
+					background-color: #eeeded;
+					color: #888;
+				}
+
+				> span.arrow {
+					color: #fff;
+				}
+
+				li a {
+					border-bottom: 1px solid #d8d8d8;
+					padding: 8px 45px;
+					font-size: 14px;
+				}
+			}
+
+			&.current {
+				> a,
+				a.active {
+					background-color: #00589d;
+					color: #fff;
+				}
+			}
+
+			span {
+				&.glyphicon {
+					margin-right: 10px;
+				}
+				&.arrow {
+					position: absolute;
+					top: 12px;
+					right: 0px;
+				}
+			}
+
+			ul {
+				display: none;
+			}
+		}
+	}
+
+	.leftTopSec {
+		margin: 0 0 15px;
+		background: #f9f8f8;
+
+		h2 {
+			font-size: 15px;
+			font-family: 'robotomedium', Helvetica, Arial, Sans-Serif;
+			padding: 15px 15px;
+			border-bottom: 1px solid #dcdcdc;
+			color: #555555;
+		}
+
+		.topics {
+			padding: 15px 15px;
+			font-size: 14px;
+
+			a {
+				color: #00589d;
+			}
+		}
+	}
+}
+
+
+/*Main Content Right Section CSS*/
+
+.mainContRightSec {
+
+	.pageInfoSec {
+		font-size: 16px;
+		color: #555555;
+		margin-bottom: 15px;
+	}
+
+	.overview-element {
+		/* Need to be so specific to override .mainContRightSec .overview-element h1 */
+		.staticBnrSimple h1 {
+			color: #005b9f;
+		}
+	}
+}
+
+.cms-container {
+	float: right;
+}
+
+/* Box Item CSS*/
+
+.fourBoxItem,
+.threeBoxItem {
+	position: relative;
+	margin-bottom: 15px;
+}
+
+
+
+/* [BUGFIX #21209] 2018020210000137 - Bildauslieferung für Teaser passt nicht seit RWD Umbau */
+.fourBoxItem>div>a,
+.threeBoxItem img,
+.imageBox {
+	width: 100%;
+	height: 1px;
+	padding-bottom: 58%;
+	border: 1px solid #ececec;
+	box-shadow: 1px 1px 5px 0px rgba(0, 0, 0, 0.3);
+	border-radius: 0;
+	display: block;
+	overflow: hidden
+}
+
+/* [BUGFIX #22467] Bild mit zu viel Leerraum - 2018072510000255 */
+.forSpclPrps .threeBoxItem img {
+	padding-bottom: 0;
+}
+
+.imageBox {
+	height: auto;
+}
+
+/* [BUGFIX #21209] 2018020210000137 - Bildauslieferung für Teaser passt nicht seit RWD Umbau */
+.fourBoxItem img,
+.threeBoxItem img,
+.imageBox img {
+	margin: 0;
+	width: 100%;
+	height: auto;
+}
+
+.threeBoxItem {
+	.textCont {
+		text-align: left;
+		padding: 10px 0;
+		font-size: 16px;
+		color: #555555;
+	}
+}
+
+.fourBoxItem {
+
+	.actionText.bsl {
+		height: 80px;
+
+		a {
+			height: 40px;
+			display: block;
+		}
+	}
+
+	.textCont {
+		text-align: center;
+		padding: 10px 0;
+		font-size: 17px;
+		color: #00589d;
+		word-wrap: break-word;
+	}
+
+	&.newsList {
+		display: flex;
+		flex-flow: row wrap
+	}
+
+	&.listHome {
+		margin-left: 0;
+	}
+}
+
+/* [BUGFIX #21154] 2018013010000452 — Teaser Texte abgeschnitten */
+.threeBoxItem .actionTxt,
+.fourBoxItem .actionTxt,
+.newsList .actionTxt {
+	padding-top: 10px;
+	margin-bottom: 10px;
+}
+
+/* Nagarro: styles for homepage banner added */
+.rwd_design .newsList .actionTxt a,
+.rwd_design .newsList .actionTxt h3,
+.threeBoxItem .actionTxt h3 {
+	display: block;
+	height: 40px;
+	margin: 0;
+}
+
+
+.gridContainer {
+	margin-bottom: 25px;
+}
+
+.original-size img {
+	margin-bottom: 10px;
+}
+
+.original-size figure img {
+	margin-bottom: 10px;
+	max-width: 100%;
+}
+
+%rte-ol-li {
+	list-style: decimal inside;
+	margin-bottom: 10px;
+}
+
+%rte-ul-li {
+	margin-bottom: 10px;
+	padding-left: 16px;
+	background: url(../Images/rwd/list-icon-9x8.png) no-repeat left 7px;
+
+}
+
+%rte-ul {
+	position: relative;
+	left: 11px;
+	display: inline-block;
+}
+
+.rte-ul,
+.ce-bullets {
+	@extend %rte-ul;
+	border-bottom: none;
+
+	& > li {
+		@extend %rte-ul-li;
+	}
+
+	& > li > ol {
+		padding-left: 9px;
+	}
+}
+
+.rte-ol {
+	border-bottom: none;
+
+	& > li > ol {
+		padding-left: 20px;
+	}
+
+	& > li > ul {
+		left: 21px;
+	}
+
+	& > li {
+		@extend %rte-ol-li;
+	}
+}
+
+.rte-ul,
+.rte-ol {
+	ul {
+		@extend %rte-ul;
+		display:inline;
+
+		li:first-child{
+			margin-top:10px;
+		}
+	}
+
+    ol {
+        margin-top: 10px;
+    }
+ 
+	ol > li > ol {
+		padding-left: 20px;
+	}
+
+	ol > li > ul {
+		left: 21px;
+	}
+
+	ul > li > ol {
+		padding-left: 9px;
+	}
+
+	ul > li {
+		@extend %rte-ul-li;
+	}
+
+	ol > li {
+		@extend %rte-ol-li;
+	}
+}
+
+.image-in-text-left-33 .rte-ul,
+.image-in-text-left-50 .rte-ul {
+	position: static;
+}
+
+
+.image-in-text-right-50, .image-in-text-left-50 {
+	.rte-ul {
+		display: table;
+	}
+}
+
+.inner {
+	.csc-default {
+		display:inline-block;
+		width:100%;
+	}
+}
+
+#siteMessageWarningContainer {
+	opacity: 1 !important;
+	position: absolute;
+	margin-top: -1px;
+	margin-left: -176px;
+	width: 315px;
+	z-index: 10000000000000 !important;
+}
+
+#siteMessageWarning {
+	position : relative!important;
+	margin-top : 0!important;
+	margin-left : 0!important;
+	z-index: 0!important;
+
+	.messageText {
+		width: 237px !important;
+	}
+}
+
+.closeButton {
+	font-size: 3.2em;
+	font-weight: bold;
+	color: black !important;
+}
+
+#warning-message-close-typo {
+	cursor: pointer;
+	position:absolute;
+	right:0px;
+	top:0px;
+	width: 48px;
+}
+
+.frame header {
+	display: inline;
+}
+
+.video-embed {
+	position: relative;
+	padding-bottom: 56.25%;
+	height: 0;
+	overflow: hidden;
+	max-width: 100%;
+	margin-bottom: 30px;
+
+	iframe, video {
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+	}
+}
+
+.tx-go-maps-ext .gme-map {
+	width: 100% !important;
+	margin-bottom: 10px;
+}
+
+
+.cdm-teaser-image {
+	width: 100%;
+	height: 100%;
+}
+
+.cdm-teaser-description {
+	position: absolute;
+	margin-top: -85px;
+	margin-left: 7px;
+	font-size: 42px;
+	color: #00589d;
+	font-weight: 700;
+}
+
+.without-menu {
+	.top-navigation-container,
+	.typo_messagebar {
+		display: none !important;
+	}
+}
+
+.col-centered {
+	float: none;
+	margin: 0 auto;
+}
+
+.footer-tunnel-list {
+	li {
+		display: inline;
+		margin-right: 15px;
+	}
+}
+
+//
+//  Responsive
+//  ---------------------------------------------
+
+@media (min-width: $breakpoint-up-md) and (max-width: $breakpoint-down-lg) {
+
+	.fourBoxItem > div > a {
+		height: 125px;
+	}
+}
+
+@media (min-width: $breakpoint-up-xs) and (max-width: $breakpoint-down-md) {
+
+	section.inner h2 {
+		font-size: 18px;
+	}
+
+	/* [BUGFIX #21209] 2018020210000137 - Bildauslieferung für Teaser passt nicht seit RWD Umbau */
+	.fourBoxItem > div > a, .imageBox img, .imageBox {
+		width: 100%;
+		max-width: 100%;
+	}
+
+	.fourBoxItem .textCont {
+		font-size: 12px;
+	}
+}
+
+@media (min-width: 400px) and (max-width: 767px) {
+	.fourBoxItem .col-xs-12 {
+		width: 50%;
+	}
+}

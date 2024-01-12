@@ -1,0 +1,35 @@
+﻿<?xml version="1.0"?>
+<!--
+/**
+ * orcamultimedia
+ * http://www.orca-multimedia.de
+ * 
+ * @author		Thomas Wild
+ * @package		Orcamultimedia_Sapoci
+ * @copyright	Copyright (c) 2017 orcamultimedia Thomas Wild (http://www.orca-multimedia.de)
+ * 
+**/
+-->
+<layout version="1.0.1">
+    <checkout_cart_index translate="label">
+        <reference name="checkout.cart.methods.onepage">
+            <action method="setTemplate"><name>sapoci/checkout/onepage/link.phtml</name></action>
+        </reference>
+        <reference name="checkout.cart.methods.onepage.top">
+            <action method="setTemplate"><name>sapoci/checkout/onepage/link.phtml</name></action>
+        </reference>
+        <reference name="checkout.cart.methods.onepage.bottom">
+            <action method="setTemplate"><name>sapoci/checkout/onepage/link.phtml</name></action>
+        </reference>
+    </checkout_cart_index>
+    <sapoci_punchout_validate translate="label">
+        <reference name="content">
+            <block type="sapoci/validate" name="root" output="toHtml" template="sapoci/validate.phtml" />
+        </reference>
+    </sapoci_punchout_validate>
+    <sapoci_punchout_search translate="label">
+        <reference name="content">
+            <block type="sapoci/search" name="root" output="toHtml" template="sapoci/search.phtml" />
+        </reference>
+    </sapoci_punchout_search>
+</layout>

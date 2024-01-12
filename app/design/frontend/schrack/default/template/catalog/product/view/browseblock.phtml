@@ -1,0 +1,81 @@
+<!-- default/template/catalog/product/view/browseblock.phtml (start) -->
+<?php
+    Varien_Profiler::start('product/view/browseblock.phtml->init');
+    $product = Mage::registry('product');
+    $currentCategory = Mage::registry('current_category');
+    /** @var Schracklive_SchrackGoogleAnalytics_Helper_Data $gaHelper */
+    $gaHelper = Mage::helper('googleanalytics');
+    $categoryUrl = '';
+    $previousProduct = null;
+    $nextProduct = null;
+    $showBrowseBlock = false;
+    if ($currentCategory) {
+        $categoryUrl = $currentCategory->getUrl();
+        try {
+            Varien_Profiler::start('product/view/browseblock.phtml->get_products');
+            Varien_Profiler::start('product/view/browseblock.phtml->get_productL');
+            $previousProduct = $currentCategory->getProductAtOffsetOrDefault($product, -1);
+            Varien_Profiler::stop('product/view/browseblock.phtml->get_productL');
+            Varien_Profiler::start('product/view/browseblock.phtml->get_productR');
+            $nextProduct = $currentCategory->getProductAtOffsetOrDefault($product, 1);
+            Varien_Profiler::stop('product/view/browseblock.phtml->get_productR');
+            Varien_Profiler::stop('product/view/browseblock.phtml->get_products');
+            Varien_Profiler::start('product/view/browseblock.phtml->get_images');
+            $prevProductImage = $this->helper('catalog/image')->init($previousProduct, 'small_image')->constrainOnly(true)->resize(66, 66);
+            $prevProductImageUrl = (string)$prevProductImage;
+            // Removes protocol:
+            $prevProductImageUrl = str_replace(array('http:', 'https:'), '', $prevProductImageUrl);
+            $nextProductImage = $this->helper('catalog/image')->init($nextProduct, 'small_image')->constrainOnly(true)->resize(66, 66);
+            $nextProductImageUrl = (string)$nextProductImage;
+            // Removes protocol:
+            $nextProductImageUrl = str_replace(array('http:', 'https:'), '', $nextProductImageUrl);
+            Varien_Profiler::stop('product/view/browseblock.phtml->get_images');
+            $showBrowseBlock = true;
+
+            if ($previousProduct->getProductUrl() == $nextProduct->getProductUrl()) {
+                $showBrowseBlock = false;
+            }
+        } catch (Exception $e) {
+            $showBrowseBlock = false;
+        }
+    }
+    Varien_Profiler::stop('product/view/browseblock.phtml->init');
+?>
+
+<?php if ( $showBrowseBlock ): ?>
+    <div class="browse-bar row hide-on-print">
+        <div class="large-12 columns">
+            <div class="row labels">
+                <div class="large-6 columns">
+                    <?php echo $this->__('To previous product') ?>
+                </div>
+                <div class="large-6 columns">
+                    <?php echo $this->__('To next product') ?>
+                </div>
+            </div>
+            <div class="row">
+                <div class="large-12 columns boxes">
+                    <div class="arrow">
+                        <div><p><a href="<?php echo $previousProduct->getProductUrl() ?>" rel="nofollow"><img src="<?php echo $this->getSkinUrl('schrackdesign/Public/Images/catalog/prev-product-arrow.png') ?>" alt="<?php echo $this->__('To previous product') ?>"/></a></p></div>
+                    </div>
+                    <div class="product-name prev">
+                        <div class="image"><a href="<?php echo $previousProduct->getProductUrl() ?>" rel="nofollow"><img src="<?php echo $prevProductImageUrl ?>"/></a></div>
+                        <div class="text"><a href="<?php echo $previousProduct->getProductUrl() ?>" rel="nofollow"><?php echo $previousProduct->getName() ?></a></p></div>
+                    </div>
+                    <div class="product-name next">
+                        <div class="image">
+                            <a class="image" href="<?php echo $nextProduct->getProductUrl() ?>"rel="nofollow"><img src="<?php echo $nextProductImageUrl ?>"/></a>
+                        </div>
+                        <div class="text">
+                            <a href="<?php echo $nextProduct->getProductUrl() ?>" rel="nofollow"><?php echo $nextProduct->getName() ?></a>
+                        </div>
+                    </div>
+                    <div class="arrow">
+                        <div><p><a href="<?php echo $nextProduct->getProductUrl() ?>" rel="nofollow"><img src="<?php echo $this->getSkinUrl('schrackdesign/Public/Images/catalog/next-product-arrow.png') ?>" alt="<?php echo $this->__('To next product') ?>"/></a></p></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+<?php endif; ?>
+<!-- default/template/catalog/product/view/browseblock.phtml (end) -->

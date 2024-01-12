@@ -1,0 +1,43 @@
+<?php
+/* @var $this Schracklive_SchrackWishlist_Block_Partslist */
+?>
+<?php
+$_partslist = $this->helper('schrackwishlist/partslist')->getPartslist();
+
+/* @var $_infoHelper Schracklive_SchrackCatalog_Helper_Info */
+/* @var $_productHelper Schracklive_SchrackCatalog_Helper_Product */
+?>
+<?php echo $this->getMessagesBlock()->getGroupedHtml() ?>
+<div id="reset-container">
+    <div class="wishlist">
+        <h1><span class="icon-partslist"></span><span><?php echo $_partslist->getDescription()?></span></h1>
+        <div class="linear-box sizing-default">
+            <form id="wishlist-view-form" action="<?php echo $this->getUrl('*/*/edit', array('id' => $_partslist->getId())) ?>" method="post">
+                <?php echo $this->getBlockHtml('formkey') ?>
+                <input type="hidden" name="id" id="id" value="<?php echo $_partslist->getId() ?>" />            
+                <ul class="form-list">
+                    <li>
+                        <label for="description"><?php echo $this->__('Description') ?></label>
+                        <div class="input-box">
+                            <input type="text" name="description" id="description" value="<?php echo $_partslist->getDescription() ?>" title="<?php echo $this->__('Description') ?>" class="input-text" maxlength="255"/><br/>
+                        </div>
+
+                    </li>
+                    <li>
+                        <label for="comment"><?php echo $this->__('Comment') ?></label>
+                        <div class="input-box">
+                            <textarea name="comment" id="comment" title="<?php echo $this->__('Comment') ?>" class="input-text" rows="10" cols="80"/><?php echo $_partslist->getComment() ?></textarea>
+                        </div>
+
+                    </li>
+                </ul>
+                <div class="buttons-set">
+                    <button type="submit" class="button" title="<?php echo $this->__('Save partslist') ?>"><span><?php echo $this->__('Save partslist') ?></span></button>
+                    <?php if (!$_partslist->getIsActive()) : ?>
+                        <button type="button" class="button" onClick="window.location.replace('<?php echo Mage::getUrl('wishlist/partslist/activate', array('id' => $_partslist->getId())) ?>');return false;" title="<?php echo $this->__('Set as standard') ?>" class="button"><span><?php echo $this->__('Set as standard') ?></span></button>
+                    <?php endif; ?>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,35 @@
+#page-3056 .forSpclPrps {
+	background: #f8f8f8;
+	border: 1px solid #d9d9d9;
+	padding: 20px;
+	font-size: 15px;
+	color: #00589d;
+	line-height: 30px;
+}
+
+#page-3056 .forSpclPrps h5 {
+	font-size: 15px;
+	color: #00589d;
+	line-height: 30px;
+}
+
+#page-3056 .forSpclPrps .original-size img {
+	width: 145px;
+	height: 190px;
+}
+
+#page-3056 .forSpclPrps .original-size {
+	width: 20%;
+}
+
+//
+//  Responsive
+//  ---------------------------------------------
+
+@media (min-width: $breakpoint-up-xs) and (max-width: $breakpoint-down-md) {
+
+	#page-418 .gridContainer, #page-3 .gridContainer, #page-418 .picContent, #page-418 .spaceH30 {
+		display: none;
+	}
+
+}

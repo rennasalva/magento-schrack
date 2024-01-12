@@ -1,0 +1,19 @@
+<?php /**  @var $this Schracklive_SchrackWishlist_Block_Endcustomerpartslist_Customer */
+try {
+    $_customer = $this->getCustomer();
+} catch (Exception $e) {
+    Mage::logException($e);
+    $_customer = null;
+}
+?>
+
+<?php if ($_customer):?>
+    <div class="row">
+        <div class="large-12 columns">
+            <img src="<?php echo $_customer->getBannerUrl()?>"/>
+        </div>
+    </div>
+    <div class="row" id="messages">
+        <div class="large-4 columns large-offset-4"><div class="align-center"></div></div>
+    </div>
+<?php endif;?>

@@ -1,0 +1,160 @@
+/*Tab Section CSS*/
+
+.tab-v1,
+.searchTabSection {
+	ul {
+		border-bottom: 2px solid #dbdbdb;
+	}
+}
+
+.tabSection,
+.tab-v1,
+.searchTabSection {
+	color: #888888;
+	font-size: 16px;
+	
+	li {
+		font-size: 14px;
+	}
+
+	.shop_specific {
+		color: #bfbfbf;
+		font-size: 17px;
+		float: left;
+
+		a {
+			color: #bfbfbf;
+			text-decoration: none;
+			float: left;
+			padding: 10px 30px;
+
+			&:hover {
+				color: #022644;
+				text-decoration: none;
+			}
+		}
+	}
+
+	.tab-content {
+		padding: 20px 30px;
+	}
+}
+
+.tabSlider {
+	li {
+		color: #bfbfbf;
+		font-size: 15px;
+		float: left;
+
+		a {
+			color: #bfbfbf;
+			text-decoration: none;
+			float: left;
+			padding: 10px 30px;
+
+			&:hover {
+				color: #022644;
+				text-decoration: none;
+			}
+		}
+	}
+}
+
+.tabSlider {
+	border-bottom: 2px solid #dbdbdb;
+}
+
+.tabSection li.active,
+.tabSection li.active a,
+.tab-v1 li.active,
+.tab-v1 li.active a,
+
+.searchTabSection li a.active {
+	color: #022644;
+	border-bottom: 5px solid #d1222b;
+	margin-bottom: -3px;
+	height: 92px;
+}
+
+.paginate_button {
+	height: 31px !important;
+}
+
+.paginate_button a {
+	height: 31px !important;
+}
+
+.shop_specific_height {
+	height: auto !important;
+}
+
+.tabSection .tab-content h3,
+.tab-v1 .tab-content h3,
+.searchTabSection h3 {
+	margin-bottom: 15px;
+	font-size: 18px;
+	color: #00589d;
+	font-weight: 600;
+}
+
+.partListCont.tabSection li.active {
+	border-bottom: 4px solid #d1222b;
+}
+
+.partListCont.tabSection .tab-content {
+	padding: 15px 0px;
+}
+
+.rwd_design .tab-v1 li.active a,
+.rwd_design .tabSection .bx-viewport .tabSlider li.active a {
+	border: 0;
+}
+
+.otherActions h2 .info-icon {
+	font-size: 14px;
+}
+
+.otherActions h2 li {
+	border: 0;
+	margin: 0;
+	box-shadow: none;
+}
+
+.otherActions li {
+	border: 1px solid #d6d6d6;
+	width: 100%;
+	margin-bottom: 10px;
+	box-shadow: 1px 1px 5px 0px rgba(0, 0, 0, .16);
+	-webkit-box-shadow: 1px 1px 5px 0px rgba(0, 0, 0, .16);
+	float: left;
+}
+
+.otherActions li a {
+	font-size: 16px;
+	color: #00589d;
+	padding: 15px 10px;
+	display: block;
+}
+
+.otherActions li a:hover {
+	text-decoration: underline;
+}
+
+.otherActions li a img {
+	padding-right: 5px;
+}
+
+//
+//  Responsive
+//  ---------------------------------------------
+
+@media (min-width: $breakpoint-up-lg) and (max-width: $breakpoint-down-xl) {
+
+	.tabSection li, .tab-v1 li, .searchTabSection li {
+		font-size: 16px;
+	}
+	.tabSection li a, .tab-v1 li a, .searchTabSection li a {
+		padding: 10px 16px;
+	}
+
+}

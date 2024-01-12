@@ -1,0 +1,178 @@
+<?php
+/**
+ * @var $this Schracklive_SchrackCustomer_Block_Account_Documents_Filter 
+ */
+$_sessionParams = Mage::getSingleton('customer/session')->getData('documentParams');
+?>
+
+<?php $_category = 'type'; foreach (array('offers', 'orders', 'deliveries', 'invoices', 'creditmemos') as $_name): 
+    echo $this->createCategoryInput($_category, $_name);
+endforeach; ?>
+
+<?php $_category = 'status'; foreach (array('open', 'commissioned', 'delivered', 'invoiced', 'credited') as $_name):
+    echo $this->createCategoryInput($_category, $_name);
+endforeach; ?>
+<input type="hidden" name="date_range" value="<?php echo $this->_arrayHelper->arrayDefault($_sessionParams, 'date_range')?>" />
+
+<?php $rowNum = 1;?>
+<?php if ($this->isDetailsearchRequest()): ?>
+    <div class="filter table row <?php if ($rowNum %2 === 0) echo 'even'; else echo 'odd';++$rowNum;?>"">
+        <div class="large-2 columns"><div class="bottom-align-container">
+            <?php echo $this->__('Documents:')?>
+        </div></div>
+        <div class="large-10 columns"><div class="bottom-align-container">
+            <?php echo $this->createFilterSpan('offers', $this->getTypeOffers(), $this->getCountOfferDocs(), 'documents_form', 'type')?>
+            <?php echo $this->createFilterSpan('orders', $this->getTypeOrders(), $this->getCountOrderDocs(), 'documents_form', 'type')?>
+            <?php echo $this->createFilterSpan('deliveries', $this->getTypeDeliveries(), $this->getCountDeliveryDocs(), 'documents_form', 'type')?>
+            <?php echo $this->createFilterSpan('invoices', $this->getTypeInvoices(), $this->getCountInvoiceDocs(), 'documents_form', 'type')?>
+            <?php echo $this->createFilterSpan('creditmemos', $this->getTypeCreditmemos(), $this->getCountCreditMemoDocs(), 'documents_form', 'type')?>
+            <span><a href="<?php echo $this->getUrl('*/*/*', array('reset' => 1))?>" onClick="resetSwitches('documents_form', 'type');return false;"><?php echo $this->__('All')?> <span class="count">(*)</span></a></span>
+        </div></div>
+    </div>
+<?php endif; ?>            
+<?php switch($this->getActionName()):      
+    case 'creditmemos': ?>
+        <?php break; ?>
+    <?php case 'invoices': ?>
+        <?php break; ?>
+    <?php case 'offers': ?>
+        <div class="filter table row <?php if ($rowNum %2 === 0) echo 'even'; else echo 'odd';++$rowNum;?>"">
+            <div class="large-2 columns"><div class="bottom-align-container">
+                <?php echo $this->__('Order Status:')?>
+            </div></div>
+            <div class="large-10 columns"><div class="bottom-align-container">
+                <?php echo $this->createFilterSpan('open', $this->getStatusOpen(), $this->getCountOffers(), 'documents_form', 'status')?>
+                <?php echo $this->createFilterSpan('commissioned', $this->getStatusCommissioned(), $this->getCountCommissioned(), 'documents_form', 'status')?>
+                <?php echo $this->createFilterSpan('delivered', $this->getStatusDelivered(), $this->getCountDelivered(), 'documents_form', 'status')?>
+                <?php echo $this->createFilterSpan('invoiced', $this->getStatusInvoiced(), $this->getCountInvoiced(), 'documents_form', 'status')?>
+                <?php echo $this->createFilterSpan('credited', $this->getStatusCredited(), $this->getCountCredited(), 'documents_form', 'status')?>
+                <span><a href="<?php echo $this->getUrl('*/*/*', array('reset' => 1))?>" onClick="resetSwitches('documents_form', 'status');return false;"><?php echo $this->__('All')?> <span class="count">(*)</span></a></span>
+            </div></div>
+        </div>
+        <?php break; ?>
+    <?php case 'orders': ?>
+        <div class="filter table row <?php if ($rowNum %2 === 0) echo 'even'; else echo 'odd';++$rowNum;?>"">
+            <div class="large-2 columns"><div class="bottom-align-container">
+                <?php echo $this->__('Order Status:')?>
+            </div></div>
+            <div class="large-10 columns"><div class="bottom-align-container">
+                <?php echo $this->createFilterSpan('open', $this->getStatusOpen(), $this->getCountOpen(), 'documents_form', 'status')?>
+                <?php echo $this->createFilterSpan('commissioned', $this->getStatusCommissioned(), $this->getCountCommissioned(), 'documents_form', 'status')?>
+                <?php echo $this->createFilterSpan('delivered', $this->getStatusDelivered(), $this->getCountDelivered(), 'documents_form', 'status')?>
+                <?php echo $this->createFilterSpan('invoiced', $this->getStatusInvoiced(), $this->getCountInvoiced(), 'documents_form', 'status')?>
+                <?php echo $this->createFilterSpan('credited', $this->getStatusCredited(), $this->getCountCredited(), 'documents_form', 'status')?>
+                <span><a href="<?php echo $this->getUrl('*/*/*', array('reset' => 1))?>" onClick="resetSwitches('documents_form', 'status');return false;"><?php echo $this->__('All')?> <span class="count">(*)</span></a></span>
+            </div></div>
+        </div>
+        <?php break; ?>
+    <?php case 'shipments': ?>
+        <div class="filter table row <?php if ($rowNum %2 === 0) echo 'even'; else echo 'odd';++$rowNum;?>"">
+            <div class="large-2 columns"><div class="bottom-align-container">
+                <?php echo $this->__('Order Status:')?>
+            </div></div>
+            <div class="large-10 columns"><div class="bottom-align-container">
+                <?php echo $this->createFilterSpan('delivered', $this->getStatusDelivered(), $this->getCountDelivered(), 'documents_form', 'status')?>
+                <?php echo $this->createFilterSpan('invoiced', $this->getStatusInvoiced(), $this->getCountInvoiced(), 'documents_form', 'status')?>
+                <?php echo $this->createFilterSpan('credited', $this->getStatusCredited(), $this->getCountCredited(), 'documents_form', 'status')?>
+                <span><a href="<?php echo $this->getUrl('*/*/*', array('reset' => 1))?>" onClick="resetSwitches('documents_form', 'status');return false;"><?php echo $this->__('All')?> <span class="count">(*)</span></a></span>
+            </div></div>
+        </div>
+        <?php break; ?>
+    <?php default: ?>
+        <div class="filter table row <?php if ($rowNum %2 === 0) echo 'even'; else echo 'odd';++$rowNum;?>"">
+            <div class="large-2 columns"><div class="bottom-align-container">
+                <?php echo $this->__('Order Status:')?>
+            </div></div>
+            <div class="large-10 columns"><div class="bottom-align-container">
+                <?php echo $this->createFilterSpan('open', $this->getStatusOpen(), $this->getCountOpen(), 'documents_form', 'status')?>
+                <?php echo $this->createFilterSpan('commissioned', $this->getStatusCommissioned(), $this->getCountCommissioned(), 'documents_form', 'status')?>
+                <?php echo $this->createFilterSpan('delivered', $this->getStatusDelivered(), $this->getCountDelivered(), 'documents_form', 'status')?>
+                <?php echo $this->createFilterSpan('invoiced', $this->getStatusInvoiced(), $this->getCountInvoiced(), 'documents_form', 'status')?>
+                <?php echo $this->createFilterSpan('credited', $this->getStatusCredited(), $this->getCountCredited(), 'documents_form', 'status')?>
+                <span><a href="<?php echo $this->getUrl('*/*/*', array('reset' => 1))?>" onClick="resetSwitches('documents_form', 'status');return false;"><?php echo $this->__('All')?> <span class="count">(*)</span></a></span>
+            </div></div>
+        </div>
+        <?php break; ?>
+<?php endswitch; ?>            
+<div class="table filter row <?php if ($rowNum %2 === 0) echo 'even'; else echo 'odd';++$rowNum;?>">
+    <div class="large-2 columns"><div class="bottom-align-container"><?php echo $this->__('Document Date:')?></div></div>
+    <div class="large-10 columns date"><div class="bottom-align-container">
+        <?php echo $this->createBasicFilterSpan('date_range', 'this_year', $this->__('this year'), ($this->_arrayHelper->arrayDefault($_sessionParams, 'date_range') === 'this_year'), "setDateRange('documents_form', 'this_year');return false;")?>
+        <?php echo $this->createBasicFilterSpan('date_range', 'this_month', $this->__('this month'), ($this->_arrayHelper->arrayDefault($_sessionParams, 'date_range') === 'this_month'), "setDateRange('documents_form', 'this_month');return false;")?>
+        <?php echo $this->createBasicFilterSpan('date_range', 'last_3_months', $this->__('last %d months', 3), ($this->_arrayHelper->arrayDefault($_sessionParams, 'date_range') === 'last_3_months'), "setDateRange('documents_form', 'last_3_months');return false;")?>
+        <span><?php echo $this->__('date from/to')?>: 
+            <input type="text" name="date_from" class="date-picker" id="documents-date-from" size="10" maxlength="10" value="<?php echo $this->_arrayHelper->arrayDefault($_sessionParams, 'date_from')?>"/>
+            <input type="text" name="date_to" class="date-picker" id="documents-date-to" size="10" maxlength="10" value="<?php echo $this->_arrayHelper->arrayDefault($_sessionParams, 'date_to')?>"/>
+        </span>
+        <?php echo $this->createBasicFilterSpan('text', 'text', $this->__('All'). ' <span class="count">(*)</span>', (false), "document.forms['documents_form'].elements['date_from'].value = '';document.forms['documents_form'].elements['date_to'].value = '';setDateRange('documents_form', '');return false;")?>
+    </div></div>
+</div>
+    <?php if ($this->isDetailsearchRequest()): ?>
+        </td>
+        <td class="right-column">
+            <div class="headline c2"><?php echo $this->__('Info')?></div>
+            <p><?php echo $this->__('You can filter your documents by type, date, and status. You can search for document number, article id and your document description.')?></p>
+        </td>
+        </tr>
+        </table>
+    <?php endif; ?>
+
+<script type="text/javascript">//<![CDATA[
+
+    function setDateRange(formName, range) {
+        if (jQuery('form#' + formName + ' input[name=\"date_range\"]').val() === range)
+            jQuery('form#' + formName + ' input[name=\"date_range\"]').val('');
+        else {
+            jQuery('form#' + formName + ' input[name=\"date_range\"]').val(range);
+            jQuery('form#' + formName + ' input[name=\"date_from\"]').val('');
+            jQuery('form#' + formName + ' input[name=\"date_to\"]').val('');
+        }
+        jQuery('form#' + formName).submit();
+    }
+    function switchText(el, defaultText) {
+        if (el.value == defaultText)
+            { el.value=''; jQuery(el).addClass('default'); }
+        else if (el.value == '')
+            { el.value=defaultText; jQuery(el).addClass('default'); }
+        else jQuery(el).removeClass('default');
+    }
+    function setSwitch ( formName, categoryName, elementName ) {
+        var value = jQuery('#' + categoryName + '-' + elementName).val();
+        if (value === '1')
+            value = '';
+        else
+            value = '1';
+        jQuery('#' + categoryName + '-' + elementName).val(value);
+        jQuery('form#' + formName).submit();
+    }
+    function resetSwitches ( formName, categoryName ) {
+        jQuery('form#' + formName + ' input[id|="' + categoryName + '"]').each(function(i, e) {
+            jQuery(this).val('');
+        });
+        jQuery('form#' + formName).submit();
+    }
+
+    function resetTextIfDefault() {
+        <?php
+            $_textDefault = $this->__('Order/Offer Data, Names, Addresses, Article IDs');
+            $_text = $this->_arrayHelper->arrayDefault($_sessionParams, 'text', $_textDefault);
+        ?>
+        var el = jQuery('form#documents_form input[name="text"]');
+
+        if (el.val() === '<?php echo $_textDefault?>')
+            el.val('').addClass('default');
+
+    }
+
+    jQuery(document).ready(function() {
+        jQuery('form#documents_form').submit(function() {
+            resetTextIfDefault();
+        });
+        jQuery('.date-picker').change(function(evt) {
+            jQuery('input[name=\"date_range\"]').val('');
+            jQuery('.date_range').removeClass('active');
+            jQuery('form#documents_form').submit();
+        });
+    });
+//]]>
+</script>

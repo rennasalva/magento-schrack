@@ -1,0 +1,385 @@
+/*Filter Css*/
+
+.filterPopup {
+	background: #e2e2e2;
+	position: absolute;
+	top: 50px;
+	right: 0;
+	left: inherit;
+	width: 350px;
+
+	&.openedBx {
+		display: block;
+		width: 100%;
+		position: relative;
+		top: 10px;
+		border-radius: 0;
+		border: 0;
+		background: #f9f8f8;
+		box-shadow: none;
+		font-size: 14px;
+		margin: 0;
+		padding: 0;
+
+		.tabSection {
+
+			li {
+				a {
+					padding: 5px 15px;
+					font-size: 14px;
+				}
+
+				&.active a {
+					border-bottom: 3px solid #d1222b;
+				}
+			}
+
+			.tab-content .panel-body li a {
+				padding: 0px 0px 0 5px;
+			}
+		}
+
+		.search-page-container {
+			.prodListing li .tabSection li a {
+				width: 100%;
+			}
+		}
+	}
+
+	.tabSection {
+
+		li {
+			a {
+				color: #666666;
+
+				&:hover {
+					color: #000;
+				}
+			}
+
+			&.active, &.active a {
+				color: #000;
+			}
+		}
+
+		.tab-content {
+			padding: 0px;
+		}
+	}
+
+	.panel-group {
+		.panel,
+		.panel-heading {
+			border-radius: 0px;
+		}
+
+		.panel-heading h4 a {
+			display: block;
+		}
+
+		.panel+.panel {
+			margin: 0px;
+		}
+	}
+
+	.panel-body {
+		background: #e2e2e2;
+
+		li input[type=checkbox] {
+			vertical-align: top;
+		}
+
+		li,
+		li label {
+			float: none;
+			font-size: 15px;
+			color: #666666;
+			font-weight: normal;
+			width: 92%;
+		}
+	}
+}
+
+
+
+.filterPopup .tabSection .panel-body ul {
+	border-bottom: 0;
+}
+
+.filterPopup .tabSection .panel-body a {
+	padding: 0;
+	color: #174573;
+}
+
+.filterPopup .topSection {
+	padding: 5px 15px 10px;
+	font-size: 14px;
+}
+
+.filterPopup .topBttmSection {
+	padding: 5px 15px 5px;
+	background: #fff;
+	font-size: 14px;
+}
+
+.filterPopup .filterTopLInk {
+	color: #d1222b;
+	font-weight: bold;
+}
+
+.filterPopup .panel-heading .accordion-toggle:after {
+	font-family: 'Glyphicons Halflings';
+	font-style: normal;
+	font-weight: normal;
+	line-height: 1;
+	content: "\e260";
+	float: right;
+}
+
+.filterPopup .panel-heading .accordion-toggle.collapsed:after {
+	content: "\e259";
+}
+
+
+/* filter chnages */
+
+.desktop-view .filterPopup.openedBx {
+	border-top: none;
+	top: 0;
+}
+
+.desktop-view.product-view .filterPopup.openedBx {
+	top: 10px;
+}
+
+.desktop-view .filterPopup.openedBx>.tabSection {
+	border-top: 1px solid rgba(0, 0, 0, .15)
+}
+
+.filterPopup .tabSection .panel-body a.filter-deselect {
+	margin-bottom: 7px;
+	display: block;
+	color: #333;
+	margin-top: -8px;
+}
+
+.filterPopup .panel-group .panel-heading h4 .selected-filter {
+	font-size: 12px;
+	height: 33px;
+	display: none;
+	overflow: hidden;
+	color: #333;
+	text-decoration: none;
+}
+
+.filterPopup .panel-group .panel-heading h4 a {
+	text-decoration: none;
+}
+
+.filterPopup .panel-group .panel-heading h4 a:hover .selected-filter {
+	text-decoration: none;
+}
+
+.filterPopup .panel-heading .accordion-toggle {
+	position: relative;
+}
+
+.filterPopup .panel-heading .accordion-toggle::after {
+	position: absolute;
+	top: 0;
+	right: 0
+}
+
+.filterPopup .panel-group .panel-heading h4 a:hover>span {
+	text-decoration: underline;
+}
+
+.filterPopup .panel-body li input[type=checkbox] {
+	float: left;
+}
+
+.filterPopup .panel-body li label {
+	width: calc(100% - 22px);
+	margin-left: 5px;
+}
+
+.filterPopup .panel-body li label a {
+	float: none;
+}
+
+
+.popupBox {
+	-webkit-box-shadow: 0px 0px 5px 0px #dedede;
+	box-shadow: 0px 0px 5px 0px #dedede;
+	position: absolute;
+	border: 1px solid #dfdfdf;
+	left: -125px;
+	//top: 30px;
+	background: #fff;
+	z-index: 1;
+	width: 250px;
+	display: none;
+
+	li {
+		padding: 5px 10px;
+		clear: both;
+		font-size: 12px !important;
+		font-family: 'robotomedium', Helvetica, Arial, Sans-Serif !important;
+		color: #333;
+
+		span {
+			float: right;
+			padding-left: 20px;
+			font-size: 13px;
+			color: #333;
+		}
+
+		span.redMarker {
+			color: #d1222b;
+		}
+
+		&.hd {
+			border-bottom: 1px solid #e2e2e2;
+			font-size: 13px !important;
+			font-weight: bold;
+		}
+
+		&.bt {
+			border-top: 1px solid #e2e2e2;
+			font-size: 13px !important;
+		}
+	}
+
+	.product-description & {
+		left: 35px;
+	}
+
+	.partListCont & {
+		left: 10px;
+
+		ul {
+			border: 0;
+		}
+
+		li {
+			width: 100%;
+
+			&.hd {
+				padding: 0px 10px 5px;
+			}
+		}
+	}
+}
+
+
+.inquiryPopup {
+	.modal-title,
+	.catalog-nr {
+		font-size: 20px;
+		color: #00589d;
+	}
+
+	.modal-title {
+		.subTitle {
+			font-size: 18px;
+			color: #888;
+		}
+	}
+
+	.modal-header {
+		border-bottom: 0;
+		padding-bottom: 5px;
+	}
+
+	.modal-footer {
+		padding: 0px 15px 15px 15px;
+		border-top: 0;
+	}
+
+	.errorMsg {
+		color: #D1222C;
+	}
+
+	.contactBx {
+		background: #ebebeb;
+		padding: 15px;
+		border: 0;
+		box-shadow: none;
+		margin: 0 -15px;
+
+		.inner {
+			background: #f8f8f8;
+			box-shadow: 0 0 5px 1px #dedede;
+			padding: 15px;
+
+			.iconCont {
+				width: 20px;
+				margin-right: 10px;
+				padding-bottom: 5px;
+				padding-top: 3px;
+			}
+		}
+	}
+
+	.replacing-product-box {
+		padding: 15px 0;
+
+		.innerCont {
+			border: 1px solid #e0e0e0;
+			padding: 15px;
+			margin-bottom: 15px;
+			font-size: 16px;
+		}
+	}
+}
+
+//
+//  Responsive
+//  ---------------------------------------------
+
+@media (min-width: $breakpoint-up-xs) and (max-width: $breakpoint-down-md) {
+	.filterPopup {
+		width: 290px;
+	}
+
+	.filterPopup .tabSection li a {
+		padding: 10px 20px;
+	}
+
+	.inquiryPopup .contactBx .inner .foto {
+		width: 100%;
+	}
+
+	.inquiryPopup .contactBx .inner .iconCont {
+		width: 15px;
+		margin-right: 5px;
+	}
+
+	.inquiryPopup .contactBx .inner p {
+		font-size: 11px;
+	}
+
+	.inquiryPopup .contactBx .inner h3.subHeading {
+		font-size: 13px;
+	}
+
+	.popupBox {
+		left: -100px;
+	}
+
+	.cartBx .popupBox {
+		left: -10px;
+	}
+
+}
+
+/* icon click issue */
+@media (min-width: $breakpoint-up-xs) and (max-width: $breakpoint-down-md) {
+	.filterPopup {
+		width: 240px;
+	}
+
+	.filterPopup .tabSection li a {
+		padding: 10px 10px;
+	}
+}

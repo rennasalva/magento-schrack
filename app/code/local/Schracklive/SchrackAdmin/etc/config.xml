@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<config>
+	<modules>
+		<Schracklive_SchrackAdmin>
+			<version>1.0.1</version>
+			<depends>
+				<Mage_Admin />
+				<Schracklive_Schrack />
+			</depends>
+		</Schracklive_SchrackAdmin>
+	</modules>
+	<global>
+		<models>
+			<admin>
+				<rewrite>
+					<user>Schracklive_SchrackAdmin_Model_User</user>
+				</rewrite>
+			</admin>
+		</models>
+	</global>
+</config>

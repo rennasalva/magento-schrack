@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+<layout>
+	<checkout_onepage_index>
+			<reference name="head">
+				<action method="addItem"><type>js</type><name>customweb/payunitycw/checkout.js</name><params/><if/></action>
+				 <action method="addItem"><type>skin_css</type><name>customweb/payunitycw/updates.css</name></action>
+			</reference>
+			<reference name="content">
+        		<block type="payunitycw/Checkout" name="loadJavascriptForPayUnityCw" after="-" />
+   			</reference>
+	</checkout_onepage_index>
+	
+	<onestepcheckout_index_index>
+			<reference name="head">
+				<action method="addItem"><type>js</type><name>customweb/payunitycw/checkout.js</name><params/><if/></action>
+				<action method="addItem"><type>skin_css</type><name>customweb/payunitycw/updates.css</name></action>
+			</reference>
+			<reference name="content">
+        		<block type="payunitycw/Checkout" name="loadJavascriptForPayUnityCw" after="-" />
+   			</reference>
+	</onestepcheckout_index_index>
+	
+	<onepagecheckout_index_index>
+			<reference name="head">
+				<action method="addItem"><type>js</type><name>customweb/payunitycw/checkout.js</name><params/><if/></action>
+				<action method="addItem"><type>skin_css</type><name>customweb/payunitycw/updates.css</name></action>
+			</reference>
+			<reference name="content">
+        		<block type="payunitycw/Checkout" name="loadJavascriptForPayUnityCw" after="-" />
+   			</reference>
+	</onepagecheckout_index_index>
+	
+	<gomage_checkout_onepage_index>
+			<reference name="head">
+				<action method="addItem"><type>js</type><name>customweb/payunitycw/checkout.js</name><params/><if/></action>
+				<action method="addItem"><type>skin_css</type><name>customweb/payunitycw/updates.css</name></action>
+			</reference>
+			<reference name="before_body_end">
+        		<block type="payunitycw/Checkout" name="loadJavascriptForPayUnityCw" after="-" />
+   			</reference>
+	</gomage_checkout_onepage_index>
+
+	<aw_onestepcheckout_index_index>
+			<reference name="head">
+				<action method="addItem"><type>js</type><name>customweb/payunitycw/checkout.js</name><params/><if/></action>
+				<action method="addItem"><type>skin_css</type><name>customweb/payunitycw/updates.css</name></action>
+			</reference>
+			<reference name="content">
+        		<block type="payunitycw/Checkout" name="loadJavascriptForPayUnityCw" after="-" />
+   			</reference>
+	</aw_onestepcheckout_index_index>
+	
+	<firecheckout_index_index>
+			<reference name="head">
+				<action method="addItem"><type>js</type><name>customweb/payunitycw/checkout.js</name><params/><if/></action>
+				<action method="addItem"><type>skin_css</type><name>customweb/payunitycw/updates.css</name></action>
+			</reference>
+			<reference name="content">
+        		<block type="payunitycw/Checkout" name="loadJavascriptForPayUnityCw" after="-" />
+   			</reference>
+	</firecheckout_index_index>
+	
+	<iwd_opc_index_index>
+			<reference name="head">
+				<action method="addItem"><type>js</type><name>customweb/payunitycw/checkout.js</name><params/><if/></action>
+				<action method="addItem"><type>skin_css</type><name>customweb/payunitycw/updates.css</name></action>
+			</reference>
+			<reference name="content">
+        		<block type="payunitycw/Checkout" name="loadJavascriptForPayUnityCw" after="-" />
+   			</reference>
+	</iwd_opc_index_index>
+	
+	<opc_index_index>
+			<reference name="head">
+				<action method="addItem"><type>js</type><name>customweb/payunitycw/checkout.js</name><params/><if/></action>
+				<action method="addItem"><type>skin_css</type><name>customweb/payunitycw/updates.css</name></action>
+			</reference>
+			<reference name="content">
+        		<block type="payunitycw/Checkout" name="loadJavascriptForPayUnityCw" after="-" />
+   			</reference>
+	</opc_index_index>
+	
+	<payunitycw_checkout_pay>
+		<reference name="head">
+			<action method="addItem"><type>skin_css</type><name>customweb/payunitycw/updates.css</name></action>
+		</reference>
+	</payunitycw_checkout_pay>
+
+	 <checkout_cart_index>
+	 	<reference name="head">
+			<action method="addItem"><type>skin_css</type><name>customweb/payunitycw/updates.css</name></action>
+		</reference>
+        <reference name="checkout.cart.top_methods">
+            <block type="payunitycw/externalCheckout_widgets" name="checkout.cart.methods.payunitycw_external_checkouts.top" before="-" template="customweb/payunitycw/external_checkout/widgets.phtml" />
+        </reference>
+        <reference name="checkout.cart.methods">
+            <block type="payunitycw/externalCheckout_widgets" name="checkout.cart.methods.payunitycw_external_checkouts.bottom" before="-" template="customweb/payunitycw/external_checkout/widgets.phtml" />
+        </reference>
+    </checkout_cart_index>
+    
+    <payunitycw_external_checkout_review>
+    	<remove name="right"/>
+        <remove name="left"/>
+    
+    	<block type="payunitycw/externalCheckout_review" name="root" output="toHtml" template="customweb/payunitycw/external_checkout/review.phtml">
+            <action method="addItemRender"><type>default</type><block>checkout/cart_item_renderer</block><template>checkout/onepage/review/item.phtml</template></action>
+            <action method="addItemRender"><type>grouped</type><block>checkout/cart_item_renderer_grouped</block><template>checkout/onepage/review/item.phtml</template></action>
+            <action method="addItemRender"><type>configurable</type><block>checkout/cart_item_renderer_configurable</block><template>checkout/onepage/review/item.phtml</template></action>
+            <block type="checkout/cart_totals" name="checkout.onepage.review.info.totals" as="totals" template="checkout/onepage/review/totals.phtml"/>
+		</block>
+    </payunitycw_external_checkout_review>
+</layout>

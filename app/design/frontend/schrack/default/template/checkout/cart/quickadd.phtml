@@ -1,0 +1,223 @@
+<!-- shop/app/design/frontend/schrack/default/template/checkout/cart/quickadd.phtml (start) -->
+<?php
+	/**
+	* Quickadd template
+	*
+	* @see Schracklive_SchrackCheckout_Block_Cart_Quickadd
+	*/
+
+	// $_helper = Mage::getModel('catalog/product');
+	// $_itemRenderer = Mage::getModel( 'checkout_block_cart_item/renderer' );
+
+	/* var $_searchHelper Schracklive_SchrackCatalogSearch_Helper_Data */
+
+	// $_searchHelper = Mage::helper( 'catalogsearch' );
+	// $queryname = $_searchHelper->getQueryParamName();
+
+    $_quickaddHelper = Mage::helper('schrackcheckout/quickadd');
+    $affectedId = '';
+    if ($this->getRequest()->getParam('id')) {
+        $affectedId = $this->getRequest()->getParam('id');
+    } else {
+        if ($_quickaddHelper->getModuleName() === 'wishlist' && $_quickaddHelper->getControllerName() === 'partslist') {
+            $partslist = Mage::helper('schrackwishlist/partslist')->getActiveOrFirstPartslist();
+            $affectedId = $partslist->getId();
+        }
+    }
+    $_quote = Mage::registry('quote_tricky');
+    if ( isset($_quote) ) {
+        $_isPickup = $_quote->getIsPickup();
+    } else {
+        $_isPickup = false;
+    }
+
+    $showQuickaddContent = true;
+
+    $sessionCustomerId = Mage::getSingleton('customer/session')->getCustomer()->getId();
+    $aclRoleId = Mage::getModel('customer/customer')->load($sessionCustomerId)->getSchrackAclRoleId();
+    $isProjectant = Mage::helper('schrack/acl')->isProjectantRoleId($aclRoleId);
+    if ($isProjectant) {
+        $showQuickaddContent = false;
+    }
+?>
+
+<?php if ($showQuickaddContent) : ?>
+    <div class="quickadd table row no-table-heights">
+        <div class="large-12 columns">
+            <div class="table row csv">
+                <form method="post" onsubmit="submitFormAndTrackGaEvent(this.form, 'cart', 'quick_add_upload', 'csv')" action="<?php echo Mage::helper('schrackcore/url')->getUrlWithPossibleId('*/*/addCsv'); ?>" enctype="multipart/form-data" id="cart-addcsv-form">
+                    <div class="large-3 columns">
+                        <div class="text"><?php echo $this->__('Upload CSV') ?> <a href="<?php echo Mage::getStoreConfig('schrack/typo3/typo3url') . Mage::getStoreConfig('schrack/typo3/uploadcsvtext_url');?>">[?]</a></div>
+                    </div>
+                    <div class="upload large-6 columns">
+                        <input type="file" title="<?php echo $this->__('CSV File');?>" name="csv" id="quickadd-csv-upload-button"/>
+                    </div>
+                    <div class="add_product large-3 columns"><div class="right-align-container">
+                        <button type="button" id="quickadd-button" title="<?php echo $this->__('Add Products') ?>" class="button-red small fixed-width"><?php echo $this->__('Add Products') ?></button>
+                    </div></div>
+                </form>
+            </div>
+            <div class="table row download-csv">
+                <div class="large-3 columns"><div class="text"><?php echo $this->__('Download CSV')?> <a href="<?php echo Mage::getStoreConfig('schrack/typo3/typo3url') . Mage::getStoreConfig('schrack/typo3/uploadcsvtext_url');?>">[?]</a></div></div>
+                <?php if ($_quickaddHelper->getModuleName() === 'wishlist' && $_quickaddHelper->getControllerName() === 'partslist') : ?>
+                    <div class="large-3 columns large-offset-3"><button id="downloadButton1" class="button-red small fixed-width"><?php echo $this->__('CSV Download Button Text')?></button></div>
+                <?php else:?>
+                    <div class="large-3 columns large-offset-3"><button id="downloadButton2" class="button-red small fixed-width"><?php echo $this->__('CSV Download Button Text')?></button></div>
+                <?php endif;?>
+            </div>
+            <div class="table row add-product no-table-heights">
+                <form action="<?php echo $this->getUrl('checkout/cart/quickadd') ?>" onsubmit="return submitFormAndTrackGaEvent(this.form, '<?php echo $_quickaddHelper->getModuleName(); ?>', 'quick_add_single', this.form.elements['<?php echo $_quickaddHelper->getQueryParamName(); ?>'].value)" method="post" id="product_quickadd_form">
+                    <input type="hidden" name="target" value="cart" />
+                    <input type="hidden" name="id" value="<?php echo $affectedId; ?>" />
+                    <div class="large-3 columns">
+                        <div class="text"><?php echo $this->__('Quickadd')?></div>
+                    </div>
+                    <div class="large-3 columns">
+                        <input type="hidden" name="url" value="<?php echo $_quickaddHelper->getResultUrl(); ?>" id="url"/>
+                        <input type="text" name="<?php echo $_quickaddHelper->getQueryParamName(); ?>" id="sku" maxlength="10" placeholder="<?php echo $this->__('Article Number'); ?>" title="<?php echo $this->__('Article Number'); ?>" class="input-text sku default-text" autocomplete="off" autofocus="autofocus" /><div id="quickadd_autocomplete" class="quickadd-autocomplete"></div>
+                    </div>
+                    <div class="large-3 columns">
+                        <input type="text" name="qty" id="qty" maxlength="12" placeholder="<?php echo $this->__('Qty'); ?>" title="<?php echo $this->__('Qty'); ?>" class="input-text qty default-text" />
+                    </div>
+                    <div class="large-3 columns"><div class="right-align-container">
+                        <?php if ($_quickaddHelper->getModuleName() === 'wishlist' && $_quickaddHelper->getControllerName() === 'partslist') : ?>
+                            <button type="button" id="quickadd_addproduct_partslist_button" title="<?php echo $this->__('Add to partslist'); ?>" class="button-red gray small fixed-width">
+                                <?php echo $this->__('Add to partslist'); ?>
+                            </button>
+                        <?php else: ?>
+                            <button type="button" id="quickadd_addproduct_button" title="<?php echo $this->__('Add to Cart'); ?>" class="button-red small gray fixed-width">
+                                <?php echo $this->__('Add to Cart'); ?>
+                            </button>
+                        <?php endif; ?>
+                    </div></div>
+                    <script type="text/javascript">
+                        //<![CDATA[
+                        var quickaddsearchForm = new quickaddsearchForm('product_quickadd_form', 'sku', '<?php echo $this->__('Article Number'); ?>', 'qty');
+                        quickaddsearchForm.initAutocomplete('<?php echo $_quickaddHelper->getSuggestUrl(); ?>', 'quickadd_autocomplete');
+
+                        var element_to_focus = document.getElementById('product_quickadd_form');
+                        element_to_focus.sku.focus();
+
+                        addDefaultText('sku', '<?php echo $this->__('Article Number'); ?>');
+                        addDefaultText('qty', '<?php echo $this->__('Qty'); ?>');
+                        //]]>
+                    </script>
+                </form>
+                <input type="hidden" id="memo" value="0">
+            </div>
+       </div>
+    </div>
+
+    <style>
+        button:focus { outline: none; }
+    </style>
+<?php endif; ?>
+
+<script type="text/javascript">//<![CDATA[
+
+    var availabilityCheck4quickadd = function () {
+        checkAvailability("<?php echo Mage::helper('schrackcore/url')->getUrlWithCurrentProtocol('catalog/product/checkAvailability'); ?>",
+            jQuery('#sku').val(),
+            jQuery('#qty').val(),
+            '',
+            <?php echo $_isPickup ? 1 : 0; ?>,
+            <?php echo $_isPickup ? 0 : 1; ?>
+        ).done(function (datax) {
+                if ( typeof(datax) !== 'undefined' && typeof(datax.status) !== 'undefined' && datax.status === 'ERROR' ) {
+                    checkMessages(datax);
+                } else {
+                    // Check valid quantity:
+                    var url = "<?php echo Mage::helper('schrackcore/url')->getUrlWithCurrentProtocol('catalog/product/checkValidQuantity'); ?>";
+                    var result = checkValidQuantity(url, jQuery('#sku').val(), jQuery('#qty').val());
+                    if (result == "valid") {
+                        var fform = jQuery('#product_quickadd_form').get()[0];
+                        submitFormAndTrackGaEvent(fform, 'cart', 'quick_add_single', fform.elements['<?php echo $_quickaddHelper->getQueryParamName(); ?>'].value)
+                    } else if (result.indexOf("invalid") >= 0) {
+                        var correctQuantity = result.replace("invalid_", "");
+                        var infoTextNextPossibleQuantity = "<?php echo $this->__('Quantity of %1$s has been adjusted to %2$d (a multiple of %3$d).', '', '', '0'); ?>";
+                        infoTextNextPossibleQuantity = infoTextNextPossibleQuantity.replace('0', correctQuantity);
+                        jQuery('#qty').val(correctQuantity);
+                        jQuery('.errors').remove();
+                        setTimeout(function() {
+                            jQuery('#content').prepend('<ul class="messages"><li class="notice-msg"><ul><li><span>' + infoTextNextPossibleQuantity + '</span></li></ul></li></ul>');
+                        }, 1000);
+                        jQuery('#quickadd_addproduct_button').click();
+                    } else {
+                        jQuery('.errors').remove();
+                        jQuery('#content').prepend('<ul class="messages"><li class="error-msg"><ul><li><span><?php echo $this->__('The entered values are not correct and/or not a number.') ?></span></li></ul></li></ul>');
+                        unsetOverlayLoader();
+                    }
+                }
+            });
+    };
+
+    var setOverlayLoader = function() {
+        // Set overlay for
+        jQuery('.controlsArea').css({  "position": "absolute",
+            "height": "100%",
+            "width": "100%",
+            "background": "url(<?php echo $this->getSkinUrl('schrackdesign/Public/Images/download_ajax_loader.gif'); ?>) no-repeat center center",
+            "top": "-241px",
+            "left": "0",
+            "opacity": "0.4",
+            "z-index": "99"});
+    }
+
+    jQuery(document).ready(function() {
+        jQuery('#quickadd_addproduct_button').focus();
+
+        function removeMessages() {
+            // Both are messages but not shown in unique manner:
+            jQuery('.messages').hide();
+            jQuery('.messages').remove();
+
+            jQuery('.errors').hide();
+            jQuery('.errors').remove();
+        }
+
+        // These buttons are used multiple: e.g. partslist, cart, etc:
+        jQuery('#quickadd-button').on('click', function() {
+            removeMessages();
+            setOverlayLoader();
+            submitFormAndTrackGaEvent(jQuery('#cart-addcsv-form').get()[0], 'cart', 'quick_add_upload', 'csv');
+        });
+
+        jQuery('#downloadButton1').on('click', function(event) {
+            if (event.which && event.which == 1 && jQuery('.ui-dialog-buttons').is(':visible')) {
+                // Do Nothing (This is only for Internet Explorer, because IE11 intterpretes ENTER-Button pressed as MouseClick-Event)
+            } else {
+                removeMessages();
+                setOverlayLoader();
+                window.location.href='<?php echo $this->getUrl('wishlist/partslist/downloadCsv') ?>';
+                setTimeout(function(){unsetOverlayLoader();},2000);
+            }
+            return true;
+        });
+
+        jQuery('#downloadButton2').on('click', function() {
+            removeMessages();
+            setOverlayLoader();
+            window.location.href='<?php echo $this->getUrl('checkout/cart/downloadCsv') ?>';
+            setTimeout(function(){unsetOverlayLoader();},2000);
+            return true;
+        });
+
+        jQuery('#quickadd_addproduct_partslist_button').on('click', function() {
+            removeMessages();
+            setOverlayLoader();
+            this.form.elements['target'].value='<?php echo $_quickaddHelper->getPartslistButtonTarget() ?>';
+            submitFormAndTrackGaEvent(jQuery('#product_quickadd_form').get()[0], '<?php echo $_quickaddHelper->getModuleName(); ?>', 'quick_add_single', this.form.elements['<?php echo $_quickaddHelper->getQueryParamName(); ?>'].value);
+            return false;
+        });
+
+        jQuery('#quickadd_addproduct_button').on('click', function() {
+            removeMessages();
+            setOverlayLoader();
+            availabilityCheck4quickadd();
+            return false;
+        });
+    });
+
+    //]]>
+</script>
+<!-- shop/app/design/frontend/schrack/default/template/checkout/cart/quickadd.phtml (end) -->

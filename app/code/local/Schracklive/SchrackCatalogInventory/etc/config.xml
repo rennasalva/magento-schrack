@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<config>
+    <modules>
+         <Schracklive_SchrackCatalogInventory>
+            <version>1.1.1</version>
+            <depends>
+                <Mage_CatalogInventory />
+                <Schracklive_Schrack />
+            </depends>
+         </Schracklive_SchrackCatalogInventory>
+    </modules>
+    
+    <!-- The <layout> updates allow us to define our block layouts in a seperate file so are aren't messin' with the magento layout files.  -->
+    <adminhtml>
+        <layout>
+            <updates>
+                <schrackcataloginventory>
+                    <file>schrackcataloginventory.xml</file>
+                </schrackcataloginventory>
+            </updates>
+        </layout>
+    </adminhtml>
+    
+    <admin>
+		<!--             Here we are telling the Magento router to look for the controllers in the 
+                         Schracklive_SchrackCatalogInventory_Adminhtml before we look in the             
+                         Mage_Adminhtml module for all urls that begin with /admin/controller_name          -->
+		<routers>
+			<adminhtml>
+				<args>
+					<modules>
+						<schrackcataloginventory before="Mage_Adminhtml">Schracklive_SchrackCatalogInventory_Adminhtml</schrackcataloginventory>
+					</modules>
+				</args>
+			</adminhtml>
+		</routers>
+	</admin>    
+	<global>
+		<resources>
+			<schrackcataloginventory_setup>
+				<setup>
+					<module>Schracklive_SchrackCatalogInventory</module>
+				</setup>
+			</schrackcataloginventory_setup>
+		</resources>
+        <models>
+            <schrackcatalogcataloginventory>
+                <class>Schracklive_SchrackCatalogInventory_Model</class>
+                <resourceModel>cataloginventory_mysql4</resourceModel>
+            </schrackcatalogcataloginventory>
+            <cataloginventory>
+                <rewrite>
+                    <stock>Schracklive_SchrackCatalogInventory_Model_Stock</stock>
+                    <stock_item>Schracklive_SchrackCatalogInventory_Model_Stock_Item</stock_item>
+                    <stock_status>Schracklive_SchrackCatalogInventory_Model_Stock_Status</stock_status>
+                    <stock_item_api_v2>Schracklive_SchrackCatalogInventory_Model_Stock_Item_Api_V2</stock_item_api_v2>
+                </rewrite>
+            </cataloginventory>
+            <cataloginventory_mysql4>
+                <rewrite>
+                    <stock>Schracklive_SchrackCatalogInventory_Model_Mysql4_Stock</stock>
+                    <stock_collection>Schracklive_SchrackCatalogInventory_Model_Mysql4_Stock_Collection</stock_collection>
+                    <stock_item>Schracklive_SchrackCatalogInventory_Model_Mysql4_Stock_Item</stock_item>
+                </rewrite>
+            </cataloginventory_mysql4>
+        </models>
+		<blocks>
+			<schrackcataloginventory>
+				<class>Schracklive_SchrackCatalogInventory_Block</class>
+			</schrackcataloginventory>
+		</blocks>
+        
+        <helpers>
+            <schrackcataloginventory>
+                <class>Schracklive_SchrackCatalogInventory_Helper</class>
+            </schrackcataloginventory>
+        </helpers>
+	</global>
+</config>

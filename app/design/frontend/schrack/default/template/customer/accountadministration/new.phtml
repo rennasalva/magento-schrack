@@ -1,0 +1,196 @@
+<!-- default/template/customer/accountadministration/new.phtml (start) -->
+<?php
+    echo $this->getMessagesBlock()->getGroupedHtml();
+    $customer = Mage::getModel("customer/customer");
+    $customer->setData(Mage::getSingleton('customer/session')->getCustomerFormData());
+
+    $_session = Mage::getSingleton('customer/session');
+    $sessionCustomer  = $_session->getCustomer();
+?>
+
+<?php if ($sessionCustomer->isAllowed('accessRight','edit')) :?>
+<form action="<?php echo $this->getUrl('customer/accountadministration/savenew') ?>" method="post" id="form-validate">
+    <div class="row data">
+        <div class="large-12 columns info-box">
+            <div class="row">
+                <div class="large-12 columns">
+                    <div class="headline b1">
+                        &nbsp;<?php echo $this->__('Add Account'); ?>
+                    </div>
+                </div>
+            </div>
+            <div class="row content">
+                <div class="large-12 columns">                
+                    <div class="fieldset">
+                        <?php echo $this->getBlockHtml('formkey') ?>
+
+                        <ul class="form-list">
+                            <br>
+                            <?php $_gender = $this->getLayout()->createBlock('customer/widget_gender') ?>
+                            <?php if ($_gender->isEnabled()): ?>
+                                <li><?php echo $_gender->setGender($customer->getGender())->toHtml() ?></li>
+                                <br>
+                            <?php endif ?>
+                            <li class="fields" style="height: 75px;">
+                                <?php echo $this->getLayout()->createBlock('schrackcustomer/widget_addressname')->setObject($customer)->toHtml() ?>
+                            </li>
+                            <br>
+                            <li class="wide">
+                                <label for="schrack_salutatory"><?php echo $this->__('Salutation') ?></label>
+                                <div class="input-box" style="margin-top: 10px;">
+                                    <input type="text" name="schrack_salutatory" value="<?php echo $customer->getSchrackSalutatory() ?>" title="<?php echo $this->__('Salutation') ?>" id="schrack_salutatory" class="input-text" maxlength="50" />
+                                </div>
+                            </li>
+                            <br>
+
+                            <?php echo $this->getLayout()->createBlock('schrackcustomer/widget_phonenumber')->setObject($customer)->toHtml() ?>
+
+                            <br>
+                            <li class="wide" style="width: 453px;">
+                                <label for="email" class="required"><?php echo $this->__('Email') ?><em> *</em></label>
+                                <div class="input-box" style="margin-top: 10px;">
+                                    <input style="width: 303px;" type="text" name="email" value="<?php echo $customer->getEmail() ?>" title="<?php echo $this->__('Email') ?>" id="email" class="input-text required-entry validate-email" maxlength="255" />
+                                </div>
+                            </li>
+                            <br>
+                            <li class="wide">
+                                <div>
+                                    <div style="float: left;">
+                                        <label for="password" class="required"><?php echo $this->__('Password') ?><em> *</em></label>
+                                        <div class="input-box" style="margin-top: 10px;">
+                                            <input style="width: 200px; margin-right: 4px;" type="password" title="<?php echo $this->__('Password') ?>" class="input-text required-entry validate-password" name="password" id="password" />
+                                        </div>
+                                    </div>
+                                    <div style="float: left; margin-left: 50px;">
+                                        <label for="password_repeat" class="required"><?php echo $this->__('Confirm Password') ?><em> *</em></label>
+                                        <div class="input-box" style="margin-top: 10px;">
+                                            <input style="width: 200px; margin-right: 4px;" type="password" title="<?php echo $this->__('Repeat Password') ?>" class="input-text required-entry validate-password" name="password_repeat" id="password_repeat" />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div style="clear: both;"></div>
+                            </li>
+                            <br>
+                            <li class="wide">
+                                <div>
+                                    <label for="role"><?php echo $this->__('Permissions') ?></label>
+                                    <div class="input-box" style="margin-top: 10px; margin-left: 4px;">
+                                        <?php echo Mage::helper('schrack/acl')->getAclRoleSelectorBoxForCustomerId($customer->getId()) ?>
+                                    </div>
+                                </div>
+                                <div style="margin-top: 15px; margin-left: 8px;">
+                                    <?php if (Mage::getStoreConfig('schrack/typo3/aclrolesurl')): ?>
+                                        <a href="<?php echo Mage::getStoreConfig('schrack/typo3/aclrolesurl') ?>" target="_new"><?php echo $this->__('Explanation of different permissions:') ?></a>
+                                    <?php else: ?>
+                                        <?php echo $this->__('Explanation of different permissions:') ?>
+                                    <?php endif; ?>
+                                </div>
+                                <div style="margin-top: 5px; margin-left: 8px;">
+                                    <?php echo $this->__('admin – is allowed to add new users, change data and set the user\'s rights. More than one (but minimum one) admin per customer is possible. This user is allowed to see purchase prices and send orders.') ?><br/>
+                                    <?php echo $this->__('customer – sees purchase prices, can send orders.') ?><br/>
+                                    <?php echo $this->__('staff – sees purchase prices, can not send orders.') ?><br/>
+                                    <?php echo $this->__('projectant – sees no prices, can not send orders.') ?><br/>
+                                </div>
+                            </li>
+                        </ul>
+                        <br>
+                        <br>
+                        <p class="required"><?php echo $this->__('* Required Fields') ?></p>
+                    </div>
+                </div>
+			</div>
+			<div class="row content">
+                <div style="margin-left: 9px; margin-bottom: -20px;">
+                    <a style="font-size: 1.3em; font-weight: bold;" href="<?php echo $this->getUrl('*/accountadministration/'); ?>" class=""><?php echo $this->__('Back'); ?></a>
+                </div>
+                <div class="large-2 columns large-offset-10">
+                    <button class="button-red small gray" type="submit" title="<?php echo $this->__('Save') ?>" ><?php echo $this->__('Save') ?></button>
+                </div>
+			</div>
+		</div>
+    </div>
+</form>
+<?php endif; ?>
+
+<script type="text/javascript">
+	//<![CDATA[
+
+    jQuery(document).ready(function() {
+
+        <?php if (!$sessionCustomer->isAllowed('accessRight','edit')) :?>
+            console.log('Keine Berechtigung');
+        <?php endif; ?>
+
+		var s4y_salut_format = new Object();
+
+		s4y_salut_format['de_DE_1'] = "Sehr geehrter Herr %title% %last_name%";
+		s4y_salut_format['de_DE_2'] = "Sehr geehrte Frau %title% %last_name%";
+        s4y_salut_format['de_AT_1'] = "Sehr geehrter Herr %title% %last_name%";
+        s4y_salut_format['de_AT_2'] = "Sehr geehrte Frau %title% %last_name%";
+		s4y_salut_format['en_EN_1'] = "Dear Mr. %last_name%";
+		s4y_salut_format['en_EN_2'] = "Dear Ms. %last_name%";
+		s4y_salut_format['hr_HR_1'] = "Poštovani gospodine %title% %last_name%";
+		s4y_salut_format['hr_HR_2'] = "Poštovana gospodo %title% %last_name%";
+		s4y_salut_format['fr_FR_1'] = "Monsieur %last_name%";
+		s4y_salut_format['fr_FR_2'] = "Madame %last_name%";
+		s4y_salut_format['nl_NL_1'] = "Geachte heer %last_name%";
+		s4y_salut_format['nl_NL_2'] = "Geachte mevrouw %last_name%";
+		s4y_salut_format['ro_RO_1'] = "Stimate domnule %last_name%";
+		s4y_salut_format['ro_RO_2'] = "Stimata doamna %last_name%";
+		s4y_salut_format['sr_SR_1'] = "Poštovani gospodine %title% %last_name%";
+		s4y_salut_format['sr_SR_2'] = "Poštovana gospodo %title% %last_name%";
+		s4y_salut_format['sl_SL_1'] = "Spoštovani gospod %title% %last_name%";
+		s4y_salut_format['sl_SL_2'] = "Spoštovana gospa %title% %last_name%";
+		s4y_salut_format['cs_CS_1'] = "Vážený Pane %title% %last_name%";
+		s4y_salut_format['cs_CS_2'] = "Milá Paní %title% %last_name%";
+		s4y_salut_format['hu_HU_1'] = "Tisztelt %title% %last_name% Úr!";
+		s4y_salut_format['hu_HU_2'] = "Tisztelt %title% %last_name% Asszony!";
+		s4y_salut_format['sk_SK_1'] = "Vážený pán %title% %last_name%";
+		s4y_salut_format['sk_SK_2'] = "Vážená pani %title% %last_name%";
+		s4y_salut_format['bg_BG_1'] = "Уважаеми господин %last_name%";
+		s4y_salut_format['bg_BG_2'] = "Уважаема госпожо %last_name%";
+ 		s4y_salut_format['pl_PL_1'] = "Szanowny Panie %last_name%";
+		s4y_salut_format['pl_PL_2'] = "Szanowna Pani %last_name%";       
+
+		function s4y_gen_salutatory() {
+			var language = "<?php echo Mage::app()->getLocale()->getLocaleCode();?>";
+
+			// if (language == "pl_PL")
+			// return true;
+
+			var s4y_gender = jQuery("#gender").val();
+			var s4y_salutatory;
+
+            if (s4y_gender == "1") {
+                s4y_salutatory = s4y_salut_format[language+"_1"];
+            } else {
+                s4y_salutatory = '';
+            }
+
+            if (s4y_gender == "2") {
+                s4y_salutatory = s4y_salut_format[language+"_2"];
+            }
+
+
+            s4y_salutatory = s4y_salutatory.replace(/undefined/g, "");
+			s4y_salutatory = s4y_salutatory.replace("%title%", jQuery("#prefix").val());
+			s4y_salutatory = s4y_salutatory.replace("%first_name%", jQuery("#firstname").val());
+			s4y_salutatory = s4y_salutatory.replace("%last_name%", jQuery("#lastname").val());
+			s4y_salutatory = s4y_salutatory.replace("  ", " ");
+
+			jQuery("#schrack_salutatory").val(s4y_salutatory);
+			return true;
+		}
+
+		jQuery("#gender, #lastname, #firstname, #prefix").change(function() {
+			s4y_gen_salutatory();
+		});
+
+    });
+
+	var dataFormNewCustomer = new VarienForm('form-validate', true);
+
+
+	//]]>
+</script>
+<!-- default/template/customer/accountadministration/new.phtml (end) -->

@@ -1,0 +1,212 @@
+<?php
+/* app/design/frontend/schrack/default/template/catalog/category/view.phtml */
+?>
+<?php
+    Varien_Profiler::start('category/view.phtml->init');
+    $_helper    = $this->helper('catalog/output');
+    $_category  = $this->getCurrentCategory();
+    $_tableHelper = Mage::helper('schrackcore/table');
+    $currentCategory = $_category->getData('url_key');
+    $showContent = true;
+
+    $sessionCustomerId = Mage::getSingleton('customer/session')->getCustomer()->getId();
+    $aclRoleId = Mage::getModel('customer/customer')->load($sessionCustomerId)->getSchrackAclRoleId();
+    $isProjectant = Mage::helper('schrack/acl')->isProjectantRoleId($aclRoleId);
+
+    // Lock promotions for projectants:
+    if ($isProjectant && $currentCategory == 'promotions') {
+        $showContent = false;
+    }
+
+	if (strlen($_category->getData('schrack_thumbnail_url'))) {
+		$_imgHtml = '<img src="'.Mage::getStoreConfig('schrack/general/imageserver').$_category->getData('schrack_thumbnail_url').'" alt="'.$this->htmlEscape($_category->getName()).'" />';
+	}
+    Varien_Profiler::stop('category/view.phtml->init');
+?>
+
+<?php if ($showContent) : ?>
+    <?php Varien_Profiler::start('category/view.phtml->messageblock'); ?>
+    <?php echo $this->getMessagesBlock()->getGroupedHtml() ?>
+    <?php Varien_Profiler::stop('category/view.phtml->messageblock'); ?>
+    <?php Varien_Profiler::start('category/view.phtml->header'); ?>
+    <div id="category-header" class="category-header row">
+        <div class="large-12 columns">
+            <h1 class="headline a" id="page-state"><?php echo $_helper->categoryAttribute($_category, $_category->getName(), 'name'); ?></h1>
+        </div>
+    </div>
+    <?php Varien_Profiler::stop('category/view.phtml->header'); ?>
+
+    <?php Varien_Profiler::start('category/view.phtml->description'); ?>
+    <?php $_description=$_category->getDescription(); if(isset($_description) && strlen($_description)): ?>
+        <div class="row category-description" id="category-description">
+            <div class="large-12 columns">
+                <div class="bodytext" id="category-description-bodytext-short"></div>
+                <div class="bodytext" id="category-description-bodytext-long"><?php echo $_description;?></div>
+            </div>
+        </div>
+        <div class="row category-description-switcher" id="category-description-switcher-row">
+            <div class="large-12 columns"><button class="category-description-switcher closed" id="category-description-switcher"><?php echo $this->__('More')?></button></div>
+        </div>
+    <?php endif; ?>
+    <?php Varien_Profiler::stop('category/view.phtml->description'); ?>
+
+    <?php Varien_Profiler::start('category/view.phtml->script1'); ?>
+    <script type="text/javascript">//<![CDATA[
+        jQuery(document).ready(function() {
+            var descriptionMaxLength = 230;
+
+            var descriptionText = jQuery('#category-description-bodytext-long').text();
+            if ( descriptionText.length > descriptionMaxLength + 5) {
+                var restText = descriptionText.substr(descriptionMaxLength).match(/^\S+\s/);
+                if (!restText) {
+                    restText = descriptionText.substr(descriptionMaxLength).match(/^\S+/);
+                }
+                if (!restText) {
+                    restText = '';
+                }
+                jQuery('#category-description-bodytext-short').html(descriptionText.substr(0, descriptionMaxLength) + restText);
+
+                jQuery('#category-description-switcher').click(function() {
+                    if (jQuery('#category-description-switcher').hasClass('closed')) {
+                        jQuery('#category-description-bodytext-short').hide();
+                        jQuery('#category-description-bodytext-long').show();
+                        jQuery('#category-description-switcher').switchClass('closed', 'open').html('<?php echo $this->__('Less')?>');
+                    } else {
+                        jQuery('#category-description-bodytext-short').show();
+                        jQuery('#category-description-bodytext-long').hide();
+                        jQuery('#category-description-switcher').switchClass('open', 'closed').html('<?php echo $this->__('More')?>');
+                    }
+                });
+                jQuery('.row#category-description-switcher-row').show();
+            } else {
+                jQuery('#category-description-bodytext-long').show();
+            }
+            jQuery('#search_category_form').submit(function(ev) {
+                ev.preventDefault();
+                var serializedData = jQuery(ev.target).serialize();
+                var patt = /^(.*)\.html/;
+                var path = window.location.pathname;
+                var res = patt.exec(path);
+                if (res) {
+                    path = res[1] + '.html';
+                }
+                performSolrSearchAjax(path + '?' + serializedData);
+            });
+
+            window.addEventListener('popstate', function(event) {
+                var state = History.getState();
+                var url = state.url;
+                performSolrSearchAjax(url, false);
+             });
+            setBestWidthes();
+            jQuery('table.attributes-list input[type="checkbox"]').click(function() {
+                jQuery('table.attributes-list input[type="checkbox"]').attr("disabled", true);
+                jQuery(this).removeAttr('disabled');
+            });
+        });
+        function setBestWidthes() {
+            jQuery('table.attributes-list tr').each(function(){
+                var maxWidth=0;
+                var yPos = 0;
+                var minYPos = 0;
+                jQuery('fieldset.bestwidth', jQuery(this)).each(function(){
+                    if (maxWidth < jQuery(this).width())
+                        maxWidth = jQuery(this).width();
+                    if (yPos < jQuery(this).offset().top)
+                        yPos = jQuery(this).offset().top;
+                    if (minYPos == 0)
+                        minYPos = yPos;
+                });
+                if (yPos > minYPos) {
+                    jQuery('fieldset.bestwidth', jQuery(this)).each(function(){
+                        jQuery(this).width(maxWidth + 5);
+                    });
+                }
+            });
+        }
+    //]]></script>
+    <?php Varien_Profiler::stop('category/view.phtml->script1'); ?>
+
+    <?php Varien_Profiler::start('category/view.phtml->child-categories'); ?>
+    <?php $_childCats = $this->getCurrentChildCategories();
+    if (count($_childCats) > 0):?>
+        <div class="subcategories-container row show-for-print">
+            <div class="large-12 columns">
+                <?php $i = 0;?>
+                <?php foreach ($_childCats as $_childCat): ?>
+                    <?php $_catModel = Mage::getModel('catalog/category');?>
+                    <?php $_subCat = $_catModel->load($_childCat->getId());?>
+                    <?php if($_subCat->isDiscontinuedProductsCategory() && $_subCat->getProductCount() == 0) continue; ?>
+                    <?php if ($i % 4 === 0):?>
+                        <?php if ($i > 0):?>
+                            </div>
+                        <?php endif; ?>
+                        <div class="subcategories row table">
+                    <?php endif;?>
+                    <?php $_imgHtml = '<img src="'.Mage::getStoreConfig('schrack/general/imageserver').$_subCat->getData('schrack_thumbnail_url').'" alt="'.$this->htmlEscape($_subCat->getName()).'" />';?>
+                    <div class="large-3 columns">
+                        <?php if (strlen($_subCat->getData('schrack_thumbnail_url'))):?>
+                            <div class="row image">
+                                <div class="large-12 columns">
+                                    <a href="<?php echo $this->getUrl($_subCat->getUrlPath()); ?>"><?php echo $_imgHtml;?></a>
+                                </div>
+                            </div>
+                        <?php else:?>
+                            <div class="row image"><div class="large-12 columns"></div></div>
+                        <?php endif;?>
+                        <div class="row name">
+                            <div class="large-12 columns">
+                                <a class="link-arrow small" href="<?php echo $this->getUrl($_subCat->getUrlPath()); ?>"><?php echo $_subCat->getName();?></a>
+                            </div>
+                        </div>
+                    </div>
+                <?php ++$i; endforeach; ?>
+                <?php for (; $i % 4 !== 0; ++$i):?>
+                      <div class="large-3 columns empty"></div>
+                <?php endfor; ?>
+                <?php if ($i>0):?></div><?php endif;?>
+            </div>
+        </div>
+    <?php endif;?>
+    <?php Varien_Profiler::stop('category/view.phtml->child-categories'); ?>
+
+    <?php Varien_Profiler::start('category/view.phtml->attachments'); ?>
+    <?php
+    $_attachments = array_filter( $this->getCurrentCategory()->getAttachmentsCollection()->getItems(), function($att) { return $att->getFiletype() !== 'produktkataloge'; } )?>
+    <?php if (count($_attachments) > 0 && intval($_category->getLevel()) <= 2):?>
+        <h2 class="headline b1"><?php echo $this->__('Product information for'); ?> <?php echo $_helper->categoryAttribute($_category, $_category->getName(), 'name') ?></h2>
+        <div class="attachment-list">
+            <?php $i = 0; $_tableHelper->resetEvenOddClass();foreach ($_attachments as $_attachment):?>
+                <?php if ($i % 3 === 0):?>
+                    <?php if ($i > 0):?></div><?php endif; ?>
+                    <div class="row table body <?php echo $_tableHelper->getEvenOddClass();?>">
+                <?php endif;?>
+                <div class="large-4 columns"><a class="<?php echo $_attachment->getFiletype()?>" href="<?php echo Mage::getStoreConfig('schrack/general/imageserver').$_attachment->getUrl(); ?>" target="_blank"><?php echo $_attachment->getLabel(); ?></a></div>
+            <?php ++$i; endforeach;?>
+            <?php for (; $i % 3 !== 0; ++$i):?>
+                 <div class="large-4 columns empty"></div>
+           <?php endfor; ?>
+           </div>
+        </div>
+    <?php endif;?>
+    <?php Varien_Profiler::stop('category/view.phtml->attachments'); ?>
+
+    <?php Varien_Profiler::start('category/view.phtml->products'); ?>
+    <?php if($this->isContentMode() ): ?>
+    <?php elseif($this->isMixedMode()): ?>
+        <?php echo $this->getCmsBlockHtml() ?>
+    <?php elseif (intval($_category->getLevel()) >= 3): ?>
+        <?php echo $this->getProductListHtml() ?>
+    <?php endif; ?>
+    <?php Varien_Profiler::stop('category/view.phtml->products'); ?>
+
+    <?php Varien_Profiler::start('category/view.phtml->content'); ?>
+    <?php $cmsContent =$this->getChildHtml('category.cms_content');
+    if(isset($cmsContent) && strlen(strip_tags($cmsContent))): ?>
+        <div id="t3" class="cms-content<?php echo (intval($_category->getLevel()) > 2 ? ' shop-level-2' : '') ?>">
+            <?php echo $cmsContent; ?>
+        </div>
+    <?php endif;?>
+    <?php Varien_Profiler::stop('category/view.phtml->content'); ?>
+
+ <?php endif;?>

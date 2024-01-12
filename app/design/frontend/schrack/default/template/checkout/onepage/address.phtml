@@ -1,0 +1,119 @@
+<!-- default/template/checkout/onepage/address.phtml (start) -->
+
+<?php /* @var $this Schracklive_SchrackCheckout_Block_Onepage_Address */
+    $_requestReceivers = $this->getRequestreceivers();
+?>
+
+<style>
+
+    #checkout_warning_message {
+        color: red !important;
+        font-weight: bold !important;
+        margin-top: 10px !important;
+        margin-bottom: 10px !important;
+    }
+
+    #checkout_login_header_tab {
+        display: none !important;
+    }
+
+    #addressSaveButton {
+        width: 150px !important;
+    }
+
+</style>
+
+<form id="co-address-form" action="">
+<fieldset>
+    <ul class="form-list">
+        <li class="fields">
+            <label for="address:name"><?php echo $this->__('Name')?><em> *</em></label>
+            <div class="input-box"><input type="text" id="address:name" name="address[name]" value=""/></div>
+            <br/>
+            <label for="address:email"><?php echo $this->__('Email')?><em> *</em></label>
+            <div class="input-box"><input type="text" id="address:email" name="address[email]" value=""/><span id="valid-email-warning" style="display: none; padding-left: 10px;"><?php echo $this->__('Please enter a valid email address. For example johndoe@domain.com.')?></span></div>
+            <br/>
+            <label for="address:phone"><?php echo $this->__('Phone')?><em> *</em></label>
+            <div class="input-box"><input type="text" id="address:phone" name="address[phone]" value=""/></div>
+            <br/>
+            <label for="address:homepage"><?php echo $this->__('Homepage')?></label>
+            <div class="input-box"><input type="text" id="address:homepage" name="address[homepage]" value=""/></div>
+            <br/>
+
+            <?php
+                $countries = Mage::getResourceModel('directory/country_collection')->loadData()->toOptionArray(false);
+                sort($countries);
+            ?>
+            <label for="address:country"><?php echo $this->__('Country')?></label>
+            <div class="input-box">
+                <select id="address:country" name="address[country]" >
+                    <?php foreach ( $countries as $country ): ?>
+                        <option value="<?php echo $country['value'] ?>">
+                            <?php echo $country['value'] . '  ' . $country['label'] ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+            <br/>
+
+            <?php if ( $_requestReceivers && $_requestReceivers->count() > 0 ):?>
+                <div class="input-box">
+                    <label for="address:homepage"><?php echo $this->__('Receiver')?><em> *</em></label><br/>
+                    <select id="address:receiver" name="address[receiver]">
+                        <?php foreach ($_requestReceivers as $receiver):?>
+                            <option value="<?php echo $receiver->getId()?>"><?php echo $receiver->getName()?></option>
+                        <?php endforeach;?>
+                    </select>
+                </div>
+            <?php endif;?>
+            <br/>
+        </li>
+        <div id="checkout_warning_message"></div>
+        <div class="buttons-set" id="address-buttons-container">
+            <button type="button" class="bttn-lg" id="addressSaveButton" title="<?php echo $this->__('Continue') ?>"><span id="address-please-wait" class="please-wait" style="display:none;float:left;padding-left:20px;text-align:left;background:url('<?php echo $this->getSkinUrl('images/opc-ajax-loader.gif') ?>') left center no-repeat;"><?php echo $this->__('Loading next step...') ?></span><?php echo $this->__('Continue') ?></button>
+        </div>        
+    </ul>
+</fieldset>
+</form>
+
+
+<script type="text/javascript">
+//<![CDATA[
+    var address = new Address('co-address-form', '<?php echo $this->getUrl('checkout/onepage/saveAddress') ?>', '<?php echo $this->getUrl('checkout/onepage/saveAddress') ?>');
+    var addressForm = new VarienForm('co-address-form');
+
+    function validateEmail(email) {
+        var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+        return re.test(email);
+    }
+    jQuery(document.getElementById('address:email')).change(function() {
+            var val = jQuery(this).val();
+            if ( ! validateEmail(val) ) {
+                jQuery('#valid-email-warning').show();
+                jQuery('#address\\:email').focus();
+            }
+        })
+        .focus(function(){
+            jQuery('#valid-email-warning').hide();
+    });
+
+
+    jQuery('#addressSaveButton').on('click', function() {
+console.log('clicked');
+        if (jQuery('#address\\:name').val() != '' && jQuery('#address\\:email').val() != '' && jQuery('#address\\:phone').val() != '') {
+            address.save();
+        } else {
+            jQuery('#checkout_warning_message').hide();
+            jQuery('#checkout_warning_message').text('Please insert complete form data: name, email and phone');
+            jQuery('#checkout_warning_message').fadeIn(500);
+            jQuery('#checkout_warning_message').fadeOut(5000);
+        }
+     });
+
+    jQuery(document).ready(function() {
+        jQuery('#checkout_login_header_tab').hide();
+    });
+
+//]]>
+</script>
+<!-- default/template/checkout/onepage/address.phtml (end) -->

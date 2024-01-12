@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<layout>
+    <adminhtml_typo3connect_edit>
+        <update handle="editor"/>
+        <reference name="left">
+            <block type="typo3connect/adminhtml_typo3connect_tree" name="typo3connect.tree" template="typo3connect/tree.phtml" />
+        </reference>
+        <reference name="content">
+            <block name="typo3connect.edit" type="typo3connect/adminhtml_typo3connect_edit" template="typo3connect/edit.phtml" />
+        </reference>        
+        <reference name="js">
+            <block type="core/template" template="catalog/wysiwyg/js.phtml" name="catalog.wysiwyg.js" />
+        </reference>
+    </adminhtml_typo3connect_edit>
+</layout>

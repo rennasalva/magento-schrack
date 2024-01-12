@@ -1,0 +1,9 @@
+<?php
+$_imgCartUrl = $this->getSkinUrl('images/cart_raute1.png');
+$_imgPdfUrl = $this->getSkinUrl('images/application_pdf.png');
+?>
+<?php if ($this->getDocuments()->count() > 0): ?>
+    <div class="row toolbar before-list">
+        <?php echo $this->getChildHtml('html_pager') ?>
+    </div>
+<?php endif; ?>

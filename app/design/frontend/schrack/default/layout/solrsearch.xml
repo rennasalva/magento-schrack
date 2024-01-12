@@ -1,0 +1,67 @@
+<?xml version="1.0"?>
+<layout version="0.1.0">
+	<catalog_category_default>
+		<reference name="product_list">
+			<block type="solrsearch/form_search" name="schrack_search" template="solrsearch/search.phtml"></block>
+			<action method="insert">
+				<block>schrack_search</block>
+			</action>
+
+            <block type="catalog/product_list" name="product_list_table" template="catalog/product/list/table.phtml">
+                <block type="catalog/product_list_toolbar" name="product_list_toolbar" template="catalog/product/list/toolbar.phtml">
+                    <block type="page/html_pager" name="product_list_toolbar_pager"/>
+                </block>
+            </block>
+		</reference>
+	</catalog_category_default>
+	<catalog_category_layered>
+		<reference name="product_list">
+			<block type="solrsearch/form_search" name="schrack_search" template="solrsearch/search.phtml"></block>
+			<action method="insert">
+				<block>schrack_search</block>
+			</action>
+
+            <block type="catalog/product_list" name="product_list_table" template="catalog/product/list/table.phtml">
+                <block type="catalog/product_list_toolbar" name="product_list_toolbar" template="catalog/product/list/toolbar.phtml">
+                    <block type="page/html_pager" name="product_list_toolbar_pager"/>
+                </block>
+            </block>
+		</reference>
+	</catalog_category_layered>
+
+    <catalogsearch_result_index translate="label">
+        <label>Quick Search Form</label>
+        <reference name="root">
+            <action method="setTemplate"><template>page/3columns.phtml</template></action>
+        </reference>
+        <reference name="left">
+            <block type="catalogsearch/layer" name="catalogsearch.leftnav" after="currency" template="catalog/layer/view.phtml"/>
+        </reference>
+        <reference name="content">
+            <action method="unsetChild"><name>search_result_list</name></action>
+            <action method="unsetChild"><name>search.result</name></action>
+
+            <action method="unsetChild"><name>product_list</name></action>
+            <action method="unsetChild"><name>product_list_table</name></action>
+            <block type="catalogsearch/result" name="search.result" template="catalogsearch/result.phtml">
+                <block type="catalog/product_list" name="search_result_list" template="catalog/product/list.phtml">
+
+                    <block type="solrsearch/form_search" name="schrack_search" template="solrsearch/search.phtml"></block>
+                    <action method="insert">
+                        <block>schrack_search</block>
+                    </action>
+
+                    <block type="catalog/product_list" name="product_list_table" template="catalog/product/list/table.phtml">
+                        <block type="catalog/product_list_toolbar" name="product_list_toolbar" template="catalog/product/list/toolbar.phtml">
+                            <block type="page/html_pager" name="product_list_toolbar_pager"/>
+                        </block>
+                    </block>
+                    <action method="setToolbarBlockName"><name>product_list_toolbar</name></action>
+                </block>
+                <action method="setListOrders"/>
+                <action method="setListModes"/>
+                <action method="setListCollection"/>
+            </block>
+        </reference>
+    </catalogsearch_result_index>
+</layout>

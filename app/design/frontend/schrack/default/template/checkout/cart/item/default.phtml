@@ -1,0 +1,305 @@
+<!-- default/template/checkout/cart/item/default.phtml (start) -->
+<?php /* @var $this Schracklive_SchrackCheckout_Block_Cart_Item_Renderer */ ?>
+<?php
+    $_customer = Mage::getSingleton('customer/session')->getCustomer();
+    $_item = $this->getItem();
+    $_product = $this->getProduct();
+    if ( Schracklive_SchrackCatalog_Helper_Preparator::PREPARATE_PRODUCTS ) {
+        Mage::helper('schrackcatalog/preparator')->prepareProduct($_product);
+    }
+
+    $_infoHelper = Mage::helper('schrackcatalog/info');
+    $_productHelper = Mage::helper('schrackcatalog/product');
+    /* @var $_stockListToolbar Schracklive_SchrackcatalogInventory_Helper_Stock */
+    $_stockHelper = Mage::helper('schrackcataloginventory/stock');
+    /* @var $_infoHelper Schracklive_SchrackCatalog_Helper_Info */
+    $_nextGraduatedPrice = Mage::helper('schrackcatalog/price')->getNextGraduatedPriceForCustomer($_product, $this->getQty(), $_customer);
+    $_imgCartUrl = $this->getSkinUrl('images/cart_raute1.png');
+    $_imgTruckUrl = $this->getSkinUrl('images/truck_white_diamond.png');
+    $_imgInvisUrl = $this->getSkinUrl('images/no_truck_no_cart.png');
+    $_partslistHelper = Mage::helper('schrackwishlist/partslist');
+    $_priceHelper = Mage::helper('schrackcatalog/price');
+    $_maySeePrices = Mage::helper('geoip')->maySeePrices();
+?>
+<div class="row-fine product-item body product-item-row-<?php echo $_item->getId() ?>"<?php echo Mage::helper('googleanalytics')->getDataTags($_product); ?>>
+    <div class="product-col large-fine-7 columns-fine hide-on-print">
+        <div class="row">
+            <div class="large-4 columns">
+                <?php
+                $_product_image = $this->helper('catalog/image')->init($_product, 'small_image')->constrainOnly(true)->resize(66, 66);
+                $_product_image_url = (string)$_product_image;
+                // Removes protocol:
+                $_product_image_url = str_replace(array('http:', 'https:'), '', $_product_image_url);
+                $_product_image_width = $_product_image->getWidth();
+                $_product_image_height = $_product_image->getHeight();
+                $_hover_product_image = $this->helper('catalog/image')->init($_product, 'image');
+                $_hover_product_image_url = (string)$_hover_product_image;
+                // Removes protocol:
+                $_hover_product_image_url = str_replace(array('http:', 'https:'), '', $_hover_product_image_url);
+                $_hover_product_image_width = $_hover_product_image->getWidth();
+                $_hover_product_image_height = $_hover_product_image->getHeight();
+                ?>
+                <a class="preview hide-on-print" data-image="<?php echo $_hover_product_image_url ?>" onClick="return false;" title="<?php echo $this->htmlEscape($this->getImageLabel($_product, 'small_image')) ?>" class="product-image">
+                    <img src="<?php echo $_product_image_url ?>" width="<?php echo $_product_image_width ?>" height="<?php echo $_product_image_height ?>" alt="<?php echo $this->htmlEscape($this->getImageLabel($_product, 'small_image')) ?>" />
+                </a>
+                <img class="print-only" src="<?php echo $_product_image_url ?>" width="<?php echo $_product_image_width ?>" height="<?php echo $_product_image_height ?>" alt="<?php echo $this->htmlEscape($this->getImageLabel($_product, 'small_image')) ?>" />
+            </div>
+            <div class="large-8 columns" style="word-wrap: break-word;">
+                <h2 class="product-name"><a href="<?php echo $_product->getProductUrl() ?>" title="<?php echo $this->htmlEscape($_product->getName()) ?>"><?php echo $this->htmlEscape($_product->getName()) ?></a></h2>
+                <?php if ($_product->getSku()): ?>
+                    <div class="catalog-nr"><?php echo $this->__('Art.Nr.')?> <?php echo $this->htmlEscape($_product->getSku()); ?></div>
+                <?php endif; ?>
+            </div>
+        </div>
+    </div>
+    <div class="product-col large-fine-9 columns-fine print-only">
+        <div class="row">
+            <div class="large-4 columns">
+                <?php $_product_image = $this->helper('catalog/image')->init($_product, 'small_image')->constrainOnly(true)->resize(66, 66);?>
+                <img class="product-image" src="<?php echo $_product_image ?>" width="<?php echo $_product_image->getWidth() ?>" height="<?php echo $_product_image->getHeight() ?>" alt="<?php echo $this->htmlEscape($this->getImageLabel($_product, 'small_image')) ?>" />
+            </div>
+            <div class="large-8 columns">
+                <div class="row"><div class="large-12 columns">
+                    <div class="product-name headline c1 "><?php echo $this->htmlEscape($_product->getName()) ?></div>
+                </div></div>
+                <?php if ($_product->getSku()): ?>
+                    <div class="row"><div class="large-12 columns">
+                        <div class="catalog-nr"><?php echo $this->__('Art.Nr.')?> <?php echo $this->htmlEscape($_product->getSku()); ?></div>
+                    </div></div>
+                <?php endif; ?>
+            </div>
+        </div>
+    </div>
+
+    <div class="availability-col large-fine-4 columns-fine availability">
+        <div class="row">
+            <div class="large-12 columns">
+                <?php if ( $_product->isDead() ) : ?>
+                    <span class="sale_mark gray"><?php echo $this->__('NOT AVAILABLE'); ?></span>
+                <?php elseif ( $_productHelper->isSale($_product,$_customer) ) : ?>
+                    <span class="sale_mark red_white"><?php echo $this->__('SALE'); ?></span>
+                <?php elseif ( $_productHelper->isPromotion($_product,$_customer) ) : ?>
+                    <span class="sale_mark full_red"><?php echo $this->__('PROMOTION'); ?></span>
+                <?php endif; ?>
+            </div>
+        </div>
+        <?php if ( ! $_productHelper->isAvailInAnyStock($_product) ): ?>
+            <div class="row"><div class="large-12 columns onrequest"><?php echo $this->__('on request') ?></div></div>
+        <?php elseif ($_product->isSaleable()): ?>
+            <?php $stock = $_stockHelper->getCustomerPickupStock($_customer);?>
+            <?php if ( $_productHelper->isAvailInStock($_product,$stock)): ?>
+                <div class="row-fine avail-item">
+                    <div class="large-fine-6 columns-fine pickupable"></div>
+                    <div class="large-fine-18 columns-fine">
+                        <div class="qty"><?php echo $this->__('Pickupable') ?>: <?php echo $_productHelper->getFormattedPickupQuantity($_product);?></div>
+                        <div><?php echo $_productHelper->trimLength($this->__('at') . ' ' . $stock->getStockName(),16); ?></div>
+                    </div>
+                </div>
+            <?php endif; ?>
+            <?php if ( $_productHelper->isAvailInAnyDeliveryStock($_product) ): ?>
+                <?php $stock = $_stockHelper->getLocalDeliveryStock(); $stockNo = $stock ? $stock->getStockNumber() : 0;?>
+                <?php if ( $_productHelper->isAvailInStock($_product,$stock)): ?>
+                    <div class="row-fine avail-item">
+                        <div class="large-fine-6 columns-fine deliverable"></div>
+                        <div class="large-fine-18 columns-fine">
+                            <div class="qty"><?php echo $this->__('Deliverable') ?>: <?php echo $_productHelper->getFormattedDeliveryQuantity($_product);?></div>
+                            <div><?php echo $_productHelper->getFormattedDeliveryTime($_product,$stockNo);?></div>
+                        </div>
+                    </div>
+                <?php endif; ?>
+                <?php $stock = $_stockHelper->getForeignDeliveryStock(); $stockNo = $stock ? $stock->getStockNumber() : 0;?>
+                <?php if ( $_productHelper->isAvailInStock($_product,$stock)): ?>
+                    <div class="row-fine avail-item">
+                        <div class="large-fine-6 columns-fine deliverable"></div>
+                        <div class="large-fine-18 columns-fine">
+                            <div class="qty"><?php echo $_productHelper->getFormattedDeliveryQuantity($_product,$stockNo);?></div>
+                            <div><?php echo $_productHelper->getFormattedDeliveryTime($_product,$stockNo);?></div>
+                        </div>
+                    </div>
+                <?php endif; ?>
+                <?php $stockNo = $_stockHelper->getThirdPartyDeliveryStockNumber(); ?>
+                <?php if ( ! $_product->isDiscontinuation() && $_productHelper->isAvailInStockNo($_product,$stockNo)): ?>
+                    <div class="row-fine avail-item">
+                        <div class="large-fine-6 columns-fine deliverable"></div>
+                        <div class="large-fine-18 columns-fine">
+                            <div class="qty"><?php echo $_productHelper->getFormattedDeliveryQuantity($_product,$stockNo);?></div>
+                            <div><?php echo $_productHelper->getFormattedDeliveryTime($_product,$stockNo);?></div>
+                        </div>
+                    </div>
+                <?php endif; ?>
+            <?php endif; ?>
+        <?php else: ?>
+            <div class="row"><div class="large-12 columns outofstock"><?php echo $this->__('Out of stock') ?></div></div>
+        <?php endif; ?>
+    </div>
+
+	<div class="price-leftbound large-fine-3 columns-fine price-col">
+        <?php if ( $_maySeePrices ):?>
+            <?php $_currency = $_priceHelper->getCurrencyForCustomer($_product, $_customer);?>
+            <?php echo ($this->helper('schrackcheckout')->isPriceAvailable($_product, $_item->getSchrackBasicPrice()) ? ($_currency . ' ') : '') . ' ' . $this->helper('schrackcheckout')->formatPrice($_product, $_item->getSchrackBasicPrice()); ?>
+            <span class="nobr annotation">
+                <?php if ($_nextGraduatedPrice): ?>
+                    <?php echo ($this->helper('schrackcheckout')->isPriceAvailable($_product, $_nextGraduatedPrice['price']) ? ($_currency . ' ') : '') . $this->helper('checkout')->formatPrice($_nextGraduatedPrice['price']) .' '. $this->__('from').' '.$_nextGraduatedPrice['qty'].' '.$_product->getSchrackQtyunit(); ?>
+                <?php endif; ?>
+            </span>
+            <?php if ($_nextGraduatedPrice): ?>
+                <div class="cart-prc-spacer-small">&nbsp;</div>
+            <?php else: ?>
+                <div class="cart-prc-spacer-big">&nbsp;</div>
+            <?php endif; ?>
+            <div><?php echo $this->__('per').' '.($_product->getSchrackPriceunit() > 1 ? $_product->getSchrackPriceunit().' ' : '').$_product->getSchrackQtyunit(); ?></div>
+            <div><?php echo $this->__('excl. surcharges, net of VAT'); ?></div>
+        <?php else: ?>
+            <?php echo $this->__('on request');?>
+        <?php endif;?>
+	</div>
+    
+    <div class="large-fine-3 columns-fine qty-col">
+        <?php
+                $drumNo = $this->getDrumNumber();
+                $sumQty = $this->getSummarizedQtyForProduct();
+                $isPickup = $this->isQuotePickup();
+                $quantityIsAvailable = $_productHelper->checkOrderAvail($_product,$isPickup,$sumQty,$drumNo);
+                if ($_product->isBestellArtikel() && $_product->getCumulatedPickupableAndDeliverableQuantities() > 0) {
+                    $quantityIsAvailable = true;
+                }
+        ?>
+        <input type="text"
+           <?php if ( $_product->isCable() ) : ?>
+               readonly="readonly"
+               style="cursor: not-allowed; background: #e5e5e5; color: #282828; border: none;"
+           <?php endif; ?>
+               class="input-text qty hide-on-print cart-qty"
+               ref="cart-qty-<?php echo $_product->getId() ?>"
+               name="cart[<?php echo $_item->getId() ?>][qty]"
+               value="<?php echo $this->getQty() ?>"
+               size="4"
+               title="<?php echo $this->__('Qty') ?>"
+               maxlength="12"/>
+        <span class="print-only"><?php echo $this->getQty() ?></span><?php echo $_product->getSchrackQtyunit() ?>
+        <input type="hidden" name="cart[<?php echo $_item->getId() ?>][sku]" id="sku-<?php echo $_product->getId()?>" value="<?php echo $_product->getSku()?>"/>
+        <input type="hidden" name="cart[<?php echo $_item->getId() ?>][drum]"  id="drum-<?php echo $_product->getId()?>" value="<?php echo $_product->isCable() ? $this->getDrumId() : ''?>"/>
+        <input type="hidden" id="product-id-<?php echo $_item->getId() ?>" value="<?php echo $_product->getId() ?>">
+        <?php if ( ! $quantityIsAvailable ): ?>
+            <span class="cart-not-fully-avail-mark" title="<?php echo $this->__('Quantity is not fully available')?>">!</span>
+        <?php endif; ?>
+        <?php if ($_nextGraduatedPrice): ?>
+            <div class="cart-qty-spacer-small">&nbsp;</div>
+        <?php else: ?>
+            <div class="cart-qty-spacer-big">&nbsp;</div>
+        <?php endif; ?>
+        <span><br /><?php echo $this->htmlEscape($this->getDrumDescription()); ?>&nbsp;</span>
+        <?php
+            $productData = Mage::getModel('catalog/product')->loadBySku($_product->getSku());
+        ?>
+        <div><?php
+                echo $this->__('Sales unit').':<br/>'.$productData->calculateMinimumQuantityPackageToDisplay().' '.$_product->getSchrackQtyunit();
+             ?>
+        </div>
+    </div>
+
+    <div class="price-col large-fine-2 columns-fine">
+        <?php if ( $_maySeePrices ):?>
+            <?php echo ($this->helper('schrackcheckout')->isPriceAvailable($_product, $_item->getSchrackRowTotalSurcharge()) ? ($_currency . ' ') : '') . $this->helper('schrackcheckout')->formatPrice($_product, $_item->getSchrackRowTotalSurcharge()); ?>
+        <?php else: ?>
+            <?php echo $this->__('on request');?>
+        <?php endif;?>
+    </div>
+    <div class="price-col large-fine-3 columns-fine">
+        <?php if ( $_maySeePrices ):?>
+            <?php echo ($this->helper('schrackcheckout')->isPriceAvailable($_product, $_item->getRowTotal()) ? ($_currency . ' ') : '') . $this->helper('schrackcheckout')->formatPrice($_product, $_item->getRowTotal()); ?>
+        <?php else: ?>
+            <?php echo $this->__('on request');?>
+        <?php endif;?>
+    </div>
+    <div class="buttons-col large-fine-2 columns-fine hide-on-print">
+    <?php if (Mage::getStoreConfig('ec/config/active')) : ?>
+        <a <?php echo Mage::helper('googleanalytics')->getDataTags($_product); ?> data-brand="" data-click="" data-event="removeFromCart" data-quantity="<?php echo $this->getQty() ?>" data-variant="" data-id="<?php echo $_product->getSku(); ?>"  class="link-delete btn-remove remove" href="<?php echo $this->getDeleteUrl() ?>" title="<?php echo $this->__('Remove item')?>" onClick="return AEC.remove(this,dataLayer);"></a>
+    <?php else : ?>
+        <!-- <a class="link-delete delete-button-<?php // echo $_item->getId()?>" onclick="confirmDeleteAnimation('showDeleteCornfirmPanel', <?php // echo $_item->getId()?>);" title="<?php //echo $this->__('Remove item')?>" style="height: 24px;"></a> -->
+        <a class="link-delete" href="<?php echo $this->getDeleteUrl() ?>" title="<?php echo $this->__('Remove item')?>" onClick="trackRemoveFromCart(this, document.location='<?php echo $this->getDeleteUrl() ?>'); return false;"></a>
+    <?php endif; ?>
+        <div id="confirm-panel-<?php echo $_item->getId()?>" style="display: none; height: 52px; width: 65px;" onmouseleave="confirmDeleteAnimation('cancelDelete', <?php echo $_item->getId()?>);">
+            <div style="height: 23px;">
+                <a id="cancel-delete-<?php echo $_item->getId()?>" onclick="confirmDeleteAnimation('cancelDelete', <?php echo $_item->getId()?>);">
+                    <?php echo $this->__('Cancel')?>
+                </a>
+            </div>
+            <div style="height: 28px; padding-top: 4px">
+                <a id="confirm-delete-<?php echo $_item->getId()?>" onclick="confirmDeleteAnimation('executeDelete', <?php echo $_item->getId()?>, '<?php echo $this->getDeleteUrl() ?>');" style="color: red;">
+                    <?php echo $this->__('Delete')?>
+                </a>
+            </div>
+        </div>
+        <div class="distancePlaceholder-<?php echo $_item->getId()?>" style="height: 27px; width: 65px; float: left;"></div>
+        <?php if ( Mage::getSingleton('customer/session')->isLoggedIn() ) : ?>
+            <select class="dropdown-menu partslist" title="<?php echo $this->__('Add to partslist')?>">
+                <option class="add-to-new-partslist" onClick="partslistFE.addItemToNewList('<?php echo $this->__('New partslist')?>', new ListRequestManager.Product(<?php echo $_product->getId()?>, getAmountFromSKUValue(<?php echo $_product->getId()?>)));"><?php echo $this->__('Add to new partslist')?></option>
+                <?php if ($_partslistHelper->getPartslistCount() > 0): ?>
+                    <?php $activePl = $_partslistHelper->getActiveOrFirstPartslist();?>
+                    <option onClick="partslistFE.addItemToList(<?php echo $activePl->getId()?>, new ListRequestManager.Product(<?php echo $_product->getId()?>, getAmountFromSKUValue(<?php echo $_product->getId()?>)), true);" title="<?php echo $activePl->getDescription()?>"><?php echo $this->__('Add to %s', $activePl->getDescription())?></option>
+                <?php else: ?>
+                    <?php $activePl = null; ?>
+                <?php endif; ?>
+                <?php foreach ($_partslistHelper->getPartslists() as $pl): ?>
+                    <?php if ($activePl === null || $pl->getId() !== $activePl->getId()):?>
+                        <option onClick="partslistFE.addItemToList(<?php echo $pl->getId()?>, new ListRequestManager.Product(<?php echo $_product->getId()?>, getAmountFromSKUValue(<?php echo $_product->getId()?>)), true);" title="<?php echo $pl->getDescription()?>"><?php echo $this->__('Add to %s', $pl->getDescription())?></option>
+                    <?php endif; ?>
+                <?php endforeach; ?>
+            </select>
+        <?php endif; ?>
+    </div>
+</div>
+
+<script type="text/javascript">//<![CDATA[
+
+jQuery(document).ready(function() {
+    jQuery('.cart-qty').on('change', function() {
+        pageIsDirty = true;
+    });
+
+    jQuery('.cart-qty').on('keypress', function(e) {
+        pageIsDirty = true;
+        return runUpdateCart(e);
+    });
+});
+
+    var getAmountFromSKUValue = function(produktId) {
+        var amount = 0;
+        //amount = jQuery('input[name="cart[' + produktId + '][qty]"]').val();
+        amount = jQuery('#cart-qty-' + produktId).val(); // TODO
+        return amount;
+    }
+
+    var confirmDeleteAnimation = function(action, itemId, deleteURL) {
+        if (action == 'showDeleteCornfirmPanel') {
+            jQuery('.delete-button-' + itemId).hide();
+            jQuery('#confirm-panel-' + itemId).show();
+            jQuery('.distancePlaceholder-' + itemId).hide();
+        }
+        if (action == 'cancelDelete') {
+            jQuery('.delete-button-' + itemId).show();
+            jQuery('#confirm-panel-' + itemId).hide();
+            jQuery('.distancePlaceholder-' + itemId).show();
+        }
+        if (action == 'executeDelete') {
+            trackRemoveFromCart(this, document.location = deleteURL);
+            jQuery('#confirm-panel-' + itemId).hide();
+            jQuery('.delete-button-' + itemId).hide();
+            jQuery('.product-item-row-' + itemId).remove();
+            setOverlayLoaderInCartView();
+            return false;
+        }
+    }
+
+    function runUpdateCart(e) {
+        // All browser cross compatible solution:
+        var evt = e || window.event;
+        var keyID = (evt.charCode) ? evt.charCode : ((evt.which) ? evt.which : evt.keyCode);
+        if (keyID == 13) {
+            cartUpdate();
+            return false;
+        }
+    }
+//]]></script>
+<!-- default/template/checkout/cart/item/default.phtml (end) -->

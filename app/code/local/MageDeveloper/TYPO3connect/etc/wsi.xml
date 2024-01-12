@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions xmlns:typens="urn:{{var wsdl.name}}"
+             xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+             xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+             xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/"
+             xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+             name="{{var wsdl.name}}"
+             targetNamespace="urn:{{var wsdl.name}}">
+
+    <wsdl:types>
+        <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="urn:{{var wsdl.name}}">
+            <xsd:element name="customerCustomerFetchRequestParam">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element minOccurs="1" maxOccurs="1" name="sessionId" type="xsd:string" />
+                        <xsd:element minOccurs="1" maxOccurs="1" name="email" type="xsd:string" />
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+            <xsd:element name="customerCustomerFetchResponseParam">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element minOccurs="1" maxOccurs="1" name="serialized" type="xsd:string" />
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+		</xsd:schema>
+    </wsdl:types>
+
+    <wsdl:message name="customerCustomerFetchRequest">
+        <wsdl:part name="parameters" element="typens:customerCustomerFetchRequestParam" />
+    </wsdl:message>
+    <wsdl:message name="customerCustomerFetchResponse">
+        <wsdl:part name="parameters" element="typens:customerCustomerFetchResponseParam" />
+    </wsdl:message>
+
+	<wsdl:portType name="{{var wsdl.handler}}PortType">
+        <wsdl:operation name="customerCustomerFetch">
+            <wsdl:documentation>Retrieve customer full data</wsdl:documentation>
+            <wsdl:input message="typens:customerCustomerFetchRequest" />
+            <wsdl:output message="typens:customerCustomerFetchResponse" />
+        </wsdl:operation>
+    </wsdl:portType>
+
+     <wsdl:binding name="{{var wsdl.handler}}Binding" type="typens:{{var wsdl.handler}}PortType">
+        <wsdl:operation name="customerCustomerFetch">
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+    </wsdl:binding>
+</wsdl:definitions>

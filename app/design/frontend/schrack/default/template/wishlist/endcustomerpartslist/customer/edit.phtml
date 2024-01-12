@@ -1,0 +1,125 @@
+<?php
+/**
+ * @var $this Schracklive_SchrackWishlist_Block_Endcustomerpartslist_Customer_Edit
+ */
+$_endcustomerCustomer = $this->getEndcustomerCustomer();
+?>
+<?php echo $this->getMessagesBlock()->getGroupedHtml();?>
+<div class="row endcustomercustomer-edit data">
+    <div class="large-12 columns">
+        <div class="row">
+            <div class="large-12 columns">
+                <?php if($this->getTitle()): ?>
+                    <div class="headline b1"><?php echo $this->getTitle() ?></div>
+                <?php endif; ?>
+            </div>
+        </div>
+        <?php if ($this->mayEdit()): ?>
+            <form action="<?php echo $this->getUrl('wishlist/endcustomerpartslist/editCustomerPost') ?>" method="post" id="form-validate">
+                <?php echo $this->getBlockHtml('formkey')?>
+                <div class="row content">
+                    <div class="large-12 columns">
+                        <div class="row">
+                            <div class="large-12 columns">
+                                <ul class="form-list">
+                                    <li>
+                                        <label for="name1"><?php echo $this->__('Id Key') ?></label>
+                                        <div class="input-box">
+                                            <input type="text" name="idkey" id="idkey" value="<?php echo $this->htmlEscape($_endcustomerCustomer->getIdKey()) ?>" title="<?php echo $this->__('Id Key') ?>" class="input-text" size="100" maxlength="255"/><br/>
+                                        </div>
+                                    </li>
+                                    <li>
+                                        <label for="name1"><?php echo $this->__('Company Name') ?></label>
+                                        <div class="input-box">
+                                            <input type="text" name="companyname" id="companyname" value="<?php echo $this->htmlEscape($_endcustomerCustomer->getCompanyName()) ?>" title="<?php echo $this->__('Company Name') ?>" class="input-text" size="100" maxlength="255"/><br/>
+                                        </div>
+                                    </li>
+                                    <!-- commented out, pretty sure it'll come back at some point...
+                                    <li>
+                                        <label for="name1"><?php echo $this->__('Address 1') ?></label>
+                                        <div class="input-box">
+                                            <input type="text" name="address1" id="address1" value="<?php echo $this->htmlEscape($_endcustomerCustomer->getAddress1()) ?>" title="<?php echo $this->__('Company Name') ?>" class="input-text" size="100" maxlength="255"/><br/>
+                                        </div>
+                                    </li>
+                                    <li>
+                                        <label for="name1"><?php echo $this->__('Address 2') ?></label>
+                                        <div class="input-box">
+                                            <input type="text" name="address2" id="address2" value="<?php echo $this->htmlEscape($_endcustomerCustomer->getAddress2()) ?>" title="<?php echo $this->__('Address 2') ?>" class="input-text" size="100" maxlength="255"/><br/>
+                                        </div>
+                                    </li>
+                                    <li>
+                                        <label for="name1"><?php echo $this->__('Address 3') ?></label>
+                                        <div class="input-box">
+                                            <input type="text" name="address3" id="address3" value="<?php echo $this->htmlEscape($_endcustomerCustomer->getAddress3()) ?>" title="<?php echo $this->__('Address 3') ?>" class="input-text" size="100" maxlength="255"/><br/>
+                                        </div>
+                                    </li>
+                                    <li>
+                                        <label for="name1"><?php echo $this->__('Phone') ?></label>
+                                        <div class="input-box">
+                                            <input type="text" name="phone" id="phone" value="<?php echo $this->htmlEscape($_endcustomerCustomer->getPhone()) ?>" title="<?php echo $this->__('Phone') ?>" class="input-text" maxlength="255"/><br/>
+                                        </div>
+                                    </li>
+                                    <li>
+                                        <label for="name1"><?php echo $this->__('Fax') ?></label>
+                                        <div class="input-box">
+                                            <input type="text" name="fax" id="fax" value="<?php echo $this->htmlEscape($_endcustomerCustomer->getFax()) ?>" title="<?php echo $this->__('Fax') ?>" class="input-text" maxlength="255"/><br/>
+                                        </div>
+                                    </li>
+                                    -->
+                                    <li>
+                                        <label for="name1"><?php echo $this->__('Email') ?></label>
+                                        <div class="input-box">
+                                            <input type="text" name="email" id="email" value="<?php echo $this->htmlEscape($_endcustomerCustomer->getEmail()) ?>" title="<?php echo $this->__('Email') ?>" class="input-text" maxlength="255"/><br/>
+                                        </div>
+                                    </li>
+                                    <li>
+                                        <label for="name1"><?php echo $this->__('Homepage') ?></label>
+                                        <div class="input-box">
+                                            <input type="text" name="homepage" id="homepage" value="<?php echo $this->htmlEscape($_endcustomerCustomer->getHomepage()) ?>" title="<?php echo $this->__('Homepage') ?>" class="input-text" maxlength="255"/><br/>
+                                        </div>
+                                    </li>
+                                    <li>
+                                        <label for="name1"><?php echo $this->__('Banner URL') ?></label>
+                                        <div class="input-box">
+                                            <input type="text" name="banner_url" id="banner_url" value="<?php echo $this->htmlEscape($_endcustomerCustomer->getBannerUrl()) ?>" title="<?php echo $this->__('Banner URL') ?>" class="input-text" maxlength="255"/><br/>
+                                        </div>
+                                    </li>
+                                    <li>
+                                        <label for="welcome_text_heading"><?php echo $this->__('Welcome Text Heading') ?></label>
+                                        <div class="input-box">
+                                            <input type="text" name="welcome_text_heading" id="welcome_text_heading" value="<?php echo $this->htmlEscape($_endcustomerCustomer->getWelcomeUrl()) ?>" title="<?php echo $this->__('Welcome Text Heading') ?>" class="input-text" maxlength="255"/><br/>
+                                        </div>
+                                    </li>
+                                    <li>
+                                        <label for="welcome_text_heading"><?php echo $this->__('Welcome Text') ?></label>
+                                        <div class="input-box">
+                                            <input type="text" name="welcome_text_text" id="welcome_text_text" value="<?php echo $this->htmlEscape($_endcustomerCustomer->getWelcomeUrl()) ?>" title="<?php echo $this->__('Welcome Text Text') ?>" class="input-text"/><br/>
+                                        </div>
+                                    </li>
+                                    <li>
+                                        <label for="name1"><?php echo $this->__('Welcome URL') ?><?php echo $this->__('(pic on right side)')?></label>
+                                        <div class="input-box">
+                                            <input type="text" name="welcome_url" id="welcome_url" value="<?php echo $this->htmlEscape($_endcustomerCustomer->getWelcomeUrl()) ?>" title="<?php echo $this->__('Welcome URL') ?>" class="input-text" maxlength="255"/><br/>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="large-3 columns large-offset-9">
+                                <button type="submit" title="<?php echo $this->__('Save') ?>" class="button-red small gray fixed-width"><span><span><?php echo $this->__('Save') ?></span></span></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="large-12 columns">
+                        <p class="back-link"><a href="<?php echo Mage::getUrl('customer/account') ?>"><small>&laquo; </small><?php echo $this->__('Back') ?></a></p>
+                    </div>
+                </div>                
+            </form>
+        <?php else: ?>
+            <p><?php echo $this->__('No customer information is available.') ?></p>
+        <?php endif; ?>
+    </div>
+</div>

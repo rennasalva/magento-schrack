@@ -1,0 +1,171 @@
+<!-- default/template/catalog/product/view/stock.phtml (start) -->
+<?php
+    $_product = Mage::registry('product');
+    $_customer = Mage::getSingleton('customer/session')->getCustomer();
+
+    /* @var $_stockListToolbar Schracklive_SchrackcatalogInventory_Helper_Stock */
+    $_stockHelper = Mage::helper('schrackcataloginventory/stock');
+    $_drumHelper = Mage::helper('schrackcatalog/drum');
+    $_productHelper = Mage::helper('schrackcatalog/product');
+
+/*change 4 ajax:*/
+    $_allPickupLocations = $_productHelper->getAllPickupQuantities($_product);
+    $_warehouseIdDefaultDelivery = (int) $_stockHelper->getLocalDeliveryStock()->getStockNumber();
+    $_warehouseIdDefaultPickup = (int) $_stockHelper->getCustomerPickupStockNumber(null);
+    $_hasDrums = $_productHelper->hasDrums($_product);
+    if ($_hasDrums) {
+        $_availableDrums = Mage::helper('schrackcatalog/info')->getAvailableDrums($_product, $_stockHelper->getAllStockNumbers());
+    } else {
+        $_availableDrums = array();
+    }
+?>
+
+<div class="availability">
+<?php /*change 4 ajax:*/ ?>
+    <?php if ( ! $_productHelper->isAvailInAnyStock($_product) || $_product->isHideStockQantities() ) : ?>
+        <div class="availability-box">
+            <div class="row availability-opener" style="cursor: default;">
+                <div class="large-8 columns">
+                    <span class="name"><?php echo $this->__('Deliverable') ?></span>
+                </div>
+                <div class="large-4 columns qty">
+                    <?php echo $this->__('on request'); ?>
+                </div>
+            </div>
+        </div>
+        <div class="availability-box">
+            <div class="row availability-opener" style="cursor: default;"> <!-- überschrift mit aufklapper für abholbar -->
+                <div class="large-6 columns">
+                    <span class="name"><?php echo $this->__('Pickupable') ?></span>
+                </div>
+                <div class="large-4 columns qty"><?php echo $this->__('on request') ?></div>
+            </div>
+        </div>
+    <?php elseif ($_product->isSaleable()): ?>
+
+        <!-- 1. lieferbar / deliver -->
+<?php /*change 4 ajax:*/ ?>
+        <?php if ($_productHelper->isAvailInAnyDeliveryStock($_product)): ?>
+            <div class="availability-box">
+                <div class="row availability-opener closed" id="delivery-opener">
+                    <div class="large-8 columns"><span class="name"><?php echo $this->__('Deliverable') ?></span></div>
+<?php /*change 4 ajax:*/ ?>
+                    <div class="large-4 columns qty"><?php echo $_productHelper->getSummarizedFormattedDeliveryQuantities($_product) ?></div>
+                </div>
+                <?php $stock = $_stockHelper->getLocalDeliveryStock();
+                $stockNo = $stock ? $stock->getStockNumber() : 0; ?>
+<?php /*change 4 ajax:*/ ?>
+                <?php if ($_productHelper->isAvailInStock($_product, $stock)): ?>
+                    <div class="row availability-content delivery-content">
+<?php /*change 4 ajax:*/ ?>
+                        <div class="large-8 columns"><?php echo $_productHelper->getFormattedDeliveryTime($_product, $stockNo); ?></div>
+                        <div class="large-4 columns">
+<?php /*change 4 ajax:*/ ?>
+                            <div class="qty"><?php echo $_productHelper->getFormattedDeliveryQuantity($_product); ?></div>
+                        </div>
+                    </div>
+                <?php endif; ?>
+                <?php $stock = $_stockHelper->getForeignDeliveryStocks();
+                $stockNo = $stock ? $stock->getStockNumber() : 0; ?>
+                <?php if ($_productHelper->isAvailInStock($_product, $stock)): ?>
+                    <div class="row availability-content delivery-content">
+<?php /*change 4 ajax:*/ ?>
+                        <div class="large-8 columns"><?php echo $_productHelper->getFormattedDeliveryTime($_product, $stockNo); ?></div>
+<?php /*change 4 ajax:*/ ?>
+                        <div class="large-4 columns qty"><?php echo $_productHelper->getFormattedDeliveryQuantity($_product, $stockNo); ?></div>
+                    </div>
+                <?php endif; ?>
+                <?php $stockNo = $_stockHelper->getThirdPartyDeliveryStockNumber(); ?>
+<?php /*change 4 ajax:*/ ?>
+                <?php if ( ! $_product->isDiscontinuation() && $_productHelper->isAvailInStockNo($_product, $stockNo)): ?>
+                    <div class="row availability-content delivery-content">
+                        <div class="large-8 columns"><?php echo $_productHelper->getFormattedDeliveryTime($_product, $stockNo); ?></div>
+<?php /*change 4 ajax:*/ ?>
+                        <div class="large-4 columns qty"><?php echo $_productHelper->getFormattedDeliveryQuantity($_product, $stockNo); ?></div>
+                    </div>
+                <?php endif; ?>
+            </div>
+<?php /*change 4 ajax:*/ ?>
+        <?php elseif ( $_productHelper->isAvailInAnyPickupStock($_product) ) : ?>
+            <!-- if pickupable somewhere but no delivery stock qty, we show "on request" for deliverable -->
+            <?php if ( $_product->isSale() ): ?>
+                <!-- if we are a sales/promotion/discontinuation(?) product, we show the sum of all pickupable stocks in the delivery opener but don't let anyone open it -->
+                <div class="availability-box">
+                    <div class="row availability-opener">
+                        <div class="large-8 columns"><span class="name"><?php echo $this->__('Deliverable') ?></span></div>
+<?php /*change 4 ajax:*/ ?>
+                        <div class="large-4 columns qty"><?php echo $_productHelper->getSummarizedFormattedPickupQuantities($_product) ?></div>
+                    </div>
+                </div>
+            <?php else: ?>
+                <div class="availability-box">
+                    <div class="row availability-opener" style="cursor: default;">
+                        <div class="large-8 columns"><span class="name"><?php echo $this->__('Deliverable') ?></span></div>
+                        <div class="large-4 columns qty"><?php echo $this->__('on request'); ?></div>
+                    </div>
+                </div>
+            <?php endif; ?>
+        <?php endif; ?>
+
+        <!-- 2. abholbar / pickup -->
+
+        <div class="availability-box">
+            <?php $stock = $_stockHelper->getCustomerPickupStock($_customer); ?>
+<?php /*change 4 ajax:*/ ?>
+            <?php if ($_productHelper->isAvailInAnyPickupStock($_product)): ?>
+                <div class="row availability-opener closed" id="pickup-opener">
+                    <!-- überschrift mit aufklapper für abholbar -->
+                    <div class="large-9 columns">
+                        <span class="name"><?php echo $this->__('Pickupable') ?></span> <?php echo $_productHelper->trimLength($this->__('at') . ' ' . $stock->getStockName(), 16); ?>
+                    </div>
+                    <div class="large-3 columns qty">
+<?php /*change 4 ajax:*/ ?>
+                        <?php echo $_productHelper->getFormattedPickupQuantity($_product); ?>
+                    </div>
+                </div>
+            <?php else: ?>
+                <div class="row availability-opener closed" id="pickup-opener">
+                    <!-- überschrift mit aufklapper für abholbar -->
+                    <div class="large-12 columns">
+                        <span class="name"><?php echo $this->__('Pickupable') ?></span>
+                    </div>
+                </div>
+            <?php endif; ?>
+
+            <?php foreach ($_allPickupLocations as $_warehouseId => $pickupLocation): ?>
+                <div class="row availability-content pickup-content">
+                    <div class="large-9 columns"><?php echo Mage::helper('schrackshipping/pickup')->getWarehouse($_warehouseId)->getName(); ?></div>
+                    <div class="large-3 columns qty"><?php echo $pickupLocation->getFormattedQty(); ?></div>
+                </div>
+            <?php endforeach; ?>
+        </div>
+    <?php else: ?>
+        <div class="row">
+            <div class="large-12 columns outofstock"><?php echo $this->__('Out of stock') ?></div>
+        </div>
+    <?php endif; ?>
+    <script type="text/javascript">
+        //<![CDATA[
+        jQuery(document).ready(function () {
+            jQuery('#pickup-opener,#delivery-opener').click(function (ev) {
+                var t = jQuery(ev.target);
+                if (t.hasClass('columns')) {
+                    t = t.parent();
+                }
+                var id = t.attr('id');
+                var c = id.substring(0, id.indexOf('-'));
+                if (t.hasClass('closed')) {
+                    jQuery('.' + c + '-content').show();
+                    t.switchClass('closed', 'opened');
+                } else {
+                    jQuery('.' + c + '-content').hide();
+                    t.switchClass('opened', 'closed');
+                }
+            })
+        });
+
+        setTimeout(function() {jQuery('#delivery-opener').click();}, 1000);
+        //]]>
+    </script>
+</div>
+<!-- default/template/catalog/product/view/stock.phtml (end) -->

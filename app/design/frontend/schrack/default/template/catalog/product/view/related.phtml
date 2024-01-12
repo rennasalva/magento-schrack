@@ -1,0 +1,222 @@
+<!-- default/template/catalog/product/view/related.phtml (start) -->
+<?php
+    /* @var $_infoHelper Schracklive_SchrackCatalog_Helper_Info */
+    $_infoHelper = Mage::helper('schrackcatalog/info');
+    /* @var $_productHelper Schracklive_SchrackCatalog_Helper_Product */
+    $_productHelper = Mage::helper('schrackcatalog/product');
+    /* @var $_stockHelper class Schracklive_SchrackcatalogInventory_Helper_Stock */
+    $_stockHelper = Mage::helper('schrackcataloginventory/stock');
+    /** @var Schracklive_SchrackGoogleAnalytics_Helper_Data $_gaHelper */
+    $_gaHelper = Mage::helper('googleanalytics');
+    $_customer = Mage::getSingleton('customer/session')->getCustomer();
+    $_imgCartUrl = $this->getSkinUrl('images/cart_raute1.png');
+    $_imgTruckUrl = $this->getSkinUrl('images/truck_white_diamond.png');
+    $_imgInvisUrl = $this->getSkinUrl('images/no_truck_no_cart.png');
+    $_partslistHelper = Mage::helper('schrackwishlist/partslist');
+
+    $sessionCustomerId = Mage::getSingleton('customer/session')->getCustomer()->getId();
+    $aclRoleId = Mage::getModel('customer/customer')->load($sessionCustomerId)->getSchrackAclRoleId();
+    $isProjectant = Mage::helper('schrack/acl')->isProjectantRoleId($aclRoleId);
+?>
+
+<?php if($this->getItems()->getSize()): ?>
+    <script type="text/javascript">//<![CDATA[
+
+        var partslist = new ListRequestManager.List('<?php echo $_partslistHelper->getBaseUrl() ?>');
+        partslist.setProductAddUrl('<?php echo Mage::helper('schrackcore/url')->getUrlWithCurrentProtocol('checkout/cart/addProductToPartslist')?>');
+        var partslistFE = new ListRequestManager.Frontend(partslist, ListRequestManager.Product);
+
+        var cart = new ListRequestManager.List('<?php echo $this->getUrl('checkout/cart/')?>', true);
+        var cartFE = new ListRequestManager.Frontend(cart, ListRequestManager.Product);
+
+        var compare = new ListRequestManager.List('<?php echo $this->getUrl('catalog/product_compare') ?>', true);
+        var compareFE = new ListRequestManager.Frontend(compare, ListRequestManager.Product);
+    //]]>
+    </script>
+    <div class="large-12 columns related-products">
+        <div class="header-related headline c1">
+            <?php echo $this->__('Related Products') ?>
+        </div>
+
+        <?php $_iterator = 0; ?>
+        <div class="product-list table" data-name="related_products" style="margin-left: 0px;">
+            <div class="header row">
+                <div class="large-4 columns product-col hide-on-print"><span class="bottom-align-container-5"><?php echo $this->__('Product'); ?></span></div>
+                <div class="large-6 columns product-col print-only"><span class="bottom-align-container-5"><?php echo $this->__('Product'); ?></span></div>
+                <div class="large-3 columns availability-col"><span class="bottom-align-container-5"><?php echo $this->__('Availability'); ?></span></div>
+                <div class="large-2 columns price-col hide-on-print"><span class="bottom-align-container-5"><?php echo $this->__('Your price'); ?><br />(<?php echo $this->__('net of VAT'); ?>)</span></div>
+                <div class="large-3 columns price-col print-only"><span class="bottom-align-container-5"><?php echo $this->__('Your price'); ?><br />(<?php echo $this->__('net of VAT'); ?>)</span></div>
+                <div class="large-3 columns buttons-col hide-on-print"><span class="bottom-align-container-5"><?php echo $this->__('Buy'); ?> /<br /><?php echo $this->__('Wishlist') . ' / ' . $this->__('Compare'); ?></span></div>
+            </div>
+            <?php $_productCollection = $this->getItems(); ?>
+            <?php $_infoHelper->preloadProductsInfo($_productCollection, $_customer); ?>
+            <?php foreach ($_productCollection as $_product): ?>
+                <div class="body row product-item"<?php echo $_gaHelper->getDataTags($_product, ++$_iterator); ?>>
+                    <div class="large-4 columns product-col hide-on-print">
+                        <div class="row">
+                            <div class="large-3 columns">
+                                <?php
+                                    $_product_image = $this->helper('catalog/image')->init($_product, 'small_image')->constrainOnly(true)->resize(66, 66);
+                                    $_product_image_url = (string)$_product_image;
+                                    // Removes protocol:
+                                    $_product_image_url = str_replace(array('http:', 'https:'), '', $_product_image_url);
+                                    $_product_image_width = $_product_image->getWidth();
+                                    $_product_image_height = $_product_image->getHeight();
+                                    $_hover_product_image = $this->helper('catalog/image')->init($_product, 'image');
+                                    $_hover_product_image_url = (string)$_hover_product_image;
+                                    // Removes protocol:
+                                    $_hover_product_image_url = str_replace(array('http:', 'https:'), '', $_hover_product_image_url);
+                                    $_hover_product_image_width = $_hover_product_image->getWidth();
+                                    $_hover_product_image_height = $_hover_product_image->getHeight();
+                                    ?>
+                                    <a class="preview" data-image="<?php echo $_hover_product_image_url ?>" onClick="return false;" title="<?php echo $this->htmlEscape($this->getImageLabel($_product, 'small_image')) ?>" class="product-image">
+                                        <img src="<?php echo $_product_image_url ?>" width="<?php echo $_product_image_width ?>" height="<?php echo $_product_image_height ?>" alt="<?php echo $this->htmlEscape($this->getImageLabel($_product, 'small_image')) ?>" />
+                                    </a>
+                            </div>
+                            <div class="large-9 columns">
+                                <h2 class="product-name"><a href="<?php echo $_product->getProductUrl() ?>" title="<?php echo $this->htmlEscape($_product->getName()) ?>"><?php echo $this->htmlEscape($_product->getName()) ?></a></h2>
+                                <?php if ($_product->getSku()): ?>
+                                    <div class="catalog-nr"><?php echo $this->__('Art.Nr.')?> <?php echo $this->htmlEscape($_product->getSku()); ?></div>
+                                <?php endif; ?>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="large-6 columns product-col print-only">
+                        <div class="row">
+                            <div class="large-3 columns">
+                                <?php
+                                $_product_image = $this->helper('catalog/image')->init($_product, 'small_image')->constrainOnly(true)->resize(66, 66);
+                                ?>
+                                <img src="<?php echo $_product_image ?>" width="<?php echo $_product_image->getWidth() ?>" height="<?php echo $_product_image->getHeight() ?>"/>
+                            </div>
+                            <div class="large-9 columns">
+                                <h2 class="product-name"><?php echo $this->htmlEscape($_product->getName()) ?></h2>
+                                <?php if ($_product->getSku()): ?>
+                                    <div class="catalog-nr"><?php echo $this->__('Art.Nr.')?> <?php echo $this->htmlEscape($_product->getSku()); ?></div>
+                                <?php endif; ?>
+                            </div>
+                        </div>
+                    </div>
+                   <div class="large-3 columns availability-col availability">
+                        <?php if ( ! $_productHelper->isAvailInAnyStock($_product) ): ?>
+                            <div class="row"><div class="large-12 columns onrequest"><?php echo $this->__('on request') ?></div></div>
+                        <?php elseif ($_product->isSaleable()): ?>
+                            <?php $stock = $_stockHelper->getCustomerPickupStock($_customer);?>
+                            <?php if ( $_productHelper->isAvailInStock($_product,$stock)): ?>
+                                <div class="row-fine avail-item">
+                                    <div class="large-fine-4 columns-fine pickupable"></div>
+                                    <div class="large-fine-20 columns-fine">
+                                        <div class="qty"><?php echo $this->__('Pickupable') ?>: <?php echo $_productHelper->getFormattedPickupQuantity($_product);?></div>
+                                        <div><?php echo $_productHelper->trimLength($this->__('at') . ' ' . $stock->getStockName(),16); ?></div>
+                                    </div>
+                                </div>                                    
+                            <?php endif; ?>
+                            <?php if ( $_productHelper->isAvailInAnyDeliveryStock($_product) ): ?>
+                                <?php $stock = $_stockHelper->getLocalDeliveryStock(); $stockNo = $stock ? $stock->getStockNumber() : 0;?>
+                                <?php if ( $_productHelper->isAvailInStock($_product,$stock)): ?>
+                                    <div class="row-fine avail-item">
+                                        <div class="large-fine-4 columns-fine deliverable"></div>
+                                        <div class="large-fine-20 columns-fine">
+                                            <div class="qty"><?php echo $this->__('Deliverable') ?>: <?php echo $_productHelper->getFormattedDeliveryQuantity($_product);?></div>
+                                            <div><?php echo $_productHelper->getFormattedDeliveryTime($_product,$stockNo);?></div>
+                                        </div>
+                                    </div>
+                                <?php endif; ?>
+                                <?php $stock = $_stockHelper->getForeignDeliveryStock(); $stockNo = $stock ? $stock->getStockNumber() : 0;?>
+                                <?php if ( $_productHelper->isAvailInStock($_product,$stock)): ?>
+                                    <div class="row-fine avail-item">
+                                        <div class="large-fine-4 columns-fine deliverable"></div>
+                                        <div class="large-fine-20 columns-fine">
+                                            <div class="qty"><?php echo $_productHelper->getFormattedDeliveryQuantity($_product,$stockNo);?></div>
+                                            <div><?php echo $_productHelper->getFormattedDeliveryTime($_product,$stockNo);?></div>
+                                        </div>
+                                    </div>
+                                <?php endif; ?>
+                                <?php $stockNo = $_stockHelper->getThirdPartyDeliveryStockNumber(); ?>
+                                <?php if ( ! $_product->isDiscontinuation() && $_productHelper->isAvailInStockNo($_product,$stockNo)): ?>
+                                    <div class="row-fine avail-item">
+                                        <div class="large-fine-4 columns-fine deliverable"></div>
+                                        <div class="large-fine-20 columns-fine">
+                                            <div class="qty"><?php echo $_productHelper->getFormattedDeliveryQuantity($_product,$stockNo);?></div>
+                                            <div><?php echo $_productHelper->getFormattedDeliveryTime($_product,$stockNo);?></div>
+                                        </div>
+                                    </div>
+                                <?php endif; ?>
+                            <?php endif; ?>
+                        <?php else: ?>
+                            <div class="row"><div class="large-12 columns outofstock"><?php echo $this->__('Out of stock') ?></div></div>
+                        <?php endif; ?>
+                    </div>
+                    <div class="large-2 columns price-col hide-on-print">
+                        <div class="table">
+                            <?php $priceHtml = $this->getPriceHtml($_product, true); echo $priceHtml; ?>
+                        </div>
+                    </div>
+                    <div class="large-3 columns price-col print-only">
+                        <div class="surcharges">
+                            <?php echo $this->__('excl. surcharges, net of VAT'); ?><br/>
+                            <?php echo $this->__('Sales unit') . ': ' . $_infoHelper->getDeliverySalesUnit($_product) . ' ' . $_product->getSchrackQtyunit(); ?>
+                        </div>
+                        <div class="table">
+                            <?php echo $priceHtml; ?>
+                        </div>
+                    </div>
+                    <div class="large-3 columns buttons-col hide-on-print">
+                        <?php if ($_customer->isAllowed('customerOrder', 'order') && !$isProjectant) : ?>
+                            <?php if ($_product->isSaleable()): ?>
+                                <form action="<?php echo $this->getAddToCartUrl($_product) ?>" method="post" name="product_addtocart_form_<?php echo $_product->getId(); ?>" id="product_addtocart_form_<?php echo $_product->getId(); ?>"<?php if ($_product->getOptions()): ?> enctype="multipart/form-data"<?php endif; ?> onsubmit="trackListAddToCart(this, productAddToCartForm_<?php echo $_product->getId(); ?>.submit())">
+                                    <div class="addtocart small">
+                                        <input type="text" class="qty" name="qty" id="qty-<?php echo $_product->getId() ?>" maxlength="12" value="" title="<?php echo $this->__('Qty'); ?>" />
+                                        <label for="qty-<?php echo $_product->getId() ?>" class="unit" title="<?php echo $_product->getSchrackQtyunit(); ?>"><?php echo $_product->getSchrackQtyunit(); ?></label>
+                                        <button type="button" class="btn-cart" title="<?php echo $this->__('Add to Cart'); ?>" onclick="trackListAddToCart(this, productAddToCartForm_<?php echo $_product->getId(); ?>.submit())">
+                                            <div><?php echo $this->__('Buy now'); ?></div>
+                                        </button>
+                                    </div>
+                                </form>
+                                <script type="text/javascript">
+                                    //<![CDATA[
+                                    var productAddToCartForm_<?php echo $_product->getId(); ?> = new VarienForm('product_addtocart_form_<?php echo $_product->getId(); ?>');
+                                    productAddToCartForm_<?php echo $_product->getId(); ?>.submit = function() {
+                                        document.forms['product_addtocart_form_<?php echo $_product->getId(); ?>'].submit();
+                                    }.bind(productAddToCartForm_<?php echo $_product->getId(); ?>);
+                                    //]]>
+                                </script>
+                            <?php endif; ?>
+                        <?php endif; ?>
+                        <div class="surcharges">
+                            <?php echo $this->__('excl. surcharges, net of VAT'); ?><br/>
+                            <?php echo $this->__('Sales unit') . ': ' . $_infoHelper->getDeliverySalesUnit($_product) . ' ' . $_product->getSchrackQtyunit(); ?>
+                        </div>
+                        <?php if (Mage::getSingleton('customer/session')->isLoggedIn()) : ?>                        
+                            <select class="dropdown-menu partslist" title="<?php echo $this->__('Add to partslist') ?>">
+                                <option></option>
+                                <option class="add-to-new-partslist no-auto-activate" onClick="partslistFE.addItemToNewList('<?php echo $this->__('New partslist') ?>', new ListRequestManager.Product(<?php echo $_product->getId() ?>, jQuery('#qty-<?php echo $_product->getId() ?>').val()));"><?php echo $this->__('Add to new partslist') ?></option>
+                                <?php if ($_partslistHelper->getPartslistCount() > 0): ?>
+                                    <?php $activePl = $_partslistHelper->getActiveOrFirstPartslist(); ?>
+                                    <option onClick="partslistFE.addItemToList(<?php echo $activePl->getId() ?>, new ListRequestManager.Product(<?php echo $_product->getId() ?>, jQuery('#qty-<?php echo $_product->getId() ?>').val()), false);" title="<?php echo $activePl->getDescription() ?>"><?php echo $this->__('Add to %s', $activePl->getDescription()) ?></option>
+                                <?php else: ?>
+                                    <?php $activePl = null; ?>
+                                <?php endif; ?>
+                                <?php foreach ($_partslistHelper->getPartslists() as $pl): ?>
+                                    <?php if ($activePl === null || $pl->getId() !== $activePl->getId()): ?>
+                                        <option onClick="partslistFE.addItemToList(<?php echo $pl->getId() ?>, new ListRequestManager.Product(<?php echo $_product->getId() ?>, jQuery('#qty-<?php echo $_product->getId() ?>').val()), false);" title="<?php echo $pl->getDescription() ?>"><?php echo $this->__('Add to %s', $pl->getDescription()) ?></option>
+                                <?php endif; ?>
+                            <?php endforeach; ?>
+                            </select>
+                            <?php if ($_compareUrl = $this->getAddToCompareUrl($_product)): ?>
+                                <a rel="nofollow" onclick="return checkCompare();" href="<?php echo $_compareUrl ?>" class="link-compare" title="<?php echo $this->__('Add to Compare'); ?>"><div></div></a>
+                            <?php endif; ?>
+                        <?php endif; ?>
+                    </div>
+                </div>
+            <?php endforeach; ?>
+        </div>    
+    </div>    
+<?php endif ?>
+
+<script type="text/javascript">
+    jQuery(document).ready(function() {
+        jQuery('select.dropdown-menu').dropdown({activateOnClick: false});
+    });
+</script>
+<!-- default/template/catalog/product/view/related.phtml (end) -->

@@ -1,0 +1,74 @@
+<?xml version="1.0"?>
+<config>
+    <sections>
+        <schrack translate="label">
+            <groups>
+                <promotions translate="label">
+                    <label>Promotions</label>
+                    <sort_order>300</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>0</show_in_website>
+                    <show_in_store>0</show_in_store>
+                    <fields>
+                        <stomp_url translate="label">
+                            <label>Stomp URL</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>10</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </stomp_url>
+                        <message_queue_inbound translate="label">
+                            <label>Inbound Message Queue Name</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>20</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </message_queue_inbound>
+                        <message_queue_error translate="label">
+                            <label>Error Message Queue Name</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>30</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </message_queue_error>
+                        <service_url translate="label">
+                            <label>Price-Proxy Service URL</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>40</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </service_url>
+                        <service_user translate="label">
+                            <label>Price-Proxy Service User</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>50</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </service_user>
+                        <service_password translate="label">
+                            <label>Price-Proxy Service Password</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>50</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </service_password>
+                        <default_image_url translate="label">
+                            <label>Default Image URL</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>80</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </default_image_url>
+                    </fields>
+                </promotions>
+            </groups>
+        </schrack>
+    </sections>
+</config>

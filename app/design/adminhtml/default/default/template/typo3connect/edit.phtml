@@ -1,0 +1,90 @@
+<div id="category-edit-container" class="category-content">
+	<?php echo $this->getChildHtml('form') ?>
+</div>
+<script type="text/javascript">
+//<![CDATA[
+
+    /**
+     * Update category content area
+     */
+    function updateContent(url, params) {
+        if (!params) {
+            params = {};
+        }
+        if (!params.form_key) {
+            params.form_key = FORM_KEY;
+        }
+
+        toolbarToggle.stop();
+
+       if(params.node_name)
+       {
+           var currentNode = tree.getNodeById(tree.currentNodeId);
+           currentNode.setText(params.node_name);
+       }
+
+        var categoryContainer = $('category-edit-container');
+        var messagesContainer = $('messages');
+        var thisObj = this;
+        
+        new Ajax.Request(url + (url.match(new RegExp('\\?')) ? '&isAjax=true' : '?isAjax=true' ), {
+            parameters:  params,
+            evalScripts: true,
+            onComplete: function () {
+                /**
+                 * This func depends on variables, that came in response, and were eval'ed in onSuccess() callback.
+                 * Since prototype's Element.update() evals javascripts in 10 msec, we should exec our func after it.
+                 */
+                setTimeout(function() {
+                    try {
+                        toolbarToggle.start();
+                    } catch (e) {
+                        alert(e.message);
+                    };
+                }, 25);
+            },
+            onSuccess: function(transport) {
+            	
+            	//$(categoryContainer).update('categoryContainer');
+            	//$(messagesContainer).update('messagesContainer');
+            	
+                try {
+                    if (transport.responseText.isJSON()) {
+                        var response = transport.responseText.evalJSON();
+                        var needUpdate = true;
+                        if (response.error) {
+                            alert(response.message);
+                            needUpdate = false;
+                        }
+                        if(response.ajaxExpired && response.ajaxRedirect) {
+                            setLocation(response.ajaxRedirect);
+                            needUpdate = false;
+                        }
+                        if (needUpdate){
+                            if (response.content){
+                                $(categoryContainer).update(response.content);
+                            }
+                            if (response.messages){
+                                $(messagesContainer).update(response.messages);
+                            }
+                        }
+                    } else {
+                        $(categoryContainer).update(transport.responseText);
+                    }
+                }
+                catch (e) {
+                    $(categoryContainer).update(transport.responseText);
+                }
+            }
+        });
+    }
+
+    function displayLoadingMask()
+    {
+       var loaderArea = $$('#html-body .wrapper')[0]; // Blocks all page
+        Position.clone($(loaderArea), $('loading-mask'), {offsetLeft:-2});
+        toggleSelectsUnderBlock($('loading-mask'), false);
+        Element.show('loading-mask');
+    }
+//]]>
+</script>

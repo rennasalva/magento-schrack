@@ -1,0 +1,135 @@
+{
+  "projectType": "Intercom Calculator",
+  "documentationStylesheet": "intercomcalculatorV21.xslt",
+  "legalNotesKeyPrefix": "intercom_",
+  "articleAttributeMetadata": {
+    "schrack_kommunikationsart":      { "search": true, "display": true, "suppressNA": true, "excludeArticles" : [ "SP120000--" ] },
+    "schrack_system":                 { "search": true, "display": true },
+    "schrack_montageartaussenstell":  { "search": true, "display": true },
+    "schrack_montageartinnenstelle":  { "search": true, "display": true },
+    "schrack_farbe":                  { "search": false, "display": true },
+    "schrack_innenstelleausfuehrun":  { "search": true, "display": true },
+    "schrack_zusaetzlichefunktione":  { "search": true, "display": true, "displayEachValueAsRow": true, "buildCheckboxes": true }
+  },
+  "articles": [
+    {
+      "preload_additional_data" : true,
+      "SKU": "SP8451V---",
+      "audio_set": false,
+      "audio_video_set": true,
+      "default_set_for": "audio_video_set"
+    },
+    {
+      "preload_additional_data" : true,
+      "SKU": "SP8461M---",
+      "audio_set": false,
+      "audio_video_set": true,
+      "default_set_for": false
+    },
+    {
+      "preload_additional_data" : true,
+      "SKU": "SP8461V---",
+      "audio_set": false,
+      "audio_video_set": true,
+      "default_set_for": false
+    },
+    {
+      "preload_additional_data" : true,
+      "SKU": "SP8461I---",
+      "audio_set": false,
+      "audio_video_set": true,
+      "default_set_for": false
+    },
+    {
+      "preload_additional_data" : true,
+      "SKU": "SPVISTO---",
+      "audio_set": false,
+      "audio_video_set": true,
+      "default_set_for": false
+    },
+    {
+      "preload_additional_data" : true,
+      "SKU": "SPVISTOC--",
+      "audio_set": false,
+      "audio_video_set": true,
+      "default_set_for": false
+    },
+    {
+      "preload_additional_data" : true,
+      "SKU": "SPKCA2061-",
+      "audio_set": true,
+      "audio_video_set": false,
+      "default_set_for": false
+    },
+    {
+      "preload_additional_data" : true,
+      "SKU": "SPKCA2071A",
+      "audio_set": true,
+      "audio_video_set": false,
+      "default_set_for": "audio_set"
+    },
+    {
+      "preload_additional_data" : true,
+      "SKU": "SPKCA5061A",
+      "audio_set": true,
+      "audio_video_set": false,
+      "default_set_for": false
+    },
+    {
+      "preload_additional_data" : true,
+      "SKU": "SP8531HD--",
+      "audio_set": false,
+      "audio_video_set": true,
+      "default_set_for": false
+    },
+    {
+      "preload_additional_data" : true,
+      "SKU": "SP8561IHV-",
+      "audio_set": false,
+      "audio_video_set": true,
+      "default_set_for": false
+    },
+    {
+      "preload_additional_data" : true,
+      "SKU": "SP8561V---",
+      "audio_set": false,
+      "audio_video_set": true,
+      "default_set_for": false
+    },
+    {
+      "preload_additional_data" : true,
+      "SKU": "SPKAE0061-",
+      "audio_set": true,
+      "audio_video_set": false,
+      "default_set_for": false
+    },
+    {
+      "preload_additional_data" : true,
+      "SKU": "SPKAE5061-",
+      "audio_set": true,
+      "audio_video_set": false,
+      "default_set_for": false
+    },
+    {
+      "preload_additional_data" : true,
+      "SKU": "SPKAE5062-",
+      "audio_set": true,
+      "audio_video_set": false,
+      "default_set_for": false
+    },
+    {
+      "preload_additional_data" : true,
+      "SKU": "SPKAE5064-",
+      "audio_set": true,
+      "audio_video_set": false,
+      "default_set_for": false
+    },
+    {
+      "preload_additional_data" : true,
+      "SKU": "SP120000--",
+      "audio_set": false,
+      "audio_video_set": false,
+      "default_set_for": false
+    }
+  ]
+}

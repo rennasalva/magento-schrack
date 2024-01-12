@@ -1,0 +1,39 @@
+<div id="reset-container">    
+    <div class="content-header">
+        <table cellspacing="0" class="grid-header">
+            <tr>
+                <td><h3><?=$this->__('Datanorm Mass Production Results')?></h3></td>
+            </tr>
+        </table>
+    </div>
+    <div class="entry-edit">
+        <form id="edit_form" name="edit_form" method="post" action="<?=$this->getUrl('*/*/post')?>">
+            <input name="form_key" type="hidden" value="<?php echo Mage::getSingleton('core/session')->getFormKey() ?>" />
+            <table cellspacing="0" class="form-list">
+                <tr>
+                    <th>
+                        <?= $this->__('Customer ID')?>
+                    </th>
+                    <th>
+                        <?= $this->__('Link')?>
+                    </th>
+                </tr>
+                <?php foreach ($results as $customerId => $res):?>
+                    <tr>
+                        <td class="">
+                            <?= $customerId ?>
+                        </td>
+                        <td class="">
+                            <?php if (isset($res['url'])):?>
+                                <a href="<?= $res['url']?>" target="_blank"><?= $res['url']?></a>
+                            <?php else:?>
+                                ERROR: <?= $res['error']?>
+                            <?php endif; ?>
+                        </td>
+                    </tr>
+                <?php endforeach; ?>
+            </table>
+        </form>
+        <?= $this->__('A result email will be sent to your address')?>
+    </div>
+</div>

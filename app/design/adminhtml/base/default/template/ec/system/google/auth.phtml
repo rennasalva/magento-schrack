@@ -1,0 +1,16 @@
+<?php if ($this->getApi()->getClient()->isAccessTokenExpired()):?>
+	<a style="display:inline-block; height:30px; border:1px solid #4285F4; line-height:30px; padding:0px 10px 0px 10px; background:transparent -moz-linear-gradient(center top , #4387FD, #4683EA) repeat scroll 0% 0%; color:#fff; text-decoration:none; font-size:13px; font-family:Arial, sans-serif; font-weight:bold; border-radius:2px;margin-bottom:5px;" href="<?php echo $this->getApi()->getClient()->createAuthUrl()?>">Sign in to Google</a>
+<?php else: ?>
+	<div>
+		<div style="margin:0px 0px 10px 0px"><strong style="text-transform: uppercase">SELECT ITEMS TO CREATE IN YOUR GOOGLE TAG MANAGER ACCOUNT</strong></div>
+		<div style="margin:0px 0px 10px 0px">The following items will be created next time you click "Save config" button.</div>
+	</div>
+	<div>
+		<div><label for="ec_api_variables"><input type="checkbox" name="args[]" value="ec_api_variables" id="ec_api_variables" /> Create variables</label></div>
+		<div><label for="ec_api_triggers"><input type="checkbox" name="args[]" value="ec_api_triggers" id="ec_api_triggers" /> Create triggers</label></div>
+		<div><label for="ec_api_tags"><input type="checkbox" name="args[]" value="ec_api_tags" id="ec_api_tags" /> Create tags</label></div>
+	</div>
+	<div style="margin:10px 0px 10px 0px">
+		Make sure Container ID and Account ID are present and your account is authorised with corresponding permissions.
+	</div>
+<?php endif ?>

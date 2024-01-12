@@ -1,0 +1,48 @@
+<?php
+    $_value = $this->getTotal()->getValue();
+    $_style = $this->getTotal()->getStyle();
+?>
+
+<?php global $taxIter; $taxIter++; ?>
+<?php if ($this->helper('tax')->displayFullSummary() && $_value!=0): ?>
+<?php $isTop = 1; ?>
+    <?php foreach ($this->getTotal()->getFullInfo() as $info): ?>
+        <?php if (isset($info['hidden']) && $info['hidden']) continue; ?>
+        <?php $percent = $info['percent']; ?>
+        <?php $amount = $info['amount']; ?>
+        <?php $rates = $info['rates']; ?>
+        <?php $isFirst = 1; ?>
+
+        <?php foreach ($rates as $rate): ?>
+        <div class="row-fine totals">
+            <div class="large-fine-20 columns-fine">
+                <?php echo $rate['title']; ?>
+                <?php if ($rate['percent']): ?>
+                    <?php echo $rate['percent']; ?>%
+                <?php endif; ?>
+                <br />
+            </div>
+            <?php if ($isFirst): ?>
+                <div class="large-fine-4 columns-fine">
+                    <div class="sum align-right">
+                        <?php echo $this->helper('checkout')->formatPrice($amount); ?>
+                    </div>
+                </div>
+            <?php endif; ?>
+        </div>
+        <?php $isFirst = 0; ?>
+        <?php $isTop = 0; ?>
+        <?php endforeach; ?>
+    <?php endforeach; ?>
+<?php else:?>
+<div class="row-fine totals">
+    <div class="large-fine-20 columns-fine">
+        <?php if ($this->helper('tax')->displayFullSummary()): ?>
+            <div class="tax-collapse"><?php echo $this->getTotal()->getTitle() ?></div>
+        <?php else: ?>
+            <?php echo $this->getTotal()->getTitle() ?>
+        <?php endif;?>
+    </div>
+    <div class="large-fine-4 columns-fine"><?php echo $this->helper('checkout')->formatPrice($_value) ?></div>
+</div>
+<?php endif;?>

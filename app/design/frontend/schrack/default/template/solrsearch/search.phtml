@@ -1,0 +1,326 @@
+<?php
+/* @var $this Schracklive_SolrSearch_Block_Form_Search */
+$_tableHelper = Mage::helper('schrackcore/table');
+$_hasActiveFacets = $this->hasActiveFacets();
+$_showAll = $_hasActiveFacets || ($this->getRequest()->getParam('showAll', null) !== null);
+$_searchLineCounter = 0;
+if ($this->hasFacets()) {
+    $_facets = $this->getFacets();
+    $_facetCount = count($_facets);
+    if ( $_facetCount <= 6 ) {
+        $_showAll = true;
+    }
+    $_haveHiddenFacets = ($_facetCount >= 5 && !$_showAll);
+} else {
+    $_facets = array();
+    $_facetCount = 0;
+    $_haveHiddenFacets = false;
+}
+?>
+<!-- search.phtml (start) -->
+<?php if ($this->categoryHasItems()) { ?>
+	<?php if ($this->hasFacets()) { ?>
+<div class="search-attributes row info-box three-d hide-on-print"><div class="large-12 columns">
+	<table class="attributes-list">
+<?php $i = 0; foreach ($_facets as $facet => $entries) { ?>
+        <?php if ( $facet != null ||strlen($facet) > 0 ) : ?>
+            <tr class="facet <?php echo $_tableHelper->getEvenOddClass()?><?php if ($i >= 5 && $_haveHiddenFacets):?> hidden<?php endif;?>" id="facet-<?php echo $i?>">
+                <th><?php echo $facet; ?>:</th>
+                <td>
+                 <?php $j = 0; foreach ($entries as $entry) { ++$j;?>
+                    <?php $_isActive = ($entry['type'] == Schracklive_SolrSearch_Block_Form_Search::FACET_ACTIVE);?>
+                    <fieldset class="bestwidth">
+                        <span class="<?php echo ($_isActive ? 'active' : ($entry['count'] == 0 ? 'zero' : '')); ?> nobr">
+                            <input id="checkbox-<?php echo $i.'-'.$j;?>" type="checkbox"<?php if($_isActive):?> checked="checked"<?php endif;?> /><label for="checkbox-<?php echo $i.'-'.$j;?>">&nbsp;<a id="link-<?php echo $i.'-'.$j;?>" rel="nofollow"><?php echo $entry['label']; ?></a>&nbsp;<?php echo '<span class="count">('.$entry['count'].')</span>'; ?></label>
+                             <script type="text/javascript">
+                                 //<![CDATA[
+                                jQuery(document).ready(function() {
+                                    jQuery('#checkbox-<?php echo $i.'-'.$j;?>').on( 'click', function(){
+                                        performSolrSearchAjax('<?php echo $entry['url']; ?>', true, '<?php echo $facet; ?>', '<?php echo $entry['label']; ?>');
+                                    });
+                                    jQuery('#link-<?php echo $i.'-'.$j;?>').on( 'click', function(){
+                                        performSolrSearchAjax('<?php echo $entry['url']; ?>', true, '<?php echo $facet; ?>', '<?php echo $entry['label']; ?>');
+                                    });
+                                });
+                             //]]></script>
+                        </span>
+                    </fieldset>
+                <?php } ?>
+                </td>
+            </tr>
+            <?php if ($i === 4 && $_haveHiddenFacets):?>
+                <tr class="<?php echo $_tableHelper->getEvenOddClass()?>" id="hidden-facets-opener-tr">
+                    <th>&nbsp;</th>
+                    <td style="text-align: right; padding-right: 10px; padding-top: 5px;">
+                        <a id="hidden-facets-opener"><?php echo $this->__('Show all facets')?></a>
+                    </td>
+                </tr>
+                <?php ++$i;?>
+            <?php endif;?>
+        <?php endif; ?>
+<?php ++$i; } ?>
+        <?php if ($i > 5 && $_haveHiddenFacets) { $_tableHelper->setLineCounter(6); } ?>
+		<tr id="search-tr" class="<?php echo $_tableHelper->getEvenOddClass()?>">
+			<th style="vertical-align: middle"><?php echo $this->__('Full text search'); ?>:</th>
+			<td class="last-col">
+				<form id="search_category_form" method="get">
+<?php foreach ($this->getQueryFacets() as $fq) { ?>
+					<input type="hidden" name="fq[]" value="<?php echo $fq; ?>" />
+<?php } ?>
+					<input type="hidden" name="cat" value="Shop_Category" />
+					<input id="search-attr-full" type="text" name="q" value="<?php echo $this->helper('catalogsearch')->getEscapedQueryText(); ?>" class="search default" autocomplete="off" placeholder="<?php echo $this->__('Search within article selection') ?>"/>
+                    <button type="button" class="button-red small search" title="<?php echo $this->__('Search')?>" onClick="checkSubmitForm();"><?php echo $this->__('Search')?></button>
+					<div id="search_category_autocomplete_wrapper" style="display: none;"><div id="search_category_autocomplete" class="search-autocomplete"></div></div>
+        <script type="text/javascript">
+        //<![CDATA[
+            var searchCatForm = new Varien.searchForm('search_category_form', 'search-attr-full', '');
+            searchCatForm.initAutocomplete('<?php echo $this->helper('catalogsearch')->getSuggestUrl() ?>?searchcategoryid=<?php echo $this->getCurrentCategoryId(); ?><?php echo $this->getFacetsRequestString('&'); ?>', 'search_category_autocomplete');
+
+            var checkSubmitForm = function() {
+                if ( jQuery('#search-attr-full').val() === '<?php echo $this->__('Search within article selection') ?>' )
+                    jQuery('#search-attr-full').val('');
+
+                jQuery('#search_category_form').submit();
+            }
+        //]]>
+        </script>
+				</form>
+			</td>
+		</tr>
+	</table>
+	<script type="text/javascript">//<![CDATA[
+
+        decorateTable('attributes-list', 'none-recursive');
+        jQuery(document).ready(function() {
+            jQuery('#hidden-facets-opener').click(function(ev){
+                jQuery('#hidden-facets-opener-tr').hide();
+                jQuery('.facet.hidden').show();
+                var fc = <?php echo $_facetCount?>;
+                for (var i=5; i <= fc; ++i) {
+                    if (jQuery('#facet-' + i).hasClass('odd')) {
+                        jQuery('#facet-' + i).removeClass('odd');
+                        jQuery('#facet-' + i).addClass('even');
+                    } else {
+                        jQuery('#facet-' + i).removeClass('even');
+                        jQuery('#facet-' + i).addClass('odd');
+                    }
+                    if (fc % 2 === 0) {
+                        jQuery('#search-tr').removeClass('even');
+                        jQuery('#search-tr').addClass('odd');
+                    } else {
+                        jQuery('#search-tr').removeClass('odd');
+                        jQuery('#search-tr').addClass('even');
+                    }
+                }
+                setBestWidthes();
+            });
+        });
+
+        var performSolrSearchAjax = function(url, setPageState, facetGroup, facetLabel) {
+            if ( typeof(setPageState) === 'undefined' ) {
+                setPageState = true;
+            }
+            if (typeof(ga) != 'undefined' && typeof(facetGroup) != 'undefined' && typeof(facetLabel) != 'undefined') {
+                ga('set', 'dimension5', facetGroup + ':' + facetLabel);
+                ga('send', 'event', 'facet', 'click', facetGroup + ':' + facetLabel, {'page': gaLocation});
+            }
+            jQuery('#t3').hide();
+            jQuery('#solrsearch-container').empty().append(jQuery('<div class="ajax-request-spinner active"></div>'));
+            if (setPageState) {
+                setPageStateFromUrl(url);
+            }
+            jQuery.ajax(url, {
+                'success': function (data) {
+                    var datax = JSON.parse(data);
+                    if (datax.status.toString() === 'ERROR') {
+                        // showOverlayMessage('error', datax.errors.join(', '), '');
+                        alert(datax.errors.join(', '));
+                        console.log('Json errors', datax.errors);
+                    } else {
+                        jQuery('#solrsearch-container').html(datax.html);
+                        jQueryLazyLoader.update();
+                        imagePreviewHover();
+                    }
+                    setBestWidthes();
+                }
+            });
+
+            var sign = ( url.indexOf('?') > -1 ) ? '&' : '?';
+            performSolrListAjax(url + sign + 'list=1');
+
+        };
+
+        var performSolrListAjax = function(url) {
+            jQuery('#solrlist-container').empty().append(jQuery('<div class="ajax-request-spinner active"></div>'));
+            jQuery.ajax(url, {
+                'success': function(data) {
+                    var datax = JSON.parse(data);
+                    if (datax.status.toString() === 'ERROR') {
+                        alert(datax.errors.join(', '));
+                        console.log('Json errors', datax.errors);
+                    } else {
+                        jQuery('#solrlist-container').html(datax.html);
+                        initProductList();
+                        setTableHeights();
+                        if (typeof trackPage !== 'undefined' && jQuery.isFunction(trackPage)) {
+                            trackPage();
+                        } else {
+                            console.log('Dev-Message of caught error: trackPage is not available and in consequence not executable');
+                        }
+                        jQueryLazyLoader.update();
+                        imagePreviewHover();
+                    }
+                }
+            });
+        };
+
+        var setPageStateFromUrl = function(url, hash) {
+            if ( typeof(hash) === 'undefined') {
+                hash = '';
+            } else {
+                hash = '#' + hash;
+            }
+
+            var patt = /^(.*)\?(.*)$/;
+            var res = patt.exec(url);
+            var data = '';
+            var baseUrl = url;
+            if (res) {
+                baseUrl = res[1];
+                data = res[2];
+            }
+            History.pushState({data: data}, document.title, '?' + data + hash);
+        };
+
+        jQuery.fn.AttributeObserver = function(){
+
+            var AttributeObserver = function(el, attr, cb, delay){
+                var el = el,
+                    cb = cb,
+                    delay = delay,
+                    oldValue = false,
+                    timeout = null;
+
+                function check(el){
+                    var newValue = typeof(attr) == 'function' ? attr(el) : el.getAttribute(attr);
+
+                    if(oldValue === false){
+                        oldValue = newValue;
+                    }
+
+                    if(oldValue != newValue){
+
+                        if(typeof(forceCheckCb) == 'function'){
+                            forceCheckCb(oldValue, newValue, el);
+                        }
+
+                        jQuery.proxy(cb,el)(oldValue, newValue);
+                        oldValue = newValue;
+                    }
+
+                    timeout = setTimeout(function(){check(el);}, delay);
+                }
+
+                /*
+                 The following methods could be moved
+                 in AttributeObserver.prototype.
+                 */
+                this.setOldValue = function(value){
+                    oldValue = value;
+                };
+
+                this.remove = function(){
+                    clearTimeout(timeout);
+                    jQuery.removeData(el, 'AttributeObserver');
+                    return $(el);
+                }
+
+                this.forceCheck = function(forceCheckCb){
+                    clearTimeout(timeout);
+                    check(forceCheckCb);
+                };
+
+                check(el);
+            };
+
+
+            /* Interface */
+            var args = arguments;
+
+            if(args.length == 0){
+                return jQuery.data(this[0], 'AttributeObserver');
+            }
+
+            var cb
+                , attr
+                , delay = 1000;
+
+            if(this.length == 0){
+                throw new Error('[AttributeObserver] Select one (or more) elements.');
+                return false;
+            }
+
+            if(typeof(args[0]) != 'string' && typeof(args[0]) != 'function'){
+                throw new Error('[AttributeObserver] 1st argument must be a string or a function');
+                return false;
+
+            } else {
+                attr = args[0];
+            }
+
+            if(typeof(args[1]) != 'function'){
+                throw new Error('[AttributeObserver] Second argument must be a function');
+                return false;
+
+            } else {
+                cb = args[1];
+            }
+
+            if(typeof(args[2]) == 'number'){
+                delay = args[2];
+            }
+
+            var i = this.length;
+            while(i--){
+                jQuery.data(this.eq(i)[0], 'AttributeObserver', new AttributeObserver(this[i], attr, cb, delay));
+            }
+
+            return this;
+        };
+
+        var topDistanceSearchAutoCompleterDiv = '368px';
+
+        if(navigator.userAgent.toLowerCase().indexOf("msie") != -1) {
+           var topDistanceSearchAutoCompleterDiv = '380px';
+        }
+
+        // Only check for IE 11 :
+        if (Object.hasOwnProperty.call(window, "ActiveXObject") && !window.ActiveXObject) {
+            var topDistanceSearchAutoCompleterDiv = '380px';
+        }
+
+        jQuery('#search_category_autocomplete').AttributeObserver('style', function(oldValue, newValue) {
+            jQuery('#search_category_autocomplete').css({'top' : topDistanceSearchAutoCompleterDiv, 'left' : '156px'});
+            if(newValue.indexOf('display: none') >= 0 ) {
+                jQuery('#search_category_autocomplete_wrapper').css({'display' : 'none'});
+            } else {
+                jQuery('#search_category_autocomplete_wrapper').css({'display' : 'block'});
+            }
+        })
+
+        jQuery('#search_category_autocomplete').bind("DOMSubtreeModified", function(){
+            if (jQuery('#search_category_autocomplete').html() == '') {
+                jQuery('#search_category_autocomplete_wrapper').css({'display' : 'none'});
+            } else {
+                jQuery('#search_category_autocomplete_wrapper').css({'display' : 'block'});
+            }
+        });
+
+	//]]>
+	</script>
+</div></div>
+<!-- search.phtml (end) -->
+	<?php } ?>
+<?php } ?>
+
+    

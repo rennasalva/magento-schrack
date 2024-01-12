@@ -1,0 +1,63 @@
+<?xml version="1.0"?>
+<config>
+    <modules>
+        <Schracklive_Tools>
+            <version>1.2.2</version>
+        </Schracklive_Tools>
+    </modules>
+
+    <frontend>
+        <layout>
+            <updates>
+                <tools module="Schracklive_Tools">
+                    <file>tools.xml</file>
+                </tools>
+            </updates>
+        </layout>
+
+        <routers>
+            <onlinetools>
+                <use>standard</use>
+                <args>
+                    <module>Schracklive_Tools</module>
+                    <frontName>onlinetools</frontName>
+                </args>
+            </onlinetools>
+        </routers>
+
+		<translate>
+			<modules>
+				<Schracklive_Tools>
+					<files>
+						<account>local/Schracklive_Tools.csv</account>
+					</files>
+				</Schracklive_Tools>
+			</modules>
+		</translate>
+    </frontend>
+
+    <global>
+        <blocks>
+            <page>
+                <rewrite>
+                    <html>Schracklive_Tools_Block_Html</html>
+                </rewrite>
+            </page>
+            <tools>
+                <class>Schracklive_Tools_Block</class>
+            </tools>
+        </blocks>
+        <helpers>
+            <tools>
+                <class>Schracklive_Tools_Helper</class>
+            </tools>
+        </helpers>
+        <resources>
+            <tools_setup>
+                <setup>
+                    <module>Schracklive_Tools</module>
+                </setup>
+            </tools_setup>
+        </resources>
+    </global>
+</config>

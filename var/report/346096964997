@@ -1,0 +1,19 @@
+a:5:{i:0;s:69:"Invalid method Mage_Checkout_Block_Links::addQuickaddLink(Array
+(
+)
+)";i:1;s:1442:"#0 /magento/app/code/core/Mage/Core/Model/Layout.php(346): Varien_Object->__call()
+#1 /magento/app/code/core/Mage/Core/Model/Layout.php(209): Mage_Core_Model_Layout->_generateAction()
+#2 /magento/app/code/core/Mage/Core/Model/Layout.php(201): Mage_Core_Model_Layout->generateBlocks()
+#3 /magento/app/code/core/Mage/Core/Model/Layout.php(205): Mage_Core_Model_Layout->generateBlocks()
+#4 /magento/app/code/core/Mage/Core/Controller/Varien/Action.php(345): Mage_Core_Model_Layout->generateBlocks()
+#5 /magento/app/code/core/Mage/Cms/Helper/Page.php(101): Mage_Core_Controller_Varien_Action->generateLayoutBlocks()
+#6 /magento/app/code/core/Mage/Cms/Helper/Page.php(41): Mage_Cms_Helper_Page->_renderPage()
+#7 /magento/app/code/core/Mage/Cms/controllers/IndexController.php(62): Mage_Cms_Helper_Page->renderPage()
+#8 /magento/app/code/core/Mage/Core/Controller/Varien/Action.php(421): Mage_Cms_IndexController->noRouteAction()
+#9 /magento/app/code/core/Mage/Core/Controller/Varien/Router/Standard.php(255): Mage_Core_Controller_Varien_Action->dispatch()
+#10 /magento/app/code/core/Mage/Core/Controller/Varien/Front.php(181): Mage_Core_Controller_Varien_Router_Standard->match()
+#11 /magento/app/code/core/Mage/Core/Model/App.php(358): Mage_Core_Controller_Varien_Front->dispatch()
+#12 /magento/app/Mage.php(740): Mage_Core_Model_App->run()
+#13 /magento/index.php(56): Mage::run()
+#14 /magento/pub/default/index.php(25): require('...')
+#15 {main}";s:3:"url";s:36:"/errors/default/images/bkg_main2.gif";s:11:"script_name";s:10:"/index.php";s:4:"skin";s:7:"default";}

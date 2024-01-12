@@ -1,0 +1,28 @@
+<?php
+$_checkoutHelper = Mage::helper('checkout/url');
+$_wishlistHelper = Mage::helper('schrackwishlist');
+$_partslistHelper = Mage::helper('schrackwishlist/partslist');
+$_partslist = $_partslistHelper->getActiveOrFirstPartslist();
+?>
+<div class="block block-schrack-rubric">
+    <h2><span><?php echo __('Rubric'); ?></span></h2>
+    <div class="block-content">
+        <ul>
+            <?php if (Mage::getSingleton('customer/session')->getCustomer()->isAllowed('customerOrder', 'order')): ?>
+                <li><a href="<?php echo Mage::helper('checkout/cart')->getCartUrl(); ?>"><?php echo $this->__('My Cart'); ?></a></li>
+            <?php endif; ?>
+            <?php if ($this->helper('customer')->isLoggedIn()) : ?>
+                <?php if ($_partslist):?><li><a href="<?php echo Mage::getUrl('wishlist/partslist/view', array('id' => $_partslist->getId()))?>"><?php echo $this->__('My Partslists')?></a></li><?php endif; ?>
+            <?php endif; ?>
+            <li><a rel="nofollow" href="<?php echo Mage::getUrl('catalog/product_compare'); ?>"><?php echo $this->__('My Compare List'); ?></a></li>
+            <?php if (Mage::getConfig()->getModuleConfig('Schracklive_Datanorm')->is('active', 'true')): ?>
+                <li><a href="<?php echo Mage::getUrl('datanorm'); ?>"><?php echo $this->__('My Datanorm Download'); ?></a></li>
+            <?php endif; ?>
+        </ul>
+        <?php if (Mage::getSingleton('customer/session')->getCustomer()->isAllowed('customerOrder', 'order')): ?>
+            <div class="actions">
+                <button type="button" title="<?php echo $_checkoutHelper->__('To Checkout') ?>" class="button" onclick="setLocation('<?php echo $_checkoutHelper->getCheckoutUrl() ?>')"><?php echo $_checkoutHelper->__('To Checkout') ?></button>
+            </div>
+        <?php endif; ?>
+    </div>
+</div>

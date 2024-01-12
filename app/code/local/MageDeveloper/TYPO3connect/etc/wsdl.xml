@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns:typens="urn:{{var wsdl.name}}" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+    xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns="http://schemas.xmlsoap.org/wsdl/"
+    name="{{var wsdl.name}}" targetNamespace="urn:{{var wsdl.name}}">
+    <types>
+		<schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="urn:Magento">
+            <import namespace="http://schemas.xmlsoap.org/soap/encoding/"
+                    schemaLocation="http://schemas.xmlsoap.org/soap/encoding/"/>
+            <complexType name="catalogProductReturnEntityIdArray">
+                <complexContent>
+                    <restriction base="soapenc:Array">
+                        <attribute ref="soapenc:arrayType" wsdl:arrayType="typens:catalogProductReturnEntityId[]"/>
+                    </restriction>
+                </complexContent>
+            </complexType>
+			<complexType name="catalogProductReturnEntityId">
+                <all>
+                    <element name="product_id" type="xsd:string" minOccurs="0"/>
+                </all>
+            </complexType>
+		</schema>
+    </types>
+    <message name="customerCustomerFetchRequest">
+        <part name="sessionId" type="xsd:string" />
+        <part name="email" type="xsd:string" />
+    </message>
+    <message name="customerCustomerFetchResponse">
+        <part name="serialized" type="xsd:string" />
+    </message>
+	<message name="customerCustomerFetchalladvisorsRequest">
+		<part name="sessionId" type="xsd:string" />
+	</message>
+	<message name="customerCustomerFetchalladvisorsResponse">
+		<part name="serialized" type="xsd:string" />
+	</message>
+	<message name="catalogProductDetailRequest">
+        <part name="sessionId" type="xsd:string" />
+        <part name="product_id" type="xsd:string" />
+        <part name="storeView" type="xsd:string" />
+        <part name="productIdentifierType" type="xsd:string" />
+    </message>
+    <message name="catalogProductFilteredRequest">
+        <part name="sessionId" type="xsd:string" />
+        <part name="tags" type="typens:ArrayOfString"/>
+        <part name="categories" type="typens:ArrayOfString"/>
+        <part name="skus" type="typens:ArrayOfString"/>
+        <part name="storeView" type="xsd:string" />
+    </message>    
+    <message name="catalogProductFilteredResponse">
+        <part name="product_ids" type="typens:ArrayOfString"/>
+    </message>    
+    <message name="catalogProductDetailResponse">
+        <part name="serialized" type="xsd:string" />
+    </message>
+    <message name="catalogCategoryFetchallRequest">
+        <part name="sessionId" type="xsd:string" />
+        <part name="storeView" type="xsd:string" />
+    </message>
+    <message name="catalogCategoryFetchallResponse">
+        <part name="serialized" type="xsd:string" />
+    </message>
+	<portType name="{{var wsdl.handler}}PortType">
+        <operation name="customerCustomerFetch">
+            <documentation>Retrieve customer full data</documentation>
+            <input message="typens:customerCustomerFetchRequest" />
+            <output message="typens:customerCustomerFetchResponse" />
+        </operation>
+		<operation name="customerCustomerFetchalladvisors">
+			<documentation>Retrieve advisor data</documentation>
+			<input message="typens:customerCustomerFetchalladvisorsRequest" />
+			<output message="typens:customerCustomerFetchalladvisorsResponse" />
+		</operation>
+        <operation name="catalogProductDetail">
+            <documentation>Retrieve product full data</documentation>
+            <input message="typens:catalogProductDetailRequest" />
+            <output message="typens:catalogProductDetailResponse" />
+        </operation>
+        <operation name="catalogProductFiltered">
+            <documentation>Retrieve filtered product ids</documentation>
+            <input message="typens:catalogProductFilteredRequest" />
+            <output message="typens:catalogProductFilteredResponse" />
+        </operation>
+        <operation name="catalogCategoryFetchall">
+            <documentation>Retrieve full category list</documentation>
+            <input message="typens:catalogCategoryFetchallRequest" />
+            <output message="typens:catalogCategoryFetchallResponse" />
+        </operation>
+    </portType>
+	<binding name="{{var wsdl.handler}}Binding" type="typens:{{var wsdl.handler}}PortType">
+        <soap:binding style="rpc" transport="http://schemas.xmlsoap.org/soap/http" />
+        <operation name="customerCustomerFetch">
+            <soap:operation soapAction="urn:{{var wsdl.handler}}Action" />
+            <input>
+                <soap:body namespace="urn:{{var wsdl.name}}" use="encoded" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+            </input>
+            <output>
+                <soap:body namespace="urn:{{var wsdl.name}}" use="encoded" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+            </output>
+        </operation>
+		<operation name="customerCustomerFetchalladvisors">
+			<soap:operation soapAction="urn:{{var wsdl.handler}}Action" />
+			<input>
+				<soap:body namespace="urn:{{var wsdl.name}}" use="encoded" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+			</input>
+			<output>
+				<soap:body namespace="urn:{{var wsdl.name}}" use="encoded" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+			</output>
+		</operation>
+        <operation name="catalogProductDetail">
+            <soap:operation soapAction="urn:{{var wsdl.handler}}Action" />
+            <input>
+                <soap:body namespace="urn:{{var wsdl.name}}" use="encoded" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+            </input>
+            <output>
+                <soap:body namespace="urn:{{var wsdl.name}}" use="encoded" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+            </output>
+        </operation>
+        <operation name="catalogProductFiltered">
+            <soap:operation soapAction="urn:{{var wsdl.handler}}Action" />
+            <input>
+                <soap:body namespace="urn:{{var wsdl.name}}" use="encoded" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+            </input>
+            <output>
+                <soap:body namespace="urn:{{var wsdl.name}}" use="encoded" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+            </output>
+        </operation>
+        <operation name="catalogCategoryFetchall">
+            <soap:operation soapAction="urn:{{var wsdl.handler}}Action" />
+            <input>
+                <soap:body namespace="urn:{{var wsdl.name}}" use="encoded" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+            </input>
+            <output>
+                <soap:body namespace="urn:{{var wsdl.name}}" use="encoded" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+            </output>
+        </operation>
+    </binding>    
+</definitions>

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config>
+	<menu>
+		<system>
+			<children>
+				<branch translate="title" module="branch">
+					<title>Branch</title>
+					<sort_order>61</sort_order>
+					<action>branch/adminhtml_branch</action>
+				</branch>
+			</children>
+		</system>
+	</menu>
+	<acl>
+		<resources>
+			<admin>
+				<children>
+					<system>
+						<children>
+							<branch>
+								<title>Branch</title>
+								<sort_order>41</sort_order>
+							</branch>
+						</children>
+					</system>
+				</children>
+			</admin>
+		</resources>
+	</acl>
+</config>

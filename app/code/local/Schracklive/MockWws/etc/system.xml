@@ -1,0 +1,46 @@
+<?xml version="1.0"?>
+<config>
+  <sections>
+    <schrackdev translate="label" module="schrack">
+      <groups>
+        <wws translate="label">
+          <label>WWS</label>
+          <frontend_type>text</frontend_type>
+          <sort_order>20</sort_order>
+          <show_in_default>1</show_in_default>
+          <show_in_website>0</show_in_website>
+          <show_in_store>0</show_in_store>
+          <fields>
+            <info translate="label">
+              <label>Simulate Product Info</label>
+              <frontend_type>select</frontend_type>
+              <source_model>adminhtml/system_config_source_yesno</source_model>
+              <sort_order>1</sort_order>
+              <show_in_default>1</show_in_default>
+              <show_in_website>0</show_in_website>
+              <show_in_store>0</show_in_store>
+            </info>
+            <prepare translate="label">
+              <label>Simulate Prepare Order</label>
+              <frontend_type>select</frontend_type>
+              <source_model>adminhtml/system_config_source_yesno</source_model>
+              <sort_order>2</sort_order>
+              <show_in_default>1</show_in_default>
+              <show_in_website>0</show_in_website>
+              <show_in_store>0</show_in_store>
+            </prepare>
+            <finalize translate="label">
+              <label>Simulate Finalize Order</label>
+              <frontend_type>select</frontend_type>
+              <source_model>adminhtml/system_config_source_yesno</source_model>
+              <sort_order>3</sort_order>
+              <show_in_default>1</show_in_default>
+              <show_in_website>0</show_in_website>
+              <show_in_store>0</show_in_store>
+            </finalize>
+          </fields>
+        </wws>
+      </groups>
+    </schrackdev>
+  </sections>
+</config>

@@ -1,0 +1,315 @@
+<?php 
+$partslists = $this->getPartslists()->toArray();
+try{
+$active_flag = true;
+$active = Mage::getModel('schrackwishlist/partslist')->loadActiveListByCustomer(Mage::getSingleton('customer/session')->getCustomer()->getId());
+}
+catch(Exception $e){
+    $active_flag = false;
+}
+if($active_flag) {
+$activeName = $active->getDescription();
+$deleteUrl = $this->getUrl('wishlist/partslist/delete',array('id'=>$active->getId(),'forward' => '#active-tab'));
+$emptyUrl = $this->getUrl('wishlist/partslist/truncate',array('id'=>$active->getId()));
+$editUrl = $this->getUrl('wishlist/partslist/edit',array('id'=>$active->getId()));
+?>
+
+<input type="hidden" id="sku-list"/>
+<!-- quick add modal start -->
+<div class="modal fade" id="quick-add" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog modal-sm" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel"><?php echo $this->__('Quick Add')?></h4>
+      </div>
+      <form class="" action="<?php echo $this->getUrl('checkout/cart/quickadd')?>" method="post">
+      <div class="modal-body">
+        <input type="hidden" name="target" class="quickadd-target" value="current-partslist">
+        <input type="hidden" name="id" class="quickadd-id" value="<?php $active->getId();?>">
+        <input type="hidden" name="url" class="quickadd-url" value="">
+          <div class="form-group">
+            <label for="article"><?php echo $this->__('Article Number')?></label>
+            <input type="text" class="form-control" id="article" name="sku" required>
+          </div>
+          <div class="form-group">
+            <label for="article-quantity"><?php echo $this->__('Quantity')?></label>
+            <input type="text" class="form-control" id="article-quantity" name="qty" required>
+          </div>
+      </div>
+      <div class="modal-footer">
+        <button type="submit" id="addpartslist" class="bttn-md" style="cursor: auto;"><?php echo $this->__('Add to Partslists');?></button>
+      </div>
+      </form>
+    </div>
+  </div>
+</div>
+<!-- quick add modal end -->
+
+<!-- rename modal start -->
+<div class="modal fade" id="active-rename" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog modal-sm" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel"><?php echo $this->__('Edit Partslist')?></h4>
+      </div>
+      <div class="modal-body">
+      	<div class="rename-alert alert alert-info" role="alert" style="display: none"> 
+		  
+		</div>        
+        <input type="hidden" name="target" class="quickadd-target" value="current-partslist">
+        <input type="hidden" name="id" class="quickadd-id" value="<?php $active->getId();?>">
+        <input type="hidden" name="url" class="quickadd-url" value="">
+          <div class="form-group">
+            <label for="partslist-name"><?php echo $this->__('Name')?></label>
+            <input type="text" class="form-control" id="partslist-name" name="sku" value="<?php echo $activeName;?>" required>
+          </div>
+          <div class="form-group">
+            <label for="partslist-comment"><?php echo $this->__('Comment')?></label>
+            <input type="text" class="form-control" id="partslist-comment" value="<?php echo $active->getComment();?>" name="qty" required>
+          </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" id="rename" class="bttn-md" style="cursor: auto;"><?php echo $this->__('Update Partslists');?></button>
+      </div>
+      
+    </div>
+  </div>
+</div>
+<!-- rename modal end -->
+
+
+
+<!-- upload csv start -->
+<div class="modal fade" id="upload-csv" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog modal-sm" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel"><?php echo $this->__('Upload Csv')?></h4>
+      </div>
+      <form action="<?php echo $this->getUrl('wishlist/partslist/addCsv',array('id'=>$active->getId()));?>" enctype="multipart/form-data" method="POST">
+      <div class="modal-body">
+          <div class="form-group">
+            <label for="partslist-name"><?php echo $this->__('Upload Csv')?></label>
+            <input type="file" class="form-control" name="csv" id="partslist-csv" >
+          </div>          
+      </div>
+      
+      <div class="modal-footer">
+        <button type="submit" id="rename" class="bttn-md" style="cursor: auto;"><?php echo $this->__('Upload');?></button>
+      </div>
+      </form>
+    </div>
+  </div>
+</div>
+<!-- upload csv end -->
+
+
+<!-- edit-comment start -->
+<div class="modal fade" id="edit-comment" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog modal-sm" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel"><?php echo $this->__('Edit Comment')?></h4>
+      </div>
+      <div class="modal-body">
+          <div class="form-group">
+            <label for="partslist-name"><?php echo $this->__('comment')?></label>
+            <textarea class="form-control" id="comment-message-text"></textarea>
+          </div>          
+      </div>
+      
+      <div class="modal-footer">
+        <button type="submit" id="update-comment" class="bttn-md" style="cursor: auto;"><?php echo $this->__('update');?></button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- edit-comment end -->
+
+
+<!-- print label start -->
+<div  id="print-label" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+</div>
+<!-- print label end -->
+
+
+<div class="">
+<div class="actionBx">
+	<div class="row">
+		<div class="col-xs-6 col-sm-9">
+			<div class="row">
+				<div class="col-xs-12 col-sm-4">
+					<div class="dropdown partslist-drop partslist-switch">
+					    <button class="btn dropdown-toggle form-control" type="button" id="menu1" data-toggle="dropdown">
+					    	<?php echo $activeName;?>
+					    </button>
+					    <ul class="dropdown-menu dropDwnListGeneric" role="menu" aria-labelledby="menu1">
+					      <?php foreach($partslists['items'] as $list){ ?>
+					      <li role="presentation">
+						      <a role="menuitem" tabindex="-1" data-id="<?php echo $list['partslist_id'];?>" data-url="<?php echo $this->getUrl('wishlist/partslist/view/',array('id'=>$list['partslist_id']));?>" href="#">
+						      	<?php echo $list['description'];?>
+						      </a>
+					      </li>	
+					      <?php }?>
+					    </ul>
+					</div>
+				</div>
+				<div class="col-xs-12 col-sm-8 hidden-xs norLinks">
+					<div class="row">
+						<div class="col-xs-3 lnkBx">
+							<a href="#" data-toggle="modal" data-target="#quick-add"><span class="quickaddIcon"></span> <?php echo $this->__('Quick-Add');?></a>
+						</div>
+						<div class="col-xs-3 lnkBx">
+							<a href="#" data-toggle="modal" data-target="#active-rename"><span class="renameIcon"></span> <?php echo $this->__('Rename');?></a>
+						</div>
+						<div class="col-xs-2 lnkBx">
+							<a href="#" onclick="if (confirmEmptyPartslist()) setLocation('<?php echo $emptyUrl;?>');return false;"><span class="clearIcon"></span> <?php echo $this->__('Clear');?></a>
+						</div>
+						<div class="col-xs-2 lnkBx">
+							<a href="#" onclick="if (confirmDeletePartslist()) setLocation('<?php echo $deleteUrl;?>');return false;"><span class="deleteIcon"></span> <?php echo $this->__('Delete');?></a>
+						</div>
+						<div class="col-xs-2 lnkBx">
+							<a href="#" data-toggle="modal" data-target="#active-rename"><span class="noteIcon"></span> <?php echo $this->__('Notes');?></a>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="col-xs-6 col-sm-3">
+			<a class="bttn-md wid85Per marginL5" href="<?php echo Mage::helper('schrackwishlist/partslist')->getAddAllToCartUrl();?>" class="bttn-md"><img src="<?php echo $this->getSkinUrl('schrackdesign/Public/Images/rwd/cartIconWht.png');?>"> Add to cart</a>
+		</div>
+		
+		
+				<div class="col-xs-12 hidden-sm hidden-md hidden-lg norLinks">
+					<div class="row">
+						<div class="col-xs-3 lnkBx paddingL10">
+							<a href="#" data-toggle="modal" data-target="#quick-add"><span class="quickaddIcon"></span> <?php echo $this->__('Quick-Add');?></a>
+						</div>
+						<div class="col-xs-3 lnkBx">
+							<a href="#" data-toggle="modal" data-target="#active-rename"><span class="renameIcon"></span> <?php echo $this->__('Rename');?></a>
+						</div>
+						<div class="col-xs-2 lnkBx">
+							<a href="#" onclick="if (confirmEmptyPartslist()) setLocation('<?php echo $emptyUrl;?>');return false;"><span class="clearIcon"></span> <?php echo $this->__('Clear');?></a>
+						</div>
+						<div class="col-xs-2 lnkBx">
+							<a href="#" onclick="if (confirmDeletePartslist()) setLocation('<?php echo $deleteUrl;?>');return false;"><span class="deleteIcon"></span> <?php echo $this->__('Delete');?></a>
+						</div>
+						<div class="col-xs-2 lnkBx">
+							<a href="#" data-toggle="modal" data-target="#active-rename"><span class="noteIcon"></span> <?php echo $this->__('Notes');?></a>
+						</div>
+					</div>
+				</div>
+		
+	</div>
+	
+	
+</div>
+
+
+<script type="text/javascript">
+	jQuery('.partslist-switch ul li a').click(function(){
+		jQuery('.partslist-switch button').html(jQuery(this).html());
+		window.location.href=jQuery(this).attr('data-url');
+	});
+</script>
+<div class="row">
+<form id="active-partlist" action="<?php echo $this->getUrl('wishlist/partslist/update',array('id'=>$active->getId()));?>" method="POST" >
+	<input type="hidden" name="form_key" value="<?php echo Mage::getSingleton('core/session')->getFormKey()?>"/>
+	<div class="col-xs-12 col-sm-9 col-md-9 active-container">					
+	</div>
+</form>
+
+<div class="col-xs-12 col-sm-3 col-md-3">
+	<div class="row">
+		<div class="otherActions col-xs-12">
+		<ul>
+			<li class="hidden-sm hidden-xs">
+				<a href="#" data-toggle="modal" data-target="#upload-csv"><img src="<?php echo $this->getSkinUrl('schrackdesign/Public/Images/rwd/uploadIcon.png');?>"> <span><?php echo $this->__('Upload CSV')?></span></a>
+			</li>
+			<li>
+				<a target="_blank" href="<?php echo $this->getUrl('wishlist/partslist/downloadCsv/');?>"><img src="<?php echo $this->getSkinUrl('schrackdesign/Public/Images/rwd/downloadIconGray.png');?>"> <span><?php echo $this->__('Download CSV')?></span></a>
+			</li>
+			<li>
+				<a class="labelprint" href="#"><img src="<?php echo $this->getSkinUrl('schrackdesign/Public/Images/rwd/labelprintingIcon.png');?>"> <span><?php echo $this->__('Label Printing')?></span></a>
+			</li>
+			
+			<li class="hidden-xs">
+				<a class="active-submit" href="#"><img src="<?php echo $this->getSkinUrl('schrackdesign/Public/Images/rwd/downloadIconGray.png');?>"> <span><?php echo $this->__('Save')?></span></a>
+			</li>
+			<li>
+				<a href="#" class="dropdown partslist-drop all-products"><img src="<?php echo $this->getSkinUrl('schrackdesign/Public/Images/rwd/partlistIcon.png');?>"> <span id="all-products" class="dropdown-toggle" data-toggle="dropdown"><?php echo $this->__('Add All Product to Partslist')?></span>
+				<ul class="dropdown-menu dropDwnListGeneric" role="menu" aria-labelledby="all-products"></ul>
+				</a>
+			</li>
+			<li>
+				<a href="#" class="share-active" data-id="<?php echo $active->getId();?>"  data-toggle="modal" data-target="#share-modal"><img src="<?php echo $this->getSkinUrl('schrackdesign/Public/Images/rwd/shareIcon.png');?>"> <span><?php echo $this->__('Share Partslist')?></span></a>
+			</li>
+			
+		</ul>
+		</div>
+	</div>
+	
+</div>
+</div>
+			
+		</div>
+<script type="text/javascript">
+	var skuList = [];
+	function confirmDeletePartslist() {
+            return confirm('<?php echo $this->__('Are you sure you want to delete this partslist?')?>');
+        }
+    function confirmEmptyPartslist() {
+            return confirm('<?php echo $this->__('Are you sure you want to empty this partslist?')?>');
+        }
+    jQuery(document).ready(function() {
+      jQuery('.share-active').click(function(){
+          jQuery('#partlistshare-id').val(jQuery(this).attr('data-id'));                
+      });
+    	jQuery('#rename').click(function(){
+    		var url = '<?php echo $editUrl;?>' + 'description/' + jQuery('#partslist-name').val() + '/comment/' + jQuery('#partslist-comment').val();
+    		//console.log(url);
+    		jQuery.ajax(url).done(function(data){
+    			var res = JSON.parse(data);
+    			if(res.ok == true) {
+    				jQuery('.rename-alert').html('<?php echo $this->__('Partslist saved')?>').fadeIn('slow').show().delay(1000).fadeIn(function(){
+    					jQuery('#active-rename').modal('hide');
+    					jQuery('.rename-alert').hide();
+              jQuery('.dropdown.partslist-drop.partslist-switch button').html(jQuery('#partslist-name').val());
+    				});
+    			}
+    		})
+    	});
+
+    	jQuery('.labelprint').click(function(){
+    	var ajaxUrl = '<?php echo $this->getUrl('catalog/download/getDownloadMediaDialog');?>';
+    	var source = 'partslist.view.phtml';
+    		jQuery.ajax(ajaxUrl, {
+                'type': 'POST',
+                'async': false,
+                'data': {
+                    'source': source,
+                    'affectedItems': skuList
+                },
+                'success': function (data) {
+                    var datax = JSON.parse(data);
+                    if (datax.html) {
+                    	jQuery('#print-label').html(datax.html);
+                        jQuery('#print-label').modal();
+                    }
+                }
+            });
+    	});
+            
+    jQuery('.active-submit').click(function(){
+    	jQuery('#active-partlist').submit();
+    });    
+
+    });
+</script>
+<?php } else { ?>
+<p><?php echo $this->__('You have no active Parstlist'); ?></p>
+<?php }?>

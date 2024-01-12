@@ -1,0 +1,23 @@
+<?php
+$session = Mage::getSingleton('core/session');
+$name = $session->getOnepageName();
+$email = $session->getOnepageEmail();
+$phone = $session->getOnepagePhone();
+$homepage = $session->getOnepageHomepage();
+?>                
+<html>
+    <body>
+
+        <p>
+            <?php echo $this->__('Dear Customer,')?>
+        </p>
+        <p>
+            <?php echo $this->__('thank you for your enquiry. We are currently processing your request and you will shortly receive our proposal. Please find attached the requested products in CSV file format.')?>
+        </p>
+        <p>
+            <?php echo $this->__('Sincerely,')?><br/>
+
+            <?php echo $this->__('your online shop team')?>
+        </p>
+    </body>
+</html>

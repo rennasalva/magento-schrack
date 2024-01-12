@@ -1,0 +1,105 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * OpenMage
+ *
+ * This source file is subject to the Academic Free License (AFL 3.0)
+ * that is bundled with this package in the file LICENSE_AFL.txt.
+ * It is also available at https://opensource.org/license/afl-3-0-php
+ *
+ * @category    Mage
+ * @package     Mage_Core
+ * @copyright   Copyright (c) 2006-2020 Magento, Inc. (https://www.magento.com)
+ * @copyright   Copyright (c) 2022 The OpenMage Contributors (https://www.openmage.org)
+ * @license     https://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
+ */
+-->
+<config>
+    <global>
+        <install>
+            <date><![CDATA[Wed, 10 Jan 2024 15:20:24 +0000]]></date>
+        </install>
+        <crypt>
+            <key><![CDATA[1qazxsw2]]></key>
+        </crypt>
+        <disable_local_modules>false</disable_local_modules>
+        <resources>
+            <db>
+                <table_prefix><![CDATA[]]></table_prefix>
+            </db>
+            <default_setup>
+                <connection>
+                    <host><![CDATA[shrack-db]]></host>
+                    <username><![CDATA[root]]></username>
+                    <password><![CDATA[zendtraining]]></password>
+                    <dbname><![CDATA[magento_schrack]]></dbname>
+                    <initStatements><![CDATA[SET NAMES utf8]]></initStatements>
+                    <model><![CDATA[mysql4]]></model>
+                    <type><![CDATA[pdo_mysql]]></type>
+                    <pdoType><![CDATA[]]></pdoType>
+                    <active>1</active>
+                </connection>
+            </default_setup>
+            <loginswitch_setup>
+                <connection>
+                    <host><![CDATA[shrack-db]]></host>
+                    <username><![CDATA[root]]></username>
+                    <password><![CDATA[zendtraining]]></password>
+                    <dbname><![CDATA[magento_schrack]]></dbname>
+                    <initStatements><![CDATA[SET NAMES utf8]]></initStatements>
+                    <model><![CDATA[mysql4]]></model>
+                    <type><![CDATA[pdo_mysql]]></type>
+                    <pdoType><![CDATA[]]></pdoType>
+                    <active>1</active>
+                </connection>
+            </loginswitch_setup>
+            <loginswitch_write>
+                <connection>
+                    <use>loginswitch_setup</use>
+                </connection>
+            </loginswitch_write>
+            <loginswitch_read>
+                <connection>
+                    <use>loginswitch_setup</use>
+                </connection>
+            </loginswitch_read>
+            <common_db>
+                <connection>
+                    <host><![CDATA[shrack-db]]></host>
+                    <username><![CDATA[root]]></username>
+                    <password><![CDATA[zendtraining]]></password>
+                    <dbname><![CDATA[magento_common]]></dbname>
+                    <model>mysql4</model>
+                    <initstatements>SET NAMES utf8</initstatements>
+                    <type>pdo_mysql</type>
+                    <active>1</active>
+                </connection>
+            </common_db>
+            <commondb_setup>
+                <connection>
+                    <use>common_db</use>
+                </connection>
+            </commondb_setup>
+            <commondb_write>
+                <connection>
+                    <use>common_db</use>
+                </connection>
+            </commondb_write>
+            <commondb_read>
+                <connection>
+                    <use>common_db</use>
+                </connection>
+            </commondb_read>
+        </resources>
+        <session_save><![CDATA[files]]></session_save>
+    </global>
+    <admin>
+        <routers>
+            <adminhtml>
+                <args>
+                    <frontName><![CDATA[admin]]></frontName>
+                </args>
+            </adminhtml>
+        </routers>
+    </admin>
+</config>

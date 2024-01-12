@@ -1,0 +1,108 @@
+/*Headings CSS*/
+
+h1 {
+	font-size: 24px;
+	color: #00589d;
+	font-family: 'robotoregular', Helvetica, Arial, Sans-Serif;
+	margin-bottom: 10px;
+}
+
+.headline.b1 {
+	font-size: 22px;
+	color: #00589d;
+	font-family: 'robotoregular', Helvetica, Arial, Sans-Serif;
+	margin: 10px 0;
+}
+
+.headline.b2,
+h2 {
+	display: flex;
+	font-size: 20px;
+	color: #00589d;
+	font-family: 'robotoregular', Helvetica, Arial, Sans-Serif;
+	margin-bottom: 10px;
+
+	&:hover {
+		.anchor-link {
+			opacity: 1;
+		}
+	}
+}
+
+.headline.c1,
+h3 {
+	font-size: 20px;
+	color: #00589d;
+	font-family: 'robotoregular', Helvetica, Arial, Sans-Serif;
+	margin-bottom: 10px;
+}
+
+.headline.c2,
+h4 {
+	font-size: 18px;
+	color: #00589d;
+	font-family: 'robotoregular', Helvetica, Arial, Sans-Serif;
+	margin-bottom: 10px;
+}
+
+.headline.c3,
+h5 {
+	font-size: 16px;
+	color: #00589d;
+	font-family: 'robotomedium', Helvetica, Arial, Sans-Serif;
+	margin-bottom: 10px;
+}
+
+.headline.d,
+h4 {
+	font-size: 14px;
+	color: #00589d;
+	font-family: 'robotomedium', Helvetica, Arial, Sans-Serif;
+	margin-bottom: 10px;
+}
+
+.mainContRightSec h1,
+.mainContRightSec h2.primaryHd,
+.mainContRightSec h2.b1,
+.main-content h1,
+.mainContent h1 {
+	font-size: 20px;
+	color: #00589d;
+	font-family: 'robotomedium', Helvetica, Arial, Sans-Serif;
+	margin-bottom: 10px;
+}
+
+.mainContRightSec h2.secondryHd,
+.mainContRightSec h2.b2,
+h2.headline {
+	font-size: 16px;
+	color: #00589d;
+	font-family: 'robotomedium', Helvetica, Arial, Sans-Serif;
+	margin-bottom: 10px;
+}
+
+.mainContRightSec h2.secondryNoBldHd,
+h3.headline,
+.mainContent h2,
+.main-content h2.subHeading {
+	font-size: 18px;
+	color: #00589d;
+	margin-bottom: 10px;
+}
+
+h3.subHeading,
+.heading3 {
+	font-size: 16px;
+	color: #00589d;
+	font-family: 'robotomedium', Helvetica, Arial, Sans-Serif;
+	margin-bottom: 10px;
+}
+
+
+.headingBg {
+	background: #00589d;
+	font-size: 18px;
+	color: #fff !important;
+	padding: 10px;
+	margin-bottom: 10px;
+}

@@ -1,0 +1,32 @@
+<!-- customer\account\dashboard\persons.phtml (start) -->
+<?php
+/* @var $this Schracklive_SchrackCustomer_Block_Account_Administration */
+?>
+<?php if ($this->getCustomer()->isAllowed('accessRight','edit')) : ?>
+    <div class="row name">
+        <div class="large-12 columns">
+            <div class="headline copy-bold-8"><?php echo $this->__('Accounts') ?></div>
+        </div>
+    </div>
+    <div class="row content">
+        <div class="large-12 columns">
+            <div class="row">
+                <div class="large-12 columns">
+                    <?php foreach ($this->getVisibleContacts() as $_customer) : ?>
+                        <?php $_customer->load($_customer->getId()); ?>
+                        <p>
+                            <strong><?php echo $_customer->getName() ?></strong><br/>
+                            <?php echo $_customer->getEmailAddress() ?>
+                        </p>
+                    <?php endforeach ?>
+                </div>
+            </div>
+        </div>
+        <div class="row-fine">
+            <div class="large-fine-11 large-offset-fine-13 columns-fine">
+                <a class="link-arrow small" href="<?php echo $this->getUrl('*/accountadministration/'); ?>" class=""><?php echo $this->__('Manage Accounts'); ?></a>
+            </div>
+        </div>
+    </div>
+<?php endif ?>
+<!-- customer\account\dashboard\persons.phtml (end) -->

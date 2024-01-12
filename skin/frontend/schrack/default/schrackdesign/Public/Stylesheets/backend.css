@@ -1,0 +1,221 @@
+select option[value="icon-downloadcenter"] {
+  background-image: url(../Images/icons-service-menu.png);
+  background-position: 15px -198px;
+  width: 24px;
+  height: 24px;
+  padding-left: 30px;
+  height: 30px;
+  margin-left: 5px;
+}
+
+select option[value="icon-schrack-store"] {
+  background-image: url(../Images/icons-service-menu.png);
+  background-position: 15px -546px;
+  width: 24px;
+  height: 24px;
+  padding-left: 30px;
+  height: 30px;
+  margin-left: 5px;
+}
+
+select option[value="icon-universal-icon2"] {
+  background-image: url(../Images/icons-service-menu.png);
+  background-position: 15px -575px;
+  width: 24px;
+  height: 24px;
+  padding-left: 30px;
+  height: 30px;
+  margin-left: 5px;
+}
+
+select option[value="icon-pickup-spool"] {
+  background-image: url(../Images/icons-service-menu.png);
+  background-position: 15px -372px;
+  width: 24px;
+  height: 24px;
+  padding-left: 30px;
+  height: 30px;
+  margin-left: 5px;
+}
+
+select option[value="icon-schrack-digital"] {
+  background-image: url(../Images/icons-service-menu.png);
+  background-position: 15px -488px;
+  width: 24px;
+  height: 24px;
+  padding-left: 30px;
+  height: 30px;
+  margin-left: 5px;
+}
+
+select option[value="icon-schrack-live-app"] {
+  background-image: url(../Images/icons-service-menu.png);
+  background-position: 15px -517px;
+  width: 24px;
+  height: 24px;
+  padding-left: 30px;
+  height: 30px;
+  margin-left: 5px;
+}
+
+select option[value="icon-datanorm-download"] {
+  background-image: url(../Images/icons-service-menu.png);
+  background-position: 15px -169px;
+  width: 24px;
+  height: 24px;
+  padding-left: 30px;
+  height: 30px;
+  margin-left: 5px;
+}
+
+select option[value="icon-ad-material"] {
+  background-image: url(../Images/icons-service-menu.png);
+  background-position: 15px -24px;
+  width: 24px;
+  height: 24px;
+  padding-left: 30px;
+  height: 30px;
+  margin-left: 5px;
+}
+
+select option[value="icon-archive"] {
+  background-image: url(../Images/icons-service-menu.png);
+  background-position: 15px -314px;
+  width: 24px;
+  height: 24px;
+  padding-left: 30px;
+  height: 30px;
+  margin-left: 5px;
+}
+
+select option[value="icon-campaign"] {
+  background-image: url(../Images/icons-service-menu.png);
+  background-position: 15px -82px;
+  width: 24px;
+  height: 24px;
+  padding-left: 30px;
+  height: 30px;
+  margin-left: 5px;
+}
+
+select option[value="icon-catalogue"] {
+  background-image: url(../Images/icons-service-menu.png);
+  background-position: 15px -111px;
+  width: 24px;
+  height: 24px;
+  padding-left: 30px;
+  height: 30px;
+  margin-left: 5px;
+}
+
+select option[value="icon-password"] {
+  background-image: url(../Images/icons-service-menu.png);
+  background-position: 15px -343px;
+  width: 24px;
+  height: 24px;
+  padding-left: 30px;
+  height: 30px;
+  margin-left: 5px;
+}
+
+select option[value="icon-video"] {
+  background-image: url(../Images/icons-service-menu.png);
+  background-position: 15px -604px;
+  width: 24px;
+  height: 24px;
+  padding-left: 30px;
+  height: 30px;
+  margin-left: 5px;
+}
+
+select option[value="icon-data-connection"] {
+  background-image: url(../Images/icons-service-menu.png);
+  background-position: 15px -140px;
+  width: 24px;
+  height: 24px;
+  padding-left: 30px;
+  height: 30px;
+  margin-left: 5px;
+}
+
+select option[value="icon-intercom-tool"] {
+  background-image: url(../Images/icons-service-menu.png);
+  background-position: 15px -227px;
+  width: 24px;
+  height: 24px;
+  padding-left: 30px;
+  height: 30px;
+  margin-left: 5px;
+}
+
+select option[value="icon-online-functions"] {
+  background-image: url(../Images/icons-service-menu.png);
+  background-position: 15px -285px;
+  width: 24px;
+  height: 24px;
+  padding-left: 30px;
+  height: 30px;
+  margin-left: 5px;
+}
+
+select option[value="icon-power-dissipation"] {
+  background-image: url(../Images/icons-service-menu.png);
+  background-position: 15px -401px;
+  width: 24px;
+  height: 24px;
+  padding-left: 30px;
+  height: 30px;
+  margin-left: 5px;
+}
+
+select option[value="icon-pv-calculator"] {
+  background-image: url(../Images/icons-service-menu.png);
+  background-position: 15px -430px;
+  width: 24px;
+  height: 24px;
+  padding-left: 30px;
+  height: 30px;
+  margin-left: 5px;
+}
+
+select option[value="icon-schrack-design"] {
+  background-image: url(../Images/icons-service-menu.png);
+  background-position: 15px -459px;
+  width: 24px;
+  height: 24px;
+  padding-left: 30px;
+  height: 30px;
+  margin-left: 5px;
+}
+
+select option[value="icon-outlet-center"] {
+  background-image: url(../Images/icons-service-menu.png);
+  background-position: 15px 5px;
+  width: 24px;
+  height: 24px;
+  padding-left: 30px;
+  height: 30px;
+  margin-left: 5px;
+}
+
+select option[value="icon-knx-datadownload"] {
+  background-image: url(../Images/icons-service-menu.png);
+  background-position: 15px -256px;
+  width: 24px;
+  height: 24px;
+  padding-left: 30px;
+  height: 30px;
+  margin-left: 5px;
+}
+
+select option[value="icon-cad-drawing"] {
+  background-image: url(../Images/icons-service-menu.png);
+  background-position: 15px -53px;
+  width: 24px;
+  height: 24px;
+  padding-left: 30px;
+  height: 30px;
+  margin-left: 5px;
+}
+
+/*# sourceMappingURL=backend.css.map */

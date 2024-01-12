@@ -1,0 +1,274 @@
+<?php
+$_product = Mage::registry('product');
+?>
+<?php if ( $_product->isCable() ) : ?>
+    <?php
+    $_productHelper = Mage::helper('schrackcatalog/product');
+    /* @var $_stockListToolbar Schracklive_SchrackcatalogInventory_Helper_Stock */
+    $_stockHelper = Mage::helper('schrackcataloginventory/stock');
+    $_drumHelper = Mage::helper('schrackcatalog/drum');
+/*change 4 ajax:*/
+    $_allPickupLocations = $_productHelper->getAllPickupQuantities($_product);
+    $_warehouseIdDefaultDelivery = (int) $_stockHelper->getLocalDeliveryStock()->getStockNumber();
+    $_warehouseIdDefaultPickup = (int) $_stockHelper->getCustomerPickupStockNumber(null);
+    $_availableDrums = Mage::helper('schrackcatalog/info')->getAvailableDrums($_product, $_stockHelper->getAllStockNumbers());
+
+    $_roundMultipleDrums = Mage::helper('schrackcatalog/info')->selectRoundMultipleDrums($_availableDrums);
+    $_readyPackagingDrums = Mage::helper('schrackcatalog/info')->selectReadyPackagingDrums($_availableDrums);
+
+    $_customer = Mage::getSingleton('customer/session')->getCustomer();
+    $_drumsqty = $this->getRequest()->getParam('qty', '');
+    $_dfltDeliveryWarehouseId = (int) Mage::helper('schrackcataloginventory/stock')->getLocalDeliveryStock()->getStockNumber();
+
+    if (Mage::helper('schrackcatalog/product')->hasDrums($_product)) {
+        $_possibleDeliveryDrums = Mage::helper('schrackcatalog/info')->getPossibleDrums($_product, array($_dfltDeliveryWarehouseId));
+
+        if ( false && defined('DEBUG') && DEBUG ) {
+            $fakedrum = Mage::getModel('schrackcatalog/drum');
+            $fakedrum->setData('wws_number', 8);
+            $fakedrum->setData('name', 'K500');
+            $fakedrum->setData('description', 'auf 500 m troumeln');
+            $fakedrum->setData('type', 'P');
+            $fakedrum->setData('size', 500);
+            $fakedrum->setData('stock_qty', 38);
+            $fakedrum->setData('lessen_delivery', 1);
+            $fakedrum->setData('lessen_pickup', 1);
+
+
+
+
+            $_readyPackagingDrums = array (
+                10 =>
+                    array (
+                    ),
+                20 =>
+                    array (
+                    ),
+                30 =>
+                    array (
+                    ),
+                40 =>
+                    array (
+                    ),
+                50 =>
+                    array (
+                    ),
+                60 =>
+                    array (
+                    ),
+                70 =>
+                    array (
+                    ),
+                80 =>
+                    array (
+                        1 =>
+                            $fakedrum
+                    ),
+            );
+
+
+
+            // POSSSSIBLE!!
+
+            $poss1 = Mage::getModel('schrackcatalog/drum');
+            $poss1->addData(
+                array (
+                    'wws_number' => '8',
+                    'name' => 'K500',
+                    'description' => 'auf 500 m-droumeln',
+                    'type' => 'P',
+                    'size' => 500,
+                    'stock_qty' => 38,
+                    'lessen_delivery' => true,
+                    'lessen_pickup' => true,
+                )
+            );
+            $_possibleDeliveryDrums = array (
+                80 =>
+                    array (
+                        1 => $poss1
+                    )
+            );
+
+        }
+
+    }
+
+if ( ! function_exists('initialOpenerClass') ) {
+    function initialOpenerClass ( $index, $drumArray1, $drumArray2 = array() )
+    {
+        return (($index === 0 && (count($drumArray1) + count($drumArray2)) <= 3) ? 'open' : 'closed');
+    }
+}
+    ?>
+
+    <div class="row-fine before-addtocart hide-on-print">
+        <div class="large-fine-21 columns-fine">
+            <div class="row-fine gray-form">
+                <div class="large-fine-24 columns-fine">
+                    <div class="row-fine">
+                        <div class="large-fine-12 columns">
+                            <div class="row howto">
+                                <div class="large-12 columns headline d">
+                                    <?php echo $this->__('1. Enter length'); ?>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="large-12 columns">
+                                    <?php if ($_product->isSaleable()): ?>
+                                        <div class="before-qty">
+                                            <input type="hidden" id="schrack_drum_number"
+                                                   name="schrack_drum_number"
+                                                   value="<?php echo $this->getRequest()->getParam('schrack_drum_number'); ?>"/>
+                                        </div>
+                                        <input type="text" class="qty" name="qty" id="qty" maxlength="12"
+                                               value="<?php echo($_drumsqty ? $_drumsqty : ''); ?>"
+                                               title="<?php echo $this->__('Qty') ?>" class="article"/>
+                                        <label for="qty"><?php echo $_product->getSchrackQtyunit() ?></label>
+                                    <?php endif; ?>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="large-fine-12 columns">
+                            <div class="row howto">
+                                <div class="large-12 columns headline d">
+                                    <?php echo $this->__('2. Select packaging'); ?>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="large-12 columns">
+                                    <select id="select-drum">
+                                        <?php
+                                        if (isset($_possibleDeliveryDrums[$_dfltDeliveryWarehouseId]) && is_array($_possibleDeliveryDrums[$_dfltDeliveryWarehouseId])) {
+                                            $_requestedDrumNumber = $this->getRequest()->getParam('schrack_drum_number');
+                                            foreach ($_possibleDeliveryDrums[$_dfltDeliveryWarehouseId] as $_drum) {
+                                                $_drumNumber = Mage::helper('schrackcatalog/info')->getDrumSelectorName($_drum);
+                                                $_selected = ($_requestedDrumNumber == $_drumNumber) ? ' selected="selected"' : '';
+                                                echo '<option value="' . $_drumNumber . '"' . $_selected . '>' . $_drum->getDescription() . '</option>';
+                                            }
+                                        }
+                                        ?></select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row-fine drumstocks" id="drumstocks">
+                        <div class="large-fine-12 columns-fine">
+                            <?php if ( $_productHelper->isAvailInAnyDeliveryStock($_product )):?>
+                                <div class="row">
+<?php /*change 4 ajax:*/ ?>
+                                    <div class="large-12 columns delivery-class"><?php echo $this->__('Deliverable') ?>:&nbsp;<?php echo $_productHelper->getSummarizedFormattedDeliveryQuantities($_product)?></div>
+                                </div>
+                                <?php $i=0; foreach ($_stockHelper->getAllDeliveryStockNumbers() as $stockNo) : ?>
+                                    <?php if (isset($_roundMultipleDrums[$stockNo]) || isset($_readyPackagingDrums[$stockNo])): ?>
+                                        <div class="row">
+<?php /*change 4 ajax:*/ ?>
+                                            <div class="large-12 columns drumstocks-opener <?php if ($i === 0):?>open<?php else:?>closed<?php endif;?>" id="drumstocksdelivery<?php echo $stockNo;?>-opener"><?php echo $_productHelper->getFormattedDeliveryTime($_product,$stockNo);?>:&nbsp;<?php echo $_productHelper->getFormattedDeliveryQuantity($_product, $stockNo)?></div>
+                                        </div>
+                                        <?php if (isset($_roundMultipleDrums[$stockNo])):?>
+                                            <?php foreach ($_roundMultipleDrums[$stockNo] as $_drum): ?>
+                                                <div class="row drumstocksdelivery<?php echo $stockNo;?>-content <?php echo initialOpenerClass($i, $_roundMultipleDrums[$stockNo])?>">
+                                                    <div class="large-12 columns drumstock">
+                                                        <?php echo Mage::helper('schrackcore/string')->numberFormat($_drum->getStockQty()) . '&nbsp;' . $_product->getSchrackQtyunit(); ?>&nbsp;<?php echo $_drum->getDescription(); ?>
+                                                    </div>
+                                                </div>
+                                            <?php endforeach;?>
+                                        <?php endif;?>
+                                        <?php if (isset($_readyPackagingDrums[$stockNo]) && count($_readyPackagingDrums[$stockNo]) > 0):?>
+                                            <div class="row drumstocksdelivery<?php echo $stockNo;?>-content <?php echo initialOpenerClass($i, array_filter($_readyPackagingDrums, function($a) { return count($a) > 0;}))?>">
+                                                <div class="large-12 columns drumstock"><?php echo $this->__('Ready packaging')?>:
+                                                    <?php foreach ($_readyPackagingDrums[$stockNo] as $_drum): ?>
+                                                        <?php if ( !$_drumHelper->isDrumNumberInCartForProduct($_product, $_drum, $_drum->getStockQty()) ):?>
+                                                            <a class="ready-packaging" onClick="selectDrum('<?php echo Mage::helper('schrackcatalog/info')->getDrumSelectorName($_drum);?>'); jQuery('#qty').val('<?php echo $_drum->getStockQty()?>'); return false;" title="<?php echo '&nbsp;' . $_drum->getDescription(); ?>"><?php echo Mage::helper('schrackcore/string')->numberFormat($_drum->getStockQty()) . '&nbsp;' . $_product->getSchrackQtyunit(); ?></a>
+                                                        <?php endif;?>
+                                                    <?php endforeach;?>
+                                                </div>
+                                            </div>
+                                        <?php endif;?>
+                                        <?php ++$i;?>
+                                    <?php endif;?>
+                                <?php endforeach;?>
+                            <?php endif;?>
+                        </div>
+                        <div class="large-fine-12 columns-fine">
+<?php /*change 4 ajax:*/ ?>
+                            <?php if ( Mage::helper('schrackcatalog/info')->getSummarizedPickupQuantities($_product) > 0 ):?>
+                                <div class="row">
+<?php /*change 4 ajax:*/ ?>
+                                    <div class="large-12 columns delivery-class"><?php echo $this->__('Pickupable') ?>:&nbsp;<?php echo $_productHelper->getSummarizedFormattedPickupQuantities($_product);?></div>
+                                </div>
+                                <?php $i=0; foreach ($_stockHelper->getOrderedPickupStocks($_customer) as $stock) : ?>
+                                    <?php $stockNo = $stock->getStockNumber();
+                                    if (isset($_roundMultipleDrums[$stockNo]) || isset($_readyPackagingDrums[$stockNo])): ?>
+                                        <div class="row">
+<?php /*change 4 ajax:*/ ?>
+                                            <div class="large-12 columns drumstocks-opener <?php if ($i === 0):?>open<?php else:?>closed<?php endif;?>" id="drumstockspickup<?php echo $stockNo;?>-opener"><?php echo $stock->getStockName();?>:&nbsp;<?php echo $_productHelper->getFormattedPickupQuantity($_product, $stockNo);?></div>
+                                        </div>
+                                        <?php if (isset($_roundMultipleDrums[$stockNo])):?>
+                                            <?php foreach ($_roundMultipleDrums[$stockNo] as $_drum): ?>
+                                                <div class="row drumstockspickup<?php echo $stockNo;?>-content <?php echo initialOpenerClass($i, $_roundMultipleDrums[$stockNo])?>">
+                                                    <div class="large-12 columns drumstock">
+                                                        <?php echo Mage::helper('schrackcore/string')->numberFormat($_drum->getStockQty()) . '&nbsp;' . $_product->getSchrackQtyunit(); ?>&nbsp;<?php echo $_drum->getDescription(); ?>
+                                                    </div>
+                                                </div>
+                                            <?php endforeach;?>
+                                        <?php endif;?>
+                                        <?php if (isset($_readyPackagingDrums[$stockNo]) && count($_readyPackagingDrums[$stockNo]) > 0):?>
+                                            <div class="row drumstockspickup<?php echo $stockNo;?>-content <?php echo initialOpenerClass($i, $_readyPackagingDrums[$stockNo])?>">
+                                                <div class="large-12 columns drumstock <?php echo initialOpenerClass($i, $_readyPackagingDrums[$stockNo])?>"><?php echo $this->__('Ready packaging')?>:
+                                                    <?php foreach ($_readyPackagingDrums[$stockNo] as $_drum): ?>
+                                                        <?php if ( !$_drumHelper->isDrumNumberInCartForProduct($_product, $_drum, $_drum->getStockQty()) ):?>
+                                                            <a class="ready-packaging" onClick="selectDrum('<?php echo Mage::helper('schrackcatalog/info')->getDrumSelectorName($_drum);?>'); jQuery('#qty').val('<?php echo $_drum->getStockQty()?>'); return false;" title="<?php echo '&nbsp;' . $_drum->getDescription(); ?>"><?php echo Mage::helper('schrackcore/string')->numberFormat($_drum->getStockQty()) . '&nbsp;' . $_product->getSchrackQtyunit(); ?></a>
+                                                        <?php endif;?>
+                                                    <?php endforeach;?>
+                                                </div>
+                                            </div>
+                                        <?php endif;?>
+                                        <?php ++$i;?>
+                                    <?php endif;?>
+                                <?php endforeach;?>
+                            <?php endif;?>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        <div class="large-fine-3 columns-fine"></div>
+    </div>
+
+
+    <script type="text/javascript">
+        //<![CDATA[
+        jQuery(document).ready(function() {
+            jQuery('.drumstocks-opener').click(function(ev) {
+                var t = jQuery(ev.target);
+
+                var id = t.attr('id');
+                var c = id.substring(0, id.indexOf('-'));
+                if (t.hasClass('closed')) {
+                    jQuery('.' + c + '-content').show();
+                    t.switchClass('closed', 'open');
+                } else {
+                    jQuery('.' + c + '-content').hide();
+                    t.switchClass('open', 'closed');
+                }
+            });
+
+            if ( jQuery('#schrack_drum_number').val().toString() === '' ) {
+                jQuery('#schrack_drum_number').val(jQuery('#select-drum').val());
+            }
+
+            jQuery('#select-drum').change(function() {
+                jQuery('#schrack_drum_number').val(jQuery('#select-drum').val());
+            });
+        });
+
+        function selectDrum(drum) {
+            jQuery('#select-drum').val(drum);
+            jQuery('#schrack_drum_number').val(drum);
+        }
+        //]]>
+    </script>
+<?php endif; ?>

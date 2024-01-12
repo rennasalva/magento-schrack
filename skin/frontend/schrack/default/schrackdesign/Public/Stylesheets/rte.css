@@ -1,0 +1,130 @@
+a.button-small {
+    color: #fff;
+    background-color: transparent;
+    background-repeat: repeat-x;
+    background-position: top;
+    font-weight: 700;
+    position: relative;
+    border: 0;
+    display: inline;
+
+    background-image: url('../../../Resources/Public/Images/button-small-right.png'), url('../../../Resources/Public/Images/button-small-arrow.png'), url('../../../Resources/Public/Images/button-small-bg.png');
+    background-repeat: no-repeat, no-repeat, repeat-x;
+    background-position: top right, 7px center, top;
+    font-size: 16px;
+    line-height: 26px;
+    height: 26px;
+    padding-bottom: 0px;
+    padding-left: 20px;
+    padding-top: 0px;
+    padding-right: 12px;
+    color: #fff;
+}
+
+a.button-medium {
+    color: white;
+    background-color: transparent;
+    background-repeat: repeat-x;
+    background-position: top;
+    font-weight: 700;
+    position: relative;
+    border: 0;
+    display: inline;
+    background-image: url('../../../Resources/Public/Images/button-arrow-medium-bg.png');
+    font-size: 20px;
+    line-height: 40px;
+    height: 40px;
+    padding-bottom: 8px;
+    padding-left: 20px;
+    padding-top: 6px;
+    padding-right: 12px;
+}
+
+a.button-medium:before {
+    content: url('../../../Resources/Public/Images/button-arrow-medium-arrow.png');
+}
+
+a.button-medium:after {
+    content: url('../../../Resources/Public/Images/button-medium-right.png');
+    position: absolute;
+    top: 0px;
+    right: -22px;
+}
+
+ul li,
+ol li {
+    line-height: 20px;
+    margin-top: 7px;
+}
+
+ul > li {
+    list-style-type: none;
+    background: url(../../../Resources/Public/Images/list-icon.png) no-repeat 0 7px;
+    padding-left: 16px;
+}
+
+ol > li {
+    background: none;
+    list-style-type: decimal;
+    padding-left: 0
+}
+
+h3 {
+    font-size: 12px;
+    font-weight: normal;
+}
+
+h3,
+h3.c1 {
+    font-family: "Roboto", Arial, Helvetica, sans-serif;
+    font-weight: bold;
+    font-size: 18px;
+    color: #00589D;
+    line-height: 25px;
+    margin: 0 0 2px 0;
+}
+
+h3.c3 {
+    font-family: "Roboto", Arial, Helvetica, sans-serif;
+    font-weight: 500;
+    font-size: 18px;
+    color: #333;
+    line-height: 25px;
+    margin: 0 0 2px 0;
+}
+
+p.blue-message-box {
+    border: 1px solid #02a3d9;
+    color: #02a3d9;
+    background: url("../../../Resources/Public/Images/messages/message.png") no-repeat 8px center #ebf8fc;
+    padding: 8px 20px 8px 30px;
+    font-size: 15px;
+}
+
+table {
+    table-layout: auto;
+}
+
+td {
+    border: 1px solid;
+}
+
+th.td-15,
+td.td-15 {
+    width: 15%;
+}
+
+th.td-30,
+td.td-30 {
+    width: 35%;
+}
+
+th.td-50,
+td.td-50 {
+    width: 50%;
+}
+
+th.td-70,
+td.td-70 {
+    width: 70%;
+}

@@ -1,0 +1,126 @@
+<?php
+/* @var $this Schracklive_SchrackWishlist_Block_Endcustomerpartslist_Catalogs */
+?>
+
+<?php $i = 0; $_cols = 4; $_colspan = 12 / $_cols; foreach($this->getCategories() as $category): ?>
+    <?php if ($i % $_cols === 0):?>
+        <?php if ($i > 0):?></div><?php endif; ?>
+        <div class="row catalog">
+    <?php endif;?>
+    <div class="large-<?php echo $_colspan?> columns">
+        <div class="row">
+            <div class="large-12 columns">
+                <img src="<?php echo $category->getImageUrl()?>" class="category-opener-image inactive" id="category-opener-image-<?php echo $category->getId()?>"/>
+            </div>
+        </div>
+        <div class="row category-name" id="category-name-row-<?php echo $category->getId()?>">
+            <div class="large-11 columns name-col">
+                <?php echo $category->getName()?>
+            </div>
+            <div class="large-1 columns opener-col"><div class="category-opener inactive" id="category-opener-<?php echo $category->getId()?>"></div></div>
+            <ul class="category-menu" id="category-menu-<?php echo $category->getId()?>">
+                <?php foreach($this->getCatalogs($category->getId()) as $catalog): ?>
+                    <li id="category-menu-item-<?php echo $catalog->getId()?>"><?php echo $catalog->getName();?></li>
+                    <script type="text/javascript">
+                        //<![CDATA[
+                        jQuery('#category-menu-item-<?php echo $catalog->getId()?>').click(function(ev) {
+                            jQuery('#category-menu-item-<?php echo $catalog->getId()?>').hide();
+                            window.parent.showCatalog('<?php echo $catalog->getUrl();?>', '<?php echo $category->getName();?>');
+                            // ev.stopPropagation();
+                        });
+                        //]]>
+                    </script>
+                <?php endforeach?>
+            </ul>
+            <script type="text/javascript">
+                //<![CDATA[
+                jQuery(document).ready(function() {
+                    jQuery('#category-opener-<?php echo $category->getId()?>,#category-opener-image-<?php echo $category->getId()?>').click(function(ev){
+                        ev.stopPropagation();
+                        if ( jQuery(this).hasClass('inactive') ) {
+                            jQuery('.category-menu').hide();
+                            var nameRow = jQuery('#category-name-row-<?php echo $category->getId()?>');
+                            var xOffset = 10;
+                            var yOffset = 35;
+                            jQuery('#category-menu-<?php echo $category->getId()?>')
+                                .css("left", (xOffset) + "px")
+                                .css("top", (yOffset) + "px")
+                                .show();
+                            jQuery('#category-opener-<?php echo $category->getId()?>,#category-opener-image-<?php echo $category->getId()?>').switchClass('inactive', 'active');
+                        } else {
+                            jQuery('#category-menu-<?php echo $category->getId()?>').hide();
+                            jQuery('#category-opener-<?php echo $category->getId()?>,#category-opener-image-<?php echo $category->getId()?>').switchClass('active', 'inactive');
+                        }
+
+                    });
+                });
+                //]]>
+            </script>
+        </div>
+    </div>
+<?php ++$i; endforeach;?>
+    <?php for (; $i % $_cols !== 0; ++$i):?>
+        <div class="large-<?php echo $_colspan?> columns empty"></div>
+    <?php endfor; ?>
+</div>
+
+
+
+<?php /* ?>
+<?php $i = 0; $_cols = 4; $_colspan = 12 / $_cols; foreach($this->getCatalogs() as $catalog): ?>
+    <?php if ($i % $_cols === 0):?>
+        <?php if ($i > 0):?></div><?php endif; ?>
+            <div class="row catalog" style="padding-left: 10px;">
+    <?php endif;?>
+    <div class="large-<?php echo $_colspan?> columns">
+        <div class="image">
+            <a href="<?php echo $catalog->getUrl();?>" onClick="void(window.parent.showCatalog('<?php echo $catalog->getUrl();?>', '<?php echo $catalog->getName();?>'));"><img src="<?php echo $catalog->getImageUrl()?>"/></a><br/>
+            <div class="open" onClick="void(window.parent.showCatalog('<?php echo $catalog->getUrl();?>', '<?php echo $catalog->getName();?>'));"><?php echo $this->__('OPEN')?></div>
+            <div class="overlay" onClick="void(window.parent.showCatalog('<?php echo $catalog->getUrl();?>', '<?php echo $catalog->getName();?>'));"></div>
+        </div>
+        <div class="name">
+            <?php echo $catalog->getName();?>
+        </div>
+    </div>
+<?php ++$i; endforeach;?>
+    <?php for (; $i % $_cols !== 0; ++$i):?>
+        <div class="large-<?php echo $_colspan?> columns empty"></div>
+    <?php endfor; ?>
+</div>
+<?php */ ?>
+
+<script type="text/javascript">//<![CDATA[
+
+    jQuery(document).ready(function() {
+        jQuery('.image')
+            .hover(function(){
+                    jQuery('.overlay,.open', this).addClass('active');
+                }, function(){
+                    jQuery('.overlay,.open', this).removeClass('active');
+                })
+            .each(function(i, div) {
+                jQuery('img', div).load(function() { // fake vertical middle-alignment
+                    if (this.width > this.height) {
+                        var y = '' + (269/2 - this.height/2);
+                        jQuery(this).css('margin-top', y + 'px');
+                    }
+                });
+            });
+        jQuery('.content').click(closeAllCategoryMenus);
+        if ( window.parent.addEventListener ) {
+            window.parent.addEventListener('click', closeAllCategoryMenus, false);
+        } else { // ie <= 8
+            window.parent.attachevent('onclick', closeAllCategoryMenus);
+        }
+    });
+
+    var closeAllCategoryMenus = function() {
+            jQuery('.category-menu').hide();
+            jQuery('.category-opener').switchClass('active', 'inactive');
+    }
+
+    function doClose() {
+        console.log('clooosing');
+        jQuery('#category-menu-<?php echo $category->getId()?>').hide();
+    }
+//]]></script>

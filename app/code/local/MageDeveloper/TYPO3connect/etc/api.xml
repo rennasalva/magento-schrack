@@ -1,0 +1,77 @@
+<config>
+    <api>
+        <resources>
+            <customer translate="title" module="customer">
+                <model>customer/customer_api</model>
+                <title>Customer API</title>
+                <acl>customer</acl>
+                <methods>
+                    <fetch translate="title" module="customer">
+                        <title>Retrieve customer full data</title>
+                        <acl>customer/fetch</acl>
+                    </fetch>
+	                <fetchalladvisors translate="title" module="customer">
+		                <title>Retrieve advisor data</title>
+		                <acl>customer/fetch</acl>
+	                </fetchalladvisors>
+                </methods>
+            </customer>
+			<catalog_product translate="title" module="catalog">
+                <title>Product API</title>
+                <model>catalog/product_api</model>
+                <acl>catalog/product</acl>
+                <methods>
+                    <detail translate="title" module="catalog">
+                        <title>Retrieve full product information</title>
+                        <acl>catalog/product/detail</acl>
+                    </detail>
+                    <filtered translate="title" module="catalog">
+                        <title>Retrieve a list of filtered product ids</title>
+                        <acl>catalog/product/filtered</acl>
+                    </filtered> 
+                </methods>
+            </catalog_product>
+			<catalog_category translate="title" module="catalog">
+                <title>Category API</title>
+                <model>catalog/category_api</model>
+                <acl>catalog/category</acl>
+                <methods>
+                    <fetchall translate="title" module="catalog">
+                        <title>Retrieve full category list</title>
+                        <acl>catalog/category/fetchall</acl>
+                    </fetchall>
+                </methods>
+            </catalog_category>
+        </resources>
+        <acl>
+            <resources>
+                <customer translate="title" module="customer">
+                     <title>Customers</title>
+                     <sort_order>3</sort_order>
+                     <fetch translate="title" module="customer">
+                        <title>Retrieve customer full info</title>
+                     </fetch>
+                </customer>
+  				<catalog translate="title" module="catalog">
+                    <title>Catalog</title>
+                    <sort_order>1</sort_order>
+                    <product translate="title" module="catalog">
+                        <title>Product</title>
+                        <detail translate="title" module="catalog">
+                            <title>Retrieve full product data</title>
+                        </detail>
+                        <filtered translate="title" module="catalog">
+                            <title>Retrieve a list of filtered product ids</title>
+                        </filtered>
+                    </product>
+                    <category translate="title" module="catalog">
+                        <title>Category</title>
+                        <fetchall translate="title" module="catalog">
+                            <title>Retrieve full category list</title>
+                        </fetchall>
+                    </category>
+                </catalog>
+            </resources>
+        </acl>
+    </api>
+</config>

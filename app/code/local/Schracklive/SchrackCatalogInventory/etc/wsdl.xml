@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="utf-8"?>
+<definitions xmlns:typens="urn:{{var wsdl.name}}" xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+             xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/"
+             xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns="http://schemas.xmlsoap.org/wsdl/" >
+    <types>
+        <schema xmlns="http://www.w3.org/2001/XMLSchema">
+            <import namespace="http://schemas.xmlsoap.org/soap/encoding/"/>
+            <complexType name="tt_schrack_stock">
+                <sequence>
+                    <element name="xrow" type="xsd:int" minOccurs="1" maxOccurs="1"/>
+                    <element name="StockNumber" type="xsd:int" minOccurs="1" maxOccurs="1"/>
+                    <element name="StockLocation" type="xsd:string" minOccurs="0"  maxOccurs="1"/>
+                    <element name="Sku" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+                    <element name="Qty" type="xsd:decimal" minOccurs="0"  maxOccurs="1"/>
+                    <element name="PickupSalesUnit" type="xsd:int" minOccurs="0"  maxOccurs="1"/>
+                    <element name="DeliverySalesUnit" type="xsd:int" minOccurs="0"  maxOccurs="1"/>
+                    <element name="PickupState" type="xsd:int" minOccurs="0"  maxOccurs="1"/>
+                    <element name="DeliveryState" type="xsd:int" minOccurs="0"  maxOccurs="1"/>
+                    <element name="IsValid" type="xsd:int" minOccurs="0"  maxOccurs="1"/>
+                    <element name="IsHidden" type="xsd:int" minOccurs="0"  maxOccurs="1"/>
+                </sequence>
+            </complexType>
+            <complexType name="tt_schrack_stock_info">
+                <sequence>
+                    <element name="number" type="xsd:int" minOccurs="1" maxOccurs="1"/>
+                    <element name="name" type="xsd:string" minOccurs="1"  maxOccurs="1"/>
+                    <element name="street" type="xsd:string" minOccurs="0"  maxOccurs="1"/>
+                    <element name="zip" type="xsd:string" minOccurs="0"  maxOccurs="1"/>
+                    <element name="city" type="xsd:string" minOccurs="0"  maxOccurs="1"/>
+                    <element name="phone" type="xsd:string" minOccurs="0"  maxOccurs="1"/>
+                    <element name="fax" type="xsd:string" minOccurs="0"  maxOccurs="1"/>
+                    <element name="email" type="xsd:string" minOccurs="0"  maxOccurs="1"/>
+                    <element name="gmap" type="xsd:string" minOccurs="0"  maxOccurs="1"/>
+                </sequence>
+            </complexType>
+            <complexType name="ArrayOf_tt_schrack_stock">
+                <complexContent>
+                    <restriction base="soapenc:Array">
+                        <attribute ref="soapenc:arrayType" wsdl:arrayType="typens:tt_schrack_stock[]" /> 
+                    </restriction>
+                </complexContent>
+            </complexType>
+<!-- new: -->
+            <complexType name="tt_schrack_lock_stock">
+                <sequence>
+                    <element name="xrow" type="xsd:int" minOccurs="1" maxOccurs="1"/>
+                    <element name="StockNumber" type="xsd:int" minOccurs="1" maxOccurs="1"/>
+                    <element name="locked" type="xsd:boolean" minOccurs="1"  maxOccurs="1"/>
+                    <element name="lockedUntil" type="xsd:date" minOccurs="0" maxOccurs="1"/>
+                </sequence>
+            </complexType>
+            <complexType name="ArrayOf_tt_schrack_lock_stock">
+                <complexContent>
+                    <restriction base="soapenc:Array">
+                        <attribute ref="soapenc:arrayType" wsdl:arrayType="typens:tt_schrack_lock_stock[]" />
+                    </restriction>
+                </complexContent>
+            </complexType>
+<!-- :new -->
+            <complexType name="tt_schrack_result">
+                <sequence>
+                    <element name="xrow" nillable="true" type="xsd:int" minOccurs="1" maxOccurs="1"/>
+                    <element name="xstatus" nillable="true" type="xsd:int" minOccurs="1" maxOccurs="1"/>
+                    <element name="xerror" nillable="true" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+                </sequence>
+            </complexType>
+            <complexType name="ArrayOf_tt_schrack_result">
+                <complexContent>
+                    <restriction base="soapenc:Array">
+                        <attribute ref="soapenc:arrayType" wsdl:arrayType="typens:tt_schrack_result[]" /> 
+                    </restriction>
+                </complexContent>
+            </complexType>
+            <complexType name="ArrayOf_tt_stock_info">
+                <complexContent>
+                    <restriction base="soapenc:Array">
+                        <attribute ref="soapenc:arrayType" wsdl:arrayType="typens:tt_schrack_stock_info[]" /> 
+                    </restriction>
+                </complexContent>
+            </complexType>
+        </schema>
+    </types>
+    <message name="catalogInventoryStockItemSchrackUpdateRequest">
+        <part name="sessionId" type="xsd:string" />
+        <part name="ctry_code" type="xsd:string"/>
+        <part name="sender_id" type="xsd:string"/>
+        <part name="data_stock" type="typens:ArrayOf_tt_schrack_stock" />
+    </message>
+    <message name="catalogInventoryStockItemSchrackUpdateResponse">
+        <part name="exit_code" type="xsd:int"/>
+        <part name="exit_msg" type="xsd:string"/>
+        <part name="data_result" type="typens:ArrayOf_tt_schrack_result" />
+    </message>
+    <message name="catalogInventoryStockItemSchrackListStocksRequest">
+        <part name="sessionId" type="xsd:string" />
+    </message>
+    <message name="catalogInventoryStockItemSchrackListStocksResponse">
+        <part name="exit_code" type="xsd:int"/>
+        <part name="exit_msg" type="xsd:string"/>
+        <part name="data_result" type="typens:ArrayOf_tt_stock_info" /> 
+    </message>
+<!-- new: -->
+    <message name="catalogInventoryStockItemSchrackLockStocksRequest">
+        <part name="sessionId" type="xsd:string" />
+        <part name="ctry_code" type="xsd:string"/>
+        <part name="sender_id" type="xsd:string"/>
+        <part name="data_lock_stock" type="typens:ArrayOf_tt_schrack_lock_stock" />
+    </message>
+    <message name="catalogInventoryStockItemSchrackLockStocksResponse">
+        <part name="exit_code" type="xsd:int"/>
+        <part name="exit_msg" type="xsd:string"/>
+    </message>
+<!-- :new -->
+    <portType>
+        <operation name="catalogInventoryStockItemSchrackUpdate">
+            <documentation>Update product stock data in a Schrack way</documentation>
+            <input message="typens:catalogInventoryStockItemSchrackUpdateRequest" />
+            <output message="typens:catalogInventoryStockItemSchrackUpdateResponse" />
+        </operation>
+        <operation name="catalogInventoryStockItemSchrackListStocks">
+            <documentation>Get stock data</documentation>
+            <input message="typens:catalogInventoryStockItemSchrackListStocksRequest" />
+            <output message="typens:catalogInventoryStockItemSchrackListStocksResponse" />
+        </operation>
+<!-- new: -->
+        <operation name="catalogInventoryStockItemSchrackLockStocks">
+            <documentation>Get stock data</documentation>
+            <input message="typens:catalogInventoryStockItemSchrackLockStocksRequest" />
+            <output message="typens:catalogInventoryStockItemSchrackLockStocksResponse" />
+        </operation>
+<!-- :new -->
+    </portType>
+    <binding>
+        <operation name="catalogInventoryStockItemSchrackUpdate">
+            <soap:operation soapAction="urn:{{var wsdl.handler}}Action" />
+            <input>
+                <soap:body namespace="urn:{{var wsdl.name}}" use="encoded" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+            </input>
+            <output>
+                <soap:body namespace="urn:{{var wsdl.name}}" use="encoded" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+            </output>
+        </operation>
+        <operation name="catalogInventoryStockItemSchrackListStocks">
+            <soap:operation soapAction="urn:{{var wsdl.handler}}Action" />
+            <input>
+                <soap:body namespace="urn:{{var wsdl.name}}" use="encoded" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+            </input>
+            <output>
+                <soap:body namespace="urn:{{var wsdl.name}}" use="encoded" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+            </output>
+        </operation>
+<!-- new: -->
+        <operation name="catalogInventoryStockItemSchrackLockStocks">
+            <soap:operation soapAction="urn:{{var wsdl.handler}}Action" />
+            <input>
+                <soap:body namespace="urn:{{var wsdl.name}}" use="encoded" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+            </input>
+            <output>
+                <soap:body namespace="urn:{{var wsdl.name}}" use="encoded" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+            </output>
+        </operation>
+<!-- :new -->
+    </binding>
+</definitions>
+

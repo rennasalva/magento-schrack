@@ -1,0 +1,245 @@
+<!-- default/template/catalog/product/view/attributes.phtml (start) -->
+<?php
+    Varien_Profiler::start('product/view/attributes.phtml->init');
+    $_tableHelper = Mage::helper('schrackcore/table');
+    $_helper = $this->helper('catalog/output');
+    $_product = $this->getProduct();
+    $_excludeStrings = '' . Mage::getStoreConfig('schrack/shop/product_attribute_exclude_codes');
+    $_excludeCodes = explode(',', $_excludeStrings);
+    Varien_Profiler::start('product/view/attributes.phtml->init->getAttachments');
+    $_attachments = $_product->getAttachments();
+    Varien_Profiler::stop('product/view/attributes.phtml->init->getAttachments');
+    Varien_Profiler::start('product/view/attributes.phtml->init->getAccessoryProducts');
+    $_accessories = $_product->getAccessoryProducts();
+    Varien_Profiler::stop('product/view/attributes.phtml->init->getAccessoryProducts');
+    foreach ($_attachments as $_key => $_attachment) {
+        if ($_attachment->getFiletype() == 'thumbnails' || $_attachment->getFiletype() == 'foto') {
+            unset($_attachments[$_key]);
+        }
+    }
+    $productDeliverLabel = 0;
+    Varien_Profiler::start('product/view/attributes.phtml->init->getCumulatedPickupableAndDeliverableQuantities');
+    $productStockAvailableQty = $_product->getCumulatedPickupableAndDeliverableQuantities();
+    Varien_Profiler::stop('product/view/attributes.phtml->init->getCumulatedPickupableAndDeliverableQuantities');
+    Varien_Profiler::start('product/view/attributes.phtml->init->BestellArtikel');
+    if ($_product->isBestellArtikel() && $productStockAvailableQty <= 0) {
+        $productDeliverLabel = $_product->getBatchSizeFromSupplier() . ' ' . $_product->getSchrackQtyunit();
+    }
+    Varien_Profiler::stop('product/view/attributes.phtml->init->BestellArtikel');
+    Varien_Profiler::start('product/view/attributes.phtml->init->getAdditionalData');
+    $_additional = $this->getAdditionalData($_excludeCodes);
+    Varien_Profiler::stop('product/view/attributes.phtml->init->getAdditionalData');
+    Varien_Profiler::stop('product/view/attributes.phtml->init');
+?>
+<?php if ($_additional):
+    $_tableHelper->resetEvenOddClass();
+    ?>
+    <div class="large-4 columns" id="more-tabs">
+        <ul>
+            <li><a href="#details"><?php echo $this->__('Details') ?></a></li>
+            <?php if ( count($_attachments) > 0 ):?>
+                <li><a href="#downloads"><?php echo $this->__('Downloads') ?></a></li>
+            <?php endif;?>
+            <?php if ( count($_accessories) > 0 ):?>
+                <li><a href="#accessories"><?php echo $this->__('Accessories') ?></a></li>
+            <?php endif;?>
+        </ul>
+        <?php Varien_Profiler::start('product/view/attributes.phtml->details'); ?>
+        <div id="details">
+            <div class="row">
+                <div class="large-12 columns">
+                    <table class="attributes">
+                        <tbody>
+                        <?php foreach ($_additional as $_data): ?>
+                            <tr>
+                                <th><?php echo $this->htmlEscape($this->__($_data['label'])) ?></th>
+                                <td>
+                                    <?php
+                                        if ($_data['code'] == 'schrack_vpes' && $productDeliverLabel > 0) {
+                                            $resultValue = $productDeliverLabel;
+                                        } else {
+                                            $resultValue = $_data['value'];
+                                        }
+                                        echo $_helper->productAttribute($_product, $resultValue, $_data['code'])
+                                    ?>
+                                </td>
+                            </tr>
+                            <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <?php $_detailDescription = $this->getProduct()->getSchrackDetailDescription();
+            if (isset($_detailDescription) && strlen($_detailDescription) > 0):
+                ?>
+                <div class="row">
+                    <div class="large-12 columns">
+                        <h2 class="detail-description-headline"><?php echo $this->getProduct()->getSchrackDetailDescriptionTitle() ?></h2>
+                    </div>
+                    <div class="large-12 columns detail-description">
+                        <?php echo $_detailDescription ?>
+                    </div>
+                </div>
+                <div class="row hide-on-print">
+                    <div class="large-12 columns">
+                        <div class="hr">
+                            <hr/>
+                        </div>
+                    </div>
+                </div>
+            <?php endif; ?>
+            <?php $_metaKeyword = $this->getProduct()->getMetaKeyword();
+            $_keywordForeign = $this->getProduct()->getSchrackKeywordForeign();
+            if ( strlen($_keywordForeign) || strlen($_metaKeyword) ):?>
+                <div class="row-fine foreign-keywords">
+                    <div class="large-fine-6 columns-fine heading"><?php echo $this->__('Foreign Keywords')?>:</div>
+                    <div class="large-fine-18 columns-fine content">
+                        <?php if ( strlen($_keywordForeign) ):?>
+                            <div class="row">
+                                <div class="large-12 columns">
+                                    <?php echo $_keywordForeign?>
+                                </div>
+                            </div>
+                        <?php endif?>
+                        <?php if ( strlen($_metaKeyword) ):?>
+                            <div class="row">
+                                <div class="large-12 columns">
+                                    <?php echo $_metaKeyword?>
+                                </div>
+                            </div>
+                        <?php endif?>
+                    </div>
+                </div>
+            <?php endif?>
+        </div>
+        <?php Varien_Profiler::stop('product/view/attributes.phtml->details'); ?>
+        <?php Varien_Profiler::start('product/view/attributes.phtml->downloads'); ?>
+        <div id="downloads">
+            <?php
+            $classDynamic = "";
+            if (count($_attachments) > 0):
+                ?>
+                <div id="product-files" class="product-files">
+                    <?php
+                        $counter = 0;
+                        foreach ($_attachments as $_attachment):
+                            $attachmentLabel = $_attachment->getLabel();
+                            $attachmentHumanFilesize = $_attachment->getHumanFilesize();
+                            $attachmentHumanFiletype = $_attachment->getHumanFiletype();
+                            $attachmentUrl = $_attachment->getUrl();
+
+                            // Case: file is not available on image server:
+                            if ($attachmentUrl === '737,00 B') continue;
+
+                            $p = strrpos($attachmentUrl,'.');
+                            if ( $p > 0 ) { // being defensive...
+                                $lcExtension = strtolower(substr($attachmentUrl,$p));
+                            } else {
+                                $lcExtension = '';
+                            }
+                            if ( $p = strpos($lcExtension,'?') ) {
+                                $lcExtension = substr($lcExtension,0,$p);
+                            }
+
+                            $activateSaveAsFunctionInIE = true;
+                            if ( $lcExtension === '.pdf' ) {
+                                $activateSaveAsFunctionInIE = false;
+                                $classDynamic = ' pdfFileDownload';
+                            } elseif ( $lcExtension === '.png' ) {
+                                $activateSaveAsFunctionInIE = false;
+                            } elseif ( $lcExtension === '.jpg' ) {
+                                $activateSaveAsFunctionInIE = false;
+                            } elseif ( $lcExtension === '.bmp' ) {
+                                $activateSaveAsFunctionInIE = false;
+                            } elseif ( $lcExtension === '.gif' ) {
+                                $activateSaveAsFunctionInIE = false;
+                            } elseif ( $lcExtension === '.htm' ) {
+                                $activateSaveAsFunctionInIE = false;
+                            } elseif ( $lcExtension === '.html' ) {
+                                $activateSaveAsFunctionInIE = false;
+                            } elseif ( strpos($lcExtension,'.vd') === 0 && ($c = substr($lcExtension,-1)) >= '1' && $c <= '5' ) {
+                                $classDynamic = ' vd5FileDownload';
+                            } elseif ( $lcExtension === '.knxprod' ) {
+                                $classDynamic = ' knxFileDownload';
+                            } elseif ( $lcExtension === '.zip' ) {
+                                $classDynamic = ' zipFileDownload';
+                            } elseif ( $lcExtension === '.dwg' ) {
+                                $classDynamic = ' caddrawings';
+                            } elseif ( $lcExtension === '.ldt' ) {
+                                $attachmentHumanFiletype = str_replace('octet-stream', 'ldt', $attachmentHumanFiletype);
+                                $classDynamic = ' ldtFileDownload';
+                            } elseif ( $lcExtension === '.rfa' ) {
+                                $classDynamic = ' bimFileDownload';
+                            } elseif ( $lcExtension === '.ema' ) {
+                                $classDynamic = ' eplanFileDownload';
+                            } elseif ($_attachment->getFiletype() == 'onlinedatasheet') {
+                                $activateSaveAsFunctionInIE = false;
+                                $attachmentHumanFiletype = 'pdf';
+                                $classDynamic = " pdfFileDownload";
+                            } elseif ($_attachment->getFiletype() == 'externalvideo') {
+                                $activateSaveAsFunctionInIE = false;
+                                $attachmentHumanFiletype = 'stream';
+                                $classDynamic = " externalStream";
+                            } else {
+                                $classDynamic = "";
+                            }
+                            $counter++;
+
+                            $linkUrl = Mage::helper('schrackcore/url')->ensureValidMediaUrl($_attachment->getUrl());
+
+                            if($activateSaveAsFunctionInIE == false) :
+                    ?>
+                        <div class="filelinks-single"><a class="<?php echo $_attachment->getFiletype() . $classDynamic ?>"
+                                                         id="<?php echo 'attachment' . $counter; ?>"
+                                                         href="javascript: return false"
+                                                         title="<?php echo $attachmentLabel ?>"><?php echo $attachmentLabel; ?>
+                                <span class="filelinks-filetype">(<span
+                                        class="filelinks-fileext"><?php echo $attachmentHumanFiletype; ?>
+                                        , </span> <?php echo $attachmentHumanFilesize; ?>)</span></a></div>
+                            <script type="text/javascript">//<![CDATA[
+                                jQuery(document).ready(function () {
+                                    jQuery('#<?php echo 'attachment' . $counter; ?>').on('click', function(){
+                                        <?php if ($_attachment->getFiletype() == 'onlinedatasheet') : ?>
+                                            window.open('<?php echo str_replace('deliverOnlineDataSheet/', 'deliverOnlineDataSheet?', Mage::helper('schrackcore/url')->getUrlWithCurrentProtocol('catalog/download/deliverOnlineDataSheet')) . 'articlenr='. $_product->getSku(); ?>', '_blank');
+                                        <?php else: ?>
+                                            window.open('<?php echo $linkUrl; ?>');
+                                        <?php endif; ?>
+                                        return false; //this is critical to stop the click event which will trigger a normal file download
+                                    });
+                                });
+                                //]]>
+                            </script>
+                        <?php else :?>
+                                <div class="filelinks-single"><a class="<?php echo $_attachment->getFiletype() . $classDynamic ?>"
+                                                                 href="<?php echo $linkUrl;?>"
+                                                                 target="_blank"
+                                                                 title="<?php echo $attachmentLabel; ?>"><?php echo $attachmentLabel; ?>
+                                        <span class="filelinks-filetype">(<span
+                                                class="filelinks-fileext"><?php echo $attachmentHumanFiletype; ?>
+                                                , </span> <?php echo $attachmentHumanFilesize; ?>)</span></a></div>
+
+                            <?php endif; ?>
+
+                     <?php endforeach; ?>
+                </div>
+            <?php endif; ?>
+        </div>
+        <?php Varien_Profiler::stop('product/view/attributes.phtml->downloads'); ?>
+        <?php if ( count($_accessories) > 0 ):?>
+            <div id="accessories">
+                <?php Varien_Profiler::start('product/view/attributes.phtml->accessories'); ?>
+                <?php echo $this->getChildHtml('accessories',false)?>
+                <?php Varien_Profiler::stop('product/view/attributes.phtml->accessories'); ?>
+            </div>
+        <?php endif?>
+    </div>
+    <script type="text/javascript">//<![CDATA[
+        jQuery(document).ready(function () {
+            decorateTable('product-attribute-specs-table');
+            jQuery('#more-tabs').tabs();
+        });
+    //]]>
+    </script>
+
+<?php endif; ?>
+<!-- default/template/catalog/product/view/attributes.phtml (end) -->

@@ -1,0 +1,15 @@
+<?php if ( $this->getTotals() && Mage::helper('geoip')->maySeePrices() ): ?>
+    <?php echo $this->renderTotals(null, 6); ?>
+    <?php echo $this->renderTotals('footer', 6); ?>
+    <?php if ($this->needDisplayBaseGrandtotal()):?>
+    <tr>
+        <td class="a-right" colspan="<?php echo 6; ?>">
+            <small><?php echo $this->helper('sales')->__('Your credit card will be charged for') ?></small>
+        </td>
+        <td class="a-right">
+            <small><?php echo $this->displayBaseGrandtotal() ?></small>
+        </td>
+    </tr>
+    <?php endif?>
+
+<?php endif; ?>

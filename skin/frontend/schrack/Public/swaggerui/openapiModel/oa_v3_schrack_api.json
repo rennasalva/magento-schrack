@@ -1,0 +1,153 @@
+{
+    "openapi":"3.0.2",
+    "info": {
+        "title":"Schrack Shop V3",
+        "description": "This is the new Schrack Shop API ",
+        "version":"0.1",
+        "contact": {
+            "name": "API Support",
+            "email": "j.wohlschlager@schrack.com"
+        },
+        "termsOfService": "https://www.schrack.com/general-terms-and-conditions"
+    },
+    "tags": [
+        {
+            "name": "Translations",
+            "description": "Get translations from catalogs."
+        },
+        {
+            "name": "Products",
+            "description": "Get product related information's."
+        },
+        {
+            "name": "Menu",
+            "description": "Get menu based on product catalog and specified depth."
+        },
+        {
+            "name": "Content Attributes",
+            "description": "Get country specific attributes."
+        },
+        {
+            "name": "Advisor",
+            "description": "Advisor information for user."
+        },
+        {
+            "name": "Navigation Primary",
+            "description": "Shows the main navigation"
+        },
+        {
+            "name": "Newsletter",
+            "description": "Newsletter description for user"
+        },
+        {
+            "name": "Login",
+            "description": "User is logging in to his/her account"
+        },
+        {
+            "name": "Logout",
+            "description": "User is logged out from to his/her account"
+        },
+        {
+            "name": "Vendor Certificates",
+            "description": "Vendor Awards"
+        },
+        {
+            "name": "Subnavigation Footer",
+            "description": "Subnavigation Footer"
+        },
+        {
+            "name": "Links Collection",
+            "description": "Showing subnavigation in footer"
+        },
+        {
+            "name": "Logistic Partners",
+            "description": "Showing subnavigation in footer"
+        },
+        {
+            "name": "Payment Options",
+            "description": "Showing payment options in shop"
+        }
+    ],
+    "servers": [
+        {
+            "description": "Docker Local",
+            "url": "{Protocol}//schrack-at.local.plan2.net/shop/frontapi/counter",
+            "variables":{
+                "Protocol":{
+                    "enum": ["https:", "http:"],
+                    "default": "https:",
+                    "description": "Secure Protocol"
+                }
+            }
+        },
+        {
+            "description": "Test Server DE",
+            "url": "{Protocol}//test-de.schrack.com/shop/frontapi/counter",
+            "variables": {
+                "Protocol":{
+                    "enum": ["https:", "http:"],
+                    "default": "https:",
+                    "description": "Secure Protocol"
+                }
+            }
+        }
+    ],
+    "paths": {
+        "/translations/{language}/{mainscope}/{scope}":{
+            "description": "Get translations based on language context and scope",
+            "$ref": "refs/translation.json"
+        },
+        "/product/{id}":{
+            "description": "Get product information based on provided id",
+            "$ref": "refs/product.json"
+        },
+        "/menu/{level}":{
+            "description": "Get menu with underlying structure down to provided level",
+            "$ref": "refs/menu.json"
+        },
+        "/content/attribute/{headerIcon}":{
+            "description": "Shop attributes",
+            "$ref": "refs/content_attr.json"
+        },
+        "/advisor/{myAdvisors}":{
+            "description": "Get advisor(s) information for actual user",
+            "$ref": "refs/advisor.json"
+        },
+        "/navigationPrimary/{main}": {
+            "description": "Get primary navigation elements",
+            "$ref": "refs/navigationPrimary.json"
+        },
+        "/newsletter/{email}": {
+            "description": "subscribe to newsletter with provided email",
+            "$ref": "refs/newsletter.json"
+        },
+        "/login/": {
+            "description": "Login with provided email address.",
+            "$ref": "refs/login.json"
+        },
+        "/logout/{token}": {
+            "description": "Logout. Destroy session based on provided token.",
+            "$ref": "refs/logout.json"
+        },
+        "/configCertification/{vendorId}": {
+            "description": "Showing certificates of the vendors",
+            "$ref": "refs/configVendor.json"
+        },
+        "/navigationTertiary/{footerId}": {
+            "description": "Showing subnavigation in footer",
+            "$ref": "refs/navigationTertiary.json"
+        },
+        "/navigationSecondary/{Id}": {
+            "description": "Showing subnavigation in footer",
+            "$ref": "refs/navigationSecond.json"
+        },
+        "/configLogisticpartners/{logisticpartnerId}": {
+            "description": "Showing delivery partners in the footer",
+            "$ref": "refs/logisticpartners.json"
+        },
+        "/configPaymentoption/{paymentoptionId}": {
+            "description": "Showing payment options on several places in the shop",
+            "$ref": "refs/paymentoptions.json"
+        }
+    }
+}

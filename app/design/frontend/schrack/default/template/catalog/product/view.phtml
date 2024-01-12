@@ -1,0 +1,290 @@
+<!-- template\catalog\product\view.phtml (start) -->
+
+<?php
+/**
+ * Product view template
+ *
+ * @see Mage_Catalog_Block_Product_View
+ * @see Mage_Review_Block_Product_View
+ */
+
+?>
+<?php
+Varien_Profiler::start('product/view.phtml->init');
+$customerSession = Mage::getSingleton('customer/session');
+$_customer = $customerSession->getCustomer();
+if ( Mage::registry('customer') == null ) {
+    Mage::unregister('customer');
+    Mage::register('customer',$_customer);
+}
+
+$_helper = $this->helper('catalog/output');
+$_infoHelper = Mage::helper('schrackcatalog/info');
+$_productHelper = Mage::helper('schrackcatalog/product');
+$_coreHelper = Mage::helper('core');
+$_stockHelper = Mage::helper('schrackcataloginventory/stock');
+$_partslistHelper = Mage::helper('schrackwishlist/partslist');
+$_wishlistHelper = Mage::helper('schrackwishlist');
+$_product = $this->getProduct();
+/*change 4 ajax:*/
+$_productHelper->preloadForcedAvailabilityInfo($_product->getSku());
+$_accessories = $_product->getAccessoryProducts();
+$_minQty = $this->getMinimalQty($_product);
+$productUrl = $_product->getUrlModel()->getUrl($_product, array('_escape' => true, '_ignore_category' => true, '_nosid' => true));
+$_prices = array_reverse(Mage::helper('schrackcatalog/info')->getGraduatedPricesForCustomer($_product, $_customer));
+/*change 4 ajax:*/
+$_infoHelper->preloadProductsInfo(array($_product), $_customer, true);
+$_priceHelper = Mage::helper('schrackcatalog/price');
+$_currency = $_priceHelper->getCurrencyForCustomer($_product, $_customer);
+Mage::unregister('currency');
+Mage::register('currency',$_currency);
+if (count($_prices) > 0) {
+    $_price = Mage::helper('core')->formatPrice($_prices[0]['price']);
+} else {
+    try {
+        $_price = $_priceHelper->getFormattedBasicPriceForCustomer($_product, $_customer);
+    } catch (Exception $e) {
+        $_price = null;
+    }
+}
+Mage::unregister('price');
+Mage::register('price',$_price);
+$_currency = Mage::app()->getStore()->getCurrentCurrency()->getCode();
+$_imgCartUrl = $this->getSkinUrl('images/cart_raute1.png');
+$_imgTruckUrl = $this->getSkinUrl('images/truck_white_diamond.png');
+$_imgInvisUrl = $this->getSkinUrl('images/no_truck_no_cart.png');
+$_dfltDeliveryWarehouseId = (int)$_stockHelper->getLocalDeliveryStock()->getStockNumber();
+Mage::unregister('dfltDeliveryWarehouseId');
+Mage::register('dfltDeliveryWarehouseId',$_dfltDeliveryWarehouseId);
+
+/*change 4 ajax:*/
+list($_qty, $_formattedQty) = $_productHelper->getFormattedAndUnformattedDeliveryQuantity($_product, $_dfltDeliveryWarehouseId, true);
+Mage::unregister('qty');
+Mage::register('qty',$_qty);
+
+/* @var $_helper Mage_Catalog_Helper_Output */
+/* @var $_infoHelper Schracklive_SchrackCatalog_Helper_Info */
+/* @var $_productHelper Schracklive_SchrackCatalog_Helper_Product */
+
+$_categories = $_product->getCategoryCollection();
+$_categoryNames = array();
+foreach ($_categories as $_category) {
+    $_fullCategoryName = array();
+    foreach ($_category->getParentCategories() as $_parentCategory) {
+        $_fullCategoryName[] = $_parentCategory->getName();
+    }
+    $_categoryNames[] = $this->htmlEscape(implode(' > ', $_fullCategoryName));
+}
+/*change 4 ajax:*/
+$_allPickupLocations = $_productHelper->getAllPickupQuantities($_product);
+
+$replacingProduct = null;
+if (($_product->isDead() || ($_productHelper->isSale($_product, $_customer)))) {
+    $replacingProduct = $_product->getLastReplacementProduct();
+}
+Mage::unregister('replacingProduct');
+Mage::register('replacingProduct', $replacingProduct);
+Varien_Profiler::stop('product/view.phtml->init');
+
+?>
+
+<?php Varien_Profiler::start('product/view.phtml->messageblock'); ?>
+<?php echo $this->getMessagesBlock()->getGroupedHtml(); ?>
+<?php Varien_Profiler::stop('product/view.phtml->messageblock'); ?>
+<?php Varien_Profiler::start('product/view.phtml->script1'); ?>
+<script type="text/javascript">
+    //<![CDATA[
+    function checkCompare() {
+        var items = <?php echo $this->helper('catalog/product_compare')->getItemCount(); ?>;
+        if (items >= 5) {
+            // showOverlayMessage('error', '<?php echo $this->__('Compare Error'); ?>', '');
+            alert('<?php echo $this->__('Compare Error'); ?>');
+            return false;
+        } else {
+            return true;
+        }
+    }
+    var partslist = new ListRequestManager.List('<?php echo $_partslistHelper->getBaseUrl() ?>');
+    partslist.setProductAddUrl('<?php echo Mage::helper('schrackcore/url')->getUrlWithCurrentProtocol('checkout/cart/addProductToPartslist')?>');
+    var partslistFE = new ListRequestManager.Frontend(partslist, ListRequestManager.Product);
+
+    var cart = new ListRequestManager.List('<?php echo $this->getUrl('checkout/cart/')?>', true);
+    var cartFE = new ListRequestManager.Frontend(cart, ListRequestManager.Product);
+
+    var compare = new ListRequestManager.List('<?php echo $this->getUrl('catalog/product_compare') ?>', true);
+    var compareFE = new ListRequestManager.Frontend(compare, ListRequestManager.Product);
+
+    jQuery(document).ready(function () {
+        jQuery('select.dropdown-menu').dropdown({activateOnClick: false});
+
+        if (typeof(window.matchMedia) !== 'undefined' && window.matchMedia('print').matches) {
+            jQuery('#content-wrap > div.large-3').remove();
+            jQuery('#content-wrap > div.content-container')
+                .removeClass('large-9').addClass('large-12');
+        }
+    });
+
+    //]]>
+</script>
+<?php Varien_Profiler::stop('product/view.phtml->script1'); ?>
+<div class="product-detail large-12 columns" vocab="http://schema.org/" prefix="v: http://data-vocabulary.org/" typeof="Product"<?php echo Mage::helper('googleanalytics')->getDataTags($_product, 1); ?>>
+    <?php Varien_Profiler::start('product/view.phtml->meta'); ?>
+    <meta property="url" content="<?php echo $productUrl; ?>"/>
+    <meta property="og:url" content="<?php echo $productUrl; ?>"/>
+    <?php if ($_product->getSku()): ?>
+        <meta property="v:identifier" content="sku:<?php echo $_product->getSku(); ?>"/>
+    <?php endif; ?>
+    <?php if ($_product->getSchrackEan()): ?>
+        <meta property="gtin13" content="<?php echo $_product->getSchrackEan(); ?>"/>
+        <meta property="v:identifier" content="ean:<?php echo $_product->getSchrackEan(); ?>"/>
+    <?php endif; ?>
+    <?php foreach ($_categoryNames as $_categoryName): ?>
+        <meta property="v:category" content="<?php echo $_categoryName; ?>"/>
+    <?php endforeach; ?>
+    <?php Varien_Profiler::stop('product/view.phtml->meta'); ?>
+
+    <?php Varien_Profiler::start('product/view.phtml->hint'); ?>
+    <?php echo $this->getChildHtml('hint') ?>
+    <?php Varien_Profiler::stop('product/view.phtml->hint'); ?>
+
+    <?php Varien_Profiler::start('product/view.phtml->title'); ?>
+    <?php if ($_product->getSku()): ?>
+        <div class="row">
+            <div class="large-fine-12 columns sku">
+                <div class="bottom-align-container"><?php echo $this->__('Article Number') . ': ' ?><?php echo $this->htmlEscape($_product->getSku()); ?></div>
+            </div>
+        </div>
+    <?php endif; ?>
+
+    <div class="row name-row">
+        <div class="large-12 columns">
+            <h1 class="<?php echo 'name headline b1' . ($_product->isDead() ? ' just-gray' : ''); ?>" property="name"><?php echo $_helper->productAttribute($_product, $_product->getName(), 'name') ?></h1>
+        </div>
+    </div>
+    <?php if ( $_product->getSchrackLongTextAddition() || true ) : ?>
+        <div class="row long-text-addition">
+            <div class="large-12 columns">
+                <?php echo $_product->getSchrackLongTextAddition(); ?>
+            </div>
+        </div>
+    <?php endif; ?>
+    <?php Varien_Profiler::stop('product/view.phtml->title'); ?>
+
+    <?php Varien_Profiler::start('product/view.phtml->details'); ?>
+    <div class="row product-main-details">
+        <div class="large-12 columns">
+            <div class="row">
+                <div class="large-3 columns product-detail-left-bar">
+                    <?php Varien_Profiler::start('product/view.phtml->details->media'); ?>
+                    <?php echo $this->getChildHtml('media') ?>
+                    <?php Varien_Profiler::stop('product/view.phtml->details->media'); ?>
+                </div>
+                <?php if ($_product->isDead()) : ?>
+                    <?php if ($replacingProduct) : ?>
+                        <?php Varien_Profiler::start('product/view.phtml->details->deadreplacing'); ?>
+                        <?php echo $this->getChildHtml('deadreplacing') ?>
+                        <?php Varien_Profiler::stop('product/view.phtml->details->deadreplacing'); ?>
+                    <?php else : ?>
+                        <?php Varien_Profiler::start('product/view.phtml->details->dead'); ?>
+                        <?php echo $this->getChildHtml('dead') ?>
+                        <?php Varien_Profiler::stop('product/view.phtml->details->dead'); ?>
+                    <?php endif; ?>
+                <?php elseif ( $_product->isDownload() ) : ?>
+                    <?php Varien_Profiler::start('product/view.phtml->details->download'); ?>
+                    <?php echo $this->getChildHtml('download') ?>
+                    <?php Varien_Profiler::stop('product/view.phtml->details->download'); ?>
+                <?php else : ?>
+                    <div class="large-9 product-detail-main-bar columns ">
+                        <?php Varien_Profiler::start('product/view.phtml->details->meta2'); ?>
+                        <?php echo $this->getChildHtml('meta') ?>
+                        <?php Varien_Profiler::stop('product/view.phtml->details->meta2'); ?>
+                        <div id="ajax-loader" style="display: none;">
+                            <img src="<?php echo $this->getSkinUrl('schrackdesign/Public/Images/download_ajax_loader.gif'); ?>" class="zip-download-animation" style="margin-top: -106px; margin-left: -79px;"/>
+                        </div>
+                        <?php Varien_Profiler::start('product/view.phtml->details->addtocart'); ?>
+                        <form class=""
+                              action="<?php echo $this->getAddToCartUrl($_product) ?>"
+                              method="post"
+                              name="product_addtocart_form"
+                              id="product_addtocart_form"<?php if ($_product->getOptions()): ?>enctype="multipart/form-data"<?php endif; ?>>
+                            <?php if (Mage::helper('schrackcatalog/product')->hasDrums($_product)): ?>
+                                <?php echo $this->getChildHtml('drumstocks') ?>
+                            <?php endif; ?>
+
+                            <?php if ($_product->isSaleable()): ?>
+                                <div class="addtocart large">
+                                    <?php echo $this->getChildHtml('addtocart') ?>
+                                </div>
+                            <?php else: ?>
+                                <?php Mage::log('product ' . $_product->getSku() . ' is not saleable.'); ?>
+                            <?php endif; ?>
+
+                        </form>
+                        <?php Varien_Profiler::stop('product/view.phtml->details->addtocart'); ?>
+
+                        <?php if ( ! $_product->isRestricted() ): ?>
+                            <?php Varien_Profiler::start('product/view.phtml->details->priceexplanation'); ?>
+                            <?php echo $this->getChildHtml('priceexplanation') ?>
+                            <?php Varien_Profiler::stop('product/view.phtml->details->priceexplanation'); ?>
+                        <?php endif; ?>
+
+                        <div class="row-fine">
+                            <?php Varien_Profiler::start('product/view.phtml->details->prices'); ?>
+                                <div class="large-fine-11 columns-fine">
+                                    <?php if ( $_product->isRestricted() ): ?>
+                                        <div class="headline f">&nbsp;</div><!-- hack to keep availability table from moving left-->
+                                    <?php else : ?>
+                                        <?php echo $this->getChildHtml('prices') ?>
+                                    <?php endif; ?>
+                                </div>
+                            <?php Varien_Profiler::stop('product/view.phtml->details->prices'); ?>
+
+                            <div class="stock-information large-fine-11 columns-fine">
+                                <?php if ( ! $_productHelper->hasDrums($_product) && ! $_product->isRestricted() ) : ?>
+                                    <?php Varien_Profiler::start('product/view.phtml->details->stock'); ?>
+                                    <?php echo $this->getChildHtml('stock') ?>
+                                    <?php Varien_Profiler::stop('product/view.phtml->details->stock'); ?>
+                                <?php endif; ?>
+
+                                <?php Varien_Profiler::start('product/view.phtml->details->moreactions'); ?>
+                                <?php echo $this->getChildHtml('moreactions') ?>
+                                <?php Varien_Profiler::stop('product/view.phtml->details->moreactions'); ?>
+                            </div>
+
+                            <div class="large-fine-2 columns-fine"></div>
+                        </div>
+                    </div>
+                <?php endif; ?>
+            </div>
+
+            <div class="row product-additional-details">
+                <div class="large-12 columns">
+                    <div class="row">
+                        <?php Varien_Profiler::start('product/view.phtml->details->additional'); ?>
+                        <?php echo $this->getChildHtml('additional',false) /* attributes.phtml!!! */ ?>
+                        <?php Varien_Profiler::stop('product/view.phtml->details->additional'); ?>
+                    </div>
+                </div>
+            </div>
+            <div class="row hide-on-print">
+                <div class="large-12 columns">
+                    <div class="hr">
+                        <hr/>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <?php Varien_Profiler::stop('product/view.phtml->details'); ?>
+
+    <?php Varien_Profiler::start('product/view.phtml->browseblock'); ?>
+    <?php echo $this->getChildHtml('browseblock') ?>
+    <?php Varien_Profiler::stop('product/view.phtml->browseblock'); ?>
+
+    <?php Varien_Profiler::start('product/view.phtml->related'); ?>
+    <div class="row">
+        <?php echo $this->getChildHtml('related') ?>
+    </div>
+    <?php Varien_Profiler::stop('product/view.phtml->related'); ?>
+</div>
+<!-- template\catalog\product\view.phtml (end) -->

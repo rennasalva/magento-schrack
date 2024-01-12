@@ -1,0 +1,74 @@
+<?php
+/**
+ * Magento
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Academic Free License (AFL 3.0)
+ * that is bundled with this package in the file LICENSE_AFL.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/afl-3.0.php
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@magentocommerce.com so we can send you a copy immediately.
+ *
+ * DISCLAIMER
+ *
+ * Do not edit or add to this file if you wish to upgrade Magento to newer
+ * versions in the future. If you wish to customize Magento for your
+ * needs please refer to http://www.magentocommerce.com for more information.
+ *
+ * @category    design
+ * @package     base_default
+ * @copyright   Copyright (c) 2009 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @license     http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
+ */
+/**
+ * @var $this Mage_Tax_Block_Checkout_Grandtotal
+ * @see Mage_Tax_Block_Checkout_Grandtotal
+ */
+
+/* Schracklive rounding differences */
+$grandTotal = $this->getTotal()->getAddress()->getGrandTotal();
+$subTotal = $this->getTotal()->getAddress()->getSubtotal();
+$tax = $this->getTotal()->getAddress()->getTaxAmount();
+$shipping = $this->getTotal()->getAddress()->getShippingAmount();
+
+$difference = round($grandTotal - $shipping - $tax - $subTotal, 2);
+/* */
+
+?>
+<?php if ($this->includeTax() && $this->getTotalExclTax()>=0):?>
+<div class="row-fine totals">
+    <div class="large-fine-20 columns-fine">
+        <?php echo $this->helper('tax')->__('Grand Total Excl. Tax')?>
+    </div>
+    <div class="large-fine-4 columns-fine"><div class="sum align-right">
+        <?php echo $this->helper('checkout')->formatPrice($this->getTotalExclTax()) ?>
+    </div></div>
+</div>
+<?php echo $this->renderTotals('taxes', $this->getColspan()); ?>
+<div class="row-fine totals" id="grand-total">
+    <div class="large-fine-20 columns-fine">
+        <?php echo $this->helper('tax')->__('Grand Total Incl. Tax')?>
+    </div>
+    <div class="large-fine-4 columns-fine"><div class="sum align-right">
+        <?php echo $this->helper('checkout')->formatPrice($this->getTotal()->getValue()) ?>
+    </div></div>
+</div>
+<?php else:?>
+<div class="row-fine totals">
+    <div class="large-fine-20 columns-fine">
+        <?php echo $this->getTotal()->getTitle() ?>
+    </div>
+    <div class="large-fine-4 columns-fine"><div class="sum align-right">
+        <?php echo $this->helper('checkout')->formatPrice($this->getTotal()->getValue()) ?>
+    </div></div>
+</div>
+<?php endif;?>
+<?php if ($difference > 0.0): ?>
+<div class="row-fine totals">
+	<div class="large-fine-20 columns-fine"><?php echo $this->helper('tax')->__('Rounding difference'); ?></div>
+	<div class="large-fine-4 columns-fine"><div class="sum align-right"><?php echo $this->helper('checkout')->formatPrice($difference); ?></div></div>
+</div>
+<?php endif; ?>

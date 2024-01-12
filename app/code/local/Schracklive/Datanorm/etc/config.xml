@@ -1,0 +1,54 @@
+<?xml version="1.0"?>
+<config>
+    <modules>
+        <Schracklive_Datanorm>
+            <version>1.0.0</version>
+            <depends>
+                <!-- no dependencies ? -->
+            </depends>
+        </Schracklive_Datanorm>
+    </modules>
+    <frontend>
+        <translate>
+            <modules>
+                <Schracklive_Datanorm>
+                    <files>
+                        <schrack>local/Schracklive_Datanorm.csv</schrack>
+                    </files>
+                </Schracklive_Datanorm>
+            </modules>
+        </translate>
+        <routers>
+            <datanorm>
+                <use>standard</use>
+                <args>
+                    <module>Schracklive_Datanorm</module>
+                    <frontName>datanorm</frontName>
+                </args>
+            </datanorm>
+        </routers>
+        <layout>
+            <updates>
+                <datanorm module="Schracklive_Datanorm">
+                    <file>datanorm.xml</file>
+                </datanorm>
+            </updates>
+        </layout>
+    </frontend>
+    <global>
+        <models>
+            <datanorm>
+                <class>Schracklive_Datanorm_Model</class>
+            </datanorm>
+        </models>
+        <resources>
+            <datanorm_setup>
+                <setup>
+                    <module>Schracklive_Datanorm</module>
+                </setup>
+            </datanorm_setup>
+        </resources>
+        <extraconfig />
+        <blocks />
+    </global>
+</config>

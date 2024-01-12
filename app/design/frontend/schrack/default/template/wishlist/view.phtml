@@ -1,0 +1,305 @@
+<?php
+/* @var $this Mage_Wishlist_Block_Customer_Wishlist */
+?>
+<?php
+   $_infoHelper = Mage::helper('schrackcatalog/info');
+   $_productHelper = Mage::helper('schrackcatalog/product');
+   $_customer = Mage::getSingleton('customer/session')->getCustomer();
+   $_stockHelper = Mage::helper('schrackcataloginventory/stock');
+   $_imgCartUrl = $this->getSkinUrl('images/cart_raute1.png');
+   $_imgTruckUrl = $this->getSkinUrl('images/truck_white_diamond.png');
+   $_imgInvisUrl = $this->getSkinUrl('images/no_truck_no_cart.png');
+   $_wishlist = $this->helper('wishlist')->getWishlist();
+   $_partslistHelper = Mage::helper('schrackwishlist/partslist');
+   
+   /* @var $_infoHelper Schracklive_SchrackCatalog_Helper_Info */
+   /* @var $_productHelper Schracklive_SchrackCatalog_Helper_Product */
+?>
+<script type="text/javascript">//<![CDATA[
+
+    var partslist = new ListRequestManager('<?php echo $_partslistHelper->getBaseUrl() ?>');
+
+//]]></script>
+<style>
+    .availability-new {
+        padding-left: 45px;
+    }
+
+    .availability-box {
+        float: left;
+        width: 100px;
+        height: 50px;;
+    }
+
+    .availability-box-row {
+        margin-top: 10px;
+        float: left;
+        width: 100px;
+        height: 50px;;
+    }
+
+    .availability-box-cell-left {
+        margin-top: 7px;
+    }
+
+    .comment-box {
+        width: 50px;
+        padding-right: 20px;
+        padding-top: 20px;
+    }
+</style>
+<?php echo $this->getMessagesBlock()->getGroupedHtml() ?>
+<div class="wishlist">
+    <div id="wishlist-header" class="sloped-box">
+        <h1><span><?php echo $this->__('My Wishlist') ?></span></h1>
+        <?php if ($this->helper('wishlist')->isRssAllow() && $this->hasWishlistItems()): ?>
+            <a href="<?php echo $this->helper('wishlist')->getRssUrl(); ?>" class="link-rss"><?php echo $this->__('RSS Feed') ?></a>
+        <?php endif; ?>
+    <?php if (!$this->hasWishlistItems()): ?>
+        <p><?php echo $this->__('You have no items in your wishlist.') ?></p>
+    <?php endif ?>
+    </div>
+    <div class="quickadd">
+        <?php echo $this->getChildHtml('quickadd'); ?>
+    </div>    
+    <?php if ($this->hasWishlistItems()): ?>
+    <form id="wishlist-view-form" action="<?php echo $this->getUrl('*/*/update') ?>" method="post">
+        <?php echo $this->getBlockHtml('formkey')?>
+        <table border="0" cellspacing="0" cellpadding="0" width="100%" class="products-list" id="products-list">
+        <thead>
+            <tr>
+                <th class="first-col"><?php echo $this->__('Product') ?></th>
+                <th class="availability" style="width: 270px;"><?php echo $this->__('Availability'); ?></th>
+                <th><?php echo $this->__('Comment') ?></th>
+                <th class="last-col">
+					<?php if ($_customer->isAllowed('customerOrder','order')): ?>
+						<?php echo $this->__('Buy') ?> / <br />
+					<?php endif ?>
+
+					<?php echo $this->__('Compare'); ?> / <?php echo $this->__('Remove'); ?>
+				</th>
+            </tr>
+        </thead>
+        <tbody>
+			<?php
+			$_wishlistItems = $this->getWishlistItems();
+            $products = array();
+            foreach ($_wishlistItems as $item) {
+                $products[] = $item->getProduct();
+            }
+			$_infoHelper->preloadProductsInfo($products, $_customer);
+			?>
+            <?php foreach ($_wishlistItems as $item): ?>
+			<?php
+			$_product = $item->getProduct();
+			$_categories = $_product->getCategoryIds();
+            if (isset($_categories[0])) {
+			    $_category = Mage::getModel('catalog/category')->load($_categories[0]);
+			    $_url = $this->getUrl(dirname($_category->getUrlPath()).'/'.basename($_category->getUrlPath(), '.html').'/'.basename($_product->getProductUrl(false)));
+            }
+			?>
+            <tr>
+                <td class="first-col">
+    <?php
+        $_product_image = $this->helper('catalog/image')->init($_product, 'small_image')->constrainOnly(true)->resize(66, 66);
+    ?>
+                    <a href="<?php echo $_url ?>" title="<?php echo $this->htmlEscape($this->getImageLabel($_product, 'small_image')) ?>" class="product-image"><img src="<?php echo $_product_image ?>" width="<?php echo $_product_image->getWidth() ?>" height="<?php echo $_product_image->getHeight() ?>" alt="<?php echo $this->htmlEscape($this->getImageLabel($_product, 'small_image')) ?>" /></a>
+                    <?php if($_product->getSku()): ?>
+                    <span class="catalog-nr"><?php echo $this->htmlEscape($_product->getSku()); ?></span>
+                    <?php endif; ?>
+                    <h2 class="product-name"><a href="<?php echo $_url ?>" title="<?php echo $this->htmlEscape($_product->getName()) ?>"><?php echo $this->htmlEscape($_product->getName())?></a></h2>
+                </td>
+                
+                <td class="availability-new">
+                    <?php if ( ! $_productHelper->isAvailInAnyStock($_product) ): ?>
+                            <div class="availability-box">
+                                <div class="availability-box-row">
+                                    <div class="availability-box-cell-hleft"><img class="availability-box-cell-himg" src="<?php echo $_imgInvisUrl; ?>" width="36" height="20" /></div>
+                                    <div class="availability-box-cell-hmiddle">&nbsp;</div>
+                                    <div class="availability-box-cell-hright"><?php echo $this->__('on request') ?></div>
+                                </div>
+                            </div>
+                    <?php elseif($_product->isSaleable()): ?>
+                        <?php $stock = $_stockHelper->getCustomerPickupStock($_customer);?>
+                        <?php if ( $_productHelper->isAvailInStock($_product,$stock)): ?>
+                            <div class="availability-box">
+                                <div class="availability-box-row">
+                                    <div class="availability-box-cell-hleft"><img class="availability-box-cell-himg" src="<?php echo $_imgCartUrl; ?>" width="36" height="20" alt="<?php echo $this->__($_productHelper->getPickupStateText($_product)); ?>" title="<?php echo $this->__($_productHelper->getPickupStateText($_product)); ?>" /></div>
+                                    <div class="availability-box-cell-hmiddle">&nbsp;</div>
+                                    <div class="availability-box-cell-hright"><?php echo $this->__('Pickupable') ?>:</div>
+                                </div>
+                            </div>
+                            <div class="availability-box">
+                                <div class="availability-box-row">
+                                    <div class="availability-box-cell-left"><?php echo $_productHelper->getFormattedPickupQuantity($_product);?></div>
+                                    <div class="availability-box-cell-middle">&nbsp;</div>
+                                    <div class="availability-box-cell-right"><?php echo $_productHelper->trimLength($this->__('at') . ' ' . $stock->getStockName(),16); ?></div>
+                                </div>
+                            </div>
+
+                        <?php endif; ?>
+                        <?php if ( $_productHelper->isAvailInAnyDeliveryStock($_product) ): ?>
+                            <div class="availability-box-row">
+                                <div class="availability-box-cell-hleft"><img class="availability-box-cell-himg" src="<?php echo $_imgTruckUrl; ?>" width="36" height="20" alt="<?php echo $this->__($_productHelper->getDeliveryStateText($_product)); ?>" title="<?php echo $this->__($_productHelper->getDeliveryStateText($_product)); ?>" /></div>
+                                <div class="availability-box-cell-hmiddle">&nbsp;</div>
+                                <div class="availability-box-cell-hright"><?php echo $this->__('Deliverable') ?>:</div>
+                            </div>
+                        <?php endif; ?>
+                        <?php $stock = $_stockHelper->getLocalDeliveryStock(); $stockNo = $stock ? $stock->getStockNumber() : 0;?>
+                        <?php if ( $_productHelper->isAvailInStock($_product,$stock)): ?>
+                            <div class="availability-box">
+                                <div class="availability-box-row">
+                                    <div class="availability-box-cell-left"><?php echo $_productHelper->getFormattedDeliveryQuantity($_product);?></div>
+                                    <div class="availability-box-cell-middle">&nbsp;</div>
+                                    <div class="availability-box-cell-right"><?php echo $_productHelper->getFormattedDeliveryTime($_product,$stockNo);?></div>
+                                </div>
+                            </div>
+                        <?php endif; ?>
+                        <?php $stock = $_stockHelper->getForeignDeliveryStock(); $stockNo = $stock ? $stock->getStockNumber() : 0;?>
+                        <?php if ( $_productHelper->isAvailInStock($_product,$stock)): ?>
+                            <div class="availability-box">
+                                <div class="availability-box-row">
+                                    <div class="availability-box-cell-left"><?php echo $_productHelper->getFormattedDeliveryQuantity($_product,$stockNo);?></div>
+                                    <div class="availability-box-cell-middle">&nbsp;</div>
+                                    <div class="availability-box-cell-right"><?php echo $_productHelper->getFormattedDeliveryTime($_product,$stockNo);?></div>
+                                </div>
+                            </div>
+                        <?php endif; ?>
+                        <?php $stockNo = $_stockHelper->getThirdPartyDeliveryStockNumber(); ?>
+                        <?php if ( ! $_product->isDiscontinuation() && $_productHelper->isAvailInStockNo($_product,$stockNo) ): ?>
+                            <div class="availability-box">
+                                <div class="availability-box-row">
+                                    <div class="availability-box-cell-left"><?php echo $_productHelper->getFormattedDeliveryQuantity($_product,$stockNo);?></div>
+                                    <div class="availability-box-cell-middle">&nbsp;</div>
+                                    <div class="availability-box-cell-right"><?php echo $_productHelper->getFormattedDeliveryTime($_product,$stockNo);?></div>
+                                </div>
+                            </div>
+                        <?php endif; ?>
+                    <?php else: ?>
+                        <p class="availability out-of-stock"><span><?php echo $this->__('Out of stock') ?></span></p>
+                    <?php endif; ?>
+                </td>
+                
+                <td class="comment-box">
+                    <textarea name="description[<?php echo $item->getWishlistItemId() ?>]" rows="5" cols="20" onfocus="focusComment(this)" onblur="focusComment(this)" title="<?php echo $this->__('Comment') ?>"><?php echo $this->getCommentValue($item); ?></textarea>
+                </td>
+                <td class="last-col">
+					<?php if ($_customer->isAllowed('customerOrder','order')): ?>
+						<?php if($_product->isSaleable()): ?>
+									<div class="add-to-cart">
+										<input type="text" id="wishlist-qty-<?php echo $_product->getId() ?>" name="qty[<?php echo $item->getId() ?>]" maxlength="12" value="<?php echo Mage::helper('schrackcore/string')->numberFormat($item->getQty());?>" title="<?php echo $this->__('Qty') ?>" class="input-text qty" /><span class="unit"><?php echo $_product->getSchrackQtyunit() ?></span><button type="button" title="<?php echo $this->__('Add to Cart') ?>" class="button btn-cart" onclick="addWItemToCart(<?php echo $item->getId(); ?>)"><span><?php echo $this->__('Buy now') ?></span></button>
+									</div>
+						<?php endif; ?>
+					<?php endif; ?>
+							<ul class="product-info-links">
+                        <?php if($_compareUrl=$this->getAddToCompareUrl($_product)): ?>
+								<li>
+									<a rel="nofollow" onclick="return checkCompare();" href="<?php echo $_compareUrl ?>" class="link-compare"><img src="<?php echo $this->getSkinUrl('images/icon_compare.png'); ?>" width="18" height="18" alt="<?php echo $this->__('Add to Compare'); ?>" title="<?php echo $this->__('Add to Compare'); ?>"/></a>
+								</li>
+                        <?php endif; ?>
+                                <li>
+                        <?php if ($_partslistHelper->hasActivePartslist()) : ?>
+                            <?php $pl = $_partslistHelper->getActivePartslist(); ?>
+                            <a id="partslist-remove-<?php echo $_product->getId()?>" rel="nofollow" href="<?php echo $_partslistHelper->getRemoveUrlWithPartslist($pl, $_product) ?>" onClick="partslist.removeProduct('<?php echo $_product->getId() ?>');return false;" title="<?php echo $this->__('Remove from partslist') . ' ' . $pl->getDescription()?>">
+                                <?php echo $this->__('Remove from active partslist')?>
+                            </a>
+                            <a class="partslist-addToActiveList" id="partslist-addToActiveList-<?php echo $_product->getId()?>" rel="nofollow" href="<?php echo $_partslistHelper->getAddUrlWithPartslist($pl, $_product) ?>" onClick="partslist.addProduct('<?php echo $_product->getId() ?>', $('wishlist-qty-<?php echo $_product->getId() ?>').value);return false;" title="<?php echo $this->__('Add to partslist') . ' ' . $pl->getDescription()?>">
+                                <?php echo $this->__('Add to active partslist')?>
+                            </a>
+                        <?php else: ?>
+                            <a class="partslist-addToNewList" id="partslist-addToNewList-<?php echo $_product->getId()?>" rel="nofollow" href="<?php echo $_partslistHelper->getAddUrlWithNewPartslist($_product) ?>" onClick="partslist.addProductToNewList('<?php echo $_product->getId() ?>', $('wishlist-qty-<?php echo $_product->getId() ?>').value);return false;" title="<?php echo $this->__('Add to new partslist')?>">
+                                <?php echo $this->__('Add to new partslist')?>
+                            </a>
+                            <a id="partslist-remove-<?php echo $_product->getId()?>" rel="nofollow"></a>
+                        <?php endif; ?>
+                                    <span id="partslist-activity-<?php echo $_product->getId()?>">Sanduhr...</span>
+                                </li>                        
+                        <script type="text/javascript">
+                            //<![CDATA[
+                            <?php if ($_partslistHelper->hasActivePartslist()) : ?>
+                                <?php if ($pl && $_partslistHelper->isProductOnList($pl, $_product)) : ?>
+                                    partslist.showRemoveWidget(<?php echo $_product->getId() ?>);
+                                <?php else: ?>
+                                    partslist.showAddActiveWidget(<?php echo $_product->getId() ?>);
+                                <?php endif; ?>
+                            <?php else: ?>
+                                partslist.showAddNewWidget(<?php echo $_product->getId() ?>);
+                            <?php endif; ?>
+                            //]]>
+                        </script>
+                        <li>
+									<a href="<?php echo $this->getItemRemoveUrl($item) ?>" title="<?php echo $this->__('Remove item')?>" onclick="return confirmRemoveWishlistItem()"><img src="<?php echo $this->getSkinUrl('images/icon_trash.png'); ?>" width="18" height="18" alt="<?php echo $this->__('Remove item') ?>" /></a>
+								</li>
+							</ul>
+                </td>
+            </tr>
+            <?php endforeach ?>
+        </tbody>
+        </table>
+        <script type="text/javascript">//<![CDATA[
+            decorateTable('products-list');
+        //]]></script>
+        <div class="buttons-set">
+            <button type="submit" onclick="form.name='do'" title="<?php echo $this->__('Update Wishlist') ?>" class="button btn-update"><span><span><?php echo $this->__('Update Wishlist') ?></span></span></button>			
+            <?php if ($_customer->isAllowed('customerOrder','order')): ?>
+				<?php if($this->isSaleable()):?>
+					<button type="button" title="<?php echo $this->__('Add All to Cart') ?>" onclick="addAllWItemsToCart()" class="button btn-add"><span><span><?php echo $this->__('Add All to Cart') ?></span></span></button>
+				<?php endif;?>
+			<?php endif;?>
+            <button type="button" class="button btn-add" title="<?php echo $this->__('Empty Wishlist')?>" onClick="if (confirmEmptyWishlist()) setLocation('<?php echo Mage::getUrl('wishlist/index/empty')?>');" style="cursor: auto;"><?php echo $this->__('Truncate')?></button>
+        </div>                
+    </form>
+    <?php endif ?>
+    <script type="text/javascript">
+    //<![CDATA[
+    function confirmRemoveWishlistItem() {
+        return confirm('<?php echo $this->__('Are you sure you want to remove this product from your wishlist?') ?>');
+    }
+
+    function confirmEmptyWishlist() {
+        return confirm('<?php echo $this->__('Are you sure you want to empty your wishlist?') ?>');
+    }
+    function addWItemToCart(itemId) {
+        var url = '<?php echo $this->getItemAddToCartUrl('%item%') ?>';
+        url = url.gsub('%item%', itemId);
+        var form = $('wishlist-view-form');
+        if (form) {
+            var input = form['qty[' + itemId + ']'];
+            if (input) {
+                var separator = (url.indexOf('?') >= 0) ? '&' : '?';
+                url += separator + input.name + '=' + encodeURIComponent(input.value);
+            }
+        }
+        setLocation(url);
+    }
+	
+    function addAllWItemsToCart() {
+        var url = '<?php echo $this->getUrl('*/*/allcart') ?>';
+        var separator = (url.indexOf('?') >= 0) ? '&' : '?';
+        $$('#wishlist-view-form .qty').each(
+            function (input, index) {
+                url += separator + input.name + '=' + encodeURIComponent(input.value);
+                separator = '&';
+            }
+        );
+        setLocation(url);
+    }
+
+    function focusComment(obj) {
+        if( obj.value == '<?php echo $this->__('Please, enter your comments...') ?>' ) {
+            obj.value = '';
+        } else if( obj.value == '' ) {
+            obj.value = '<?php echo $this->__('Please, enter your comments...') ?>';
+        }
+    }
+
+    function setQty() {
+        $$('#wishlist-view-form .qty').each(
+            function (input, index) {
+                input.value = '1';
+            }
+        );
+    }
+    //]]>
+    </script>
+</div>

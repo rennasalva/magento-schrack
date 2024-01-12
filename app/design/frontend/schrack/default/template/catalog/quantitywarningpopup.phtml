@@ -1,0 +1,170 @@
+<?php
+if ( $this->isRestricted() ) {
+    $msg1 = $this->__('This item is currently edited by us and can therefore unfortunately not be ordered.');
+    if ($this->getFolloupProduct() != null) {
+        $msg1 .= ' ';
+        $msg1 .= $this->__('So simply order our equivalent follow-up article.');
+    }
+} else if ( $this->getAvailableQty() <= 0 ) {
+    $msg1 = $this->__('This item is currently unavailable and can therefore unfortunately not be ordered.');
+    if ($this->getFolloupProduct() != null) {
+        $msg1 .= ' ';
+        $msg1 .= $this->__('So simply order our equivalent follow-up article.');
+    }
+} else {
+    $msg1 = ''; // $this->__('This product is discontinued/on sale.') . ' '; // DLA, 20140116: removed because Ticket 2015011610000109
+    if ( $this->getAvailableQty() == 1 ) {
+        $msg1 .= $this->__("Unfortunately only %s is available.", $this->getQty());
+    } else {
+        $msg1 .= $this->__("Unfortunately only %s are available.", $this->getQty());
+    }
+    $msg1 .= ' ';
+    $msg1 .= $this->__('Please reduce your order quantity.');
+}
+$msg2 = $this->__('We would be happy to advise you personally about alternatives.');
+$msg2 .= ' ';
+$msg2 .= $this->__('Send us an inquiry and we will contact you soon.');
+$msg3 = $this->__('Please contact me regarding article %s .',$this->getSku());
+$advisor = $this->getAdvisor();
+$advEmail = $advisor->getEmail();
+$advName = $advisor->getName() . ' ';
+$advTitle = $advisor->getSchrackTitle();
+$advPhone = $advisor->getSchrackTelephone();
+?>
+
+<div>
+    <div class="row hl">
+        <div class="large-12 columns hl">
+            <h1 class="headline b1"><?php echo $this->__('Contact and order information'); ?></h1>
+        </div>
+    </div>
+    <div class="row">
+        <div class="large-12 columns catalog-nr"><?php echo $this->__('Art.Nr.')?><?php echo '&nbsp;' . $this->getSku(); ?></div>
+    </div>
+    <div class="row">
+        <div class="large-12 columns msg" style="font-size: 15px; padding-top: 0">
+            <?php echo $msg1; ?>
+        </div>
+    </div>
+    <?php if ( ! $this->isRestricted() ) : ?>
+        <div class="row">
+            <div class="large-12 columns">
+                <button class="button-small" onclick="jQuery('#quantitywarningpopup').dialog('close');"><?php echo $this->__('Adjust order quantity'); ?></button>
+            </div>
+        </div>
+    <?php endif; ?>
+    <?php if ( $this->getFolloupProduct() != null ) : ?>
+        <div class="row hl">
+            <div class="large-12 columns">
+                <h4 class="headline d blue"><?php echo $this->__('Replacing product'); ?></h4>
+                <div class="row replacing-product-box">
+                    <?php
+                    $productImage = $this->helper('catalog/image')->init($this->getFolloupProduct(), 'small_image')->constrainOnly(true)->resize(66, 66);
+                    $productImageUrl = (string)$productImage;
+                    ?>
+                    <div class="large-2 columns image">
+                        <a href="<?php echo $this->getFolloupProduct()->getProductUrl()?>" rel="nofollow">
+                            <img src="<?php echo $productImageUrl?>"/>
+                        </a>
+                    </div>
+                    <div class="large-6 columns">
+                        <h2 class="text bold"><a href="<?php echo $this->getFolloupProduct()->getProductUrl() ?>" title="<?php echo $this->htmlEscape($this->getFolloupProduct()->getName()) ?>"><?php echo $this->htmlEscape($this->getFolloupProduct()->getName()) ?></a></h2>
+                        <div class="catalog-nr"><?php echo $this->__('Art.Nr.')?> <?php echo $this->htmlEscape($this->getFolloupProduct()->getSku()); ?></div>
+                    </div>
+                    <div class="large-4 columns" style="position: relative">
+                        <button class="button-small replacing-product-button" style="font-size: 11px" onclick="document.location.href='<?php echo $this->getFolloupProduct()->getProductUrl()?>'"><?php echo $this->__('See replacing product'); ?></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    <?php endif; ?>
+    <div class="row">
+        <div class="large-12 columns msg" style="font-size: 15px;">
+            <?php echo $msg2; ?>
+        </div>
+    </div>
+    <form id="formular" method="post" action="<?php echo Mage::helper('schrackcore/url')->getUrlWithCurrentProtocol('catalog/product/sendDiscontinuationInquiry') ?>" >
+        <div class="row">
+            <div class="large-3 columns">
+                <div class="row">
+                    <div class="large-12 columns">
+                        <img class="foto" src="<?php echo $this->getAdvisor()->getPhotoUrl('medium'); ?>"/>
+                    </div>
+                </div>
+                <div class="row">
+                    <input type="hidden" name="form_key" value="<?php echo Mage::getSingleton('core/session')->getFormKey(); ?>" />
+                    <input type="hidden" name="sku" value="<?php echo $this->getSku(); ?>" />
+                    <input type="hidden" name="qty" value="<?php echo $this->getCustomerQty(); ?>" />
+                    <div class="large-12 columns">
+                        <div class="row contact bold bottompadding"><?php echo $this->__('Your Contact Person'); ?></div>
+                        <div class="row contact bold"><?php echo $advName; ?></div>
+                        <div class="row contact"><?php echo $advTitle; ?></div>
+                        <div class="row contact blue"><a href="tel:<?php echo $advPhone; ?>"><?php echo $advPhone; ?></a></div>
+                        <div class="row contact blue"><a href="mailto:<?php echo $advEmail; ?>"><?php echo $advEmail; ?></a></div>
+                    </div>
+                </div>
+            </div>
+            <div class="large-9 columns" style="background-color: #f6f6f6">
+                <div class="bold bottompadding" style="padding-left: 10px"><?php echo $this->__('Your request'); ?></div>
+                <div style="padding-left: 10px; padding-right: 10px">
+                    <div class="row contact">
+                        <div class="large-3 columns"><div class="in-line-label"><label for="company"><?php echo '*&nbsp;' . $this->__('Company:') ?></label></div></div>
+                        <div class="large-9 columns"><div class="align-right"><input class="field-size" id="company" name="company" type="text" value="<?php echo $this->getCustomer() && $this->getCustomer()->getAccount() ? $this->getCustomer()->getAccount()->getName() : ''; ?>" title="<?php echo $this->__('Name:') ?>"/></div></div>
+                    </div>
+                    <div class="row contact">
+                        <div class="large-3 columns"><div class="in-line-label"><label for="customer-no"><?php echo $this->__('Customer#:') ?></label></div></div>
+                        <div class="large-9 columns"><div class="align-right"><input class="field-size" id="customer-no" name="customer-no" type="text" value="<?php echo $this->getCustomer() ? $this->getCustomer()->getSchrackWwsCustomerId() : ''; ?>" title="<?php echo $this->__('Name:') ?>"/></div></div>
+                    </div>
+                    <div class="row contact">
+                        <div class="large-3 columns"><div class="in-line-label"><label for="name"><?php echo '*&nbsp;' . $this->__('Name:') ?></label></div></div>
+                        <div class="large-9 columns"><div class="align-right"><input class="field-size" id="name" name="name" type="text" value="<?php echo $this->getCustomer() ? $this->getCustomer()->getName() : ''; ?>" title="<?php echo $this->__('Name:') ?>"/></div></div>
+                    </div>
+                    <div class="row contact">
+                        <div class="large-3 columns"><div class="in-line-label"><label for="email"><?php echo '*&nbsp;' . $this->__('Email:') ?></label></div></div>
+                        <div class="large-9 columns"><div class="align-right"><input class="field-size" id="email" name="email" type="text" value="<?php echo $this->getCustomer() ? $this->getCustomer()->getEmail() : ''; ?>" title="<?php echo $this->__('Email:') ?>"/></div></div>
+                    </div>
+                    <div class="row contact">
+                        <div class="large-3 columns"><div class="in-line-label"><label for="phone"><?php echo $this->__('Telephone:') ?></label></div></div>
+                        <div class="large-9 columns"><div class="align-right"><input class="field-size" id="phone" name="phone" type="text" value="<?php echo $this->getCustomer() ? $this->getCustomer()->getSchrackTelephone() : ''; ?>" title="<?php echo $this->__('Telephone:') ?>"/></div></div>
+                    </div>
+
+                    <div class="row contact">
+                        <div class="large-3 columns"><div class="in-line-label"><label for="country"><?php echo '*&nbsp;' . $this->__('Country2:') ?></label></div></div>
+                        <div class="large-9 columns"><div class="align-right"><input class="field-size" id="country" name="country" type="text" value="<?php echo strtoupper(Mage::helper('schrack')->getCountryTld()); ?>" title="<?php echo $this->__('Name:') ?>"/></div></div>
+                    </div>
+                    <div class="row contact">
+                        <div class="columns">
+                            <label for="text" class="in-line-label"><?php echo '*&nbsp;' . $this->__('Text:') ?></label><br/><br/>
+                            <textarea id="text" name="text" cols="58" rows="3" title="<?php echo $this->__('Text:') ?>"><?php echo $msg3; ?></textarea>
+                        </div>
+                    </div>
+                    <button class="button-small inquiry-button" onClick="validationFunc(); return false;"><?php echo $this->__('Send inquiry'); ?></button>
+                </div>
+            </div>
+        </div>
+    </form>
+    <div id="error" style="color: red;"></div>
+</div>
+
+<script type="text/javascript">
+    var validationFunc = function () {
+        if ( jQuery('#formular #company').val() == '' ) {
+            jQuery('#error').html("<?php echo $this->__('Please insert your company name.'); ?>");
+            jQuery('#formular #company').focus();
+        }else if ( jQuery('#formular #name').val() == '' ) {
+            jQuery('#error').html("<?php echo $this->__('Please insert your name.'); ?>");
+            jQuery('#formular #name').focus();
+        } else if ( jQuery('#formular #email').val() == '' ) {
+            jQuery('#error').html("<?php echo $this->__('Please insert your email address.'); ?>");
+            jQuery('#formular #email').focus();
+        } else if ( jQuery('#formular #country').val() == '' ) {
+            jQuery('#error').html("<?php echo $this->__('Please insert your country.'); ?>");
+            jQuery('#formular #country').focus();
+        } else if ( jQuery('#formular #text').val() == '' ) {
+            jQuery('#error').html("<?php echo $this->__('Please insert a message.'); ?>");
+            jQuery('#formular #text').focus();
+        } else {
+            jQuery('#formular').submit();
+        }
+    };
+</script>

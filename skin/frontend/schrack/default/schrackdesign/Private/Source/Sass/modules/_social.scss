@@ -1,0 +1,8 @@
+.social-media-container {
+    display: flex;
+    justify-content: flex-end;
+
+    a:hover, a:focus {
+        text-decoration: none;
+    }
+}

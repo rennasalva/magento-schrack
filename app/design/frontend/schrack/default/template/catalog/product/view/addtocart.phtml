@@ -1,0 +1,152 @@
+<!-- \catalog\product\view\addtocart.phtml (start) -->
+<?php
+	$_product = Mage::registry('product');
+	$_minQty = $this->getMinimalQty($_product);
+	$_qty = max($this->getRequest()->getParam('qty', 0), ($_minQty != 1 ? $_minQty : 0));
+    $_customer = Mage::getSingleton('customer/session')->getCustomer();
+    $_helper = $this->helper('catalog/output');
+    $_infoHelper = Mage::helper('schrackcatalog/info');
+    $_productHelper = Mage::helper('schrackcatalog/product');
+    $_stockHelper = Mage::helper('schrackcataloginventory/stock');
+    $_partslistHelper = Mage::helper('schrackwishlist/partslist');
+    $_wishlistHelper = Mage::helper('schrackwishlist');
+    /** @var Schracklive_SchrackGoogleAnalytics_Helper_Data $_gaHelper */
+    $_gaHelper = Mage::helper('googleanalytics');
+    $productUrl = $_product->getUrlModel()->getUrl($_product, array('_escape'=>true,'_ignore_category'=>true,'_nosid'=>true));
+    $_prices = array_reverse(Mage::helper('schrackcatalog/info')->getGraduatedPricesForCustomer($_product, $_customer));
+/*change 4 ajax:*/
+    $_infoHelper->preloadProductsInfo(array($_product), $_customer, true);
+    $_geoipHelper = Mage::helper('geoip/data');
+    $_maySeePrices = $_geoipHelper->maySeePrices();
+    $_mayOrder = Mage::getSingleton('customer/session')->getCustomer()->isAllowed('customerOrder', 'order');
+    $_priceHelper = Mage::helper('schrackcatalog/price');
+    list($_price, $_currency) = $_priceHelper->getBasicPriceAndCurrencyForProductAndCustomer($_product, $_customer);
+
+    $sessionCustomerId = Mage::getSingleton('customer/session')->getCustomer()->getId();
+    $aclRoleId = Mage::getModel('customer/customer')->load($sessionCustomerId)->getSchrackAclRoleId();
+    $isProjectant = Mage::helper('schrack/acl')->isProjectantRoleId($aclRoleId);
+?>
+
+<?php if ($_product->isSaleable()) : ?>
+<div class="hide-on-print">
+    <div class="placeholder">
+        <div id="detail-product-data" style="display: none;"<?php echo $_gaHelper->getDataTags($_product, 0); ?>
+            <?php echo $_gaHelper->getDataTags($_product); ?> data-brand="" data-click="" data-event="addToCart" data-id="<?php echo $_product->getSku(); ?>"></div>
+        <?php if ($_product->isRestricted()): ?>
+            <div class="not-orderable"><?php echo $this->__('Currently not orderable')?></div>
+        <?php else:?>
+            <div class="before-qty">
+                <?php if ($_maySeePrices):?>
+                    <span class="currency"><?php echo $_currency?></span>
+                    <span class="price"><?php echo $_price; ?></span>
+                <?php else:?>
+                    <span class="price onrequest"><?php echo $this->__('on request')?></span>
+                <?php endif;?>
+            </div>
+            <?php if ( ! Mage::helper('schrackcatalog/product')->hasDrums($_product) && $_mayOrder && !$isProjectant) : ?>
+                <input type="text" class="qty" name="qty" id="qty" maxlength="12" value="<?php echo ($_qty ? $_qty : ''); ?>" title="<?php echo $this->__('Qty') ?>" class="article" style="padding-right: 4px !important; font-size: 1.4em !important; width: 85px;" />
+                <label for="qty"><?php echo $_product->getSchrackQtyunit() ?></label>
+            <?php endif;?>
+        <?php endif;?>
+    </div>
+
+    <?php if ( $_mayOrder && !$isProjectant) : ?>
+        <?php if ($_product->isRestricted()): ?>
+            <button type="button" title="<?php echo $this->__('Send inquiry') ?>" class="button" onclick="productAddToCartForm.submit()"><?php echo $this->__('Send inquiry') ?></button>
+        <?php else:?>
+            <button class="btn-cart cart button" id="buyNowButton" type="button" title="<?php echo $this->__('Buy now') ?>" <?php echo $_gaHelper->getDataTags($_product); ?> data-brand="" data-click="" data-event="addToCart" data-id="<?php echo $_product->getSku(); ?>">
+                <?php echo $this->__('Buy now') ?>
+            </button>
+        <?php endif;?>
+    <?php else:?>
+        <button type="button" title="" class="button" style="width: 170px"></button>
+    <?php endif;?>
+</div>
+<div class="addtocart print-only" style="position: absolute; top: 80px;">
+    <?php if ($_maySeePrices):?>
+        <span class="currency"><?php echo $_currency?></span>
+        <span class="price"><?php echo $_price; ?></span>/<?php echo $_product->getSchrackQtyunit() ?>
+    <?php else:?>
+        <span class="price onrequest"><?php echo $this->__('on request')?></span>
+    <?php endif;?>
+</div>
+<?php endif; ?>
+<div id="quantitywarningpopup" class="product-warning" title="<?php echo $this->__('Inquiry'); ?>">
+</div>
+
+<script type="text/javascript">
+    //<![CDATA[
+    var productAddToCartForm = new VarienForm('product_addtocart_form');
+    productAddToCartForm.submit = function(){
+        if (this.validator.validate()) {
+            <?php if ( $_product->isDiscontinuation() || $_product->isRestricted() ) : ?>
+                var drumId = jQuery('#select-drum').val();
+                if ( drumId == null ) {
+                    drumId = '';
+                } else {
+                    drumId = drumId.split('|')[0];
+                }
+                jQuery.ajax("<?php echo Mage::helper('schrackcore/url')->getUrlWithCurrentProtocol('catalog/product/checkAvailability'); ?>",{
+                    'success' : function ( data ) {
+                        var datax = JSON.parse(data);
+                        if ( datax.html ) {
+                            jQuery('#quantitywarningpopup').html(datax.html);
+                            jQuery('#quantitywarningpopup').dialog({
+                                'modal' : true,
+                                'width' : '700px'
+                            });
+                        } else {
+                            <?php if (Mage::getStoreConfig('ec/config/active')) : ?>
+                                console.log('Buy Button clicked : case #1');
+                                trackDetailAddToCart(document.forms['product_addtocart_form'].submit()); return AEC.ajax(this,dataLayer);
+                            <?php else : ?>
+                                console.log('Buy Button clicked : case #2');
+                                trackDetailAddToCart(document.forms['product_addtocart_form'].submit());
+                            <?php endif; ?>
+                        }
+                    },
+                    'type' : 'POST',
+                    'data' : { 'sku' : '<?php echo $_product->getSku(); ?>',
+                               'qty' : (jQuery('#qty').val() ? jQuery('#qty').val() : 1),
+                               'drum' : drumId }
+                });
+            <?php else : ?>
+                trackDetailAddToCart(this.form.submit());
+            <?php endif; ?>
+        }
+    }.bind(productAddToCartForm);
+
+    jQuery(document).ready(function () {
+        jQuery('#product_addtocart_form').submit(function (event) {
+            event.preventDefault();
+            productAddToCartForm.submit();
+        });
+
+        jQuery('#buyNowButton').on('click', function(event){
+            event.preventDefault();
+            var inputQuantity = jQuery('#qty').val();
+
+            if(inputQuantity == "") {
+                inputQuantity = "1";
+                jQuery('#qty').val(1);
+            }
+
+            if (inputQuantity.match(/^\d+$/) && inputQuantity != 0) {
+                //it's all digits
+                productAddToCartForm.submit();
+            } else {
+                console.log(jQuery('#qty').val() + ' is not a number');
+            }
+        })
+    });
+
+    function setQty(id,qty) {
+        if ('.row product-main-details') {
+            jQuery("#ajax-loader").show();
+        }
+        jQuery('#qty').val(qty);
+        productAddToCartForm.submit();
+    }
+    //]]>
+</script>
+<!-- \catalog\product\view\addtocart.phtml (end) -->

@@ -1,0 +1,70 @@
+@font-face {
+	font-family: 'robotoregular';
+	font-style: normal;
+	font-weight: 400;
+	src: local('Roboto'), local('Roboto-Regular'), /* from https://fonts.gstatic.com/s/roboto/v18/3KAd02OzFSDbt78HTOt2og.eot */
+	url('fonts/roboto/Roboto_400.eot?#iefix') format('embedded-opentype'), /* from https://fonts.gstatic.com/s/roboto/v18/Xyjz-jNkfiYuJf8UC3Lizw.woff */
+	url('fonts/roboto/Roboto_400.woff2') format('woff2'), /* from https://fonts.gstatic.com/l/font?kit=1w8PsahvVyy4URc6MP8jWQ&skey=a0a0114a1dcab3ac&v=v18#Roboto */
+	url('fonts/roboto/Roboto_400.woff') format('woff'), /* from https://fonts.gstatic.com/s/roboto/v18/fIKu7GwZTy_12XzG_jt8eA.woff2 */
+	url('fonts/roboto/Roboto_400.svg#Roboto') format('svg'), /* from https://fonts.gstatic.com/s/roboto/v18/5M21SdFLkD52QavfmHs6cA.ttf */
+	url('fonts/roboto/Roboto_400.ttf') format('truetype');
+}
+
+@font-face {
+	font-family: 'robotomedium';
+	font-style: normal;
+	font-weight: 500;
+	src: local('Roboto Medium'), local('Roboto-Medium'), /* from https://fonts.gstatic.com/s/roboto/v18/oOeFwZNlrTefzLYmlVV1UPY6323mHUZFJMgTvxaG2iE.eot */
+	url('fonts/roboto/Roboto_500.eot?#iefix') format('embedded-opentype'), /* from https://fonts.gstatic.com/s/roboto/v18/oOeFwZNlrTefzLYmlVV1UD8E0i7KZn-EPnyo3HZu7kw.woff */
+	url('fonts/roboto/Roboto_500.woff2') format('woff2'), /* from https://fonts.gstatic.com/l/font?kit=oOeFwZNlrTefzLYmlVV1UJbd9NUM7myrQQz30yPaGQ4&skey=ee881451c540fdec&v=v18#Roboto */
+	url('fonts/roboto/Roboto_500.woff') format('woff'), /* from https://fonts.gstatic.com/s/roboto/v18/oOeFwZNlrTefzLYmlVV1UFtXRa8TVwTICgirnJhmVJw.woff2 */
+	url('fonts/roboto/Roboto_500.svg#Roboto') format('svg'), /* from https://fonts.gstatic.com/s/roboto/v18/oOeFwZNlrTefzLYmlVV1UKCWcynf_cDxXwCLxiixG1c.ttf */
+	url('fonts/roboto/Roboto_500.ttf') format('truetype');
+}
+
+@font-face {
+	font-family: 'robotolight';
+	font-style: normal;
+	font-weight: 100;
+	src: local('Roboto Thin'), local('Roboto-Thin'), /* from https://fonts.gstatic.com/s/roboto/v18/hNdh1kLam5Qu9t6-swGJgPesZW2xOQ-xsNqO47m55DA.eot */
+	url('fonts/roboto/Roboto_100.eot?#iefix') format('embedded-opentype'), /* from https://fonts.gstatic.com/s/roboto/v18/idLYXfFa1c7oAPILDl4z0fesZW2xOQ-xsNqO47m55DA.woff */
+	url('fonts/roboto/Roboto_100.woff2') format('woff2'), /* from https://fonts.gstatic.com/l/font?kit=Rd0cKaNHVPp3zNwTc2cJ6fesZW2xOQ-xsNqO47m55DA&skey=5473b731ec7fc9c1&v=v18#Roboto */
+	url('fonts/roboto/Roboto_100.woff') format('woff'), /* from https://fonts.gstatic.com/s/roboto/v18/e7MeVAyvogMqFwwl61PKhPesZW2xOQ-xsNqO47m55DA.woff2 */
+	url('fonts/roboto/Roboto_100.svg#Roboto') format('svg'), /* from https://fonts.gstatic.com/s/roboto/v18/BhNUF0UvSiDyKi5GMZK0cPesZW2xOQ-xsNqO47m55DA.ttf */
+	url('fonts/roboto/Roboto_100.ttf') format('truetype');
+}
+
+@font-face {
+	font-family: 'robotobold';
+	font-style: normal;
+	font-weight: 700;
+	src: url('fonts/roboto/Roboto_700.eot'); /* IE9 Compat Modes */
+	src: local('Roboto Bold'),
+	url('fonts/roboto/Roboto_700.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
+	url('fonts/roboto/Roboto_700.woff2') format('woff2'), /* Super Modern Browsers */
+	url('fonts/roboto/Roboto_700.woff') format('woff'), /* Modern Browsers */
+	url('fonts/roboto/Roboto_700.ttf') format('truetype'), /* Safari, Android, iOS */
+	url('fonts/roboto/Roboto_700.svg#Roboto') format('svg'); /* Legacy iOS */
+}
+
+@font-face {
+	font-family: 'futurabold';
+	src: url('fonts/Futura-Bold.eot');
+	src: url('fonts/Futura-Bold.eot?#iefix') format('embedded-opentype'),
+	url('fonts/Futura-Bold.svg#Futura-Bold') format('svg'),
+	url('fonts/Futura-Bold.ttf') format('truetype'),
+	url('fonts/Futura-Bold.woff') format('woff'),
+	url('fonts/Futura-Bold.woff2') format('woff2');
+	font-weight: normal;
+	font-style: normal;
+}
+
+
+@font-face {
+	font-family: 'Glyphicons Halflings';
+	src: url('fonts/glyphicons-halflings-regular.eot');
+	src: url('fonts/glyphicons-halflings-regular.eot?#iefix') format('embedded-opentype'),
+	url('fonts/glyphicons-halflings-regular.woff') format('woff'),
+	url('fonts/glyphicons-halflings-regular.ttf') format('truetype'),
+	url('fonts/glyphicons-halflings-regular.svg#glyphicons-halflingsregular') format('svg');
+}

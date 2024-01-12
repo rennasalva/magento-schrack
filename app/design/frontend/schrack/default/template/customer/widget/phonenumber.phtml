@@ -1,0 +1,167 @@
+<!-- app/design/frontend/schrack/default/template/customer/widget/phonenumber.phtml (start) -->
+<?php
+/* @var $this Schracklive_SchrackCustomer_Block_Widget_Phonenumber */
+/**
+USAGE:
+
+Simple:
+
+<?php echo $this->getLayout()->createBlock('customer/widget_phonenumber')
+->setObject($this->getCustomer())
+->toHtml() ?>
+
+ */
+?>
+<table style="height: 70px;">
+    <tr>
+        <td colspan="5">
+            <label for="<?php echo $this->getFieldId('schrack_telephone')?>"  class="required"><?php echo $this->__('Telephone') ?><em> *</em></label>
+        </td>
+    </tr>
+    <tr>
+        <td id="telPlusSymbol"><div style="margin-top: 5px;">+</div></td>
+        <td class="input-box phone-country" style="width: 169px;">
+            &nbsp;<input maxlength="4" type="text" id="<?php echo $this->getFieldId('schrack_telephone_country')?>" name="<?php echo $this->getFieldName('schrack_telephone_country')?>" value="<?php echo ltrim($this->escapeHtml($this->getCountry('schrack_telephone')), '0'); ?>" title="<?php echo $this->__('Country Code') ?>" class="input-text required-entry" <?php echo $this->getFieldParams() ?> />
+        </td>
+        <td class="input-box phone-area" style="width: 169px;">
+            &nbsp;<span id="minus1">-</span>&nbsp;<input maxlength="5" type="text" id="<?php echo $this->getFieldId('schrack_telephone_areacode')?>" name="<?php echo $this->getFieldName('schrack_telephone_areacode')?>" value="<?php echo $this->escapeHtml($this->getAreacode('schrack_telephone')) ?>" title="<?php echo $this->__('Area Code') ?>" class="input-text required-entry" <?php echo $this->getFieldParams() ?> />
+        </td>
+        <td class="input-box phone-local" style="width: 169px;">
+            &nbsp;<span id="minus2">-</span>&nbsp;<input maxlength="10" type="text" id="<?php echo $this->getFieldId('schrack_telephone_localnumber')?>" name="<?php echo $this->getFieldName('schrack_telephone_localnumber')?>" value="<?php echo $this->escapeHtml($this->getLocalnumber('schrack_telephone')) ?>" title="<?php echo $this->__('Local Number') ?>" class="input-text required-entry" <?php echo $this->getFieldParams() ?> />
+        </td>
+        <td class="input-box phone-extension" style="width: 169px;">
+            &nbsp;<span id="minus3">-</span>&nbsp;<input maxlength="7" type="text" id="<?php echo $this->getFieldId('schrack_telephone_extension')?>" name="<?php echo $this->getFieldName('schrack_telephone_extension')?>" value="<?php echo $this->escapeHtml($this->getExtension('schrack_telephone')) ?>" title="<?php echo $this->__('Extension') ?>" class="input-text" <?php echo $this->getFieldParams() ?> />
+        </td>
+    </tr>
+</table>
+<br>
+<table style="height: 70px;">
+    <tr>
+        <td colspan="4">
+            <label for="<?php echo $this->getFieldId('schrack_fax')?>"><?php echo $this->__('Fax') ?></label>
+        </td>
+    </tr>
+    <tr class="field schrack_fax">
+        <td id="faxPlusSymbol"><div style="margin-top: 5px;">+</div></td>
+        <td class="input-box phone-country">
+            &nbsp;<input maxlength="4" type="text" id="<?php echo $this->getFieldId('schrack_fax_country')?>" name="<?php echo $this->getFieldName('schrack_fax_country')?>" value="<?php echo ltrim($this->escapeHtml($this->getCountry('schrack_fax')), '0'); ?>" title="<?php echo $this->__('Country Code') ?>" class="input-text" <?php echo $this->getFieldParams() ?> />
+        </td>
+        <td class="input-box phone-area">
+            &nbsp;<span id="minus4">-</span>&nbsp;<input maxlength="5" type="text" id="<?php echo $this->getFieldId('schrack_fax_areacode')?>" name="<?php echo $this->getFieldName('schrack_fax_areacode')?>" value="<?php echo $this->escapeHtml($this->getAreacode('schrack_fax')) ?>" title="<?php echo $this->__('Area Code') ?>" class="input-text" <?php echo $this->getFieldParams() ?> />
+        </td>
+        <td class="input-box phone-local">
+            &nbsp;<span id="minus5">-</span>&nbsp;<input maxlength="10" type="text" id="<?php echo $this->getFieldId('schrack_fax_localnumber')?>" name="<?php echo $this->getFieldName('schrack_fax_localnumber')?>" value="<?php echo $this->escapeHtml($this->getLocalnumber('schrack_fax')) ?>" title="<?php echo $this->__('Local Number') ?>" class="input-text" <?php echo $this->getFieldParams() ?> />
+        </td>
+        <td class="input-box phone-extension">
+            &nbsp;<span id="minus6">-</span>&nbsp;<input maxlength="7" type="text" id="<?php echo $this->getFieldId('schrack_fax_extension')?>" name="<?php echo $this->getFieldName('schrack_fax_extension')?>" value="<?php echo $this->escapeHtml($this->getExtension('schrack_fax')) ?>" title="<?php echo $this->__('Extension') ?>" class="input-text" <?php echo $this->getFieldParams() ?> />
+        </td>
+    </tr>
+</table>
+<br>
+<table style="height: 70px;">
+    <tr>
+        <td colspan="3">
+            <label for="<?php echo $this->getFieldId('schrack_mobile_phone')?>"><?php echo $this->__('Mobile Phone') ?></label>
+        </td>
+    </tr>
+    <tr class="field schrack_mobile_phone">
+        <td id="mobilePlusSymbol"><div style="margin-top: 5px;">+</div></td>
+        <td class="input-box phone-country" style="width: 167px;">
+            &nbsp;<input maxlength="4" type="text" id="<?php echo $this->getFieldId('schrack_mobile_phone_country')?>" name="<?php echo $this->getFieldName('schrack_mobile_phone_country')?>" value="<?php echo ltrim($this->escapeHtml($this->getCountry('schrack_mobile_phone')), '0'); ?>" title="<?php echo $this->__('Country') ?>" class="input-text" <?php echo $this->getFieldParams() ?> />
+        </td>
+        <td class="input-box phone-area">
+            &nbsp;<span id="minus7">-</span><input maxlength="5" type="text" id="<?php echo $this->getFieldId('schrack_mobile_phone_areacode')?>" name="<?php echo $this->getFieldName('schrack_mobile_phone_areacode')?>" value="<?php echo $this->escapeHtml($this->getAreacode('schrack_mobile_phone')) ?>" title="<?php echo $this->__('Area Code') ?>" class="input-text" <?php echo $this->getFieldParams() ?> />
+        </td>
+        <td class="input-box phone-local">
+            &nbsp;<span id="minus8">-</span>&nbsp;<input maxlength="10" type="text" id="<?php echo $this->getFieldId('schrack_mobile_phone_localnumber')?>" name="<?php echo $this->getFieldName('schrack_mobile_phone_localnumber')?>" value="<?php echo $this->escapeHtml($this->getLocalnumber('schrack_mobile_phone')) ?>" title="<?php echo $this->__('Local Number') ?>" class="input-text" <?php echo $this->getFieldParams() ?> />
+        </td>
+    </tr>
+</table>
+
+<script type="text/javascript">
+    //<![CDATA[
+
+    jQuery(document).ready(function() {
+        jQuery('#schrack_telephone_country').on('keyup', function() {
+            if (jQuery('#schrack_telephone_country').val() == '0' || jQuery('#schrack_telephone_country').val() == '00' || jQuery('#schrack_telephone_country').val() == '000') {
+                jQuery('#schrack_telephone_country').val('');
+            }
+        });
+
+        jQuery('#schrack_telephone_country').on('paste', function() {
+            return false;
+        });
+
+        jQuery('#schrack_fax_country').on('keyup', function() {
+            if (jQuery('#schrack_fax_country').val() == '0' || jQuery('#schrack_fax_country').val() == '00' || jQuery('#schrack_fax_country').val() == '000') {
+                jQuery('#schrack_fax_country').val('');
+            }
+        });
+
+        jQuery('#schrack_fax_country').on('paste', function() {
+            return false;
+        });
+
+        jQuery('#schrack_mobile_phone_country').on('keyup', function() {
+            if (jQuery('#schrack_mobile_phone_country').val() == '0' || jQuery('#schrack_mobile_phone_country').val() == '00' || jQuery('#schrack_mobile_phone_country').val() == '000') {
+                jQuery('#schrack_mobile_phone_country').val('');
+            }
+        });
+
+        jQuery('#schrack_mobile_phone_country').on('paste', function() {
+            return false;
+        });
+
+        jQuery('input[id*="schrack_telephone_"]').each(function() {
+            jQuery(this).keypress(checkNumberKey);
+            jQuery(this).change(function() { setPhoneValidation('schrack_telephone', true); });
+        });
+
+        jQuery('input[id*="schrack_fax_"]').map(function() {
+            jQuery(this).keypress(checkNumberKey);
+            jQuery(this).change(function() { setPhoneValidation('schrack_fax', false); });
+        });
+
+        jQuery('input[id*="schrack_mobile_phone_"]').map(function() {
+            jQuery(this).keypress(checkNumberKey);
+            jQuery(this).change(function() { setPhoneValidation('schrack_mobile_phone', false); });
+        });
+
+        function checkNumberKey(evt){
+            var charCode = evt.which;
+            if (charCode == 22) return true;
+            if (charCode == 118) return true;
+            if (charCode > 31 && (charCode < 48 || charCode > 57)) return false;
+            return true;
+        }
+
+        function setPhoneValidation(id, localNoReq) {
+            var field1 = jQuery('#'+id + '_country');
+            var field2 = jQuery('#'+id + '_areacode');
+            var field3 = jQuery('#'+id + '_localnumber');
+
+            if (field1.val().length > 0 || field2.val().length > 0 || field3.val().length > 0) {
+                field1.addClass('required-entry validate-digits');
+                field2.addClass('required-entry validate-digits');
+                if (localNoReq) {
+                    field3.addClass('required-entry validate-digits');
+                }
+            } else {
+                field1.removeClass('required-entry validate-digits');
+                field2.removeClass('required-entry validate-digits');
+                if (localNoReq) {
+                    field3.removeClass('required-entry validate-digits');
+                }
+            }
+        }
+
+        setPhoneValidation('schrack_telephone');
+        setPhoneValidation('schrack_fax');
+        setPhoneValidation('schrack_mobile_phone');
+        jQuery('#schrack_telephone_localnumber').addClass('required-entry validate-digits');
+
+    });
+
+    //]]>
+</script>
+<!-- app/design/frontend/schrack/default/template/customer/widget/phonenumber.phtml (end) -->

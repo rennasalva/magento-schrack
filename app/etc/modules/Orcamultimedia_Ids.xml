@@ -1,0 +1,16 @@
+﻿<?xml version="1.0"?>
+<!--
+/**
+ *
+ * @package	Orcamultimedia_Ids
+ *
+ **/
+-->
+<config>
+  <modules>
+	  <Orcamultimedia_Ids>
+		  <active>true</active>
+		  <codePool>local</codePool>
+	  </Orcamultimedia_Ids>
+  </modules>
+</config>

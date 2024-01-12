@@ -1,0 +1,911 @@
+{
+  "projectType": "Lightning Protection",
+  "documentationStylesheet": "lightningprotectionV25.xslt",
+  "articles": [
+    {
+      "SKU": "IS111330--",
+      "Type": "T_Main_Dispatcher",
+      "Family": "Vartec",
+      "Network System": "TN-C",
+      "Lightning Protection Class": "",
+      "Auxiliary Contact": 0,
+      "Plugable": 1,
+      "Lightning Protection Required": 0
+    },
+    {
+      "SKU": "IS111331--",
+      "Type": "T_Main_Dispatcher",
+      "Family": "Vartec",
+      "Network System": "TN-C",
+      "Lightning Protection Class": "",
+      "Auxiliary Contact": 1,
+      "Plugable": 1,
+      "Lightning Protection Required": 0
+    },
+    {
+      "SKU": "IS111340--",
+      "Type": "T_Main_Dispatcher",
+      "Family": "Vartec",
+      "Network System": "TN-S",
+      "Lightning Protection Class": "",
+      "Auxiliary Contact": 0,
+      "Plugable": 1,
+      "Lightning Protection Required": 0
+    },
+    {
+      "SKU": "IS111341--",
+      "Type": "T_Main_Dispatcher",
+      "Family": "Vartec",
+      "Network System": "TN-S",
+      "Lightning Protection Class": "",
+      "Auxiliary Contact": 1,
+      "Plugable": 1,
+      "Lightning Protection Required": 0
+    },
+    {
+      "SKU": "IS111310--",
+      "Type": "T_Main_Dispatcher",
+      "Family": "Vartec",
+      "Network System": "TT",
+      "Lightning Protection Class": "",
+      "Auxiliary Contact": 0,
+      "Plugable": 1,
+      "Lightning Protection Required": 0
+    },
+    {
+      "SKU": "IS111311--",
+      "Type": "T_Main_Dispatcher",
+      "Family": "Vartec",
+      "Network System": "TT",
+      "Lightning Protection Class": "",
+      "Auxiliary Contact": 1,
+      "Plugable": 1,
+      "Lightning Protection Required": 0
+    },
+    {
+      "SKU": "IS211230-A",
+      "Type": "T_Main_Dispatcher",
+      "Family": "Combtec",
+      "Network System": "TN-C",
+      "Lightning Protection Class": "III-IV",
+      "Auxiliary Contact": 0,
+      "Plugable": 0,
+      "Lightning Protection Required": 1
+    },
+    {
+      "SKU": "IS211231-A",
+      "Type": "T_Main_Dispatcher",
+      "Family": "Combtec",
+      "Network System": "TN-C",
+      "Lightning Protection Class": "III-IV",
+      "Auxiliary Contact": 1,
+      "Plugable": 0,
+      "Lightning Protection Required": 1
+    },
+    {
+      "SKU": "IS211240-A",
+      "Type": "T_Main_Dispatcher",
+      "Family": "Combtec",
+      "Network System": "TN-S",
+      "Lightning Protection Class": "III-IV",
+      "Auxiliary Contact": 0,
+      "Plugable": 0,
+      "Lightning Protection Required": 1
+    },
+    {
+      "SKU": "IS211241-A",
+      "Type": "T_Main_Dispatcher",
+      "Family": "Combtec",
+      "Network System": "TN-S",
+      "Lightning Protection Class": "III-IV",
+      "Auxiliary Contact": 1,
+      "Plugable": 0,
+      "Lightning Protection Required": 1
+    },
+    {
+      "SKU": "IS211210-A",
+      "Type": "T_Main_Dispatcher",
+      "Family": "Combtec",
+      "Network System": "TT",
+      "Lightning Protection Class": "III-IV",
+      "Auxiliary Contact": 0,
+      "Plugable": 0,
+      "Lightning Protection Required": 1
+    },
+    {
+      "SKU": "IS211211-A",
+      "Type": "T_Main_Dispatcher",
+      "Family": "Combtec",
+      "Network System": "TT",
+      "Lightning Protection Class": "III-IV",
+      "Auxiliary Contact": 1,
+      "Plugable": 0,
+      "Lightning Protection Required": 1
+    },
+    {
+      "SKU": "IS211234-A",
+      "Type": "T_Main_Dispatcher",
+      "Family": "Combtec",
+      "Network System": "TN-C",
+      "Lightning Protection Class": "III-IV",
+      "Auxiliary Contact": 0,
+      "Plugable": 1,
+      "Lightning Protection Required": 1
+    },
+    {
+      "SKU": "IS211235-A",
+      "Type": "T_Main_Dispatcher",
+      "Family": "Combtec",
+      "Network System": "TN-C",
+      "Lightning Protection Class": "III-IV",
+      "Auxiliary Contact": 1,
+      "Plugable": 1,
+      "Lightning Protection Required": 1
+    },
+    {
+      "SKU": "IS211244-A",
+      "Type": "T_Main_Dispatcher",
+      "Family": "Combtec",
+      "Network System": "TN-S",
+      "Lightning Protection Class": "III-IV",
+      "Auxiliary Contact": 0,
+      "Plugable": 1,
+      "Lightning Protection Required": 1
+    },
+    {
+      "SKU": "IS211245-A",
+      "Type": "T_Main_Dispatcher",
+      "Family": "Combtec",
+      "Network System": "TN-S",
+      "Lightning Protection Class": "III-IV",
+      "Auxiliary Contact": 1,
+      "Plugable": 1,
+      "Lightning Protection Required": 1
+    },
+    {
+      "SKU": "IS211214-A",
+      "Type": "T_Main_Dispatcher",
+      "Family": "Combtec",
+      "Network System": "TT",
+      "Lightning Protection Class": "III-IV",
+      "Auxiliary Contact": 0,
+      "Plugable": 1,
+      "Lightning Protection Required": 1
+    },
+    {
+      "SKU": "IS211215-A",
+      "Type": "T_Main_Dispatcher",
+      "Family": "Combtec",
+      "Network System": "TT",
+      "Lightning Protection Class": "III-IV",
+      "Auxiliary Contact": 1,
+      "Plugable": 1,
+      "Lightning Protection Required": 1
+    },
+    {
+      "SKU": "IS211330-A",
+      "Type": "T_Main_Dispatcher",
+      "Family": "Protec",
+      "Network System": "TN-C",
+      "Lightning Protection Class": "I-II",
+      "Auxiliary Contact": 0,
+      "Plugable": 0,
+      "Lightning Protection Required": 1
+    },
+    {
+      "SKU": "IS211331-A",
+      "Type": "T_Main_Dispatcher",
+      "Family": "Protec",
+      "Network System": "TN-C",
+      "Lightning Protection Class": "I-II",
+      "Auxiliary Contact": 1,
+      "Plugable": 0,
+      "Lightning Protection Required": 1
+    },
+    {
+      "SKU": "IS211340-A",
+      "Type": "T_Main_Dispatcher",
+      "Family": "Protec",
+      "Network System": "TN-S",
+      "Lightning Protection Class": "I-II",
+      "Auxiliary Contact": 0,
+      "Plugable": 0,
+      "Lightning Protection Required": 1
+    },
+    {
+      "SKU": "IS211341-A",
+      "Type": "T_Main_Dispatcher",
+      "Family": "Protec",
+      "Network System": "TN-S",
+      "Lightning Protection Class": "I-II",
+      "Auxiliary Contact": 1,
+      "Plugable": 0,
+      "Lightning Protection Required": 1
+    },
+    {
+      "SKU": "IS211311-A",
+      "Type": "T_Main_Dispatcher",
+      "Family": "Protec",
+      "Network System": "TT",
+      "Lightning Protection Class": "I-II",
+      "Auxiliary Contact": 1,
+      "Plugable": 0,
+      "Lightning Protection Required": 1
+    },
+    {
+      "SKU": "IS111330--",
+      "Type": "T_Sub_Dispatcher",
+      "Family": "Vartec",
+      "Network System": "TN-C",
+      "Lightning Protection Class": "",
+      "Auxiliary Contact": 0,
+      "Plugable": 0,
+      "Lightning Protection Required": 0
+    },
+    {
+      "SKU": "IS111331--",
+      "Type": "T_Sub_Dispatcher",
+      "Family": "Vartec",
+      "Network System": "TN-C",
+      "Lightning Protection Class": "",
+      "Auxiliary Contact": 1,
+      "Plugable": 0,
+      "Lightning Protection Required": 0
+    },
+    {
+      "SKU": "IS111340--",
+      "Type": "T_Sub_Dispatcher",
+      "Family": "Vartec",
+      "Network System": "TN-S",
+      "Lightning Protection Class": "",
+      "Auxiliary Contact": 0,
+      "Plugable": 0,
+      "Lightning Protection Required": 0
+    },
+    {
+      "SKU": "IS111341--",
+      "Type": "T_Sub_Dispatcher",
+      "Family": "Vartec",
+      "Network System": "TN-S",
+      "Lightning Protection Class": "",
+      "Auxiliary Contact": 1,
+      "Plugable": 0,
+      "Lightning Protection Required": 0
+    },
+    {
+      "SKU": "IS111310--",
+      "Type": "T_Sub_Dispatcher",
+      "Family": "Vartec",
+      "Network System": "TT",
+      "Lightning Protection Class": "",
+      "Auxiliary Contact": 0,
+      "Plugable": 0,
+      "Lightning Protection Required": 0
+    },
+    {
+      "SKU": "IS111311--",
+      "Type": "T_Sub_Dispatcher",
+      "Family": "Vartec",
+      "Network System": "TT",
+      "Lightning Protection Class": "",
+      "Auxiliary Contact": 1,
+      "Plugable": 0,
+      "Lightning Protection Required": 0
+    },
+    {
+      "SKU": "BS900200--",
+      "Type": "T_Additional_Component",
+      "Group": "Common",
+      "Name": "Equipotential bus bar"
+    },
+    {
+      "SKU": "IS212424--",
+      "Type": "T_Additional_Component",
+      "Group": "Reliability",
+      "Name": "Fire alarm system 24VDC",
+      "Note": "Observe the special requirements of lightning protection equipotential bonding and surge protection in your fire alarm system."
+    },
+    {
+      "SKU": "IS212430--",
+      "Type": "T_Additional_Component",
+      "Group": "Reliability",
+      "Name": "Fire alarm system 30VDC",
+      "Note": "Observe the special requirements of lightning protection equipotential bonding and surge protection in your fire alarm system."
+    },
+    {
+      "SKU": "IS212424--",
+      "Type": "T_Additional_Component",
+      "Group": "Reliability",
+      "Name": "Escape route orientation 24VDC",
+      "Note": "Observe the special requirements of lightning protection equipotential bonding and surge protection in your escape route lighting."
+    },
+    {
+      "SKU": "IS212430--",
+      "Type": "T_Additional_Component",
+      "Group": "Reliability",
+      "Name": "Escape route orientation 30VDC",
+      "Note": "Observe the special requirements of lightning protection equipotential bonding and surge protection in your escape route lighting."
+    },
+    {
+      "SKU": "@DUMMY",
+      "Type": "T_Additional_Component",
+      "Group": "Cables",
+      "Name": "Battery storage",
+      "Note": "Please use the suitable DC-arrester, according to your voltage-level, to secure the system against lightning."
+    },
+    {
+      "SKU": "IS212075--",
+      "Type": "T_Additional_Component",
+      "Group": "Cables",
+      "Name": "Bussystem KNX"
+    },
+    {
+      "SKU": "IS212405--",
+      "Type": "T_Additional_Component",
+      "Group": "Cables",
+      "Name": "Bussystem 5VDC"
+    },
+    {
+      "SKU": "IS212424--",
+      "Type": "T_Additional_Component",
+      "Group": "Cables",
+      "Name": "Bussystem 24VDC"
+    },
+    {
+      "SKU": "IS212430--",
+      "Type": "T_Additional_Component",
+      "Group": "Cables",
+      "Name": "Bussystem 30VDC"
+    },
+    {
+      "SKU": "IS212070--",
+      "Type": "T_Additional_Component",
+      "Group": "Cables",
+      "Name": "Coax - Video Camera"
+    },
+    {
+      "SKU": "IS212080--",
+      "Type": "T_Additional_Component",
+      "Group": "Cables",
+      "Name": "Network cabling"
+    },
+    {
+      "SKU": "IS212085--",
+      "Type": "T_Additional_Component",
+      "Group": "Cables",
+      "Name": "Telephone- and Internet"
+    },
+    {
+      "SKU": "IS210424--",
+      "Type": "T_Additional_Component",
+      "Group": "Cables",
+      "Name": "Coax TV/SAT - F-Connector"
+    },
+    {
+      "SKU": "IS210425--",
+      "Type": "T_Additional_Component",
+      "Group": "Cables",
+      "Name": "Coax BNC-Connector"
+    },
+    {
+      "SKU": "LINZ001002",
+      "Type": "T_Additional_Component",
+      "Group": "LED Lighting",
+      "Name": "LED Ceiling Mounting"
+    },
+    {
+      "SKU": "LINZ001001",
+      "Type": "T_Additional_Component",
+      "Group": "LED Lighting",
+      "Name": "LED Rail Mounted"
+    },
+
+
+    {
+      "SKU": "IS111340--",
+      "Type": "T_Supplyline",
+      "Network System": "TN-S",
+      "Lightning Protection Class": "",
+      "Auxiliary Contact": 0,
+      "Plugable": 1,
+      "Lightning Protection Required": 0,
+      "Single Phase": 0,
+      "Close to Building": 1
+    },
+    {
+      "SKU": "IS111341--",
+      "Type": "T_Supplyline",
+      "Network System": "TN-S",
+      "Lightning Protection Class": "",
+      "Auxiliary Contact": 1,
+      "Plugable": 1,
+      "Lightning Protection Required": 0,
+      "Single Phase": 0,
+      "Close to Building": 1
+    },
+    {
+      "SKU": "IS211340-A",
+      "Type": "T_Supplyline",
+      "Network System": "TN-S",
+      "Lightning Protection Class": "I-II",
+      "Auxiliary Contact": 0,
+      "Plugable": 0,
+      "Lightning Protection Required": 1,
+      "Single Phase": 0,
+      "Close to Building": 0
+    },
+    {
+      "SKU": "IS211341-A",
+      "Type": "T_Supplyline",
+      "Network System": "TN-S",
+      "Lightning Protection Class": "I-II",
+      "Auxiliary Contact": 1,
+      "Plugable": 0,
+      "Lightning Protection Required": 1,
+      "Single Phase": 0,
+      "Close to Building": 0
+    },
+    {
+      "SKU": "IS211240-A",
+      "Type": "T_Supplyline",
+      "Network System": "TN-S",
+      "Lightning Protection Class": "III-IV",
+      "Auxiliary Contact": 0,
+      "Plugable": 0,
+      "Lightning Protection Required": 1,
+      "Single Phase": 0,
+      "Close to Building": 0
+    },
+    {
+      "SKU": "IS211241-A",
+      "Type": "T_Supplyline",
+      "Network System": "TN-S",
+      "Lightning Protection Class": "III-IV",
+      "Auxiliary Contact": 1,
+      "Plugable": 0,
+      "Lightning Protection Required": 1,
+      "Single Phase": 0,
+      "Close to Building": 0
+    },
+    {
+      "SKU": "IS211244-A",
+      "Type": "T_Supplyline",
+      "Network System": "TN-S",
+      "Lightning Protection Class": "III-IV",
+      "Auxiliary Contact": 0,
+      "Plugable": 1,
+      "Lightning Protection Required": 1,
+      "Single Phase": 0,
+      "Close to Building": 0
+    },
+    {
+      "SKU": "IS211245-A",
+      "Type": "T_Supplyline",
+      "Network System": "TN-S",
+      "Lightning Protection Class": "III-IV",
+      "Auxiliary Contact": 1,
+      "Plugable": 1,
+      "Lightning Protection Required": 1,
+      "Single Phase": 0,
+      "Close to Building": 0
+    },
+
+    {
+      "SKU": "IS010320--",
+      "AdditionalSKUs": ["IS010352--", "IS010352--"],
+      "Type": "T_Supplyline",
+      "Network System": "TN-S",
+      "Lightning Protection Class": "",
+      "Auxiliary Contact": 0,
+      "Plugable": 1,
+      "Lightning Protection Required": 0,
+      "Single Phase": 1,
+      "Close to Building": 1
+    },
+    {
+      "SKU": "IS010321--",
+      "AdditionalSKUs": ["IS010352--", "IS010352--"],
+      "Type": "T_Supplyline",
+      "Network System": "TN-S",
+      "Lightning Protection Class": "",
+      "Auxiliary Contact": 1,
+      "Plugable": 1,
+      "Lightning Protection Required": 0,
+      "Single Phase": 1,
+      "Close to Building": 1
+    },
+    {
+      "SKU": "IS010115--",
+      "AdditionalSKUs": ["IS010115--"],
+      "Type": "T_Supplyline",
+      "Network System": "TN-S",
+      "Lightning Protection Class": "I-II",
+      "Auxiliary Contact": 1,
+      "Plugable": 1,
+      "Lightning Protection Required": 1,
+      "Single Phase": 1,
+      "Close to Building": 0
+    },
+    {
+      "SKU": "IS211220-A",
+      "Type": "T_Supplyline",
+      "Network System": "TN-S",
+      "Lightning Protection Class": "III-IV",
+      "Auxiliary Contact": 0,
+      "Plugable": 0,
+      "Lightning Protection Required": 1,
+      "Single Phase": 1,
+      "Close to Building": 0
+    },
+    {
+      "SKU": "IS211221-A",
+      "Type": "T_Supplyline",
+      "Network System": "TN-S",
+      "Lightning Protection Class": "III-IV",
+      "Auxiliary Contact": 1,
+      "Plugable": 0,
+      "Lightning Protection Required": 1,
+      "Single Phase": 1,
+      "Close to Building": 0
+    },
+
+    {
+      "SKU": "IS111330--",
+      "Type": "T_Supplyline",
+      "Network System": "TN-C",
+      "Lightning Protection Class": "",
+      "Auxiliary Contact": 0,
+      "Plugable": 0,
+      "Lightning Protection Required": 0,
+      "Single Phase": 0,
+      "Close to Building": 1
+    },
+    {
+      "SKU": "IS111331--",
+      "Type": "T_Supplyline",
+      "Network System": "TN-C",
+      "Lightning Protection Class": "",
+      "Auxiliary Contact": 1,
+      "Plugable": 0,
+      "Lightning Protection Required": 0,
+      "Single Phase": 0,
+      "Close to Building": 1
+    },
+    {
+      "SKU": "IS211330-A",
+      "Type": "T_Supplyline",
+      "Network System": "TN-C",
+      "Lightning Protection Class": "I-II",
+      "Auxiliary Contact": 0,
+      "Plugable": 0,
+      "Lightning Protection Required": 1,
+      "Single Phase": 0,
+      "Close to Building": 0
+    },
+    {
+      "SKU": "IS211331-A",
+      "Type": "T_Supplyline",
+      "Network System": "TN-C",
+      "Lightning Protection Class": "I-II",
+      "Auxiliary Contact": 1,
+      "Plugable": 0,
+      "Lightning Protection Required": 1,
+      "Single Phase": 0,
+      "Close to Building": 0
+    },
+    {
+      "SKU": "IS211230-A",
+      "Type": "T_Supplyline",
+      "Network System": "TN-C",
+      "Lightning Protection Class": "III-IV",
+      "Auxiliary Contact": 0,
+      "Plugable": 0,
+      "Lightning Protection Required": 1,
+      "Single Phase": 0,
+      "Close to Building": 0
+    },
+    {
+      "SKU": "IS211231-A",
+      "Type": "T_Supplyline",
+      "Network System": "TN-C",
+      "Lightning Protection Class": "III-IV",
+      "Auxiliary Contact": 1,
+      "Plugable": 0,
+      "Lightning Protection Required": 1,
+      "Single Phase": 0,
+      "Close to Building": 0
+    },
+    {
+      "SKU": "IS211234-A",
+      "Type": "T_Supplyline",
+      "Network System": "TN-C",
+      "Lightning Protection Class": "III-IV",
+      "Auxiliary Contact": 0,
+      "Plugable": 1,
+      "Lightning Protection Required": 1,
+      "Single Phase": 0,
+      "Close to Building": 0
+    },
+    {
+      "SKU": "IS211235-A",
+      "Type": "T_Supplyline",
+      "Network System": "TN-C",
+      "Lightning Protection Class": "III-IV",
+      "Auxiliary Contact": 1,
+      "Plugable": 1,
+      "Lightning Protection Required": 1,
+      "Single Phase": 0,
+      "Close to Building": 0
+    },
+
+
+    {
+      "SKU": "IS111310--",
+      "Type": "T_Supplyline",
+      "Network System": "TT",
+      "Lightning Protection Class": "",
+      "Auxiliary Contact": 0,
+      "Plugable": 1,
+      "Lightning Protection Required": 0,
+      "Single Phase": 0,
+      "Close to Building": 1
+    },
+    {
+      "SKU": "IS111311--",
+      "Type": "T_Supplyline",
+      "Network System": "TT",
+      "Lightning Protection Class": "",
+      "Auxiliary Contact": 1,
+      "Plugable": 1,
+      "Lightning Protection Required": 0,
+      "Single Phase": 0,
+      "Close to Building": 1
+    },
+    {
+      "SKU": "IS010320--",
+      "AdditionalSKUs": ["IS010352--", "IS010350--"],
+      "Type": "T_Supplyline",
+      "Network System": "TT",
+      "Lightning Protection Class": "",
+      "Auxiliary Contact": 0,
+      "Plugable": 1,
+      "Lightning Protection Required": 0,
+      "Single Phase": 1,
+      "Close to Building": 1
+    },
+    {
+      "SKU": "IS010321--",
+      "AdditionalSKUs": ["IS010352--", "IS010350--"],
+      "Type": "T_Supplyline",
+      "Network System": "TT",
+      "Lightning Protection Class": "",
+      "Auxiliary Contact": 1,
+      "Plugable": 1,
+      "Lightning Protection Required": 0,
+      "Single Phase": 1,
+      "Close to Building": 1
+    },
+    {
+      "SKU": "IS211311-A",
+      "Type": "T_Supplyline",
+      "Network System": "TT",
+      "Lightning Protection Class": "I-II",
+      "Auxiliary Contact": 1,
+      "Plugable": 0,
+      "Lightning Protection Required": 1,
+      "Single Phase": 0,
+      "Close to Building": 0
+    },
+    {
+      "SKU": "IS010115--",
+      "AdditionalSKUs": ["IS010093--"],
+      "Type": "T_Supplyline",
+      "Network System": "TT",
+      "Lightning Protection Class": "I-II",
+      "Auxiliary Contact": 1,
+      "Plugable": 1,
+      "Lightning Protection Required": 1,
+      "Single Phase": 1,
+      "Close to Building": 0
+    },
+    {
+      "SKU": "IS211210-A",
+      "Type": "T_Supplyline",
+      "Network System": "TT",
+      "Lightning Protection Class": "III-IV",
+      "Auxiliary Contact": 0,
+      "Plugable": 0,
+      "Lightning Protection Required": 1,
+      "Single Phase": 0,
+      "Close to Building": 0
+    },
+    {
+      "SKU": "IS211211-A",
+      "Type": "T_Supplyline",
+      "Network System": "TT",
+      "Lightning Protection Class": "III-IV",
+      "Auxiliary Contact": 1,
+      "Plugable": 0,
+      "Lightning Protection Required": 1,
+      "Single Phase": 0,
+      "Close to Building": 0
+    },
+    {
+      "SKU": "IS211212-A",
+      "Type": "T_Supplyline",
+      "Network System": "TT",
+      "Lightning Protection Class": "III-IV",
+      "Auxiliary Contact": 0,
+      "Plugable": 0,
+      "Lightning Protection Required": 1,
+      "Single Phase": 1,
+      "Close to Building": 0
+    },
+    {
+      "SKU": "IS211213-A",
+      "Type": "T_Supplyline",
+      "Network System": "TT",
+      "Lightning Protection Class": "III-IV",
+      "Auxiliary Contact": 1,
+      "Plugable": 0,
+      "Lightning Protection Required": 1,
+      "Single Phase": 1,
+      "Close to Building": 0
+    },
+    {
+      "SKU": "IS211214-A",
+      "Type": "T_Supplyline",
+      "Network System": "TT",
+      "Lightning Protection Class": "III-IV",
+      "Auxiliary Contact": 0,
+      "Plugable": 1,
+      "Lightning Protection Required": 1,
+      "Single Phase": 0,
+      "Close to Building": 0
+    },
+    {
+      "SKU": "IS211215-A",
+      "Type": "T_Supplyline",
+      "Network System": "TT",
+      "Lightning Protection Class": "III-IV",
+      "Auxiliary Contact": 1,
+      "Plugable": 1,
+      "Lightning Protection Required": 1,
+      "Single Phase": 0,
+      "Close to Building": 0
+    }
+
+  ],
+  "selections": {
+    "translateKeys" : true,
+    "buildingOptions": {
+      "Building with over 28m escape level": 1,
+      "Hazardous area (Ex)": 2,
+      "Processing of hazardous substances": 3,
+      "Antennas in the roof area or <2m near the roof edge": 4,
+      "Rooftop PV system available/planned": 5
+    },
+    "networkSystems": {
+      "TN-C": "TN-C",
+      "TN-C-S": "TN-S",
+      "TN-S": "TN-S",
+      "TT": "TT"
+    },
+    "subDispatcherNecessary" : {
+      "Yes, <10m": 1,
+      "Yes, >10m": 2,
+      "No": 0
+    },
+    "buildings": {
+      "Industry and trade": {
+        "Office areas": "III",
+        "Storage areas": "III",
+        "Production areas": "III",
+        "Building with a total height of over 28m": "II",
+        "Hazardous area area 2 or area 22": "III",
+        "Hazardous area area 1 or area 21": "II",
+        "Hazardous area area 0 or area 20": "I"
+      },
+      "Agriculture, sales offices for agricultural products (e.g. warehouses)": {
+        "Residential and company buildings": "III",
+        "Storage areas, barns (e.g. hay, straw), greenhouses, stables": "III",
+        "Silo systems or systems over22 m (accessible level)": "II",
+        "Automated and partially automated stables": "II",
+        "Building with a total height of over 28m": "II",
+        "Hazardous area area 2 or area 22": "III",
+        "Hazardous area area 1 or area 21": "II",
+        "Hazardous area area 0 or area 20": "I"
+      },
+      "Tourism companies, accommodation companies": {
+        "Pensions, inns, restaurants, hotels for a maximum of 1000 people": "III",
+        "Pensions, inns, restaurants, hotels for more than 1000 people": "II",
+        "Shelters, mountain lodge": "II",
+        "Thermal companies, indoor pools": "II",
+        "Cable car stations for passenger transportation": "II",
+        "Building with a total height of over 28m": "II",
+        "Hazardous area area 2 or area 22": "III",
+        "Hazardous area area 1 or area 21": "II",
+        "Hazardous area area 0 or area 20": "I"
+      },
+      "Railway facilities, train stations": {
+        "Administrative areas, offices, shopping areas": "III",
+        "Terminal buildings, business buildings, covered platform": "III",
+        "Control centers": "I",
+        "Warehouses / other areas of use": "III",
+        "Building with a total height of over 28m": "II",
+        "Hazardous area area 2 or area 22": "III",
+        "Hazardous area area 1 or area 21": "III",
+        "Hazardous area area 0 or area 20": "I"
+      },
+      "Airport business": {
+        "Administrative areas, offices, shopping areas": "III",
+        "Terminal buildings, business buildings, attached apron areas": "III",
+        "Warehouse": "III",
+        "Hangar": "III",
+        "Towers, control centers, air traffic control systems for scheduled and charter traffic": "I",
+        "Towers, control centers, air traffic control systems for other traffic (e.g. Sports airport)": "II",
+        "Building with a total height of over 28m": "II",
+        "Hazardous area area 2 or area 22": "III",
+        "Hazardous area area 1 or area 21": "II",
+        "Hazardous area area 0 or area 20": "I"
+      },
+      "Public buildings": {
+        "Administration building, multi-purpose building": "III",
+        "Schools, universities, training schools, kindergartens": "III",
+        "Student homes, boarding schools, after-school care centers, homes": "III",
+        "Shopping centers, sales outlets": "III",
+        "Event venues, exhibition halls, multi-purpose halls": "III",
+        "Theaters, opera houses, cinema, discotheques": "III",
+        "Museums and cultural sites": "III",
+        "Systems and facilities valuable in terms of cultural history": "III",
+        "Churches, religious buildings": "III",
+        "Thermal companies, baths, indoor pools": "II",
+        "Covered grandstands, changing rooms and service areas of event venues (e.g. open air platforms, sports venues)": "III",
+        "Open grandstands of event venues (e.g. open-air grandstands, sports venues)": "II",
+        "Garages, car parks": "III",
+        "Barracks": "III",
+        "Sewage treatment plants": "III",
+        "Operations centers, bases (e.g. police, fire brigade, rescue, civil protection)": "III",
+        "Prisons": "III",
+        "Building over 1000 people": "II",
+        "Building with a total height of over 28m": "II",
+        "Hazardous area area 2 or area 22": "III",
+        "Hazardous area area 1 or area 21": "II",
+        "Hazardous area area 0 or area 20": "I"
+      },
+      "Hospitals, homes and nursing homes": {
+        "General buildings, administrative blocks": "III",
+        "Bed areas, outpatient clinics, therapy and other medical areas": "II",
+        "Surgery-Areas, intensive care units and the same": "I",
+        "Building with a total height of over 28m": "II",
+        "Hazardous area area 2 or area 22": "III",
+        "Hazardous area area 1 or area 21": "II",
+        "Hazardous area area 0 or area 20": "I"
+      },
+      "Residential objects, residential complexes": {
+        "Residential objects up to two residential units": "III",
+        "Residential objects with more than two residential units": "III",
+        "Building with a total height of over 28m": "II"
+      },
+      "Special plants": {
+        "Munitions store": "I",
+        "Explosives and fireworks production and / or storage": "I"
+      },
+      "Plants for energy supply, telecommunications and information technology": {
+        "Business buildings": "III",
+        "Transformer stations up to 36 kV": "III",
+        "Switchgear and substations": "II",
+        "Network control centers, control rooms": "I",
+        "Power plants": "II",
+        "Photovoltaic systems": "III",
+        "Wind turbines": "I",
+        "Heating plants, construction systems for district heating and local heating networks (e.g. biomass)": "II",
+        "Transmitters, radar stations": "I",
+        "Building with a total height of over 28m": "II",
+        "Hazardous area area 2 or area 22": "III",
+        "Hazardous area area 1 or area 21": "II",
+        "Hazardous area area 0 or area 20": "I"
+      }
+    }
+  }
+}

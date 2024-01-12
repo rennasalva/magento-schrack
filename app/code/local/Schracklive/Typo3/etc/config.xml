@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<config>
+	<modules>
+		<Schracklive_Typo3>
+			<version>1.0.0</version>
+			<depends>
+				<Schracklive_SchrackPage />
+			</depends>
+		</Schracklive_Typo3>
+	</modules>
+	<global>
+		<blocks>
+			<page>
+				<rewrite>
+					<html_header>Schracklive_Typo3_Block_Page_Html_Header</html_header>
+					<html_footer>Schracklive_Typo3_Block_Page_Html_Footer</html_footer>
+				</rewrite>
+			</page>
+			<checkout>
+				<rewrite>
+					<checkout_agreements>Schracklive_Typo3_Block_Checkout_Agreements</checkout_agreements>
+				</rewrite>
+			</checkout>
+			<schracklive_typo3>
+				<class>Schracklive_Typo3_Block</class>
+			</schracklive_typo3>
+		</blocks>
+		<helpers>
+			<typo3>
+				<class>Schracklive_Typo3_Helper</class>
+			</typo3>
+		</helpers>
+		<cache>
+			<types>
+				<typo3 translate="label,description" module="core">
+					<label>TYPO3 data</label>
+					<description>TYPO3 data (Navigation, etc.)</description>
+					<tags>TYPO3</tags>
+				</typo3>
+			</types>
+		</cache>
+        <resources>
+            <typo3_setup>
+                <setup>
+                    <module>Schracklive_Typo3</module>
+                    <class>Mage_Core_Model_Resource_Setup</class>
+                </setup>
+            </typo3_setup>
+        </resources>
+	</global>
+</config>

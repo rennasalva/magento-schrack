@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<config>
+  <modules>
+    <Schracklive_Poland>
+      <version>0.0.1</version>
+      <depends>
+        <Schracklive_Schrack />
+      </depends>
+    </Schracklive_Poland>
+  </modules>
+  <global>
+    <resources>
+      <poland_setup>
+        <setup>
+          <module>Schracklive_Poland</module>
+        </setup>
+      </poland_setup>
+    </resources>
+  </global>
+</config>

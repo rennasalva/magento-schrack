@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<config>
+    <modules>
+        <Anowave_Ec>
+            <active>true</active>
+            <codePool>local</codePool>
+            <depends>
+            	<Anowave_Package />
+                <Schracklive_SchrackCatalog />
+                <Schracklive_SchrackPage />
+            </depends>
+        </Anowave_Ec>
+    </modules>
+</config>

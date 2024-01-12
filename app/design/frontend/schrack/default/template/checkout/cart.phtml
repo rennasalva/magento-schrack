@@ -1,0 +1,391 @@
+<!-- default/template/checkout/cart.phtml (start) -->
+<?php
+    /* @var $this Mage_Checkout_Block_Cart */
+
+    $_quote = $this->getQuote();
+    $_isPickup = $_quote->getIsPickup();
+    $_partslistHelper = Mage::helper('schrackwishlist/partslist');
+    $_wishlistHelper = Mage::helper('schrackwishlist');
+    $_quickaddHelper = Mage::helper('schrackcheckout/quickadd');
+    $_geoipHelper = Mage::helper('geoip');
+    /* @var $_stockHelper Schracklive_SchrackcatalogInventory_Helper_Stock */
+    $_stockHelper = Mage::helper('schrackcataloginventory/stock');
+
+    $sessionCustomerId = Mage::getSingleton('customer/session')->getCustomer()->getId();
+    $aclRoleId = Mage::getModel('customer/customer')->load($sessionCustomerId)->getSchrackAclRoleId();
+    $isProjectant = Mage::helper('schrack/acl')->isProjectantRoleId($aclRoleId);
+
+    $customer = $this->getCustomer();
+    if ($customer) {
+        $customerType = $customer->getSchrackCustomerType(); // ProspectTypes: 'light-prospect' / 'full-prospect'
+    }
+
+    $prospectLight = false;
+
+    if ($customerType == 'light-prospect') {
+        $prospectLight = true;
+    }
+?>
+
+<script type="text/javascript">//<![CDATA[
+
+    var partslist = new ListRequestManager.List('<?php echo $_partslistHelper->getBaseUrl() ?>');
+    partslist.setProductAddUrl('<?php echo Mage::helper('schrackcore/url')->getUrlWithCurrentProtocol('checkout/cart/addProductToPartslist')?>');
+    var partslistFE = new ListRequestManager.Frontend(partslist, ListRequestManager.Product);
+
+    var cart = new ListRequestManager.List('<?php echo $this->getUrl('checkout/cart/')?>', true);
+    var cartFE = new ListRequestManager.Frontend(cart, ListRequestManager.Product);
+
+    var compare = new ListRequestManager.List('<?php echo $this->getUrl('catalog/product_compare') ?>', true);
+    var compareFE = new ListRequestManager.Frontend(compare, ListRequestManager.Product);
+
+    confirmLeave = true;
+    leaveMessage = '<?php echo $this->__('Data has changed - are you sure you want to leave?')?>';
+//]]>
+</script>
+
+<style>
+    .big-button {
+        height: 48px !important;
+        border-radius: 3px;
+        border-width: 1px;
+    }
+
+    #messagesBlock {
+        margin-left: -10px !important;
+        margin-right: -10px !important;
+    }
+
+     #headline-commercial-warning {
+         background: #00589D;
+         color: white;
+         font-weight: bold;
+         font-size: 1.2em;
+         padding-top: 10px;
+         padding-bottom: 10px;
+         padding-left: 15px;
+         padding-right: 25px;
+         width: 883px;
+         margin-left: 0px;
+     }
+</style>
+
+<?php if (!$isProjectant) : ?>
+    <div class="large-12 columns">
+        <div id="messagesBlock" style="display: none;">
+            <?php echo $this->getMessagesBlock()->getGroupedHtml() ?>
+        </div>
+        <div class="row">
+            <div class="large-12 columns">
+                <div class="headline a"><?php echo $this->__('Shopping Cart'); ?></div>
+            </div>
+        </div>
+        <div class="row info-box three-d hide-on-print">
+            <div class="controlsArea"></div>
+            <?php if ($prospectLight == true) : ?>
+                <div style="border: 1px solid #00589D;">
+                    <header id="headline-commercial-warning"><?php echo $this->__('login.popup.registration-hint-only') ?></header>
+                </div>
+                <br>
+            <?php endif; ?>
+            <div class="large-12 columns">
+                <?php echo $this->getChildHtml('quickadd'); ?>
+            </div>
+        </div>
+        <?php echo $this->getChildHtml('form_before') ?>
+        <form action="<?php echo $this->getUrl('checkout/cart/updatePost') ?>" method="post" class="checkout-cart" id="checkout-cart-form">
+            <?php /*Nagarro : Added form key */ ?>
+            <?php echo $this->getBlockHtml('formkey') ?>
+            <div class="row hide-on-print" style="margin-bottom: 0;">
+                <div class="cartListTable"></div>
+                <div class="large-12 product-list table columns" style="margin-bottom: 0;">
+                    <div class="row-fine cart-buttons" style="margin-left: 0; margin-bottom: 0;">
+                        <?php if ($_geoipHelper->mayPerformCheckout() && $_stockHelper->hasPickupStocks() ):?>
+                            <?php if ( $_isPickup ): ?>
+                                <div class="large-fine-6 columns-fine" style="border-right: 0; width: 285px;">
+                                    <div style="background-color: #eee; border: 1px solid #ccc; border-radius: 3px; width: 135px; height: 48px; padding-top: 9px; text-align: center; float: left;">
+                                        <button id="buttonChoosePickup" style="border: 2px solid #fff; margin-left: 0; text-decoration: none;" class="button-blue small pickup active" type="button" ><?php echo $this->__('Pickup'); ?></button>
+                                    </div>
+                                    <div style="border: 1px solid #ccc; border-radius: 3px; width: 135px; height: 48px; padding-top: 9px; text-align: center; float: left; margin-left: 5px;">
+                                        <button id="buttonChooseDelivery" style="margin-left: 0;" class="button-blue small delivery" type="button" onclick="setLocationAndTrackGaEvent('<?php echo Mage::getUrl('checkout/cart/setdelivery/'); ?>', 'cart', 'change_delivery', 'Delivery')"><?php echo $this->__('Delivery'); ?></button>
+                                    </div>
+                                </div>
+                            <?php else: ?>
+                                <div class="large-fine-6 columns-fine" style="border-right: 0; width: 285px;">
+                                    <div style="border: 1px solid #ccc; border-radius: 3px; width: 135px; height: 48px; padding-top: 9px; text-align: center; float: left;">
+                                        <button id="buttonChoosePickup" style="margin-left: 0;" class="button-blue small pickup" type="button" onclick="setLocationAndTrackGaEvent('<?php echo Mage::getUrl('checkout/cart/setpickup/'); ?>', 'cart', 'change_delivery', 'Pickup')"><?php echo $this->__('Pickup'); ?></button>
+                                    </div>
+                                    <div style="background-color: #eee; border: 1px solid #ccc; border-radius: 3px; width: 135px; height: 48px; padding-top: 9px; text-align: center; float: left; margin-left: 5px;">
+                                        <button id="buttonChooseDelivery" style="border: 2px solid #fff; margin-left: 0; text-decoration: none;" class="button-blue small delivery active" type="button" ><?php echo $this->__('Delivery'); ?></button>
+                                    </div>
+                                </div>
+                            <?php endif ?>
+                        <?php else: ?>
+                            <div class="large-fine-6 columns-fine" style="border-right: 0; width: 285px;">
+                                <div style="width: 135px; height: 48px; padding-top: 9px; text-align: center; float: left;">
+                                </div>
+                                <div style="width: 135px; height: 48px; padding-top: 9px; text-align: center; float: left; margin-left: 5px;">
+                                </div>
+                            </div>
+                        <?php endif;?>
+                        <?php if (Mage::getStoreConfig('schrack/media_zip_download/enable_download')) :?>
+                            <div class="download-media-files-button" style="margin-left: -5px; margin-top: 5px; width: 143px; height: 55px; float: left;">
+                                <button class="button-blue small big-button MediaDownload" style="width: 171px;">
+                                    <div style="text-align: center; padding-left: 3px;">
+                                        <span><?php echo $this->__('Media Download'); ?></span><br>
+                                        <span><?php echo $this->__('Barcode Label Print'); ?></span>
+                                    </div>
+                                </button>
+                            </div>
+                        <?php else: ?>
+                            <div style="margin-top: 5px; width: 135px; float: left;"></div>
+                        <?php endif;?>
+                        <div class="large-fine-6 columns-fine" style="border-right: none">
+                            <div class="big-button">
+                                <div style="border: 1px solid #ccc; border-radius: 3px; width: 135px; height: 47px; padding-top: 8px; text-align: center; margin-left: 33px;">
+                                    <button type="button" title="<?php echo $this->__('Empty cart') ?>" style="margin-left: 0px; border: none;" class="button-blue arrow small btn-makeoffer" onclick="setLocation('<?php echo Mage::getUrl('checkout/cart/empty/'); ?>')"><span><?php echo $this->__('Empty cart') ?></span></button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="large-fine-4 columns-fine" style="border-right: 0;">
+                            <?php if(!$this->hasError()): ?>
+                                <div class="right-align-container" style="margin-top: 11px;">
+                                    <?php echo $this->getChildHtml('top_methods')?>
+                                </div>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="product-list table large-12 columns" data-name="cart">
+                    <div class="cart-header header row-fine">
+                        <div class="product-col large-fine-7 columns-fine hide-on-print"><div class="bottom-align-container-20"><?php echo $this->__('Product'); ?></div></div>
+                        <div class="product-col large-fine-9 columns-fine print-only"><div class="bottom-align-container-20"><?php echo $this->__('Product'); ?></div></div>
+                        <div class="availability-col large-fine-4 columns-fine"><div class="bottom-align-container-20"><?php echo $this->__('Availability'); ?></div></div>
+                        <div class="price-col large-fine-3 columns-fine"><div class="bottom-align-container-20"><?php echo $this->__('Your price'); ?></div></div>
+                        <div class="large-fine-3 columns-fine"><div class="bottom-align-container-20"><?php echo $this->__('Qty'); ?></div></div>
+                        <div class="large-fine-2 columns-fine"><div class="bottom-align-container-20"><?php echo $this->__('Surcharge') ?></div></div>
+                        <div class="large-fine-3 columns-fine"><div class="bottom-align-container-20"><?php echo $this->__('Subtotal') ?></div></div>
+                        <div class="buttons-col large-fine-2 columns-fine hide-on-print"><div class="bottom-align-container-20"><?php echo $this->__('Remove'); ?><?php if ($this->helper('wishlist')->isAllow()) : ?>/<br /><?php echo $this->__('Wishlist'); ?><?php endif ?></div></div>
+                    </div>
+                    <?php foreach($this->getItems() as $_item): ?>
+                        <?php echo $this->getItemHtml($_item) ?>
+                    <?php endforeach; ?>
+                </div>
+                <script type="text/javascript">decorateTable('shopping-cart-table')</script>
+            </div>
+            <?php if ( Mage::helper('geoip')->maySeePrices() ):?>
+                <?php echo $this->getChildHtml('totals'); ?>
+            <?php endif ?>
+
+            <div class="row hide-on-print" style="margin-bottom: 0;">
+                <div class="large-12 product-list table columns" style="margin-bottom: 0;">
+                    <div class="row-fine cart-buttons" style="margin-left: 0; margin-bottom: 0; height: 70px;">
+                        <?php if ($_geoipHelper->mayPerformCheckout()  && $_stockHelper->hasPickupStocks() ):?>
+                            <?php if ( $_isPickup ): ?>
+                                <div class="large-fine-6 columns-fine" style="border-right: 0; width: 285px;">
+                                    <div style="background-color: #eee; border: 1px solid #ccc; border-radius: 3px; width: 135px; height: 48px; padding-top: 9px; text-align: center; float: left;">
+                                        <button id="buttonChoosePickup" style="border: 2px solid #fff; margin-left: 0; text-decoration: none;" class="button-blue small pickup active" type="button" ><?php echo $this->__('Pickup'); ?></button>
+                                    </div>
+                                    <div style="border: 1px solid #ccc; border-radius: 3px; width: 135px; height: 48px; padding-top: 9px; text-align: center; float: left; margin-left: 5px;">
+                                        <button id="buttonChooseDelivery" style="margin-left: 0;" class="button-blue small delivery" type="button" onclick="setLocationAndTrackGaEvent('<?php echo Mage::getUrl('checkout/cart/setdelivery/'); ?>', 'cart', 'change_delivery', 'Delivery')"><?php echo $this->__('Delivery'); ?></button>
+                                    </div>
+                                </div>
+                            <?php else: ?>
+                                <div class="large-fine-6 columns-fine" style="border-right: 0; width: 285px;">
+                                    <div style="border: 1px solid #ccc; border-radius: 3px; width: 135px; height: 48px; padding-top: 9px; text-align: center; float: left;">
+                                        <button id="buttonChoosePickup" style="margin-left: 0;" class="button-blue small pickup" type="button" onclick="setLocationAndTrackGaEvent('<?php echo Mage::getUrl('checkout/cart/setpickup/'); ?>', 'cart', 'change_delivery', 'Pickup')"><?php echo $this->__('Pickup'); ?></button>
+                                    </div>
+                                    <div style="background-color: #eee; border: 1px solid #ccc; border-radius: 3px; width: 135px; height: 48px; padding-top: 9px; text-align: center; float: left; margin-left: 5px;">
+                                        <button id="buttonChooseDelivery" style="border: 2px solid #fff; margin-left: 0; text-decoration: none;" class="button-blue small delivery active" type="button" ><?php echo $this->__('Delivery'); ?></button>
+                                    </div>
+                                </div>
+                            <?php endif ?>
+                        <?php else: ?>
+                            <div class="large-fine-6 columns-fine" style="border-right: 0; width: 285px;">
+                                <div style="width: 135px; height: 48px; padding-top: 9px; text-align: center; float: left;">
+                                </div>
+                                <div style="width: 135px; height: 48px; padding-top: 9px; text-align: center; float: left; margin-left: 5px;">
+                                </div>
+                            </div>
+                        <?php endif;?>
+                        <div class="large-fine-13 columns-fine" style="border-right: 0;">
+                            <?php if ( Mage::getSingleton('customer/session')->isLoggedIn() ) : ?>
+                                <?php if (!$this->getCustomer()->isProspect()) : ?>
+                                <div style="border: 1px solid #ccc; border-radius: 3px; width: 170px; height: 48px; padding-top: 9px; text-align: center; float: left;">
+                                    <button style="margin-left: 0; border: none !important;" type="button" title="<?php echo $this->__('Make Offer') ?>" class="button-blue arrow small btn-makeoffer" onclick="setLocation('<?php echo Mage::getUrl('checkout/cart/makeoffer/'); ?>')"><span><?php echo $this->__('Make Offer') ?></span></button>
+                                </div>
+                                <?php endif; ?>
+                            <?php endif; ?>
+                            <div style="border: 1px solid #ccc; border-radius: 3px; width: 184px; height: 48px; padding-top: 9px; text-align: center; float: left; margin-left: 5px;">
+                                <button style="margin-left: 0; border: none !important;" title="<?php echo $this->__('Update Shopping Cart') ?>" class="button-blue arrow small btn-update"><span><?php echo $this->__('Update Shopping Cart') ?></span></button>
+                            </div>
+                            <!--c.friedl: sorry, geht sich einfach nicht mehr aus...! <?php if($this->getContinueShoppingUrl()): ?>
+                                <button type="button" title="<?php echo Mage::helper('core')->quoteEscape($this->__('Continue Shopping')) ?>" class="button-blue small btn-continue" onclick="setLocation('<?php echo Mage::helper('core')->quoteEscape($this->getContinueShoppingUrl()) ?>')"><span><?php echo $this->__('Continue Shopping') ?></span></button>
+                            <?php endif; ?>-->
+                        </div>
+                        <div class="large-fine-4 columns-fine" style="border-right: 0;">
+                            <?php if(!$this->hasError()): ?>
+                                <div class="right-align-container" style="margin-top: -46px;">
+                                    <?php echo $this->getChildHtml('methods')?>
+                                </div>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+
+        <?php $_sapociHelper = Mage::helper('sapoci');
+        if ($_sapociHelper->isSapociCheckout()):?>
+            <form id="sapoci-form" name="sapoci" action="<?php echo $_sapociHelper->getActionUrl();?>" method="post"<?php if ($_sapociHelper->getTarget()):?> target="<?php echo $_sapociHelper->getTarget();?>"<?php endif?>>
+                <?php foreach($_sapociHelper->cartItems() as $key => $value):?>
+                    <input name="<?php echo $key ?>" value="<?php echo $value ?>" type="hidden" />
+                <?php endforeach; ?>
+            </form>
+        <?php endif;?>
+    </div>
+    <div id="quantitywarningpopup" class="product-warning" title="<?php echo $this->__('Inquiry'); ?>"></div>
+    <div id="selectmediagpopup" class="product-warning" title="&nbsp;"></div>
+<?php endif;?>
+
+<script type="text/javascript">//<![CDATA[
+    var setQty = function(listId, qty) {
+        jQuery('input[name="cart[' + listId + '][qty]"]').val(qty);
+    }
+
+    var updateCart = function(action, listId) {
+    }
+
+    jQuery('select.dropdown-menu').dropdown({activateOnClick: false});
+
+    var availabilityCheck = function(targetfunc) {
+        try {
+            jQuery('.cart-qty').each(function (i, el) {
+                var id = jQuery(el).attr('ref').split('-').last();
+                checkAvailability("<?php echo Mage::helper('schrackcore/url')->getUrlWithCurrentProtocol('catalog/product/checkAvailability'); ?>",
+                    jQuery('#sku-' + id).val(),
+                    (jQuery('input[ref="cart-qty-' + id + '"]').val() ? jQuery('input[ref="cart-qty-' + id + '"]').val() : 1),
+                    jQuery('#drum-' + id).val(),
+                    <?php echo $_isPickup ? 1 : 0; ?>,
+                    <?php echo $_isPickup ? 0 : 1; ?>
+                ).fail(function () {
+                        throw 'Schleifenabbruch';
+                    });
+            });
+            targetfunc.call(null);
+        } catch (e) {
+        }
+    };
+
+    
+    function cartUpdate() {
+        setOverlayLoaderInCartView();
+        availabilityCheck(function () {
+            jQuery('#checkout-cart-form').submit();
+        });
+        return false;
+    }
+
+    function removeMessages() {
+        // Both are messages but not shown in unique manner:
+        jQuery('.messages').hide();
+        jQuery('.messages').remove();
+
+        jQuery('.errors').hide();
+        jQuery('.errors').remove();
+    }
+
+    if (typeof availabilityCheck !== 'undefined' && jQuery.isFunction(availabilityCheck)) {
+        jQuery("button[name='sap_oci_checkout']").on('click', function(){
+            jQuery('#sapoci-form').submit();
+            return false;
+        });
+
+        jQuery("button[name='proceed_to_checkout']").on('click', function(){
+            availabilityCheck(function () {
+                window.location='<?php echo $this->getUrl('checkout/onepage')?>';
+            });
+        });
+    }
+
+    jQuery(".download-media-files-button").on("click", 'button', function () {
+        getDownloadMediaDialog("<?php echo Mage::helper('schrackcore/url')->getUrlWithCurrentProtocol('catalog/download/getDownloadMediaDialog'); ?>", "cart.phtml");
+        return false;
+    });
+
+    // Cart update:
+    jQuery('.btn-update').on('click', function(){
+        removeMessages();
+        cartUpdate();
+    });
+
+    var getDownloadMediaDialog = function (ajaxUrl, source) {
+        localStorage.mediaDownloadSource = source;
+        jQuery.ajax(ajaxUrl, {
+            'type': 'POST',
+            'async': false,
+            'data': {
+                'source': source
+            },
+            'success': function (data) {
+                var datax = JSON.parse(data);
+                if (datax.html) {
+                    jQuery('#selectmediagpopup').html(datax.html);
+                    jQuery('#selectmediagpopup').dialog({
+                        'width': '700px',
+                        'modal': true
+                    });
+                }
+            }
+        });
+    };
+
+    var setOverlayLoader = function() {
+        // Set overlay for
+        jQuery('.controlsArea').css({  "position": "absolute",
+            "height": "100%",
+            "width": "100%",
+            "background": "url(<?php echo $this->getSkinUrl('schrackdesign/Public/Images/download_ajax_loader.gif'); ?>) no-repeat center center",
+            "top": "-241px",
+            "left": "0",
+            "opacity": "0.4",
+            "z-index": "99"});
+    }
+
+    var unsetOverlayLoader = function() {
+        if (jQuery('.controlsArea')) {
+            jQuery('.controlsArea').removeAttr('style');
+        }
+    }
+
+    var setOverlayLoaderInCartView = function() {
+        // Set overlay for
+        jQuery('.cartListTable').css({  "position": "absolute",
+            "height": "100%",
+            "width": "100%",
+            //"background-color": "grey",
+            "background": "url(<?php echo $this->getSkinUrl('schrackdesign/Public/Images/download_ajax_loader.gif'); ?>) no-repeat center center",
+            //"background-repeat": "no-repeat",
+            "top": "0",
+            "left": "0",
+            "opacity": "0.4",
+            "z-index": "99"});
+    }
+
+    jQuery(document).ready(function() {
+        // Try to find ugly message from failed credit card response (PayUnity):
+        if (jQuery('ul.messages li.error-msg ul li span').text() && jQuery('ul.messages li.error-msg ul li span').text() == "User Authentication Failed") {
+            var replacementText = '<?php echo $this->__('User Authentication Failed'); ?>';
+            jQuery('ul.messages li.error-msg ul li span').text(replacementText);
+        }
+        if (jQuery('ul.messages li.error-msg ul li span').text() && jQuery('ul.messages li.error-msg ul li span').text().indexOf("transaction declined") >= 0) {
+            var replacementText = '<?php echo $this->__('User Authentication Failed'); ?>';
+            jQuery('ul.messages li.error-msg ul li span').text(replacementText);
+        }
+
+        jQuery('#messagesBlock').fadeIn(100);
+    });
+//]]></script>
+<!-- default/template/checkout/cart.phtml (end) -->

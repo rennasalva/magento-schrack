@@ -1,0 +1,45 @@
+<div class="row-fine totals">
+    <div class="large-fine-20 columns-fine">
+        <div class="text">
+            <?php if ($this->getRenderingArea() == $this->getTotal()->getArea()): ?><strong><?php endif; ?>
+                <?php echo $this->getTotal()->getTitle() ?>
+            <?php if ($this->getRenderingArea() == $this->getTotal()->getArea()): ?></strong><?php endif; ?>
+        </div>
+        <div class="annotation"><?php echo $this->__('incl. surcharge excl. fees and VAT'); ?></div>
+    </div>
+    <div class="large-fine-4 columns-fine">
+        <div class="sum align-right">
+            <?php if ($this->getRenderingArea() == $this->getTotal()->getArea()): ?><strong><?php endif; ?>
+                <?php echo Mage::getStoreConfig('currency/options/default')?> <?php echo $this->helper('checkout')->formatPrice($this->getTotal()->getValue()) ?>
+            <?php if ($this->getRenderingArea() == $this->getTotal()->getArea()): ?></strong><?php endif; ?>
+        </div>
+    </div>
+</div>
+<?php if ( Mage::getSingleton('customer/session')->isLoggedIn() ):?>
+    <?php
+        $bonusUrl = Mage::getStoreConfig('schrack/general/onlinebonus_url'); $bonusMinValue = Mage::getStoreConfig('schrack/general/onlinebonus_minvalue');
+        $diffValue = $bonusMinValue - $this->getTotal()->getValue();
+
+        $onlinebonusActive = true;
+        $onlineBonusStart  = strtotime(Mage::getStoreConfig('schrack/general/onlinebonus_datestart'));
+        $onlineBonusStop   = strtotime(Mage::getStoreConfig('schrack/general/onlinebonus_datestop'));
+        $nowDateTime       = strtotime(date('Y-m-d H:i:s'));
+        if ($onlineBonusStart) {
+            if ($onlineBonusStart <= $nowDateTime && $nowDateTime <= $onlineBonusStop) {
+                $onlinebonusActive = true;
+            } else {
+                $onlinebonusActive = false;
+            }
+        }
+
+        if ( $onlinebonusActive && isset($bonusUrl) && isset($bonusMinValue) && intval($bonusMinValue) > 0 && $diffValue > 0 ):?>
+            <div class="row onlinebonus table">
+                <div class="large-3 columns link">
+                    <a href="<?php echo $bonusUrl?>"><?php echo $this->__('Online Bonus')?></a>
+                </div>
+                <div class="large-9 columns text">
+                    <?php echo $this->__('You are still missing %s to reach your online bonus.', (Mage::getStoreConfig('currency/options/default') . ' ' . $this->helper('checkout')->formatPrice($diffValue)))?>
+                </div>
+            </div>
+    <?php endif;?>
+<?php endif;?>

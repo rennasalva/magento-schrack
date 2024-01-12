@@ -1,0 +1,128 @@
+<!-- app/design/frontend/schrack/default/template/persistent/customer/form/login.phtml (start) -->
+<?php
+    // Customer login form template ->> This is the lightbox Popup!
+    // @var $this Mage_Customer_Block_Form_Login
+
+    $selfRegistrationAvailable = false; // Default fallback
+    $selfRegistrationOptions = Mage::getStoreConfig('schrack/new_self_registration/new_self_registration_options');
+    if ($selfRegistrationOptions == 'self_registration_not_available') {
+        $selfRegistrationAvailable = false;
+    } else {
+        if($selfRegistrationOptions == 'self_registration_with_typo' || $selfRegistrationOptions == 'new_self_registration_form' || $selfRegistrationOptions == 'old_self_registration_available') {
+            $selfRegistrationAvailable = true;
+        }
+    }
+
+    $showAdditionalLightSelfRegisterButton = true;
+    $selfRegistrationWithTypoForm = false;
+    if ($selfRegistrationOptions == 'self_registration_with_typo') {
+        // Typo form is only used as fallback:
+        $selfRegistrationWithTypoForm = true;
+        $showAdditionalLightSelfRegisterButton = false;
+    }
+
+    if ($selfRegistrationOptions == 'new_light_self_registration_form') {
+        $selfRegistrationWithTypoForm = false;
+        $selfRegistrationAvailable = true;
+    }
+?>
+<?php echo $this->getMessagesBlock()->getGroupedHtml();?>
+<div class="loginPopupArea"></div>
+<div class="row">
+    <div class="large-12 columns">
+        <div class="row">
+            <div class="large-8 columns large-centered">
+                <form action="<?php echo $this->getUrl('customer/account/loginPost') ?>" method="post" id="login-form" name="login-form">
+                    <?php /*Nagarro : Added form key in ajax url */ ?>
+                    <?php //echo $this->getBlockHtml('formkey') ?>
+                    <input type="hidden" name="redirectUrl" value=""/>
+                    <div class="errors">                        
+                    </div>
+                    <div class="headline c2"><?php echo $this->__('Registered Customers') ?></div>
+                    <p><?php echo $this->__('If you have an account with us, please log in.') ?></p>
+                    <label for="email" class="required"><?php echo $this->__('Email Address') ?><em> *</em></label>
+                    <div class="input-box">
+                        <input type="text" style="width: 240px;" name="username" value="<?php echo $this->htmlEscape($this->getUsername()) ?>" id="email" class="input-text required-entry" title="<?php echo $this->__('Email Address') ?>" />
+                    </div>
+                    <label for="pass" class="required"><?php echo $this->__('Password') ?><em> *</em></label>
+                    <div class="input-box"">
+                        <input type="password" style="width: 240px;" name="password" class="input-text required-entry validate-password left" id="pass" title="<?php echo $this->__('Password') ?>" />
+                        <div style="float: left; margin-left: 20px; margin-top: 13px;">
+                            <input type="checkbox" name="rememberme" class="checkbox left" id="rememberme" title="<?php echo $this->__('Keep Me Logged In') ?>" <?php if (Mage::getStoreConfigFlag('customer/rememberme/checked')) echo 'checked="checked"'; ?>/>&nbsp;<?php echo $this->__('Keep Me Logged In') ?>
+                            <input type="hidden" name="remembermeValue" id="remembermeValue" value="<?php if (Mage::getStoreConfigFlag('customer/rememberme/checked')) echo '1'; ?>" />
+                        </div>
+                        <div style="clear: both;"></div>
+                    </div>
+                    <?php echo $this->getChildHtml('persistent.remember.me'); ?>
+                    <?php echo $this->getChildHtml('persistent.remember.me.tooltip'); ?>
+                    <p class="required"><?php echo $this->__('* Required Fields') ?></p>
+                    <div>
+                        <input type="button" id="submit-button" class="button-arrow small" title="<?php echo $this->__('Login') ?>" name="send" value="<?php echo $this->__('Login') ?>" />
+                        <input type="submit" name="realsubmit" id="realsubmit" style="display: none;"/>
+                    </div>
+                    <div style="margin-top: 15px;"><input type="button" class="button-arrow small" onClick="document.location.href='<?php echo Mage::getUrl('customer/account/forgotpassword') ?>'; return false;" value="<?php echo $this->__('Forgot Your Password?') ?>"/></div>
+                    <br/>
+                    <?php if (Mage::getStoreConfig('schrack/general/country') !== 'cz'):?><div class="headline c2"><?php echo $this->__('New Customers') ?></div><?php endif;?>
+                    <?php if (Mage::getStoreConfig('schrack/new_self_registration/registerInTypo') === '1'):?>
+                        <?php //Special route if registerInTypo == 1 ?>
+                        <p>
+                            <?php echo $this->__('If it\'s your first time at Schrack:'); ?>
+                        </p>
+                        <p>
+                            <input type="button" class="button-arrow small" onClick="document.location.href='<?php echo Mage::getStoreConfig('schrack/typo3/typo3url') . Mage::getStoreConfig('schrack/typo3/registerurl') ?>'; return false;" value="<?php echo $this->__('Register') ?>"/>
+                            <?php echo $this->__('login.popup.registration-hint');?>
+                        </p>
+                    <?php else:?>
+                        <?php //Special route if registerInTypo == 1 ?>
+                        <p>
+                            <?php echo $this->__('If it\'s your first time at Schrack:'); ?>
+                        </p>
+                        <?php
+                            if ($selfRegistrationAvailable == true ) {
+                                if ($selfRegistrationWithTypoForm == true) {
+                                    $registerUrl = Mage::getStoreConfig('schrack/typo3/typo3url') . Mage::getStoreConfig('schrack/typo3/registerurl');
+                                } else {
+                                    $registerUrl = Mage::getUrl('customer/account/create');
+                                }
+                            } else {
+                                $registerUrl = Mage::getStoreConfig('schrack/typo3/typo3url') . Mage::getStoreConfig('schrack/typo3/registerurl');
+                            }
+                        ?>
+                        <p>
+                            <input type="button" class="button-arrow small" onClick="document.location.href='<?php echo $registerUrl ?>'; return false;" value="<?php echo $this->__('Register') ?>"/>
+                            <?php if ($selfRegistrationWithTypoForm == true) : ?>
+                                <input type="button" class="button-arrow small" style="position: absolute; margin-left: 12px; margin-top: 0px;" onClick="document.location.href='<?php echo Mage::getUrl('customer/account/create'); ?>'; return false;" value="<?php echo $this->__('Light Registration') ?>"/>
+                            <?php endif; ?>
+                            <?php echo $this->__('login.popup.registration-hint');?>
+                        </p>
+                        <?php /* if ( ! in_array(Mage::getStoreConfig('schrack/general/country'), array('sa', 'ru')) ): ?> <p><?php echo preg_replace('/%{(.*)}/', '<a href="'.Mage::getStoreConfig('schrack/typo3/typo3url').Mage::getStoreConfig('schrack/typo3/registerurl').'" >$1</a>', $this->__('If you already bought at Schrack Technik, please %{request your shop login}.')); ?></p><?php endif; */ ?>
+                    <?php endif;?>
+                    <?php if (Mage::helper('checkout')->isContextCheckout()): ?>
+                        <input name="context" type="hidden" value="checkout" />
+                    <?php endif; ?>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    jQuery(document).ready(function(){
+        document.onkeydown=function(evt) {
+            var keyCode = evt ? (evt.which ? evt.which : evt.keyCode) : event.keyCode;
+            if( keyCode == 13 ) {
+                evt.preventDefault();
+                setOverlayLoader('loginPopupArea', '-146px');
+                submitLoginForm('<?php echo $this->getUrl('customer/account/loginLogAuth')?>', '<?php echo $this->getUrl('customer/account/loginPost').'?form_key='.Mage::getSingleton('core/session')->getFormKey() ?>', '<?php echo Mage::app()->getRequest()->getParam('referer')?>');
+            }
+        }
+
+        jQuery('#rememberme').on('click', function() {
+           if ( jQuery('#rememberme').prop('checked')) {
+               jQuery('#remembermeValue').val(1);
+           } else  {
+               jQuery('#remembermeValue').val(0);
+           }
+        });
+    });
+</script>
+<!-- app/design/frontend/schrack/default/template/persistent/customer/form/login.phtml (end) -->

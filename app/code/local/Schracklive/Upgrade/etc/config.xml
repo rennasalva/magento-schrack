@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<config>
+	<modules>
+		<Schracklive_Upgrade>
+			<version>0.1.0</version>
+		</Schracklive_Upgrade>
+	</modules>
+	<global>
+		<models>
+			<upgrade>
+				<class>Schracklive_Upgrade_Model</class>
+			</upgrade>
+		</models>
+		<helpers>
+			<upgrade>
+				<class>Schracklive_Upgrade_Helper</class>
+			</upgrade>
+		</helpers>
+	</global>
+</config>

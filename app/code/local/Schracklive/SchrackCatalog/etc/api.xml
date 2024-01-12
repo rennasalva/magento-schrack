@@ -1,0 +1,23 @@
+<config>
+    <api>
+        <resources>
+            <catalog_category translate="title" module="catalog">
+                <model>Schracklive_SchrackCatalog_Model_Category_Api</model>
+                <acl>catalog/category</acl>
+                <title>Schracklive Catalog Category Resource</title>
+                <methods>
+                    <getAttachments translate="title" module="catalog">
+                        <title>Retrieve attachments data for category</title>
+                        <acl>catalog/category/info</acl>
+                    </getAttachments>
+                </methods>
+                <faults module="category">
+                    <not_exists>
+                        <code>101</code>
+                        <message>Category does not exist.</message>
+                    </not_exists>
+                </faults>
+            </catalog_category>
+        </resources>
+    </api>
+</config>

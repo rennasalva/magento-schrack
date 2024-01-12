@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wsdl:definitions xmlns:typens="urn:{{var wsdl.name}}"
+             xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+             xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+             xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/"
+             xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+             name="{{var wsdl.name}}"
+             targetNamespace="urn:{{var wsdl.name}}">
+    <wsdl:types>
+        <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="urn:{{var wsdl.name}}">
+
+            <xsd:element name="customerCustomerGetWwsIdRequestParam">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element minOccurs="1" maxOccurs="1" name="sessionId" type="xsd:string" />
+                        <xsd:element minOccurs="1" maxOccurs="1" name="eMail" type="xsd:string" />
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+            <xsd:element name="customerCustomerGetWwsIdResponseParam">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element minOccurs="1" maxOccurs="1" name="wwsId" type="xsd:string" />
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+
+            <xsd:element name="customerCustomerAuthenticateUserRequestParam">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element minOccurs="1" maxOccurs="1" name="sessionId"   type="xsd:string" />
+                        <xsd:element minOccurs="1" maxOccurs="1" name="eMail"       type="xsd:string" />
+                        <xsd:element minOccurs="1" maxOccurs="1" name="passWord"    type="xsd:string" />
+                        <xsd:element minOccurs="0" maxOccurs="1" name="requestType" type="xsd:string" />
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+            <xsd:element name="customerCustomerAuthenticateUserResponseParam">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element minOccurs="1" maxOccurs="1" name="ok"    type="xsd:boolean" />
+                        <xsd:element minOccurs="1" maxOccurs="1" name="wwsId" type="xsd:string" />
+                        <xsd:element minOccurs="1" maxOccurs="1" name="acl"   type="xsd:string" />
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+
+            <xsd:element name="customerCustomerAuthenticateUserResponseV20Param">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element minOccurs="1" maxOccurs="1" name="ok"              type="xsd:boolean" />
+                        <xsd:element minOccurs="1" maxOccurs="1" name="wwsId"           type="xsd:string" />
+                        <xsd:element minOccurs="1" maxOccurs="1" name="acl"             type="xsd:string" />
+                        <xsd:element minOccurs="1" maxOccurs="1" name="pickupStockNo"   type="xsd:int" />
+                        <xsd:element minOccurs="1" maxOccurs="1" name="deliveryStockNo" type="xsd:int" />
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+
+            <xsd:element name="customerCustomerGetLoginTokenRequestParam">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element minOccurs="1" maxOccurs="1" name="sessionId"   type="xsd:string" />
+                        <xsd:element minOccurs="1" maxOccurs="1" name="eMail"       type="xsd:string" />
+                        <xsd:element minOccurs="1" maxOccurs="1" name="passWord"    type="xsd:string" />
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+            <xsd:element name="customerCustomerGetLoginTokenResponseParam">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element minOccurs="1" maxOccurs="1" name="ok"    type="xsd:boolean" />
+                        <xsd:element minOccurs="1" maxOccurs="1" name="token" type="xsd:string" />
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+
+            <xsd:element name="customerCustomerFindCountryByEmailRequestParam">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element minOccurs="1" maxOccurs="1" name="sessionId" type="xsd:string" />
+                        <xsd:element minOccurs="1" maxOccurs="1" name="eMail" type="xsd:string" />
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+            <xsd:element name="customerCustomerFindCountryByEmailResponseParam">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element minOccurs="1" maxOccurs="1" name="countryId" type="xsd:string" />
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+
+        </xsd:schema>
+    </wsdl:types>
+
+    <wsdl:message name="customerCustomerGetWwsIdRequest">
+        <wsdl:part name="parameters" element="typens:customerCustomerGetWwsIdRequestParam" />
+    </wsdl:message>
+    <wsdl:message name="customerCustomerGetWwsIdResponse">
+        <wsdl:part name="parameters" element="typens:customerCustomerGetWwsIdResponseParam" />
+    </wsdl:message>
+    <wsdl:message name="customerCustomerAuthenticateUserRequest">
+        <wsdl:part name="parameters" element="typens:customerCustomerAuthenticateUserRequestParam" />
+    </wsdl:message>
+    <wsdl:message name="customerCustomerAuthenticateUserResponse">
+        <wsdl:part name="parameters" element="typens:customerCustomerAuthenticateUserResponseParam" />
+    </wsdl:message>
+    <wsdl:message name="customerCustomerAuthenticateUserResponseV20">
+        <wsdl:part name="parameters" element="typens:customerCustomerAuthenticateUserResponseV20Param" />
+    </wsdl:message>
+    <wsdl:message name="customerCustomerGetLoginTokenRequest">
+        <wsdl:part name="parameters" element="typens:customerCustomerGetLoginTokenRequestParam" />
+    </wsdl:message>
+    <wsdl:message name="customerCustomerGetLoginTokenResponse">
+        <wsdl:part name="parameters" element="typens:customerCustomerGetLoginTokenResponseParam" />
+    </wsdl:message>
+    <wsdl:message name="customerCustomerFindCountryByEmailRequest">
+        <wsdl:part name="parameters" element="typens:customerCustomerFindCountryByEmailRequestParam" />
+    </wsdl:message>
+    <wsdl:message name="customerCustomerFindCountryByEmailResponse">
+        <wsdl:part name="parameters" element="typens:customerCustomerFindCountryByEmailResponseParam" />
+    </wsdl:message>
+
+    <wsdl:portType name="{{var wsdl.handler}}PortType">
+        <wsdl:operation name="customerCustomerGetWwsId">
+            <wsdl:documentation>Get WWS ID for customer</wsdl:documentation>
+            <wsdl:input message="typens:customerCustomerGetWwsIdRequest" />
+            <wsdl:output message="typens:customerCustomerGetWwsIdResponse" />
+        </wsdl:operation>
+        <wsdl:operation name="customerCustomerAuthenticateUser">
+            <wsdl:documentation>checks authentication for user</wsdl:documentation>
+            <wsdl:input message="typens:customerCustomerAuthenticateUserRequest" />
+            <wsdl:output message="typens:customerCustomerAuthenticateUserResponse" />
+        </wsdl:operation>
+        <wsdl:operation name="customerCustomerAuthenticateUserV20">
+            <wsdl:documentation>checks authentication for user</wsdl:documentation>
+            <wsdl:input message="typens:customerCustomerAuthenticateUserRequest" />
+            <wsdl:output message="typens:customerCustomerAuthenticateUserResponseV20" />
+        </wsdl:operation>
+        <wsdl:operation name="customerCustomerGetLoginToken">
+            <wsdl:documentation>Get a login token vor valid email/password combination</wsdl:documentation>
+            <wsdl:input message="typens:customerCustomerGetLoginTokenRequest" />
+            <wsdl:output message="typens:customerCustomerGetLoginTokenResponse" />
+        </wsdl:operation>
+        <wsdl:operation name="customerCustomerFindCountryByEmail">
+            <wsdl:documentation>Get country id for email</wsdl:documentation>
+            <wsdl:input message="typens:customerCustomerFindCountryByEmailRequest" />
+            <wsdl:output message="typens:customerCustomerFindCountryByEmailResponse" />
+        </wsdl:operation>
+    </wsdl:portType>
+
+     <wsdl:binding name="{{var wsdl.handler}}Binding" type="typens:{{var wsdl.handler}}PortType">
+        <wsdl:operation name="customerCustomerGetWwsId">
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="customerCustomerAuthenticateUser">
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="customerCustomerAuthenticateUserV20">
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="customerCustomerGetLoginToken">
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="customerCustomerFindCountryByEmail">
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+    </wsdl:binding>
+
+</wsdl:definitions>

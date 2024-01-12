@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<config>
+    <menu>
+        <catalog>
+            <children>
+                <stocks translate="title" module="schrackcataloginventory">
+                    <title>Manage Stocks</title>
+                    <action>adminhtml/stock/index</action> 
+                    <sort_order>25</sort_order>
+                </stocks>
+            </children>
+        </catalog>
+    </menu>
+    
+    <acl>
+        <resources>
+            <admin>
+                <children>
+                    <catalog>
+                        <children>
+                            <stocks translate="title" module="schrackcataloginventory">
+                                <title>Manage Stocks</title>
+                            </stocks>
+                        </children>
+                    </catalog>
+                </children>
+            </admin>
+        </resources>
+    </acl>
+</config>
+            

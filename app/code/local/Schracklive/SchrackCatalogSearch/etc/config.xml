@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<config>
+  <modules>
+    <Schracklive_SchrackCatalogSearch>
+      <version>1.0</version>
+      <depends>
+        <Mage_CatalogSearch />
+        <Schracklive_Schrack />
+      </depends>
+    </Schracklive_SchrackCatalogSearch>
+  </modules>
+  <frontend>
+    <routers>
+        <catalogsearch>
+            <use>standard</use>
+            <args>
+                <module>Schracklive_SchrackCatalogSearch</module>
+                <frontName>catalogsearch</frontName>
+            </args>
+        </catalogsearch>
+    </routers>
+  </frontend>
+  <global>
+    <models>
+      <catalogsearch>
+        <rewrite>
+          <layer>Schracklive_SchrackCatalogSearch_Model_Layer</layer>
+        </rewrite>
+      </catalogsearch>
+    </models>
+    <blocks>
+      <catalogsearch>
+        <rewrite>
+          <result>Schracklive_SchrackCatalogSearch_Block_Result</result>
+          <autocomplete>Schracklive_SchrackCatalogSearch_Block_Autocomplete</autocomplete>
+        </rewrite>
+      </catalogsearch>
+    </blocks>
+    <helpers>
+      <schrackcatalogsearch>
+        <class>Schracklive_SchrackCatalogSearch_Helper</class>
+      </schrackcatalogsearch>
+    </helpers>
+  </global>
+</config>

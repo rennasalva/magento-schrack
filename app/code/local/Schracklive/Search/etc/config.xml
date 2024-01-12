@@ -1,0 +1,83 @@
+<?xml version="1.0"?>
+<config>
+	<modules>
+		<Schracklive_Search>
+			<version>1.1.1</version>
+			<depends>
+				<Schracklive_Schrack />
+			</depends>
+		</Schracklive_Search>
+	</modules>
+	<global>
+		<models>
+			<search>
+				<class>Schracklive_Search_Model</class>
+			</search>
+		</models>
+		<blocks>
+			<search>
+				<class>Schracklive_Search_Block</class>
+			</search>
+		</blocks>
+		<helpers>
+			<search>
+				<class>Schracklive_Search_Helper</class>
+			</search>
+		</helpers>
+		<resources>
+			<search_setup>
+				<setup>
+					<module>Schracklive_Search</module>
+				</setup>
+			</search_setup>
+		</resources>
+	</global>
+	<frontend>
+		<routers>
+			<search>
+				<use>standard</use>
+				<args>
+					<module>Schracklive_Search</module>
+					<frontName>search</frontName>
+				</args>
+			</search>
+		</routers>
+		<layout>
+			<updates>
+				<search>
+					<file>search.xml</file>
+				</search>
+			</updates>
+		</layout>
+		<translate>
+			<modules>
+				<Schracklive_Search>
+					<files>
+						<schrack>local/Schracklive_Search.csv</schrack>
+					</files>
+				</Schracklive_Search>
+			</modules>
+		</translate>
+	</frontend>
+	<default>
+		<schrack>
+			<solr>
+				<highlighting_enabled>1</highlighting_enabled>
+				<highlighting_enabled_pages>1</highlighting_enabled_pages>
+				<highlighting_fields>description_textS</highlighting_fields>
+				<highlighting_fields_pages>content</highlighting_fields_pages>
+				<highlighting_length>150</highlighting_length>
+				<highlighting_snippets>2</highlighting_snippets>
+				<highlighting_wrap><![CDATA[<span class="results-highlight">|</span>]]></highlighting_wrap>
+				<query_static_order_sale>0</query_static_order_sale>
+				<query_result_limit>51</query_result_limit>
+				<query_fields>sku_textTS^40.0 schrack_ean_textTM^30.0 schrack_keyword_foreign_textM^30.0 schrack_keyword_foreign_hidden_textM^30.0 name_textStS^500.0 name_textS^20.0 keyword_textStM^200.0 keyword_textM^10.0 description_textS^10.0 category_keyword_textM^5.0 category_name_textStS^10.0 category_names_search_textM^1.0 content^0.5</query_fields>
+				<query_fields_dead>sku_textTS^40.0 schrack_ean_textTM^30.0</query_fields_dead>
+				<query_fields_pages>title_textStS^500.0 title^50.0 nav_title^40.0 tagsH2H3^30.0 subtitle^20.0 content^15.0 keywords^10.0 description^1.0</query_fields_pages>
+				<query_boost>recip(schrack_wws_ranking_intS,1,999999,90)^50.0</query_boost>
+				<query_boost_sale>recip(schrack_wws_ranking_intS,1,999999,90)^10.0</query_boost_sale>
+				<query_boost_query>schrack_hersteller_facet:"01-Schrack-Trinity"^1000.0</query_boost_query>
+			</solr>
+		</schrack>
+	</default>
+</config>

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config>
+    <api>
+        <resources>
+            <!-- catalogInventoryStockItemSchrackUpdate -->
+            <cataloginventory_stock_item>
+                <methods>
+                    <schrackUpdate>
+                        <title>Update product stock data</title>
+                        <acl>cataloginventory/update</acl>
+                    </schrackUpdate>
+                    <schrackListStocks>
+                        <title>Update product stock data</title>
+                        <acl>cataloginventory/info</acl>
+                    </schrackListStocks>
+                    <schrackLockStocks>
+                        <title>Lock stocks</title>
+                        <acl>cataloginventory/update</acl>
+                    </schrackLockStocks>
+                </methods>
+            </cataloginventory_stock_item>
+        </resources>
+    </api>
+</config>

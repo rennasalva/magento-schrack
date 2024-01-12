@@ -1,0 +1,111 @@
+<!-- default/template/page/html/head.phtml (start) -->
+<meta http-equiv="X-UA-Compatible" content="IE=10,9" />
+<?php if (($this->getTitle() != "Magento Commerce" ) && ($this->getTitle() != NULL )) : ?>
+	<title><?php echo trim($this->getTitle()) ?></title>
+<?php endif; ?>
+<?php
+	$currentUrl = Mage::helper('core/url')->getCurrentUrl();
+	$tsMegaMenu = Mage::helper('schrackcatalog/megamenu')->getMegamenuChangedTimestampText();
+
+	$onlineschauraumIdentifier = false;
+
+	if (stristr($currentUrl, 'www.schrack.at/shop/wishlist/endcustomerpartslist/data/')
+		|| stristr($currentUrl, 'www.schrack.at/shop/wishlist/endcustomerpartslist/catalogs')
+		|| stristr($currentUrl, 'www.schrack.at/shop/wishlist/endcustomerpartslist/index/idkey/') ) {
+		$onlineschauraumIdentifier = true;
+	}
+
+	/* facebook */
+	if (($this->getTitle() != "Magento Commerce" ) && ($this->getTitle() != NULL )) :
+		$title = $this->getTitle();
+		$title = str_replace(Mage::getStoreConfig('design/head/title_prefix'), '', $title);
+		$title = str_replace(Mage::getStoreConfig('design/head/title_suffix'), '', $title);
+?>
+        <meta property="og:title" content="<?php echo trim($title); ?>" />
+		<meta property="og:site_name" content="<?php echo Mage::getStoreConfig('general/store_information/name'); ?>" />
+<?php endif; ?>
+<?php
+	if ( isset($refreshURL) ) {
+		echo '<meta http-equiv="refresh" content="1; URL='.$refreshURL.'">';
+	}
+?>
+<meta http-equiv="Content-Type" content="<?php echo $this->getContentType() ?>" />
+<?php
+	if (($this->getDescription() != "Default Description") && ($this->getDescription() != NULL )) :
+?>
+	<meta name="description" content="<?php echo htmlspecialchars(strip_tags($this->getDescription())) ?>" />
+<?php endif; ?>
+<?php if (($this->getKeywords() != "Magento, Varien, E-commerce" ) && ($this->getKeywords() != NULL )) : ?>
+	<meta name="keywords" content="<?php echo htmlspecialchars($this->getKeywords()) ?>" />
+<?php endif; ?>
+<?php if (($this->getRobots() != "INDEX,FOLLOW") && ($this->getRobots() != "*")) : ?>
+	<meta name="robots" content="<?php echo htmlspecialchars($this->getRobots()) ?>" />
+<?php endif; ?>
+<link rel="shortcut icon" href="<?php echo $this->getSkinUrl('favicon.ico') ?>" type="image/x-icon" />
+
+<script type="text/javascript">
+//<![CDATA[
+    var BLANK_URL = '<?php echo $this->helper('core/js')->getJsUrl('blank.html') ?>';
+    var BLANK_IMG = '<?php echo $this->helper('core/js')->getJsUrl('spacer.gif') ?>';
+    var BASE_URL  = '<?php echo str_replace('index.php/', '', Mage::getBaseUrl());?>';
+    console.log('mega_menu_latest_refresh_datetime (ISO): ' + '<?php echo $tsMegaMenu; ?>');
+    var MEGA_MENU_LATEST_REFRESH_TIMESTAMP = '<?php echo strtotime($tsMegaMenu); ?>';
+//]]>
+</script>
+
+<?php
+if ($onlineschauraumIdentifier == true) {
+	$resultgetCssJsHtml = str_replace('js/../', '', $this->getCssJsHtml());
+	$resultgetCssJsHtml = preg_replace('/Public\/Stylesheets\/.*allPacked.css/', 'Public/Stylesheets/allPacked.css', $resultgetCssJsHtml);
+	$resultgetCssJsHtml = preg_replace('/Public\/Javascript\/.*allPacked.js/', 'Public/Javascript/allPacked.js', $resultgetCssJsHtml);
+	$resultgetCssJsHtml = preg_replace('/Public\/Javascript\/.*commonPacked.js/', 'Public/Javascript/commonPacked.js', $resultgetCssJsHtml);
+	echo $resultgetCssJsHtml;
+} else {
+	echo $this->getCssJsHtml();
+}
+?>
+
+<!-- <?php echo $currentUrl; ?>  -->>
+
+<?php
+	if ($onlineschauraumIdentifier == true) :
+?>
+<script type="text/javascript" src="<?php echo $this->getSkinUrl('schrackdesign/Public/Javascript/foundation.js')?>"></script>
+<script type="text/javascript" src="<?php echo $this->getSkinUrl('schrackdesign/Public/Javascript/packedFooter.js')?>" ></script>
+<?php endif; ?>
+
+<?php
+	$actionName = $this->getAction()->getFullActionName();
+	if ($actionName == 'catalog_category_view') {
+		$category = Mage::registry('current_category');
+		$prodCol = $category->getProductCollection();
+		$tool = $this->getLayout()->createBlock('page/html_pager')->setLimit($this->getLayout()->createBlock('catalog/product_list_toolbar')->getLimit())->setCollection($prodCol);
+		$linkPrev = false;
+		$linkNext = false;
+		if ($tool->getCollection()->getSelectCountSql()) {
+			if ($tool->getLastPageNum() > 1) {
+				if (!$tool->isFirstPage()) {
+					$linkPrev = true;
+					if ($tool->getCurrentPage() == 2) {
+						$url = explode('?', $tool->getPreviousPageUrl());
+						$prevUrl = @$url[0];
+					}
+					else {
+						$prevUrl = $tool->getPreviousPageUrl();
+					}
+				}
+				if (!$tool->isLastPage()) {
+					$linkNext = true;
+					$nextUrl = $tool->getNextPageUrl();
+				}
+			}
+		}
+		if ($linkPrev) echo '<link rel="prev" href="' . $prevUrl . '" />'."\n";
+		if ($linkNext) echo '<link rel="next" href="' . $nextUrl . '" />'."\n";
+	}
+?>
+<?php echo $this->getChildHtml() ?>
+<?php echo $this->helper('core/js')->getTranslatorScript() ?>
+<?php echo $this->getIncludes() ?>
+<?php echo $this->getChildHtml('applicationjs')?>
+<!-- default/template/page/html/head.phtml (end) -->

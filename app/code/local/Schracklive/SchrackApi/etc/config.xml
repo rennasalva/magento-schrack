@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<config>
+	<modules>
+		<Schracklive_SchrackApi>
+			<version>1.0.0</version>
+			<depends>
+				<Mage_Api />
+				<Schracklive_Schrack />
+			</depends>
+		</Schracklive_SchrackApi>
+	</modules>
+	<global>
+		<models>
+			<api>
+				<rewrite>
+					<session>Schracklive_SchrackApi_Model_Session</session>
+                    <wsdl_config>Schracklive_SchrackApi_Model_Wsdl_Config</wsdl_config>
+                    <server_v2_adapter_soap>Schracklive_SchrackApi_Model_Server_V2_Adapter_Soap</server_v2_adapter_soap>
+				</rewrite>
+			</api>
+		</models>
+	</global>
+</config>

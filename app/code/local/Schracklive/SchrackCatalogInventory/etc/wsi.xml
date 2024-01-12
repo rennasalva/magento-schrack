@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions xmlns:typens="urn:{{var wsdl.name}}"
+             xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+             xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+             xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/"
+             xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+             name="{{var wsdl.name}}"
+             targetNamespace="urn:{{var wsdl.name}}">
+    
+    <wsdl:types>
+        <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="urn:{{var wsdl.name}}">
+            <xsd:complexType name="tt_schrack_stock">
+                <xsd:sequence>
+                    <xsd:element name="xrow" type="xsd:int" minOccurs="1" maxOccurs="1"/>
+                    <xsd:element name="StockNumber" type="xsd:int" minOccurs="1" maxOccurs="1"/>
+                    <xsd:element name="StockLocation" type="xsd:string" minOccurs="0"  maxOccurs="1"/>
+                    <xsd:element name="Sku" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+                    <xsd:element name="Qty" type="xsd:decimal" minOccurs="0"  maxOccurs="1"/>
+                    <xsd:element name="PickupSalesUnit" type="xsd:int" minOccurs="0"  maxOccurs="1"/>
+                    <xsd:element name="DeliverySalesUnit" type="xsd:int" minOccurs="0"  maxOccurs="1"/>
+                    <xsd:element name="PickupState" type="xsd:int" minOccurs="0"  maxOccurs="1"/>
+                    <xsd:element name="DeliveryState" type="xsd:int" minOccurs="0"  maxOccurs="1"/>
+                    <xsd:element name="IsValid" type="xsd:int" minOccurs="0"  maxOccurs="1"/>
+                    <xsd:element name="IsHidden" type="xsd:int" minOccurs="0"  maxOccurs="1"/>
+                </xsd:sequence>
+            </xsd:complexType>
+            <xsd:complexType name="tt_schrack_stock_info">
+                <xsd:sequence>
+                    <xsd:element name="number" type="xsd:int" minOccurs="1" maxOccurs="1"/>
+                    <xsd:element name="name" type="xsd:string" minOccurs="1"  maxOccurs="1"/>
+                    <xsd:element name="street" type="xsd:string" minOccurs="0"  maxOccurs="1"/>
+                    <xsd:element name="zip" type="xsd:string" minOccurs="0"  maxOccurs="1"/>
+                    <xsd:element name="city" type="xsd:string" minOccurs="0"  maxOccurs="1"/>
+                    <xsd:element name="phone" type="xsd:string" minOccurs="0"  maxOccurs="1"/>
+                    <xsd:element name="fax" type="xsd:string" minOccurs="0"  maxOccurs="1"/>
+                    <xsd:element name="email" type="xsd:string" minOccurs="0"  maxOccurs="1"/>
+                    <xsd:element name="gmap" type="xsd:string" minOccurs="0"  maxOccurs="1"/>
+                </xsd:sequence>
+            </xsd:complexType>
+            <xsd:complexType name="tt_schrack_result">
+                <xsd:sequence>
+                    <xsd:element name="xrow" nillable="true" type="xsd:int" minOccurs="1" maxOccurs="1"/>
+                    <xsd:element name="xstatus" nillable="true" type="xsd:int" minOccurs="1" maxOccurs="1"/>
+                    <xsd:element name="xerror" nillable="true" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+                </xsd:sequence>
+            </xsd:complexType>
+
+            <xsd:complexType name="ArrayOf_tt_schrack_stock">
+                <xsd:sequence>
+                    <xsd:element name="tt_schrack_stock" type="typens:tt_schrack_stock" nillable="false" minOccurs="1" maxOccurs="unbounded"/>
+                </xsd:sequence>
+            </xsd:complexType>
+            <xsd:complexType name="ArrayOf_tt_schrack_result">
+                <xsd:sequence>
+                    <xsd:element name="tt_schrack_result" type="typens:tt_schrack_result" nillable="false" minOccurs="1" maxOccurs="unbounded"/>
+                </xsd:sequence>
+            </xsd:complexType>
+            <xsd:complexType name="ArrayOf_tt_stock_info">
+                <xsd:sequence>
+                    <xsd:element name="tt_schrack_stock_info" type="typens:tt_schrack_stock_info" nillable="false" minOccurs="1" maxOccurs="unbounded"/>
+                </xsd:sequence>
+            </xsd:complexType>
+
+            <xsd:element name="catalogInventoryStockItemSchrackUpdateRequestParam">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element minOccurs="1" maxOccurs="1" name="sessionId"  type="xsd:string" />
+                        <xsd:element minOccurs="1" maxOccurs="1" name="ctry_code"  type="xsd:string" />
+                        <xsd:element minOccurs="1" maxOccurs="1" name="sender_id"  type="xsd:string" />
+                        <xsd:element minOccurs="1" maxOccurs="1" name="data_stock" type="typens:ArrayOf_tt_schrack_stock" />
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+            <xsd:element name="catalogInventoryStockItemSchrackUpdateResponseParam">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element minOccurs="1" maxOccurs="1" name="exit_code"   type="xsd:int" />
+                        <xsd:element minOccurs="1" maxOccurs="1" name="exit_msg"    type="xsd:string" />
+                        <xsd:element minOccurs="1" maxOccurs="1" name="data_result" type="typens:ArrayOf_tt_schrack_result" />
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+            <xsd:element name="catalogInventoryStockItemSchrackListStocksRequestParam">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element minOccurs="1" maxOccurs="1" name="sessionId"  type="xsd:string" />
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+            <xsd:element name="catalogInventoryStockItemSchrackListStocksResponseParam">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element minOccurs="1" maxOccurs="1" name="exit_code"   type="xsd:int" />
+                        <xsd:element minOccurs="1" maxOccurs="1" name="exit_msg"    type="xsd:string" />
+                        <xsd:element minOccurs="1" maxOccurs="1" name="data_result" type="typens:ArrayOf_tt_stock_info" />
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+
+        </xsd:schema>
+    </wsdl:types>
+    
+    <wsdl:message name="catalogInventoryStockItemSchrackUpdateRequest">
+        <wsdl:part name="parameters" element="typens:catalogInventoryStockItemSchrackUpdateRequestParam" />
+    </wsdl:message>
+    <wsdl:message name="catalogInventoryStockItemSchrackUpdateResponse">
+        <wsdl:part name="parameters" element="typens:catalogInventoryStockItemSchrackUpdateResponseParam" />
+    </wsdl:message>
+    <wsdl:message name="catalogInventoryStockItemSchrackListStocksRequest">
+        <wsdl:part name="parameters" element="typens:catalogInventoryStockItemSchrackListStocksRequestParam" />
+    </wsdl:message>
+    <wsdl:message name="catalogInventoryStockItemSchrackListStocksResponse">
+        <wsdl:part name="parameters" element="typens:catalogInventoryStockItemSchrackListStocksResponseParam" />
+    </wsdl:message>
+    
+    <wsdl:portType name="{{var wsdl.handler}}PortType">
+        <wsdl:operation name="catalogInventoryStockItemSchrackUpdate">
+            <wsdl:documentation>Update product stock data in a Schrack way</wsdl:documentation>
+            <wsdl:input message="typens:catalogInventoryStockItemSchrackUpdateRequest" />
+            <wsdl:output message="typens:catalogInventoryStockItemSchrackUpdateResponse" />
+        </wsdl:operation>
+        <wsdl:operation name="catalogInventoryStockItemSchrackListStocks">
+            <wsdl:documentation>Get stock data</wsdl:documentation>
+            <wsdl:input message="typens:catalogInventoryStockItemSchrackListStocksRequest" />
+            <wsdl:output message="typens:catalogInventoryStockItemSchrackListStocksResponse" />
+        </wsdl:operation>
+    </wsdl:portType>
+    
+     <wsdl:binding name="{{var wsdl.handler}}Binding" type="typens:{{var wsdl.handler}}PortType">
+        <wsdl:operation name="catalogInventoryStockItemSchrackUpdate">
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="catalogInventoryStockItemSchrackListStocks">
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+    </wsdl:binding>
+
+</wsdl:definitions>
+

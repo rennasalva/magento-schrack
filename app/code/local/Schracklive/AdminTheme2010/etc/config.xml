@@ -1,0 +1,14 @@
+<config>
+  <stores>
+    <admin>
+      <design>
+        <package>
+          <name>default</name>
+        </package>
+        <theme>
+          <default>schrackadmin2010</default>
+        </theme>
+      </design>
+    </admin>
+  </stores>
+</config>

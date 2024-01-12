@@ -1,0 +1,18 @@
+<script type="text/javascript">
+    //<![CDATA[
+    var getZipCodeRegex = function(countryId) {
+        countryId = countryId.toLowerCase();
+        var regexes = <?php echo Mage::helper('geoip')->getZipCodeRegexes()?>;
+console.log(regexes[countryId]);
+        if ( regexes[countryId] ) {
+            return new RegExp(regexes[countryId]);
+        } else {
+            return /\w+/;
+        }
+    }
+
+    var validateZipCode = function(countryId, text) {
+        return getZipCodeRegex(countryId).match(text);
+    }
+    //]]>
+</script>

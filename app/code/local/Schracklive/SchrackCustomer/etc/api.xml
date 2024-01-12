@@ -1,0 +1,95 @@
+<?xml version="1.0"?>
+<config>
+	<api>
+		<resources>
+			<customer>
+				<methods>
+					<replaceContact>
+						<title>Replace contact data (customer)</title>
+						<acl>customer/update</acl>
+					</replaceContact>
+					<deleteContact>
+						<title>Delete contact data (customer)</title>
+						<acl>customer/delete</acl>
+					</deleteContact>
+					<getWwsId>
+                        <title>get WWS customer id for eMail of shop user</title>
+						<acl>customer/info</acl>
+                    </getWwsId> 
+                    <authenticateUser>
+                        <title>checks user and password for allowance</title>
+						<acl>customer/info</acl>
+                    </authenticateUser>
+					<authenticateUserV20>
+						<title>checks user and password for allowance</title>
+						<acl>customer/info</acl>
+					</authenticateUserV20>
+                    <getLoginToken>
+                        <title>creates a login token for the customer with these credentials</title>
+                        <acl>customer/info</acl>
+                    </getLoginToken>
+                    <findCountryByEmail>
+                        <title>find country for customer email</title>
+                        <acl>customer/info</acl>
+                    </findCountryByEmail>
+					<changeProspectToCustomer>
+						<title>Change a prospect to a full customer and a contact</title>
+						<acl>customer/update</acl>
+					</changeProspectToCustomer>
+					<assignProspectToCustomer>
+						<title>Assigning a prospect (as contact) to an existing customer</title>
+						<acl>customer/update</acl>
+					</assignProspectToCustomer>
+					<replaceContactWithProspect>
+						<title>Replacing existing contact by a prospect (as contact)</title>
+						<acl>customer/update</acl>
+					</replaceContactWithProspect>
+					<checkFullProspectByMail>
+						<title>Find out if contact is full prospect</title>
+						<acl>customer/update</acl>
+					</checkFullProspectByMail>
+                    <assignNewS4YIdToContact>
+                        <title>Assigning a S4Y ID to an existing contact</title>
+                        <acl>customer/update</acl>
+                    </assignNewS4YIdToContact>
+					<resetPassword>
+						<title>create new ChangepwToken email</title>
+						<acl>customer/info</acl>
+					</resetPassword>
+					<registerToolUser>
+						<title>register new tool user</title>
+						<acl>customer/info</acl>
+					</registerToolUser>
+					<confirmTermsOfUse>
+						<title>confirm terms of use</title>
+						<acl>customer/info</acl>
+					</confirmTermsOfUse>
+				</methods>
+				<faults>
+					<exists>
+						<code>202</code>
+						<message>Customer already exists.</message>
+					</exists>
+				</faults>
+			</customer>
+			<customer_address>
+				<methods>
+					<replaceLocation>
+						<title>Replace address data (for account)</title>
+						<acl>customer/update</acl>
+					</replaceLocation>
+					<deleteLocation>
+						<title>Delete address data (for account)</title>
+						<acl>customer/delete</acl>
+					</deleteLocation>
+				</methods>
+				<faults>
+					<exists>
+						<code>202</code>
+						<message>Address already exists.</message>
+					</exists>
+				</faults>
+			</customer_address>
+		</resources>
+	</api>
+</config>

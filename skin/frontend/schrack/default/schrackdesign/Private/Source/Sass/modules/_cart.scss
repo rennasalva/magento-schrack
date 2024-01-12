@@ -1,0 +1,358 @@
+/*Cart Page CSS*/
+
+.cartCont {
+	padding: 15px 0 0;
+}
+
+.cartCont .onlineBonus a {
+	color: #fff;
+	text-decoration: underline;
+}
+
+.cartCont .onlineBonus a:hover {
+	text-decoration: none;
+}
+
+#headline-commercial-warning {
+	background: #00589D;
+	color: #fff;
+	font-size: 15px;
+	padding: 15px;
+	margin-bottom: 15px;
+}
+
+.cartBx {
+	border: 1px solid #d6d6d6;
+	-webkit-box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.16);
+	box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.16);
+	width: 100%;
+	margin-bottom: 15px;
+}
+
+.cartBx .leftSec {
+	text-align: center;
+	font-size: 12px;
+	color: #888888;
+	font-family: 'robotomedium', Helvetica, Arial, Sans-Serif;
+	padding: 15px 5px;
+	word-wrap: break-word;
+}
+
+.cartBx .leftSec img {
+	height: auto;
+	width: auto;
+	max-width: 100%;
+}
+
+.cartBx .rightSec {
+	padding: 15px 10px 0;
+	font-size: 15px;
+}
+
+.cartBx .rightSec label {
+	font-weight: normal;
+	color: #333333;
+}
+
+.cartBx .rightSec .productName {
+	font-size: 18px;
+	color: #025397;
+	position: relative;
+	margin-bottom: 20px;
+}
+
+.cartBx .rightSec .productName a {
+	font-size: 20px;
+	color: #025397;
+}
+
+.cartBx .rightSec .productName .actionIcon {
+	position: absolute;
+	right: 20px;
+	top: 3px;
+	color: #c7c7c7;
+}
+
+.cartBx .rightSec .productName .actionIcon span {
+	margin: 0 0px 0 5px;
+}
+
+.cartBx .rightSec .productName .actionIcon a {
+	margin: 0;
+}
+
+.cartBx .rightSec .qty,
+.cartBx .rightSec .pickupableBx,
+.cartBx .rightSec .instock {
+	margin-bottom: 15px;
+	color: #333333;
+}
+
+.cartBx .rightSec .stock-section {
+	color: #333;
+}
+
+/* [TASK #20564] Implementation of robotoregular from Google fonts */
+.cartBx .rightSec .stock-section .product-stock,
+.cartBx .rightSec .stock-section .product-store {
+	margin-bottom: 15px;
+	font-size: 15px;
+	font-family: 'robotoregular', Helvetica, Arial, Sans-Serif;
+}
+
+.cartBx .rightSec .stock-section .product-store span.logstics-icon,
+.cartBx .rightSec .stock-section .product-store span.store-icon {
+	margin-right: 10px;
+}
+
+.cartBx .rightSec .qty input {
+	width: 70px;
+	text-align: center;
+	margin-left: 10px;
+	display: inline-block;
+}
+
+.cartBx .rightSec .stock {
+	color: #969595;
+}
+
+.cartBx .rightSec .price {
+	color: #025397;
+	font-size: 12px;
+}
+
+.cartBx .rightSec .price span.sml span {
+	font-size: 18px;
+}
+
+.cartBx .rightSec .delivery {
+	margin-top: 20px;
+}
+
+.cartBx .rightSec .delivery .logstics-icon {
+	background: url(../Images/rwd/logistics.png) left top no-repeat;
+	width: 49px;
+	height: 24px;
+	display: inline-block;
+	background-size: 100%;
+	margin-right: 8px;
+	vertical-align: middle;
+}
+
+.cartBx .rightSec .delivery .cart-icon,
+.cartBx .rightSec .delivery .store-icon {
+	background: url(../Images/rwd/store.png) left top no-repeat;
+	width: 39px;
+	height: 32px;
+	display: inline-block;
+	margin-right: 5px;
+	background-size: 100% 100%;
+	vertical-align: middle;
+}
+
+.cartBx .rightSec .price .finalPrice {
+	font-size: 21px;
+	line-height: 14px;
+}
+
+.cartBx .popupBox {
+	left: 0px;
+}
+
+.cartSubTotal {
+	border: 1px solid #c8ced2;
+	padding: 15px;
+	background: #00589d;
+	color: #fff;
+	font-family: 'robotomedium', Helvetica, Arial, Sans-Serif;
+	margin-bottom: 15px;
+}
+
+.cartSubTotal .hd {
+	font-size: 18px;
+	margin-bottom: 10px;
+}
+
+.cartSubTotal .priceBx {
+	font-size: 12px;
+	padding-bottom: 10px;
+	margin-bottom: 10px;
+	border-bottom: 1px solid #cccccc;
+}
+
+.cartSubTotal .priceBx .left {
+	float: left;
+	margin-right: 10px;
+	width: 30%;
+}
+
+.cartSubTotal .priceBx .right {
+	float: left;
+	margin-top: -14px;
+	text-align: right;
+	width: 65%;
+}
+
+.cartSubTotal .priceBx .price {
+	font-size: 24px;
+}
+
+
+.cartBx .rightSec .productName {
+	font-size: 18px;
+	color: #00589d;
+}
+
+.cartBx .rightSec .qty {
+	margin-bottom: 10px;
+}
+
+.cartBx .rightSec .delivery {
+	margin-top: 10px;
+}
+
+
+.cartOfferRef {
+	float: left;
+	width: 100%;
+	text-align: center;
+	margin: 0;
+	margin-top:40px;
+}
+
+//
+//  Responsive
+//  ---------------------------------------------
+
+@media (min-width: $breakpoint-up-md) and (max-width: $breakpoint-down-lg) {
+	.cartBx .leftSec img {
+		width: 100%;
+	}
+
+	.cartBx .rightSec .qty input {
+		margin-left: 5px;
+	}
+
+	.cartBx .rightSec .price {
+		font-size: 12px;
+	}
+
+	.cartBx .rightSec .productName a {
+		margin-right: 0px;
+		display: inline-block;
+		font-size: 16px;
+	}
+
+	.cartBx .rightSec .productName .actionIcon {
+		position: absolute;
+		right: 10px;
+		top: 0px;
+	}
+
+	.cartBx .rightSec .productName .actionIcon span {
+		margin: 0 3px;
+	}
+
+	.cartSubTotal .priceBx .left {
+		margin-right: 5px;
+		width: 43%;
+	}
+
+	.cartSubTotal .priceBx .right {
+		margin-top: 0px;
+		width: 54%;
+	}
+
+	.cartSubTotal .priceBx .price {
+		font-size: 20px;
+	}
+}
+
+@media (min-width: $breakpoint-up-xs) and (max-width: $breakpoint-down-md) {
+	/*Cart Css*/
+	.cartCont {
+		margin-left: -15px;
+		margin-right: -15px;
+	}
+
+	.cartBx .leftSec {
+		border-right: 0;
+	}
+
+	.cartBx .leftSec img {
+		width: 100%;
+	}
+
+	.cartBx .rightSec .productName .actionIcon {
+		right: -10px;
+		top: -5px;
+	}
+
+	.cartBx .rightSec .productName .actionIcon span {
+		margin: 0 5px 0 0;
+	}
+
+	.cartBx .rightSec .price {
+		padding-left: 15px;
+	}
+
+	.cartBx .rightSec .qty, .cartBx .rightSec .productName {
+		margin-bottom: 5px;
+	}
+
+	.cartBx .rightSec .qty .bttnAddCrt a {
+		float: left !important;
+	}
+
+	.cartBx .rightSec .qty .form-group {
+		margin-bottom: 5px;
+	}
+
+	.cartBx .rightSec .delivery {
+		margin-top: 5px;
+	}
+
+	.cartBx .rightSec.bdrLftGray {
+		border: 0;
+	}
+
+	.cartSubTotal .priceBx {
+		font-size: 11px;
+	}
+
+	.cartSubTotal .priceBx .left {
+		margin-right: 0px;
+		width: 51%;
+	}
+
+	.cartSubTotal .priceBx .right {
+		margin-top: -7px;
+		width: 48%;
+	}
+
+	.cartSubTotal .priceBx .price {
+		font-size: 18px;
+	}
+
+	.cartBx .rightSec .productName a {
+		margin-right: 15px;
+		word-wrap: break-word;
+		font-size: 16px;
+	}
+
+	.cartBx .rightSec .productName .actionIcon {
+		position: absolute;
+		right: 5px;
+		top: 0px;
+	}
+
+	.cartBx .rightSec .productName .actionIcon span {
+		margin: 0 2px;
+	}
+}
+
+@media (min-width: 290px) and (max-width: 350px) {
+	.cartBx .popupBox {
+		left: -60px;
+	}
+}

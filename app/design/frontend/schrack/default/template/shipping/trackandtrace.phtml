@@ -1,0 +1,121 @@
+<?php echo $this->getMessagesBlock()->getGroupedHtml() ?>
+<div class="row">
+    <div class="large-12 columns">
+        <h1 class="headline b1"><?php echo $this->__('Track and Trace')?></h1>
+    </div>
+</div>
+<div class="row info-box">
+        <div class="large-12 columns">
+            <?php echo $this->__('In the Track and Trace window, you can trace the current status of each parcel by its collo number, as well as their history.')?>
+        </div>
+</div>
+<div class="row">
+    <div class="large-12 columns">
+        <?php if ($results): ?>
+            <?php foreach ($results->shipmentList->Shipment as $shipment): ?>
+                <?php $deliveryDateTime = $this->getDateFormatted($shipment->DeliveryDateTimeTo); ?>
+                <?php foreach ($shipment->ColloList->Collo as $collo): ?>
+                    <?php
+                        $statusList = array();
+                        $alreadyDelivered = false;
+                        foreach($collo->StatusList->MainStatus as $status) {
+                            if (isset($status->ColloID) && $this->isMainStatus($status->StatusID))
+                                $statusList[] = $status;
+                                if ($status->StatusID == 'DVD') {
+                                    $alreadyDelivered = true;
+                                }
+                        }
+                    ?>
+                    <?php if ( isset($collo->ColloNumber) || (is_array($collo->CodeList->ColloCode) && isset($collo->CodeList->ColloCode[0]->Code)) ) : ?>
+                    <?php
+                        if ( is_array($collo->CodeList->ColloCode) && isset($collo->CodeList->ColloCode[0]->Code) ) {
+                            $colloNumber = $collo->CodeList->ColloCode[0]->Code;
+                        } else {
+                            $colloNumber = $collo->ColloNumber;
+                        }
+                    ?>
+                        <div class="shipment">
+                            <h2 class="headline c1" style="width: 621px;">
+                                <div style="float: left;">
+                                    <?php echo $this->__('Collo Number')?>: <?php echo $colloNumber; ?>
+                                </div>
+                                <?php if ($alreadyDelivered == false) :  ?>
+                                    <span style="float: right; font-size: 0.7em; margin-left: 5px; border: 1px solid #000; color: #000; padding-left: 3px; padding-right: 3px;">
+                                        <?php echo $this->__('Expected Delivery Date') . ': ' .  $deliveryDateTime; ?>
+                                    </span>
+                                <?php endif ?>
+                                <div style="clear: both;"></div>
+                            </h2>
+                            <?php $_carrierName = null;
+                                if (property_exists($collo, 'OUContainerCarrierName') && isset($collo->OUContainerCarrierName)) {
+                                    $_carrierName = $collo->OUContainerCarrierName;
+                                } elseif (property_exists($collo, 'OUPickupCarrierName') && isset($collo->OUPickupCarrierName))
+                                { $_carrierName = $collo->OUPickupCarrierName; }
+                                elseif (property_exists($collo, 'OUDeliveryCarrierName') && isset($collo->OUDeliveryCarrierName))
+                                { $_carrierName = $collo->OUDeliveryCarrierName; }
+                            ?>
+                            <?php if ($_carrierName !== null): ?>
+                                <h2>
+                                    <?php echo $this->__('Carrier')?>:
+                                    <?php echo $_carrierName; ?>
+                                </h2>
+                            <?php endif; ?>
+                            <table class="collo-list">
+                                <tr>
+                                    <th class="">
+                                        <?php echo $this->__('Date')?>
+                                    </th>
+                                    <th class="">
+                                        <?php echo $this->__('Time')?>
+                                    </th>
+                                    <th class="">
+                                        <?php echo $this->__('Shipment Status')?>
+                                    </th>
+                                    <th class="">
+                                        <?php echo $this->__('Description')?>
+                                    </th>
+                                </tr>
+
+                                <?php $currentStatus = array_shift($statusList); ?>
+                                <?php if ($this->getStatusFromId($currentStatus->StatusID)):?>
+                                    <tr class="current-status">
+                                        <td class=""><?php echo $this->getDateFormatted($currentStatus->StatusDate)?></td>
+                                        <td class=""><?php echo $this->getTimeFormatted($currentStatus->StatusDate)?></td>
+                                        <td class=""><?php echo $this->__($this->getStatusNameFromId($currentStatus->StatusID))?></td>
+                                        <td class="<?php if (count($statusList)):?> switch<?php endif;?>" id="switch-<?php echo $currentStatus->ColloID?>"><?php echo $this->__($this->getStatusDescriptionFromId($currentStatus->StatusID, ''))?></td>
+                                    </tr>
+                                <?php endif;?>
+                                <?php foreach($statusList as $status):?>
+                                    <?php if (isset($status->ColloID) && $this->isMainStatus($status->StatusID)):?>
+                                        <tr class="history history-<?php echo $status->ColloID?>">
+                                            <td class=""><?php echo $this->getDateFormatted($status->StatusDate)?></td>
+                                            <td class=""><?php echo $this->getTimeFormatted($status->StatusDate)?></td>
+                                            <td class=""><?php echo $this->__($this->getStatusNameFromId($status->StatusID))?></td>
+                                            <td class=""><?php echo $this->__($this->getStatusDescriptionFromId($status->StatusID, $status->Description))?></td> 
+                                        </tr>
+                                    <?php endif;?>
+                                <?php endforeach;?>
+                            </table>
+                            <div style="height: 15px;"></div>
+                        </div>
+                    <?php endif;?>
+                <?php endforeach; ?>        
+            <?php endforeach; ?>        
+        <?php endif; ?>
+        <?php if ($badResults): ?>
+            <h2><?php echo $this->__('No results found.') . ' ' . $badResults; ?></h2>
+        <?php endif; ?>
+    </div>
+</div>
+<script type="text/javascript">//<![CDATA[
+
+    jQuery(document).ready(function(){
+        jQuery('.switch').click(function(evt) {
+            evt.stopPropagation();
+            var number = jQuery(evt.target).attr('id').substring(7);
+            var histClass = 'history-' + number;
+            jQuery('.' + histClass).toggle();
+        });
+    });
+
+//]]></script>

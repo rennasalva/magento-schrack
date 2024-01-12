@@ -1,0 +1,440 @@
+.partListCont .cartBx .rightSec .productName .actionIcon {
+	right: 15px;
+	top: 0;
+}
+
+.partListCont .cartBx .rightSec .productName .actionIcon .deleteIcon,
+.partListCont .cartBx .rightSec .productName .actionIcon .noteIcon {
+	width: 18px;
+	height: 18px;
+	display: inline-block;
+	background-size: 100% 100%;
+}
+
+.partListCont .cartBx .rightSec .productName .actionIcon .partlistIcon {
+	/*background: url(../Images/rwd/partlistIconLgrayFilled.jpg) left top no-repeat; background-size: 100% 100%;*/
+	background: none;
+	width: 18px;
+	height: 18px;
+	display: inline-block;
+	margin-top: 2px;
+	margin-right: 0px;
+	font-family: 'Glyphicons Halflings';
+	font-size: 16px;
+}
+
+.partListCont .cartBx .rightSec .productName .actionIcon .partlistIcon:after {
+	color: #dddddd;
+	content: "\e146";
+}
+
+.partListCont .cartBx .rightSec .productName .actionIcon .partlistIcon.blueTxt:after {
+	color: #00589d;
+	content: "\e146";
+}
+
+.partListCont .cartBx .rightSec .productName .actionIcon .partlistIcon:hover {
+	text-decoration: none;
+}
+
+
+.quickaddIcon {
+	background: url(../Images/rwd/quickAddIcon.png) left top no-repeat;
+	height: 18px;
+	width: 17px;
+}
+
+.renameIcon {
+	background: url(../Images/rwd/renameIcon.png) left top no-repeat;
+	height: 18px;
+	width: 18px;
+}
+
+.clearIcon {
+	background: url(../Images/rwd/clearIcon.png) left top no-repeat;
+	height: 19px;
+	width: 20px;
+}
+
+.noteIcon {
+	background: url(../Images/rwd/noteIcon.png) left top no-repeat;
+	height: 18px;
+	width: 22px;
+}
+
+.deleteIcon {
+	background: url(../Images/rwd/deleteIcon.png) left top no-repeat;
+	height: 27px;
+	width: 21px;
+}
+
+.partListCont .actionBx .quickaddIcon,
+.partListCont .actionBx .renameIcon,
+.partListCont .actionBx .clearIcon,
+.partListCont .actionBx .noteIcon,
+.partListCont .actionBx .deleteIcon {
+	width: 15px;
+	height: 15px;
+	background-size: 100% 100%;
+	display: inline-block;
+	margin-right: 3px;
+	margin-bottom: -3px;
+}
+
+
+.agentCont .phoneIcon,
+.agentCont .faxIcon,
+.agentCont .emailIcon,
+.agentCont .siteIcon {
+	width: 15px;
+	height: 15px;
+	display: inline-block;
+}
+
+.agentCont .phoneIcon {
+	background: url(../Images/rwd/phoneIcon.png) left top no-repeat;
+}
+
+.agentCont .faxIcon {
+	background: url(../Images/rwd/faxIcon.png) left top no-repeat;
+}
+
+.agentCont .emailIcon {
+	background: url(../Images/rwd/mailIcon.png) left top no-repeat;
+}
+
+.agentCont .siteIcon {
+	background: url(../Images/rwd/shopGlobeIcon.png) left top no-repeat;
+}
+
+.otherAdvisorsIcon,
+.myAcountIcon,
+.orderIcon,
+.offerIcon,
+.promotionIcon,
+.shipmentIcon,
+.backorderIcon,
+.invoiceIcon,
+.creditIcon,
+.partlistIcon,
+.pricelistIcon,
+.detailSearchIcon,
+.myDataIcon,
+.eInvoiceIcon,
+.manageAccountIcon,
+.storeIcon,
+.myDefaultPaymentIcon,
+.changePasswordIcon,
+.addressListIcon {
+	width: 24px;
+	height: 24px;
+	display: block;
+	float: left;
+	margin-right: 10px;
+	background-size: 100% 100% !important;
+}
+
+.myAcountIcon {
+	background: url(../Images/rwd/svgIcons/myAccount.svg) left top no-repeat;
+}
+
+.myAcountIcon.active {
+	background: url(../Images/rwd/svgIcons/myAccount-hover.svg) left top no-repeat;
+}
+
+.orderIcon {
+	background: url(../Images/rwd/svgIcons/orders.svg) left top no-repeat;
+}
+
+.orderIcon.active {
+	background: url(../Images/rwd/svgIcons/orders-hover.svg) left top no-repeat;
+}
+
+.storeIcon {
+	background: url(../Images/rwd/svgIcons/cart.svg) left top no-repeat;
+}
+
+.storeIcon.active {
+	background: url(../Images/rwd/svgIcons/cart-hover.svg) left top no-repeat;
+}
+
+.changePasswordIcon {
+	background: url(../Images/rwd/svgIcons/changePassword.svg) left top no-repeat;
+}
+
+.changePasswordIcon.active {
+	background: url(../Images/rwd/svgIcons/changePassword-hover.svg) left top no-repeat;
+}
+
+.myDefaultPaymentIcon {
+	background: url(../Images/rwd/svgIcons/myDefaultPayment.svg) left top no-repeat;
+}
+
+.myDefaultPaymentIcon.active {
+	background: url(../Images/rwd/svgIcons/myDefaultPayment-hover.svg) left top no-repeat;
+}
+
+.offerIcon {
+	background: url(../Images/rwd/svgIcons/offers.svg) left top no-repeat;
+}
+
+.offerIcon.active {
+	background: url(../Images/rwd/svgIcons/offers-hover.svg) left top no-repeat;
+}
+
+.promotionIcon {
+	background: url(../Images/rwd/svgIcons/parmotion.svg) left top no-repeat;
+}
+
+.promotionIcon.active {
+	background: url(../Images/rwd/svgIcons/parmotion-hover.svg) left top no-repeat;
+}
+
+.shipmentIcon {
+	background: url(../Images/rwd/logistics.png) left top no-repeat;
+	height: 16px;
+}
+
+.shipmentIcon.active {
+	background: url(../Images/rwd/svgIcons/logistics-hover.svg) left top no-repeat;
+	height: 16px;
+}
+
+.backorderIcon {
+	background: url(../Images/rwd/backorders_cutted.png) left top no-repeat;
+}
+
+.backorderIcon.active {
+	background: url(../Images/rwd/backorders-hover.png) left top no-repeat;
+}
+
+.invoiceIcon {
+	background: url(../Images/rwd/svgIcons/invoice.svg) left top no-repeat;
+}
+
+.invoiceIcon.active {
+	background: url(../Images/rwd/svgIcons/invoice-hover.svg) left top no-repeat;
+}
+
+.creditIcon {
+	background: url(../Images/rwd/svgIcons/credit.svg) left top no-repeat;
+}
+
+.creditIcon.active {
+	background: url(../Images/rwd/svgIcons/credit-hover.svg) left top no-repeat;
+}
+
+.detailSearchIcon {
+	background: url(../Images/rwd/svgIcons/detailSearch.svg) left top no-repeat;
+}
+
+.detailSearchIcon.active {
+	background: url(../Images/rwd/svgIcons/detailSearch-hover.svg) left top no-repeat;
+}
+
+.partlistIcon {
+	/*background:url(../Images/rwd/svgIcons/partlist.svg) left top no-repeat;*/
+	background: none;
+	margin-right: 8px;
+	font-family: 'Glyphicons Halflings';
+	font-size: 18px;
+}
+
+.partlistIcon:after {
+	color: #005c9f;
+	content: "\e146";
+}
+
+.partlistIcon.active:after {
+	color: #fff;
+}
+
+.addressListIcon {
+	background: url(../Images/rwd/svgIcons/addressList.svg) left top no-repeat;
+}
+
+.addressListIcon.active {
+	background: url(../Images/rwd/svgIcons/addressList-hover.svg) left top no-repeat;
+}
+
+.pricelistIcon {
+	background: url(../Images/rwd/svgIcons/pricelistDatanorm.svg) left top no-repeat;
+}
+
+.pricelistIcon.active {
+	background: url(../Images/rwd/svgIcons/pricelistDatanorm-hover.svg) left top no-repeat;
+}
+
+.myDataIcon {
+	background: url(../Images/rwd/svgIcons/myData.svg) left top no-repeat;
+}
+
+.myDataIcon.active {
+	background: url(../Images/rwd/svgIcons/myData-hover.svg) left top no-repeat;
+}
+
+.otherAdvisorsIcon {
+	background: url(../Images/rwd/svgIcons/userAccounts.svg) left top no-repeat;
+}
+
+.otherAdvisorsIcon.active {
+	background: url(../Images/rwd/svgIcons/userAccounts-hover.svg) left top no-repeat;
+}
+
+.eInvoiceIcon {
+	background: url(../Images/rwd/svgIcons/eInvoice.svg) left top no-repeat;
+}
+
+.eInvoiceIcon.active {
+	background: url(../Images/rwd/svgIcons/eInvoice-hover.svg) left top no-repeat;
+}
+
+.manageAccountIcon {
+	background: url(../Images/rwd/svgIcons/userAccounts.svg) left top no-repeat;
+}
+
+.manageAccountIcon.active {
+	background: url(../Images/rwd/svgIcons/userAccounts-hover.svg) left top no-repeat;
+}
+
+.partlistBlueBdrIcon {
+	background: url(../Images/rwd/partlistIconBlueBdr.png) left top no-repeat;
+	display: block;
+}
+
+
+.partlistGrayIcon {
+	/*background-size: 100% 100% !important; background:url(../Images/rwd/partlistIcon.png) left top no-repeat; width: 20px; height: 21px;*/
+	display: block;
+	float: left;
+	margin-right: 12px;
+	font-family: 'Glyphicons Halflings';
+	font-size: 20px;
+	cursor: pointer;
+}
+
+.partlistGrayIcon:after {
+	color: #999;
+	content: "\e146";
+}
+
+.pdfIcon {
+	width: 23px;
+	height: 30px;
+	display: block;
+	float: left;
+	margin-right: 11px;
+	background-size: 100% 100% !important;
+	background: url(../Images/rwd/pdfIcon.png) left top no-repeat;
+}
+
+.eyeIcon {
+	width: 54px;
+	height: 30px;
+	display: block;
+	float: left;
+	margin-right: 11px;
+	background-size: 100% 100% !important;
+	background: url(../Images/rwd/svgIcons/eye.svg) left top no-repeat;
+}
+
+.csvIcon {
+	width: 23px;
+	height: 30px;
+	display: block;
+	float: left;
+	margin-right: 11px;
+	background-size: 100% 100% !important;
+	background: url(../Images/rwd/svgIcons/csv.svg) left top no-repeat;
+}
+
+.addToCartIcon {
+	width: 23px;
+	height: 30px;
+	display: block;
+	float: left;
+	margin-right: 11px;
+	background-size: 100% 100% !important;
+	background: url(../Images/rwd/addToCartIcon.png) left top no-repeat;
+}
+
+.partlistBlueIcon {
+	/*width: 20px; height: 21px; display: block; float: left; margin-right: 12px; background-size: 100% 100% !important; background:url(../Images/rwd/partlistIconBlue.png) left top no-repeat;*/
+	display: block;
+	float: left;
+	margin-right: 12px;
+	font-family: 'Glyphicons Halflings';
+	font-size: 20px;
+	cursor: pointer;
+}
+
+.partlistBlueIcon:after {
+	color: #005c9f;
+	content: "\e146";
+}
+
+
+.partlists-action .deleteIcon {
+	width: 21px;
+	height: 24px;
+	display: inline-block;
+	background: url(../Images/rwd/deleteIconGray.png) left top no-repeat;
+	background-size: 100% 100%;
+	float: left;
+	margin-right: 10px;
+	margin-top: 5px;
+}
+
+.partlists-action .messageIcon {
+	width: 24px;
+	height: 15px;
+	display: inline-block;
+	background: url(../Images/rwd/messageIcon.jpg) left top no-repeat;
+	background-size: 100% 100%;
+	float: left;
+	margin-right: 10px;
+	margin-top: 10px;
+}
+
+.partlists-action .shareIcon {
+	width: 15px;
+	height: 15px;
+	display: inline-block;
+	background: url(../Images/rwd/shareIcon.png) left top no-repeat;
+	background-size: 100% 100%;
+	float: left;
+	margin-right: 10px;
+	margin-top: 10px;
+}
+
+
+
+.filterCrossIcon {
+	position: absolute;
+	right: 5px;
+	top: 0;
+	cursor: pointer;
+}
+
+.filterCrossIcondashoard {
+	position: absolute;
+	right: 18px;
+	top: 14px;
+	cursor: pointer;
+}
+
+//
+//  Responsive
+//  ---------------------------------------------
+
+/*Product Detail Css*/
+/* i icon click issue on PDP */
+@media screen and (max-width: 640px) {
+	span.info-icon:hover + .popupBox {
+		display: block;
+	}
+
+	.open span.info-icon:hover + .popupBox {
+		display: none;
+	}
+}

@@ -1,0 +1,696 @@
+<?xml version="1.0"?>
+<config>
+  <sections>
+        <customer translate="label" module="customer">
+            <groups>
+                <password translate="label">
+                    <fields>
+                        <reset_email_template translate="label">
+                            <label>NEW: Reset Email Template</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_email_template</source_model>
+                            <sort_order>5</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </reset_email_template>
+                    </fields>
+                </password>
+            </groups>
+        </customer>
+    <schrack>
+      <groups>
+        <customer>
+          <label>Customer</label>
+          <sort_order>1</sort_order>
+          <show_in_default>1</show_in_default>
+          <show_in_website>0</show_in_website>
+          <show_in_store>0</show_in_store>
+          <fields>
+            <warn_message_on_dashboard translate="label">
+              <label>Warn message on dashboard</label>
+              <frontend_type>text</frontend_type>
+              <sort_order>1</sort_order>
+              <show_in_default>1</show_in_default>
+              <show_in_website>0</show_in_website>
+              <show_in_store>0</show_in_store>
+            </warn_message_on_dashboard>
+            <sendEmails translate="label">
+              <label>Send Emails to New Customers (CRM Contacts)</label>
+              <frontend_type>select</frontend_type>
+              <source_model>schrackcustomer/config_source_sendemails</source_model>
+              <sort_order>5</sort_order>
+              <show_in_default>1</show_in_default>
+              <show_in_website>0</show_in_website>
+              <show_in_store>0</show_in_store>
+            </sendEmails>
+            <changeCompanyInfo translate="label">
+              <label>Company Data Change Request</label>
+              <frontend_type>select</frontend_type>
+              <source_model>adminhtml/system_config_source_email_template</source_model>
+              <sort_order>10</sort_order>
+              <show_in_default>1</show_in_default>
+              <show_in_website>0</show_in_website>
+              <show_in_store>0</show_in_store>
+            </changeCompanyInfo>
+            <useTracking translate="label">
+              <label>Use internal (non-GA) customer tracking</label>
+              <frontend_type>select</frontend_type>
+              <source_model>adminhtml/system_config_source_yesno</source_model>
+              <sort_order>20</sort_order>
+              <show_in_default>1</show_in_default>
+              <show_in_website>0</show_in_website>
+              <show_in_store>0</show_in_store>
+            </useTracking>
+            <vatCheckEmailToAddress>
+                <label>Address for Registration VAT check email</label>
+                <frontend_type>text</frontend_type>
+                <sort_order>30</sort_order>
+                <show_in_default>1</show_in_default>
+                <show_in_website>1</show_in_website>
+                <show_in_store>1</show_in_store>
+            </vatCheckEmailToAddress>
+            <notifyOrderedOfferProcess translate="label">
+               <label>Processing Ordered Offer eMail</label>
+                <frontend_type>select</frontend_type>
+                <source_model>adminhtml/system_config_source_email_template</source_model>
+                <sort_order>40</sort_order>
+                <show_in_default>1</show_in_default>
+                <show_in_website>0</show_in_website>
+                <show_in_store>0</show_in_store>
+            </notifyOrderedOfferProcess>
+            <max_share_cart_as_csv_per_hour translate="label">
+              <label>Limit Of E-Mails Per Hour (Cart)</label>
+              <frontend_type>text</frontend_type>
+              <sort_order>50</sort_order>
+              <show_in_default>1</show_in_default>
+              <show_in_website>0</show_in_website>
+              <show_in_store>0</show_in_store>
+            </max_share_cart_as_csv_per_hour>
+            <max_share_partlists_as_csv_per_hour translate="label">
+              <label>Limit Of E-Mails Per Hour (Partlist)</label>
+              <frontend_type>text</frontend_type>
+              <sort_order>60</sort_order>
+              <show_in_default>1</show_in_default>
+              <show_in_website>0</show_in_website>
+              <show_in_store>0</show_in_store>
+            </max_share_partlists_as_csv_per_hour>
+            <individualSKUs translate="label">
+              <label>Enable individual SKUs</label>
+              <frontend_type>select</frontend_type>
+              <source_model>adminhtml/system_config_source_yesno</source_model>
+              <sort_order>70</sort_order>
+              <show_in_default>1</show_in_default>
+              <show_in_website>0</show_in_website>
+              <show_in_store>0</show_in_store>
+            </individualSKUs>
+            <registration_advisor_redirect translate="label">
+              <label>Self-Registration: Alternate Advisor User-Principal</label>
+              <frontend_type>text</frontend_type>
+              <sort_order>80</sort_order>
+              <show_in_default>1</show_in_default>
+              <show_in_website>0</show_in_website>
+              <show_in_store>0</show_in_store>
+            </registration_advisor_redirect>
+            <registration_advisor_redirect_for_pupils translate="label">
+              <label>Self-Registration + Pupil State Checked: Alternate Advisor User-Principal</label>
+              <frontend_type>text</frontend_type>
+              <sort_order>90</sort_order>
+              <show_in_default>1</show_in_default>
+              <show_in_website>0</show_in_website>
+              <show_in_store>0</show_in_store>
+            </registration_advisor_redirect_for_pupils>
+          </fields>
+        </customer>
+        <new_self_registration translate="label">
+              <label>New Self Registration</label>
+              <sort_order>44</sort_order>
+              <show_in_default>1</show_in_default>
+              <show_in_website>0</show_in_website>
+              <show_in_store>0</show_in_store>
+              <fields>
+                  <groupAssignProjectantRoleToLightProspect translate="label">
+                      <label>Assign Projectant Role To Light Prospect</label>
+                      <frontend_type>select</frontend_type>
+                      <source_model>adminhtml/system_config_source_yesno</source_model>
+                      <sort_order>100</sort_order>
+                      <show_in_default>1</show_in_default>
+                      <show_in_website>0</show_in_website>
+                      <show_in_store>0</show_in_store>
+                  </groupAssignProjectantRoleToLightProspect>
+                  <groupAssignProjectantRoleToFullProspect translate="label">
+                      <label>Assign Projectant Role To Full Prospect</label>
+                      <frontend_type>select</frontend_type>
+                      <source_model>adminhtml/system_config_source_yesno</source_model>
+                      <sort_order>100</sort_order>
+                      <show_in_default>1</show_in_default>
+                      <show_in_website>0</show_in_website>
+                      <show_in_store>0</show_in_store>
+                  </groupAssignProjectantRoleToFullProspect>
+                  <registerInTypo translate="label">
+                      <label>Register In TYPO</label>
+                      <frontend_type>select</frontend_type>
+                      <source_model>adminhtml/system_config_source_yesno</source_model>
+                      <sort_order>110</sort_order>
+                      <show_in_default>1</show_in_default>
+                      <show_in_website>0</show_in_website>
+                      <show_in_store>0</show_in_store>
+                  </registerInTypo>
+                  <new_self_registration_options translate="label">
+                      <label>New Self Registration Options</label>
+                      <frontend_type>select</frontend_type>
+                      <source_model>schrackcustomer/selfregistrationoptions</source_model>
+                      <sort_order>120</sort_order>
+                      <show_in_default>1</show_in_default>
+                      <show_in_website>0</show_in_website>
+                      <show_in_store>0</show_in_store>
+                  </new_self_registration_options>
+                  <registerEmailDestinationProspects translate="label">
+                      <label>Register Email Destination (Prospects)</label>
+                      <frontend_type>text</frontend_type>
+                      <sort_order>130</sort_order>
+                      <show_in_default>1</show_in_default>
+                      <show_in_website>0</show_in_website>
+                      <show_in_store>0</show_in_store>
+                  </registerEmailDestinationProspects>
+                  <new_self_registration_checkout_options translate="label">
+                      <label>New Self Registration Checkout Options</label>
+                      <frontend_type>select</frontend_type>
+                      <source_model>schrackcustomer/selfregistrationcheckoutoptions</source_model>
+                      <sort_order>140</sort_order>
+                      <show_in_default>1</show_in_default>
+                      <show_in_website>0</show_in_website>
+                      <show_in_store>0</show_in_store>
+                  </new_self_registration_checkout_options>
+                  <checkoutEmailDestinationProspects translate="label">
+                      <label>Checkout Email Destination (Prospects)</label>
+                      <frontend_type>text</frontend_type>
+                      <sort_order>150</sort_order>
+                      <show_in_default>1</show_in_default>
+                      <show_in_website>0</show_in_website>
+                      <show_in_store>0</show_in_store>
+                  </checkoutEmailDestinationProspects>
+                  <specialRouteForGuest translate="label">
+                      <label>Handle guests like new registrations in checkout</label>
+                      <frontend_type>select</frontend_type>
+                      <source_model>adminhtml/system_config_source_yesno</source_model>
+                      <sort_order>160</sort_order>
+                      <show_in_default>1</show_in_default>
+                      <show_in_website>0</show_in_website>
+                      <show_in_store>0</show_in_store>
+                  </specialRouteForGuest>
+                  <triggerLocalVat translate="label">
+                      <label>Use Local VAT</label>
+                      <frontend_type>select</frontend_type>
+                      <source_model>adminhtml/system_config_source_yesno</source_model>
+                      <sort_order>170</sort_order>
+                      <show_in_default>1</show_in_default>
+                      <show_in_website>0</show_in_website>
+                      <show_in_store>0</show_in_store>
+                  </triggerLocalVat>
+                  <vatCheckSendEmailToSupport>
+                      <label>Send E-Mail to Support on required VAT-Softcheck (only Prospect/Guest)</label>
+                      <frontend_type>select</frontend_type>
+                      <source_model>adminhtml/system_config_source_yesno</source_model>
+                      <sort_order>173</sort_order>
+                      <show_in_default>1</show_in_default>
+                      <show_in_website>0</show_in_website>
+                      <show_in_store>0</show_in_store>
+                  </vatCheckSendEmailToSupport>
+                  <triggerNewsletterForProspects translate="label">
+                      <label>Enable Newsletter Selection On Prospect Registration/Checkout</label>
+                      <frontend_type>select</frontend_type>
+                      <source_model>adminhtml/system_config_source_yesno</source_model>
+                      <sort_order>180</sort_order>
+                      <show_in_default>1</show_in_default>
+                      <show_in_website>0</show_in_website>
+                      <show_in_store>0</show_in_store>
+                  </triggerNewsletterForProspects>
+                  <triggerNewsletterForProspectsDefaultSetting translate="label">
+                      <label>Set Default Newsletter Enabled (Prechecked Checkbox)?</label>
+                      <frontend_type>select</frontend_type>
+                      <source_model>adminhtml/system_config_source_yesno</source_model>
+                      <sort_order>190</sort_order>
+                      <show_in_default>1</show_in_default>
+                      <show_in_website>0</show_in_website>
+                      <show_in_store>0</show_in_store>
+                  </triggerNewsletterForProspectsDefaultSetting>
+                  <triggerGuestOrderAvailable translate="label">
+                      <label>Guest Order Available</label>
+                      <frontend_type>select</frontend_type>
+                      <source_model>adminhtml/system_config_source_yesno</source_model>
+                      <sort_order>200</sort_order>
+                      <show_in_default>1</show_in_default>
+                      <show_in_website>0</show_in_website>
+                      <show_in_store>0</show_in_store>
+                  </triggerGuestOrderAvailable>
+                  <checkmo_payment_available translate="label">
+                      <label>Bank Transfer For Guest/Prospect Order Available</label>
+                      <frontend_type>select</frontend_type>
+                      <source_model>adminhtml/system_config_source_yesno</source_model>
+                      <sort_order>210</sort_order>
+                      <show_in_default>1</show_in_default>
+                      <show_in_website>0</show_in_website>
+                      <show_in_store>0</show_in_store>
+                  </checkmo_payment_available>
+              </fields>
+          </new_self_registration>
+          <dsgvo translate="label">
+              <label>DSGVO Settings</label>
+              <sort_order>300</sort_order>
+              <show_in_default>1</show_in_default>
+              <show_in_website>0</show_in_website>
+              <show_in_store>0</show_in_store>
+              <fields>
+                  <activateLayerForLogin translate="label">
+                      <label>Activate Layer On Login</label>
+                      <frontend_type>select</frontend_type>
+                      <source_model>adminhtml/system_config_source_yesno</source_model>
+                      <sort_order>100</sort_order>
+                      <show_in_default>1</show_in_default>
+                      <show_in_website>0</show_in_website>
+                      <show_in_store>0</show_in_store>
+                  </activateLayerForLogin>
+                  <activateRegistrationCheckboxDataProtection translate="label">
+                      <label>Activate Checkbox For Data Protection (Ragistration)</label>
+                      <frontend_type>select</frontend_type>
+                      <source_model>adminhtml/system_config_source_yesno</source_model>
+                      <sort_order>110</sort_order>
+                      <show_in_default>1</show_in_default>
+                      <show_in_website>0</show_in_website>
+                      <show_in_store>0</show_in_store>
+                  </activateRegistrationCheckboxDataProtection>
+                  <activateRegistrationCheckboxDSGVO translate="label">
+                      <label>Activate Checkbox For DSGVO (Registration)</label>
+                      <frontend_type>select</frontend_type>
+                      <source_model>adminhtml/system_config_source_yesno</source_model>
+                      <sort_order>120</sort_order>
+                      <show_in_default>1</show_in_default>
+                      <show_in_website>0</show_in_website>
+                      <show_in_store>0</show_in_store>
+                  </activateRegistrationCheckboxDSGVO>
+                  <activateCheckoutCheckboxDataProtection translate="label">
+                      <label>Activate Checkbox For Data Protection (Checkout)</label>
+                      <frontend_type>select</frontend_type>
+                      <source_model>adminhtml/system_config_source_yesno</source_model>
+                      <sort_order>130</sort_order>
+                      <show_in_default>1</show_in_default>
+                      <show_in_website>0</show_in_website>
+                      <show_in_store>0</show_in_store>
+                  </activateCheckoutCheckboxDataProtection>
+                  <activateCheckoutCheckboxDSGVO translate="label">
+                      <label>Activate Checkbox For DSGVO (Checkout)</label>
+                      <frontend_type>select</frontend_type>
+                      <source_model>adminhtml/system_config_source_yesno</source_model>
+                      <sort_order>140</sort_order>
+                      <show_in_default>1</show_in_default>
+                      <show_in_website>0</show_in_website>
+                      <show_in_store>0</show_in_store>
+                  </activateCheckoutCheckboxDSGVO>
+              </fields>
+          </dsgvo>
+          <toolsma translate="label">
+              <label>Multiple Advisor Feature</label>
+              <sort_order>500</sort_order>
+              <show_in_default>1</show_in_default>
+              <show_in_website>0</show_in_website>
+              <show_in_store>0</show_in_store>
+              <fields>
+                  <multiple_advisor_feature translate="label">
+                      <label>Activate Multiple Advisor Feature</label>
+                      <frontend_type>select</frontend_type>
+                      <source_model>adminhtml/system_config_source_yesno</source_model>
+                      <sort_order>20</sort_order>
+                      <show_in_default>1</show_in_default>
+                      <show_in_website>0</show_in_website>
+                      <show_in_store>1</show_in_store>
+                  </multiple_advisor_feature>
+                  <multiple_advisor_feature_advisor_one_email translate="label">
+                      <label>Multiple Advisor Feature (Advisor 1: E-Mail)</label>
+                      <frontend_type>text</frontend_type>
+                      <sort_order>30</sort_order>
+                      <show_in_default>1</show_in_default>
+                      <show_in_website>0</show_in_website>
+                      <show_in_store>1</show_in_store>
+                  </multiple_advisor_feature_advisor_one_email>
+                  <multiple_advisor_feature_advisor_one_branch translate="label">
+                      <label>Multiple Advisor Feature (Advisor 1: Branch)</label>
+                      <frontend_type>text</frontend_type>
+                      <sort_order>31</sort_order>
+                      <show_in_default>1</show_in_default>
+                      <show_in_website>0</show_in_website>
+                      <show_in_store>1</show_in_store>
+                  </multiple_advisor_feature_advisor_one_branch>
+                  <multiple_advisor_feature_advisor_one_name translate="label">
+                      <label>Multiple Advisor Feature (Advisor 1: Name)</label>
+                      <frontend_type>text</frontend_type>
+                      <sort_order>32</sort_order>
+                      <comment><![CDATA[This Information Comes From Active Directory Fetch]]></comment>
+                      <show_in_default>1</show_in_default>
+                      <show_in_website>0</show_in_website>
+                      <show_in_store>1</show_in_store>
+                  </multiple_advisor_feature_advisor_one_name>
+                  <multiple_advisor_feature_advisor_one_phone translate="label">
+                      <label>Multiple Advisor Feature (Advisor 1: Telephone)</label>
+                      <frontend_type>text</frontend_type>
+                      <sort_order>40</sort_order>
+                      <comment><![CDATA[This Information Comes From Active Directory Fetch]]></comment>
+                      <show_in_default>1</show_in_default>
+                      <show_in_website>0</show_in_website>
+                      <show_in_store>1</show_in_store>
+                  </multiple_advisor_feature_advisor_one_phone>
+                  <multiple_advisor_feature_advisor_one_fax translate="label">
+                      <label>Multiple Advisor Feature (Advisor 1: Fax)</label>
+                      <frontend_type>text</frontend_type>
+                      <sort_order>50</sort_order>
+                      <comment><![CDATA[This Information Comes From Active Directory Fetch]]></comment>
+                      <show_in_default>1</show_in_default>
+                      <show_in_website>0</show_in_website>
+                      <show_in_store>1</show_in_store>
+                  </multiple_advisor_feature_advisor_one_fax>
+                  <multiple_advisor_feature_advisor_two_email translate="label">
+                      <label>Multiple Advisor Feature (Advisor 2: E-Mail)</label>
+                      <frontend_type>text</frontend_type>
+                      <sort_order>60</sort_order>
+                      <show_in_default>1</show_in_default>
+                      <show_in_website>0</show_in_website>
+                      <show_in_store>1</show_in_store>
+                  </multiple_advisor_feature_advisor_two_email>
+                  <multiple_advisor_feature_advisor_two_branch translate="label">
+                      <label>Multiple Advisor Feature (Advisor 2: Branch)</label>
+                      <frontend_type>text</frontend_type>
+                      <sort_order>61</sort_order>
+                      <show_in_default>1</show_in_default>
+                      <show_in_website>0</show_in_website>
+                      <show_in_store>1</show_in_store>
+                  </multiple_advisor_feature_advisor_two_branch>
+                  <multiple_advisor_feature_advisor_two_name translate="label">
+                      <label>Multiple Advisor Feature (Advisor 2: Name)</label>
+                      <frontend_type>text</frontend_type>
+                      <sort_order>62</sort_order>
+                      <comment><![CDATA[This Information Comes From Active Directory Fetch]]></comment>
+                      <show_in_default>1</show_in_default>
+                      <show_in_website>0</show_in_website>
+                      <show_in_store>1</show_in_store>
+                  </multiple_advisor_feature_advisor_two_name>
+                  <multiple_advisor_feature_advisor_two_phone translate="label">
+                      <label>Multiple Advisor Feature (Advisor 2: Telephone)</label>
+                      <frontend_type>text</frontend_type>
+                      <sort_order>70</sort_order>
+                      <comment><![CDATA[This Information Comes From Active Directory Fetch]]></comment>
+                      <show_in_default>1</show_in_default>
+                      <show_in_website>0</show_in_website>
+                      <show_in_store>1</show_in_store>
+                  </multiple_advisor_feature_advisor_two_phone>
+                  <multiple_advisor_feature_advisor_two_fax translate="label">
+                      <label>Multiple Advisor Feature (Advisor 2: Fax)</label>
+                      <frontend_type>text</frontend_type>
+                      <sort_order>80</sort_order>
+                      <comment><![CDATA[This Information Comes From Active Directory Fetch]]></comment>
+                      <show_in_default>1</show_in_default>
+                      <show_in_website>0</show_in_website>
+                      <show_in_store>1</show_in_store>
+                  </multiple_advisor_feature_advisor_two_fax>
+                  <multiple_advisor_feature_advisor_three_email translate="label">
+                      <label>Multiple Advisor Feature (Advisor 3: E-Mail)</label>
+                      <frontend_type>text</frontend_type>
+                      <sort_order>90</sort_order>
+                      <show_in_default>1</show_in_default>
+                      <show_in_website>0</show_in_website>
+                      <show_in_store>1</show_in_store>
+                  </multiple_advisor_feature_advisor_three_email>
+                  <multiple_advisor_feature_advisor_three_branch translate="label">
+                      <label>Multiple Advisor Feature (Advisor 3: Branch)</label>
+                      <frontend_type>text</frontend_type>
+                      <sort_order>91</sort_order>
+                      <show_in_default>1</show_in_default>
+                      <show_in_website>0</show_in_website>
+                      <show_in_store>1</show_in_store>
+                  </multiple_advisor_feature_advisor_three_branch>
+                  <multiple_advisor_feature_advisor_three_name translate="label">
+                      <label>Multiple Advisor Feature (Advisor 3: Name)</label>
+                      <frontend_type>text</frontend_type>
+                      <sort_order>92</sort_order>
+                      <comment><![CDATA[This Information Comes From Active Directory Fetch]]></comment>
+                      <show_in_default>1</show_in_default>
+                      <show_in_website>0</show_in_website>
+                      <show_in_store>1</show_in_store>
+                  </multiple_advisor_feature_advisor_three_name>
+                  <multiple_advisor_feature_advisor_three_phone translate="label">
+                      <label>Multiple Advisor Feature (Advisor 3: Telephone)</label>
+                      <frontend_type>text</frontend_type>
+                      <sort_order>100</sort_order>
+                      <comment><![CDATA[This Information Comes From Active Directory Fetch]]></comment>
+                      <show_in_default>1</show_in_default>
+                      <show_in_website>0</show_in_website>
+                      <show_in_store>1</show_in_store>
+                  </multiple_advisor_feature_advisor_three_phone>
+                  <multiple_advisor_feature_advisor_three_fax translate="label">
+                      <label>Multiple Advisor Feature (Advisor 3: Fax)</label>
+                      <frontend_type>text</frontend_type>
+                      <sort_order>110</sort_order>
+                      <comment><![CDATA[This Information Comes From Active Directory Fetch]]></comment>
+                      <show_in_default>1</show_in_default>
+                      <show_in_website>0</show_in_website>
+                      <show_in_store>1</show_in_store>
+                  </multiple_advisor_feature_advisor_three_fax>
+              </fields>
+          </toolsma>
+          <tools translate="label">
+              <label>Tools</label>
+              <sort_order>600</sort_order>
+              <show_in_default>1</show_in_default>
+              <show_in_website>0</show_in_website>
+              <show_in_store>0</show_in_store>
+              <fields>
+                  <order_review_timeout translate="label">
+                      <label>Page Refresh Time (In Minutes), To Finish Order in Checkout, On Order Review Page</label>
+                      <frontend_type>text</frontend_type>
+                      <sort_order>10</sort_order>
+                      <show_in_default>1</show_in_default>
+                      <show_in_website>0</show_in_website>
+                      <show_in_store>1</show_in_store>
+                  </order_review_timeout>
+                  <activate_redis_session_module translate="label">
+                      <label>Activate Redis Session Module</label>
+                      <frontend_type>select</frontend_type>
+                      <source_model>adminhtml/system_config_source_yesno</source_model>
+                      <sort_order>20</sort_order>
+                      <show_in_default>1</show_in_default>
+                      <show_in_website>0</show_in_website>
+                      <show_in_store>1</show_in_store>
+                  </activate_redis_session_module>
+                  <redis_log_active translate="label">
+                      <label>Activate Redis Log (redis_session.log)</label>
+                      <frontend_type>select</frontend_type>
+                      <source_model>adminhtml/system_config_source_yesno</source_model>
+                      <sort_order>30</sort_order>
+                      <show_in_default>1</show_in_default>
+                      <show_in_website>0</show_in_website>
+                      <show_in_store>1</show_in_store>
+                  </redis_log_active>
+                  <cacheflush translate="label">
+                      <label>Flush Frontend Cache</label>
+                      <frontend_type>button</frontend_type>
+                      <frontend_model>schrackadminhtml/cacheflush</frontend_model>
+                      <sort_order>40</sort_order>
+                      <show_in_default>1</show_in_default>
+                      <show_in_website>0</show_in_website>
+                      <show_in_store>1</show_in_store>
+                  </cacheflush>
+              </fields>
+          </tools>
+          <cutofftimes translate="label">
+              <label>Cut Off Times</label>
+              <sort_order>700</sort_order>
+              <show_in_default>1</show_in_default>
+              <show_in_website>0</show_in_website>
+              <show_in_store>0</show_in_store>
+              <fields>
+                  <cutofftimes_module_activated translate="label">
+                      <label>Activate Cut-Off-Times Module</label>
+                      <frontend_type>select</frontend_type>
+                      <source_model>adminhtml/system_config_source_yesno</source_model>
+                      <sort_order>10</sort_order>
+                      <show_in_default>1</show_in_default>
+                      <show_in_website>0</show_in_website>
+                      <show_in_store>0</show_in_store>
+                  </cutofftimes_module_activated>
+              </fields>
+              <fields>
+                  <holiday_service_url translate="label">
+                      <label>URL from timeanddate.com</label>
+                      <frontend_type>text</frontend_type>
+                      <sort_order>20</sort_order>
+                      <show_in_default>1</show_in_default>
+                      <show_in_website>0</show_in_website>
+                      <show_in_store>0</show_in_store>
+                  </holiday_service_url>
+              </fields>
+              <fields>
+                  <holiday_service_accesskey translate="label">
+                      <label>Holiday Service Accesskey</label>
+                      <frontend_type>text</frontend_type>
+                      <sort_order>30</sort_order>
+                      <show_in_default>1</show_in_default>
+                      <show_in_website>0</show_in_website>
+                      <show_in_store>0</show_in_store>
+                  </holiday_service_accesskey>
+              </fields>
+              <fields>
+                  <holiday_service_secretkey translate="label">
+                      <label>Holiday Service Secretkey</label>
+                      <frontend_type>text</frontend_type>
+                      <sort_order>40</sort_order>
+                      <show_in_default>1</show_in_default>
+                      <show_in_website>0</show_in_website>
+                      <show_in_store>0</show_in_store>
+                  </holiday_service_secretkey>
+              </fields>
+              <fields>
+                  <holiday_monday_time translate="label">
+                      <label>Monday: (HH:mm)</label>
+                      <frontend_type>text</frontend_type>
+                      <sort_order>50</sort_order>
+                      <show_in_default>1</show_in_default>
+                      <show_in_website>0</show_in_website>
+                      <show_in_store>0</show_in_store>
+                  </holiday_monday_time>
+              </fields>
+              <fields>
+                  <holiday_tuesday_time translate="label">
+                      <label>Tuesday: (HH:mm)</label>
+                      <frontend_type>text</frontend_type>
+                      <sort_order>51</sort_order>
+                      <show_in_default>1</show_in_default>
+                      <show_in_website>0</show_in_website>
+                      <show_in_store>0</show_in_store>
+                  </holiday_tuesday_time>
+              </fields>
+              <fields>
+                  <holiday_wednesday_time translate="label">
+                      <label>Wednesday: (HH:mm)</label>
+                      <frontend_type>text</frontend_type>
+                      <sort_order>52</sort_order>
+                      <show_in_default>1</show_in_default>
+                      <show_in_website>0</show_in_website>
+                      <show_in_store>0</show_in_store>
+                  </holiday_wednesday_time>
+              </fields>
+              <fields>
+                  <holiday_thursday_time translate="label">
+                      <label>Thursday: (HH:mm)</label>
+                      <frontend_type>text</frontend_type>
+                      <sort_order>53</sort_order>
+                      <show_in_default>1</show_in_default>
+                      <show_in_website>0</show_in_website>
+                      <show_in_store>0</show_in_store>
+                  </holiday_thursday_time>
+              </fields>
+              <fields>
+                  <holiday_friday_time translate="label">
+                      <label>Friday: (HH:mm)</label>
+                      <frontend_type>text</frontend_type>
+                      <sort_order>54</sort_order>
+                      <show_in_default>1</show_in_default>
+                      <show_in_website>0</show_in_website>
+                      <show_in_store>0</show_in_store>
+                  </holiday_friday_time>
+              </fields>
+              <fields>
+                  <holiday_saturday_time translate="label">
+                      <label>Saturday: (HH:mm)</label>
+                      <frontend_type>text</frontend_type>
+                      <sort_order>55</sort_order>
+                      <show_in_default>1</show_in_default>
+                      <show_in_website>0</show_in_website>
+                      <show_in_store>0</show_in_store>
+                  </holiday_saturday_time>
+              </fields>
+              <fields>
+                  <holiday_sunday_time translate="label">
+                      <label>Sunday: (HH:mm)</label>
+                      <frontend_type>text</frontend_type>
+                      <sort_order>56</sort_order>
+                      <show_in_default>1</show_in_default>
+                      <show_in_website>0</show_in_website>
+                      <show_in_store>0</show_in_store>
+                  </holiday_sunday_time>
+              </fields>
+              <fields>
+                  <holiday_custom_time translate="label">
+                      <label>Custom Holidays: (YYYY-mm-dd)  >>> As CSV</label>
+                      <frontend_type>text</frontend_type>
+                      <sort_order>57</sort_order>
+                      <show_in_default>1</show_in_default>
+                      <show_in_website>0</show_in_website>
+                      <show_in_store>0</show_in_store>
+                  </holiday_custom_time>
+              </fields>
+          </cutofftimes>
+      </groups>
+    </schrack>
+    <schrackdev>
+      <groups>
+        <customer>
+          <label>Customer</label>
+          <sort_order>1</sort_order>
+          <show_in_default>1</show_in_default>
+          <show_in_website>0</show_in_website>
+          <show_in_store>0</show_in_store>
+          <fields>
+            <testEmails translate="label">
+              <label>Show Emails to Customers (Don't Send)</label>
+              <frontend_type>select</frontend_type>
+              <source_model>adminhtml/system_config_source_yesno</source_model>
+              <sort_order>10</sort_order>
+              <show_in_default>1</show_in_default>
+              <show_in_website>0</show_in_website>
+              <show_in_store>0</show_in_store>
+            </testEmails>
+            <disableEmails translate="label">
+              <label>Disable All Emails to Customers</label>
+              <frontend_type>select</frontend_type>
+              <source_model>adminhtml/system_config_source_yesno</source_model>
+              <sort_order>20</sort_order>
+              <show_in_default>1</show_in_default>
+              <show_in_website>0</show_in_website>
+              <show_in_store>0</show_in_store>
+            </disableEmails>
+            <mappingDevelopmentMails translate="label">
+              <label>Email Replace Receiver (testuser_xx@schrack.com xx=COUNTRY)</label>
+              <frontend_type>text</frontend_type>
+              <sort_order>30</sort_order>
+              <show_in_default>1</show_in_default>
+              <show_in_website>0</show_in_website>
+              <show_in_store>0</show_in_store>
+            </mappingDevelopmentMails>
+          </fields>
+        </customer>
+      </groups>
+    </schrackdev>
+    <customer translate="label" module="customer">
+        <class>separator-top</class>
+        <label>Customer Configuration</label>
+        <tab>customer</tab>
+        <sort_order>130</sort_order>
+        <show_in_default>1</show_in_default>
+        <show_in_website>1</show_in_website>
+        <show_in_store>1</show_in_store>
+        <groups>
+          <online_customers translate="label">
+              <fields>
+                  <order_stop_email translate="label">
+                      <label>Redirected Customer Order E-Mail (NOT arrives WWS, but Shop-finished)</label>
+                      <frontend_type>text</frontend_type>
+                      <sort_order>20</sort_order>
+                      <show_in_default>1</show_in_default>
+                      <show_in_website>1</show_in_website>
+                      <show_in_store>1</show_in_store>
+                  </order_stop_email>
+              </fields>
+          </online_customers>
+        </groups>
+    </customer>
+  </sections>
+</config>

@@ -1,0 +1,331 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * 
+ *
+ * @category    design
+ * @package     schracklive_default
+ *
+ */
+
+-->
+<layout version="1.0.1">
+
+<!--
+Default layout, loads most of the pages
+-->
+
+    <customer_logged_in>
+
+        <reference name="top.links">
+            <action method="addLink" translate="label title" module="customer">
+                <title>My Partslists</title>
+                <path>wishlist/partslist/view</path>
+                <label>My Partslists</label>
+                <prepare>true</prepare>
+                <urlParams/>
+                <position>51</position>
+                <liParams/>
+                <aParams>
+                    <class>partslist</class>
+                </aParams>
+            </action>
+        </reference>
+
+    </customer_logged_in>
+
+<!--
+Customer account pages, rendered for all tabs in dashboard
+-->
+
+    <customer_account>
+        
+        <reference name="left">
+            <remove name="catalog.vertnav" />
+            <block type="customer/account_menu" name="customer_account_menu" template="customer/account/menu.phtml"></block>            
+        </reference>
+        
+        <!-- Mage_Wishlist -->
+        <reference name="customer_account_navigation">
+            <action method="addLink" translate="label" module="wishlist" ifconfig="wishlist/general/active">
+                <name>wishlist</name>
+                <path>wishlist/partslist/list</path>
+                <label>My Partslists</label>
+            </action>
+        </reference>
+    </customer_account>
+
+<!--
+Customer account home dashboard layout
+-->
+
+    <customer_account_index>
+
+        <reference name="right">
+            <action method="unsetChild"><name>wishlist</name></action>
+        </reference>
+    </customer_account_index>
+
+<!--
+Wishlist pages
+-->
+
+    <wishlist_index_index translate="label">
+        <label>Customer My Account My Wishlist</label>
+        <!-- Mage_Wishlist -->
+        <update handle="customer_account"/>
+        <reference name="my.account.wrapper">
+            <block type="wishlist/customer_wishlist" name="customer.wishlist" template="wishlist/view.phtml">
+                <block type="wishlist/customer_wishlist_item_options" name="customer.wishlist.item.options" as="item_options"/>
+                <block type="core/template" name="wishlist.partslist.view.quickadd" as="quickadd" template="checkout/cart/quickadd.phtml" />
+            </block>
+        </reference>
+        <reference name="right">
+            <action method="unsetChild"><name>wishlist_customer_sidebar</name></action>
+        </reference>        
+    </wishlist_index_index>
+
+    <wishlist_index_list translate="label">
+        <label>Customer My Account My Wishlist</label>
+        <!-- Mage_Wishlist -->
+        <update handle="customer_account"/>
+        <reference name="my.account.wrapper">
+            <block type="wishlist/customer_wishlist" name="customer.wishlist" template="wishlist/list.phtml">
+                <block type="wishlist/customer_wishlist_item_options" name="customer.wishlist.item.options" as="item_options"/>
+            </block>
+        </reference>
+        <reference name="right">
+            <action method="unsetChild"><name>wishlist_customer_sidebar</name></action>
+        </reference>
+    </wishlist_index_list>
+    
+    <wishlist_index_edit translate="label">
+        <label>Customer My Account My Wishlist</label>
+        <update handle="customer_account"/>
+        <reference name="my.account.wrapper">
+            <block type="wishlist/customer_wishlist" name="customer.wishlist" template="wishlist/edit.phtml">
+                <block type="wishlist/customer_wishlist_item_options" name="customer.wishlist.item.options" as="item_options"/>
+            </block>
+        </reference>
+        <reference name="right">
+            <action method="unsetChild">
+                <name>wishlist_customer_sidebar</name>
+            </action>
+        </reference>
+    </wishlist_index_edit>
+    
+    <wishlist_index_share translate="label">
+        <label>Customer My Account Wishlist Sharing Form</label>
+        <!-- Mage_Wishlist -->
+        <update handle="customer_account"/>
+        <reference name="my.account.wrapper">
+            <block type="wishlist/customer_sharing" name="wishlist.sharing" template="wishlist/sharing.phtml"/>
+        </reference>
+        <reference name="right">
+            <action method="unsetChild"><name>wishlist_customer_sidebar</name></action>
+        </reference>
+    </wishlist_index_share>
+    
+    <wishlist_index_configure translate="label">
+        <label>Configure Wishlist Item</label>
+        <update handle="catalog_product_view"/>
+        <reference name="product.info">
+            <block type="wishlist/item_configure" name="product.info.addto" as="addto" template="wishlist/item/configure/addto.phtml"/>
+        </reference>
+        <reference name="product.info.options.wrapper.bottom">
+            <action method="unsetChild"><name>product.info.addto</name></action>
+            <action method="append"><block>product.info.addto</block></action>
+        </reference>
+    </wishlist_index_configure>
+
+    <wishlist_shared_index translate="label">
+        <label>Customer Shared Wishlist View</label>
+        <!-- Mage_Wishlist -->
+        <reference name="content">
+            <block type="wishlist/share_wishlist" name="customer.wishlist" template="wishlist/shared.phtml"/>
+        </reference>
+    </wishlist_shared_index>
+
+    <wishlist_partslist translate="label">
+        <label>Customer My Account My Partslist</label>
+        <reference name="root">
+            <action method="setTemplate">
+                <template>page/2columns-right.phtml</template>
+            </action>
+        </reference>        
+        <reference name="right">
+            <action method="unsetChild"><name>wishlist_customer_sidebar</name></action>
+        </reference>
+    </wishlist_partslist>
+
+    <wishlist_partslist_create translate="label">
+        <label>Customer My Account My Partslist</label>
+        <update handle="wishlist_partslist"/>
+        <reference name="root">
+            <action method="setTemplate">
+                <template>page/2columns-right.phtml</template>
+            </action>
+        </reference>
+        <reference name="content">
+            <block type="wishlist/partslist" name="wishlist.partslist.create" template="wishlist/partslist/create.phtml"/>
+        </reference>
+    </wishlist_partslist_create>
+    
+    <wishlist_partslist_view translate="label">
+        <label>Customer My Account My Partslist</label>
+        <update handle="wishlist_partslist"/>
+        
+        <reference name="root">
+            <action method="setTemplate">
+                <template>page/2columns-left.phtml</template>
+            </action>
+        </reference>
+        <reference name="left">
+            <remove name="catalog.vertnav" />
+            <block type="customer/account_menu" name="customer_account_menu" template="customer/account/menu.phtml"></block>
+        </reference>        
+        <reference name="content">            
+            <block type="wishlist/partslist" name="wishlist.partslist.view" template="wishlist/partslist/view.phtml">
+                <block type="core/template" name="wishlist.partslist.view.quickadd" as="quickadd" template="checkout/cart/quickadd.phtml" />
+            </block>        
+        </reference>
+    </wishlist_partslist_view>
+
+    <wishlist_partslist_list translate="label">
+        <label>Customer My Account My Partslist</label>
+        <update handle="wishlist_partslist"/>
+        <reference name="root">
+            <action method="setTemplate">
+                <template>page/2columns-left.phtml</template>
+            </action>
+        </reference>
+        <reference name="left">
+            <remove name="catalog.vertnav" />
+            <block type="customer/account_menu" name="customer_account_menu" template="customer/account/menu.phtml"></block>
+        </reference>        
+        <reference name="content">
+            <block type="wishlist/partslist" name="wishlist.partslist.list" template="wishlist/partslist/list.phtml"/>
+        </reference>
+    </wishlist_partslist_list>
+
+    <wishlist_partslist_edit translate="label">
+        <label>Customer My Account My Partslist</label>
+        <update handle="wishlist_partslist"/>
+        <reference name="root">
+            <action method="setTemplate">
+                <template>page/2columns-left.phtml</template>
+            </action>
+        </reference>
+        <reference name="content">
+            <block type="wishlist/partslist" name="wishlist.partslist.edit" template="wishlist/partslist/edit.phtml"/>
+        </reference>
+    </wishlist_partslist_edit>
+    
+    <wishlist_partslist_test translate="label">
+        <label>Test</label>
+        <update handle="wishlist_partslist"/>
+        <reference name="root">
+            <action method="setTemplate">
+                <template>page/2columns-left.phtml</template>
+            </action>
+        </reference>
+        <reference name="content">
+            <block type="core/template" name="test" template="page/html/startmenu.phtml"/>
+        </reference>
+    </wishlist_partslist_test>
+    
+    <wishlist_partslist_downloadcsv>
+		<reference name="root">
+    		<block type="wishlist/partslist_csv" name="wishlist.partslist.downloadcsv" as="downloadcsv" template="wishlist/partslist/downloadcsv.phtml" />
+		</reference>
+    </wishlist_partslist_downloadcsv>
+
+    <wishlist_endcustomerpartslist_index translate="label title">
+        <label>Endcustomer Partslist</label>
+        <title>Endcustomer Partslist</title>
+        <reference name="root">
+            <action method="setTemplate">
+                <template>page/empty.phtml</template>
+            </action>
+        </reference>
+        <reference name="head">
+            <action method="setTitle" translate="title">
+                <title>Endcustomer Partslist</title>
+            </action>
+        </reference>
+        <reference name="content">
+            <block type="wishlist/endcustomerpartslist_index" name="endcustomerpartslist.index" template="wishlist/endcustomerpartslist/index.phtml">
+                <block type="wishlist/endcustomerpartslist_view" name="endcustomerpartslist.view" as="endcustomerpartslist.view" template="wishlist/endcustomerpartslist/view.phtml"/>
+                <block type="wishlist/endcustomerpartslist_customer" name="endcustomerpartslist.customer" as="endcustomerpartslist.customer" template="wishlist/endcustomerpartslist/customer.phtml"/>
+                <block type="wishlist/endcustomerpartslist_catalogs" name="endcustomerpartslist.catalogs" as="endcustomerpartslist.catalogs" template="wishlist/endcustomerpartslist/catalogs.phtml"/>
+                <block type="catalog/product_view_media" name="media" as="media" template="catalog/product/view/media.phtml"/>
+                <block type="catalog/product_view_attributes" name="attributes" as="attributes" template="catalog/product/view/attributes.phtml"/>
+            </block>
+        </reference>
+    </wishlist_endcustomerpartslist_index>
+
+    <wishlist_endcustomerpartslist_catalogs translate="label">
+        <label>Enducostomer Partslist</label>
+        <reference name="root">
+            <action method="setTemplate">
+                <template>page/empty.phtml</template>
+            </action>
+        </reference>
+        <reference name="content">
+            <block type="wishlist/endcustomerpartslist_catalogs" name="endcustomerpartslist.catalogs" template="wishlist/endcustomerpartslist/catalogs.phtml" />
+        </reference>
+    </wishlist_endcustomerpartslist_catalogs>
+
+    <wishlist_endcustomerpartslist_view translate="label">
+        <label>Enducostomer Partslist</label>
+        <reference name="root">
+            <action method="setTemplate">
+                <template>page/empty.phtml</template>
+            </action>
+        </reference>
+        <reference name="content">
+            <block type="wishlist/endcustomerpartslist_view" name="endcustomerpartslist.view" template="wishlist/endcustomerpartslist/view.phtml" />
+        </reference>
+    </wishlist_endcustomerpartslist_view>
+
+    <wishlist_endcustomerpartslist_data translate="label">
+        <label>Endcustomer Partslist</label>
+        <reference name="root">
+            <action method="setTemplate">
+                <template>page/empty.phtml</template>
+            </action>
+        </reference>
+        <reference name="content">
+            <block type="core/template" name="test" template="wishlist/endcustomerpartslist/data.phtml"/>
+        </reference>
+    </wishlist_endcustomerpartslist_data>
+
+    <wishlist_endcustomerpartslist_editcustomer translate="label">
+        <label>Endcustomepartslist Edit Customer</label>
+        <reference name="root">
+            <action method="setTemplate">
+                <template>page/2columns-left.phtml</template>
+            </action>
+        </reference>
+<!--- Friedl, Friedl, what should have that has become?
+        <reference name="left">
+            <remove name="catalog.vertnav" />
+            <block type="customer/account_menu" name="customer_account_menu" template="customer/account/menu.phtml"></block>
+        </reference>
+-->
+        <reference name="content">
+            <block type="wishlist/endcustomerpartslist_customer_edit" name="endcustomerparstlist.customer.edit" template="wishlist/endcustomerpartslist/customer/edit.phtml"/>
+        </reference>
+    </wishlist_endcustomerpartslist_editcustomer>
+
+    <wishlist_endcustomerpartslist_productdetail translate="label">
+        <label>Enducostomer Partslist</label>
+        <reference name="root">
+            <action method="setTemplate">
+                <template>wishlist/endcustomerpartslist/productdetail.phtml</template>
+            </action>
+            <block type="catalog/product_view_media" name="product.info.media" as="media" template="catalog/product/view/media.phtml"/>
+            <block type="catalog/product_view_attributes" name="product.info.attributes" as="attributes" template="catalog/product/view/attributes.phtml"/>
+        </reference>
+    </wishlist_endcustomerpartslist_productdetail>
+</layout>

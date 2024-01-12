@@ -1,0 +1,337 @@
+<?xml version="1.0"?>
+<config>
+    <modules>
+        <Schracklive_SchrackCustomer>
+            <version>1.12.2</version>
+            <depends>
+                <Mage_Customer />
+                <Schracklive_Schrack />
+            </depends>
+        </Schracklive_SchrackCustomer>
+    </modules>
+    <frontend>
+        <routers>
+            <schracklive_schrackcustomer>
+                <use>standard</use>
+                <args>
+                    <module>Schracklive_SchrackCustomer</module>
+                    <frontName>customer</frontName>
+                </args>
+            </schracklive_schrackcustomer>
+        </routers>
+        <translate>
+            <modules>
+                <Schracklive_SchrackCustomer>
+                    <files>
+                        <schrack>local/Schracklive_SchrackCustomer.csv</schrack>
+                    </files>
+                </Schracklive_SchrackCustomer>
+            </modules>
+        </translate>
+    </frontend>
+    <admin>
+        <fiedsets>
+            <customer_dataflow>
+                <street_full>
+                    <billing>0</billing>
+                    <shipping>0</shipping>
+                </street_full>
+                <city>
+                    <billing>0</billing>
+                    <shipping>0</shipping>
+                </city>
+                <country>
+                    <billing>0</billing>
+                    <shipping>0</shipping>
+                    <billing_required>0</billing_required>
+                    <shipping_required>0</shipping_required>
+                </country>
+                <postcode>
+                    <billing>0</billing>
+                    <shipping>0</shipping>
+                    <billing_required>0</billing_required>
+                    <shipping_required>0</shipping_required>
+                </postcode>
+                <telephone>
+                    <billing>0</billing>
+                    <shipping>0</shipping>
+                </telephone>
+            </customer_dataflow>
+        </fiedsets>
+        
+		<!--             Here we are telling the Magento router to look for the controllers in the 
+                         Schracklive_SchrackCatalogInventory_Adminhtml before we look in the             
+                         Mage_Adminhtml module for all urls that begin with /admin/controller_name          -->
+		<routers>
+			<adminhtml>
+				<args>
+					<modules>
+                        <schrackcustomer before="Mage_Adminhtml">Schracklive_SchrackCustomer_Adminhtml</schrackcustomer>
+					</modules>
+				</args>
+			</adminhtml>
+		</routers>        
+                        
+    </admin>
+    <adminhtml>
+        <translate>
+            <modules>
+                <Schracklive_SchrackCustomer>
+                    <files>
+                        <schrack>local/Schracklive_SchrackCustomer.csv</schrack>
+                    </files>
+                </Schracklive_SchrackCustomer>
+            </modules>
+        </translate>
+        
+<!-- The <layout> updates allow us to define our block layouts in a seperate file so are aren't messin' with the magento layout files.  -->
+        <layout>
+            <updates>
+                <schrackcustomerdatanorm>
+                    <file>schrackcustomerdatanorm.xml</file>
+                </schrackcustomerdatanorm>
+            </updates>
+        </layout>
+        
+    </adminhtml>
+    <global>
+        <customer>
+            <address>
+                <formats>
+                    <text>
+                        <renderer>schrackcustomer/address_renderer_account</renderer>
+                    </text>
+                    <oneline>
+                        <renderer>schrackcustomer/address_renderer_account</renderer>
+                    </oneline>
+                    <html>
+                        <renderer>schrackcustomer/address_renderer_account</renderer>
+                    </html>
+                    <pdf>
+                        <renderer>schrackcustomer/address_renderer_account</renderer>
+                    </pdf>
+                </formats>
+            </address>
+        </customer>
+        <rewrite>
+            <schracklive_schrackcustomer_address>
+                <from><![CDATA[#^/address/#]]>
+                </from>
+                <to>/customer/address/</to>
+            </schracklive_schrackcustomer_address>
+        </rewrite>
+        <resources>
+            <schrackcustomer_setup>
+                <setup>
+                    <module>Schracklive_SchrackCustomer</module>
+                    <class>Mage_Customer_Model_Entity_Setup</class>
+                </setup>
+            </schrackcustomer_setup>
+        </resources>
+        <fieldsets>
+            <customer_account>
+                <schrack_salutatory><update>1</update></schrack_salutatory>
+                <schrack_pickup><create>1</create><update>1</update></schrack_pickup>
+                <schrack_acl_role_id><update>1</update></schrack_acl_role_id>
+                <schrack_department><create>1</create><update>1</update></schrack_department>
+            </customer_account>
+        </fieldsets>
+        <models>
+            <customer>               
+                <rewrite>
+                    <customer>Schracklive_SchrackCustomer_Model_Customer</customer>
+                    <prospect>Schracklive_SchrackCustomer_Model_Prospect</prospect>
+                    <customer_api>Schracklive_SchrackCustomer_Model_Customer_Api</customer_api>
+                    <customer_api_v2>Schracklive_SchrackCustomer_Model_Customer_Api_V2</customer_api_v2>
+                    <address>Schracklive_SchrackCustomer_Model_Address</address>
+                    <address_api>Schracklive_SchrackCustomer_Model_Address_Api</address_api>
+                    <address_api_v2>Schracklive_SchrackCustomer_Model_Address_Api_V2</address_api_v2>
+                    <customer_attribute_backend_password>Schracklive_SchrackCustomer_Model_Customer_Attribute_Backend_Password</customer_attribute_backend_password>
+                </rewrite>
+            </customer>
+            <!--Start Nagarro -->
+            <!--customer_entity>
+                <rewrite>
+                    <customer>Schracklive_SchrackCustomer_Model_Entity_Customer</customer>
+                    <customer_collection>Schracklive_SchrackCustomer_Model_Entity_Customer_Collection</customer_collection>
+                    <address>Schracklive_SchrackCustomer_Model_Entity_Address</address>
+                </rewrite>
+            </customer_entity-->
+            <customer_resource>
+                <rewrite>
+                    <customer>Schracklive_SchrackCustomer_Model_Entity_Customer</customer>
+                    <customer_collection>Schracklive_SchrackCustomer_Model_Entity_Customer_Collection</customer_collection>
+                    <address>Schracklive_SchrackCustomer_Model_Entity_Address</address>
+                </rewrite>
+            </customer_resource>
+            <!--End Nagarro -->
+            <schrackcustomer>
+                <class>Schracklive_SchrackCustomer_Model</class>
+                <resourceModel>schrackcustomer_mysql4</resourceModel>            
+            </schrackcustomer>
+            <schrackcustomer_mysql4>
+                 <class>Schracklive_SchrackCustomer_Model_Mysql4</class>
+                <entities>  
+                    <tracking>
+                        <table>customer_tracking</table>
+                    </tracking>
+                    <acceptoffertracking>
+                        <table>accept_offer_tracking</table>
+                    </acceptoffertracking>
+                    <mailinglisttype>
+                        <table>schrack_mailinglist_type</table>
+                    </mailinglisttype>
+                </entities>
+            </schrackcustomer_mysql4>
+            <mailinglisttype>
+                <class>Schracklive_SchrackCustomer_Model_Mailinglisttype</class>
+            </mailinglisttype>
+        </models>
+        <helpers>
+            <customer>
+                <rewrite>
+                       <data>Schracklive_SchrackCustomer_Helper_Data</data>
+                </rewrite>
+             </customer>
+            <schrackcustomer>
+                <class>Schracklive_SchrackCustomer_Helper</class>
+            </schrackcustomer>
+        </helpers>
+        <events>
+            <controller_action_predispatch>
+                <observers>
+                    <schrackcustomer>
+                        <class>Schracklive_SchrackCustomer_Model_Session_Observer</class>
+                        <method>sso</method>
+                    </schrackcustomer>
+                </observers>
+            </controller_action_predispatch>
+        </events>
+        <blocks>
+            <adminhtml>
+                <rewrite>
+                    <customer>Schracklive_SchrackCustomer_Block_Adminhtml_Customer</customer>
+                    <customer_edit>Schracklive_SchrackCustomer_Block_Adminhtml_Customer_Edit</customer_edit>
+                    <customer_grid>Schracklive_SchrackCustomer_Block_Adminhtml_Customer_Grid</customer_grid>
+                </rewrite>
+            </adminhtml>
+            <schrackcustomer>
+                <class>Schracklive_SchrackCustomer_Block</class>
+            </schrackcustomer>
+            <customer>
+                <rewrite>
+                    <account_navigation>Schracklive_SchrackCustomer_Block_Account_Navigation</account_navigation>
+                    <account_dashboard_hello>Schracklive_SchrackCustomer_Block_Account_Dashboard_Hello</account_dashboard_hello>
+                    <account_dashboard_mycompany>Schracklive_SchrackCustomer_Block_Account_Dashboard_Mycompany</account_dashboard_mycompany>
+                    <account_documents>Schracklive_SchrackCustomer_Block_Account_Documents</account_documents>
+                    <account_menu>Schracklive_SchrackCustomer_Block_Account_Menu</account_menu>
+                    <account_documents_detailsearch>Schracklive_SchrackCustomer_Block_Account_Documents_Detailsearch</account_documents_detailsearch>
+                    <account_documents_detailview>Schracklive_SchrackCustomer_Block_Account_Documents_Detailview</account_documents_detailview>
+                    <account_documents_offers>Schracklive_SchrackCustomer_Block_Account_Documents_Offers</account_documents_offers>
+                    <account_documents_orders>Schracklive_SchrackCustomer_Block_Account_Documents_Orders</account_documents_orders>
+                    <account_documents_invoices>Schracklive_SchrackCustomer_Block_Account_Documents_Invoices</account_documents_invoices>
+                    <account_documents_creditmemos>Schracklive_SchrackCustomer_Block_Account_Documents_Creditmemos</account_documents_creditmemos>
+                    <account_documents_results>Schracklive_SchrackCustomer_Block_Account_Documents_Results</account_documents_results>
+                    <account_documents_shipments>Schracklive_SchrackCustomer_Block_Account_Documents_Results_Shipments</account_documents_shipments>
+                    <account_documents_backorders>Schracklive_SchrackCustomer_Block_Account_Documents_Backorders</account_documents_backorders>
+                    <account_documents_newdocuments>Schracklive_SchrackCustomer_Block_Account_Documents_Newdocuments</account_documents_newdocuments>
+                    <account_documents_latestorders>Schracklive_SchrackCustomer_Block_Account_Documents_Latestorders</account_documents_latestorders>
+                    <account_documents_latestoffers>Schracklive_SchrackCustomer_Block_Account_Documents_Latestoffers</account_documents_latestoffers>
+                    <account_documents_results_offers>Schracklive_SchrackCustomer_Block_Account_Documents_Results_Offers</account_documents_results_offers>
+                    <account_documents_results_orders>Schracklive_SchrackCustomer_Block_Account_Documents_Results_Orders</account_documents_results_orders>
+                    <account_documents_results_invoices>Schracklive_SchrackCustomer_Block_Account_Documents_Results_Invoices</account_documents_results_invoices>
+                    <account_documents_results_creditmemos>Schracklive_SchrackCustomer_Block_Account_Documents_Results_Creditmemos</account_documents_results_creditmemos>
+                    <account_documents_results_shipments>Schracklive_SchrackCustomer_Block_Account_Documents_Results_Shipments</account_documents_results_shipments>
+                    <account_documents_results_detailsearch>Schracklive_SchrackCustomer_Block_Account_Documents_Results_Detailsearch</account_documents_results_detailsearch>
+                    <account_documents_results_newdocuments>Schracklive_SchrackCustomer_Block_Account_Documents_Results_Newdocuments</account_documents_results_newdocuments>
+                    <account_documents_results_latestorders>Schracklive_SchrackCustomer_Block_Account_Documents_Results_Latestorders</account_documents_results_latestorders>
+                    <account_documents_results_latestoffers>Schracklive_SchrackCustomer_Block_Account_Documents_Results_Latestoffers</account_documents_results_latestoffers>
+                    <account_documents_filter>Schracklive_SchrackCustomer_Block_Account_Documents_Filter</account_documents_filter>
+                    <account_documents_pager>Schracklive_SchrackCustomer_Block_Account_Documents_Pager</account_documents_pager>
+                    <address_book>Schracklive_SchrackCustomer_Block_Address_Book</address_book>
+                    <address_edit>Schracklive_SchrackCustomer_Block_Address_Edit</address_edit>
+                    <form_edit>Schracklive_SchrackCustomer_Block_Form_Edit</form_edit>
+                    <form_register>Schracklive_SchrackCustomer_Block_Form_Register</form_register>
+                </rewrite>
+            </customer>
+        </blocks>
+        <template>
+            <email>
+                <customer_create_account_email_template>
+                    <file>local/account_new.html</file>
+                </customer_create_account_email_template>
+                <customer_create_account_email_confirmation_template>
+                    <file>local/account_new_confirmation.html</file>
+                </customer_create_account_email_confirmation_template>
+                <customer_create_account_email_confirmed_template>
+                    <file>local/account_new_confirmed.html</file>
+                </customer_create_account_email_confirmed_template>
+                <customer_password_forgot_email_template>
+                    <file>local/password_new.html</file>
+                </customer_password_forgot_email_template>
+                <customer_change_companyinfo_template>
+                    <label>Adress change</label>
+                    <file>local/company_change.html</file>
+                    <type>html</type>
+                </customer_change_companyinfo_template>
+                <customer_datanorm_massupload_email_template>
+                    <label>Datanorm massupload</label>
+                    <file>local/datanorm_massupload.html</file>
+                    <type>html</type>
+                </customer_datanorm_massupload_email_template>
+                <customer_notify_ordered_offer_process_template>
+                    <label>Processing Ordered Offer eMail</label>
+                    <file>local/processed_offered_order_notification.html</file>
+                    <type>html</type>
+                </customer_notify_ordered_offer_process_template>
+            </email>
+        </template>
+    </global>
+    <default>
+        <customer>
+            <address>
+                <street_lines>1</street_lines>
+                <prefix_show>opt</prefix_show>
+                <prefix_options></prefix_options>
+                <middlename_show></middlename_show>
+                <suffix_show></suffix_show>
+                <suffix_options></suffix_options>
+                <dob_show></dob_show>
+                <gender_show>req</gender_show>
+            </address>
+            <address_templates>
+                <text><![CDATA[{{if accountAddress}}{{else}}{{depend prefix}}{{var prefix}} {{/depend}}{{var firstname}} {{var lastname}}
+{{depend company}}{{var company}}{{/depend}}{{/if}}
+{{var street1}}
+{{var postcode}} {{var city}}
+{{var country}}
+]]>
+                </text>
+                <oneline><![CDATA[{{if accountAddress}}{{else}}{{depend prefix}}{{var prefix}} {{/depend}}{{var firstname}} {{var lastname}}{{/if}}{{var street}}, {{var postcode}} {{var city}}]]>
+                </oneline>
+                <html><![CDATA[{{if accountAddress}}{{else}}
+{{depend prefix}}{{var prefix}} {{/depend}}{{var firstname}} {{var lastname}}<br/>
+{{depend company}}{{var company}}<br />{{/depend}}{{/if}}
+{{var street1}}<br />
+{{var postcode}} {{var city}}<br />
+{{var country}}]]>
+                </html>
+                <pdf><![CDATA[{{if accountAddress}}{{else}}
+{{depend prefix}}{{var prefix}} {{/depend}}{{var firstname}} {{var lastname}}|
+{{depend company}}{{var company}}|{{/depend}}{{/if}}
+{{var street1}}|
+{{var postcode}} {{var city}}|
+{{var country}}|]]>
+                </pdf>
+                <js_template><![CDATA[#{prefix} #{firstname} #{lastname}<br/>#{company}<br/>#{street0}<br/>#{postcode} #{city}<br/>#{country_id}]]>
+                </js_template>
+            </address_templates>
+        </customer>
+        <schrack>
+            <customer>
+                <useTracking>1</useTracking>
+                <vatCheckEmailToAddress>online_sales@schrack.com</vatCheckEmailToAddress>
+            </customer>
+        </schrack>
+    </default>
+</config>

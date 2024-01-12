@@ -1,0 +1,22 @@
+<?php
+/**
+ * Template for Mage_Page_Block_Html
+ */
+?>
+<!DOCTYPE html>
+<html lang="<?php echo substr(Mage::app()->getLocale()->getLocaleCode(), 0, 2);?>">
+<head>
+<?php echo $this->getChildHtml('head') ?>
+</head>
+<body<?php echo $this->getBodyClass()?' class="'.$this->getBodyClass().'"':'' ?> id="tmpl-empty">
+<!-- empty.phtml (start) -->
+<div id="content" class="content row">
+    <?php echo $this->getChildHtml('content') ?>
+</div>
+<script type="text/javascript">
+    jQuery(document).foundation();
+    //console.log('foundation loaded');
+</script>
+<!-- empty.phtml (end) -->
+</body>
+</html>

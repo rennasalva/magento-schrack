@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   sodipodi:docname="Sale_Stopwatch.svg"
+   inkscape:version="1.0 (4035a4fb49, 2020-05-01)"
+   id="svg8"
+   version="1.1"
+   viewBox="0 0 11.7009 14.26107"
+   height="14.26107mm"
+   width="11.7009mm">
+  <defs
+     id="defs2">
+    <style
+       id="style833">
+      @import url("https://fonts.googleapis.com/css2?family=Roboto:ital,wght@1,500");
+      .cls-1 {
+        fill: #d1222b;
+      }
+    </style>
+  </defs>
+  <sodipodi:namedview
+     inkscape:window-maximized="1"
+     inkscape:window-y="-8"
+     inkscape:window-x="-8"
+     inkscape:window-height="1017"
+     inkscape:window-width="1920"
+     lock-margins="true"
+     fit-margin-bottom="0"
+     fit-margin-right="0"
+     fit-margin-left="0"
+     fit-margin-top="0"
+     showgrid="false"
+     inkscape:document-rotation="0"
+     inkscape:current-layer="layer1"
+     inkscape:document-units="mm"
+     inkscape:cy="44.79829"
+     inkscape:cx="30.923144"
+     inkscape:zoom="7.9195959"
+     inkscape:pageshadow="2"
+     inkscape:pageopacity="0.0"
+     borderopacity="1.0"
+     bordercolor="#666666"
+     pagecolor="#ffffff"
+     id="base">
+    <sodipodi:guide
+       id="guide850"
+       orientation="0,44.223874"
+       position="0,14.26107" />
+    <sodipodi:guide
+       id="guide852"
+       orientation="53.900108,0"
+       position="11.7009,14.26107" />
+    <sodipodi:guide
+       id="guide854"
+       orientation="0,-44.223874"
+       position="11.7009,0" />
+    <sodipodi:guide
+       id="guide856"
+       orientation="-53.900108,0"
+       position="-0.033408691,15.5306" />
+  </sodipodi:namedview>
+  <metadata
+     id="metadata5">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     transform="translate(-157.43528,-128.94089)"
+     id="layer1"
+     inkscape:groupmode="layer"
+     inkscape:label="Ebene 1">
+    <path
+       style="stroke-width:0.264583"
+       id="Pfad_51"
+       data-name="Pfad 51"
+       class="cls-1"
+       d="m 163.28571,143.20195 a 5.8676646,5.8676646 0 0 0 5.85047,-5.851 5.9322229,5.9322229 0 0 0 -0.62151,-2.6326 l 0.25586,-0.25585 a 1.0601854,1.0601854 0 0 0 0,-1.53459 1.1750146,1.1750146 0 0 0 -1.57242,0 l -0.0365,0.0365 a 5.7091792,5.7091792 0 0 0 -3.51023,-1.46262 v -0.36698 h 1.09696 a 0.39317083,0.39317083 0 0 0 0.36566,-0.36565 v -1.46262 a 0.39317083,0.39317083 0 0 0 -0.36566,-0.36565 h -2.92523 a 0.39317083,0.39317083 0 0 0 -0.36619,0.36565 v 1.46262 a 0.39317083,0.39317083 0 0 0 0.36566,0.36565 h 1.09749 v 0.36566 a 5.6440917,5.6440917 0 0 0 -3.54674,1.49913 l -0.073,-0.073 a 1.1281833,1.1281833 0 0 0 -1.53459,0 1.06045,1.06045 0 0 0 0,1.53458 l 0.29263,0.29263 a 5.7787646,5.7787646 0 0 0 -0.62309,2.59715 5.8676646,5.8676646 0 0 0 5.85046,5.851 z m -3.83963,-7.97163 a 5.7472792,5.7472792 0 0 1 0.6948,-0.95065 4.3759437,4.3759437 0 0 1 3.10832,-1.3171 4.4960646,4.4960646 0 0 1 3.10806,1.27979 4.6950312,4.6950312 0 0 1 0.73131,0.95065 4.3812354,4.3812354 0 1 1 -8.19071,2.15741 4.2645542,4.2645542 0 0 1 0.54822,-2.1201 z" />
+    <text
+       id="text848"
+       y="140.19165"
+       x="159.80074"
+       style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-size:7.97809px;line-height:1.25;font-family:Roboto;-inkscape-font-specification:'Roboto Medium';fill:#d1222b;fill-opacity:1;stroke:none;stroke-width:0.199453"
+       xml:space="preserve"><tspan
+         style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-family:Roboto;-inkscape-font-specification:'Roboto Medium';fill:#d1222b;fill-opacity:1;stroke-width:0.199453"
+         y="140.19165"
+         x="159.80074"
+         id="tspan846"
+         sodipodi:role="line">%</tspan></text>
+  </g>
+</svg>

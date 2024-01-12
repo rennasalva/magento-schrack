@@ -1,0 +1,18 @@
+<?php $advisor = Mage::helper('schrack')->getAdvisor(); ?>
+<div class="large-9 product-detail-main-bar columns product-warning dead-article-contact">
+    <div class="row-fine frame-in-product-view">
+        <div class="large-fine-5 columns-fine padding-left-10">
+            <img class="foto" src="<?php echo $advisor->getPhotoUrl('medium'); ?>"/>
+        </div>
+        <div class="large-fine-19 columns padding-left-20">
+            <div class="row contact bold bottompadding"><?php echo $this->__('Your Contact Person'); ?></div>
+            <div class="row contact bold"><?php echo $advisor->getName(); ?></div>
+            <div class="row contact"><?php echo $advisor->getSchrackTitle(); ?></div>
+            <div class="row contact">&nbsp;</div>
+            <div class="row contact blue"><a href="tel:<?php echo $advisor->getSchrackTelephone(); ?>"><?php echo $advisor->getSchrackTelephone(); ?></a></div>
+            <div class="row contact blue"><a href="mailto:<?php echo $advisor->getEmail(); ?>"><?php echo $advisor->getEmail(); ?></a></div>
+        </div>
+    </div>
+</div>
+<div class="large-fine-2 columns-fine">
+</div>

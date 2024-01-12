@@ -1,0 +1,56 @@
+<!-- template/catalog/product/view/moreactions.phtml (start) -->
+<?php
+    $product = Mage::registry('product');
+    $customer = Mage::getSingleton('customer/session')->getCustomer();
+
+    $partslistHelper = Mage::helper('schrackwishlist/partslist');
+    $priceHelper = Mage::helper('schrackcatalog/price');
+
+    $sessionCustomerId = Mage::getSingleton('customer/session')->getCustomer()->getId();
+    $aclRoleId = Mage::getModel('customer/customer')->load($sessionCustomerId)->getSchrackAclRoleId();
+    $isProjectant = Mage::helper('schrack/acl')->isProjectantRoleId($aclRoleId);
+?>
+
+<div class="product-info-links hide-on-print">
+    <?php if ($customer->isAllowed('customerOrder', 'order') && !$isProjectant): ?>
+        <div class="">
+            <a rel="nofollow" href="<?php echo $this->getUrl('checkout/cart') ?>" class="link-cart" title="<?php echo $this->__('View shopping cart'); ?>"><?php echo $this->__('View shopping cart'); ?></a>
+        </div>
+    <?php endif; ?>
+    <?php if (Mage::getSingleton('customer/session')->isLoggedIn()) : ?>
+        <?php if ($_compareUrl = $this->getAddToCompareUrl($product)): ?>
+            <div class="">
+                <a rel="nofollow" onclick="return checkCompare();" href="<?php echo $_compareUrl ?>" class="link-compare" title="<?php echo $this->__('Add to Compare'); ?>"><?php echo $this->__('Compare Products'); ?></a>
+            </div>
+        <?php endif; ?>
+        <?php if ($_compareUrl = $this->getAddToCompareUrl($product)): ?>
+            <div class="">
+                <a rel="nofollow" onclick="return checkCompare();" href="<?php echo $_compareUrl ?>" class="link-compare" title="<?php echo $this->__('Add to Compare'); ?>"><?php echo $this->__('Compare Products'); ?></a>
+            </div>
+        <?php endif; ?>
+        <div class="button-label-container ">
+            <select class="dropdown-menu partslist" title="<?php echo $this->__('Add to partslist') ?>">
+                <option></option>
+                <option class="add-to-new-partslist" onClick="partslistFE.addItemToNewList('<?php echo $this->__('New partslist') ?>', new ListRequestManager.Product(<?php echo $product->getId() ?>, jQuery('qty').val()));"><?php echo $this->__('Add to new partslist') ?></option>
+                <?php if ($partslistHelper->getPartslistCount() > 0): ?>
+                    <?php $activePl = $partslistHelper->getActiveOrFirstPartslist(); ?>
+                    <option onClick="partslistFE.addItemToList(<?php echo $activePl->getId() ?>, new ListRequestManager.Product(<?php echo $product->getId() ?>, jQuery('qty').val()), false);" title="<?php echo $activePl->getDescription() ?>"><?php echo $this->__('Add to %s', $activePl->getDescription()) ?></option>
+                <?php else: ?>
+                    <?php $activePl = null; ?>
+                <?php endif; ?>
+                <?php foreach ($partslistHelper->getPartslists() as $pl): ?>
+                    <?php if ($activePl === null || $pl->getId() !== $activePl->getId()): ?>
+                        <option onClick="partslistFE.addItemToList(<?php echo $pl->getId() ?>, new ListRequestManager.Product(<?php echo $product->getId() ?>, jQuery('qty').val()), false);" title="<?php echo $pl->getDescription() ?>"><?php echo $this->__('Add to %s', $pl->getDescription()) ?></option>
+                    <?php endif; ?>
+                <?php endforeach; ?>
+            </select>
+            <?php echo $this->__('Add to partslist') ?>
+        </div>
+    <?php endif; ?>
+    <?php if ($priceHelper->doOfferProjectPrice($product) ) : ?>
+        <div class="project-price">
+            <a id="project-price" href="<?php echo $priceHelper->getProjectPriceUrl($product->getSku()) ?>" target="_blank"><?php echo $this->__('Request project price') ?></a><br/><br/>
+        </div>
+    <?php endif; ?>
+</div>
+<!-- template/catalog/product/view/moreactions.phtml (end) -->

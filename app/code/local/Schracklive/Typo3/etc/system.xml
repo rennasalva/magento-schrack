@@ -1,0 +1,172 @@
+<?xml version="1.0"?>
+<config>
+	<sections>
+		<schrack>
+			<groups>
+				<typo3>
+					<label>TYPO3 Website</label>
+					<frontend_type>text</frontend_type>
+					<sort_order>22</sort_order>
+					<show_in_default>1</show_in_default>
+					<show_in_website>0</show_in_website>
+					<show_in_store>0</show_in_store>
+					<fields>
+						<typo3url translate="label">
+							<label>TYPO3 main URL</label>
+							<frontend_type>text</frontend_type>
+							<sort_order>10</sort_order>
+							<show_in_default>1</show_in_default>
+							<show_in_website>0</show_in_website>
+							<show_in_store>0</show_in_store>
+						</typo3url>
+						<maintenance>
+							<label>TYPO3 Maintenance URL (relative)</label>
+							<frontend_type>text</frontend_type>
+							<sort_order>18</sort_order>
+							<show_in_default>1</show_in_default>
+							<show_in_website>0</show_in_website>
+							<show_in_store>0</show_in_store>
+						</maintenance>
+						<hash_key>
+							<label>TYPO3 hash key</label>
+							<frontend_type>text</frontend_type>
+							<sort_order>20</sort_order>
+							<show_in_default>1</show_in_default>
+							<show_in_website>0</show_in_website>
+							<show_in_store>0</show_in_store>
+						</hash_key>
+						<typo3menumain translate="label">
+							<label>TYPO3 main menu URL (relative)</label>
+							<frontend_type>text</frontend_type>
+							<sort_order>30</sort_order>
+							<show_in_default>1</show_in_default>
+							<show_in_website>0</show_in_website>
+							<show_in_store>0</show_in_store>
+						</typo3menumain>
+						<typo3menufooter>
+							<label>TYPO3 footer menu URL (relative)</label>
+							<frontend_type>text</frontend_type>
+							<sort_order>40</sort_order>
+							<show_in_default>1</show_in_default>
+							<show_in_website>0</show_in_website>
+							<show_in_store>0</show_in_store>
+						</typo3menufooter>
+						<typo3menubreadcrumbs>
+							<label>TYPO3 breadcrumbs menu URL (relative)</label>
+							<frontend_type>text</frontend_type>
+							<sort_order>50</sort_order>
+							<show_in_default>1</show_in_default>
+							<show_in_website>0</show_in_website>
+							<show_in_store>0</show_in_store>
+						</typo3menubreadcrumbs>
+						<notifyverionfilesupdate>
+							<label>TYPO3 URL to notify versioned JS and CSS files changes (relative)</label>
+							<frontend_type>text</frontend_type>
+							<sort_order>75</sort_order>
+							<show_in_default>1</show_in_default>
+							<show_in_website>0</show_in_website>
+							<show_in_store>0</show_in_store>
+						</notifyverionfilesupdate>
+						<typo3searchurl>
+							<label>TYPO3 search URL (relative)</label>
+							<frontend_type>text</frontend_type>
+							<sort_order>80</sort_order>
+							<show_in_default>1</show_in_default>
+							<show_in_website>0</show_in_website>
+							<show_in_store>0</show_in_store>
+						</typo3searchurl>
+						<registerurl>
+							<label>TYPO3 register form URL (relative)</label>
+							<frontend_type>text</frontend_type>
+							<sort_order>90</sort_order>
+							<show_in_default>1</show_in_default>
+							<show_in_website>0</show_in_website>
+							<show_in_store>0</show_in_store>
+						</registerurl>
+						<typo3termsurl>
+							<label>TYPO3 terms and conditions URL (relative)</label>
+							<frontend_type>text</frontend_type>
+							<sort_order>100</sort_order>
+							<show_in_default>1</show_in_default>
+							<show_in_website>0</show_in_website>
+							<show_in_store>0</show_in_store>
+						</typo3termsurl>
+						<aclrolesurl>
+							<label>TYPO3 ACL roles explanation URL (absolute)</label>
+							<frontend_type>text</frontend_type>
+							<sort_order>110</sort_order>
+							<show_in_default>1</show_in_default>
+							<show_in_website>0</show_in_website>
+							<show_in_store>0</show_in_store>
+						</aclrolesurl>
+						<typo3termstext>
+							<label>TYPO3 terms and conditions: text to replace with a link</label>
+							<frontend_type>text</frontend_type>
+							<sort_order>120</sort_order>
+							<show_in_default>1</show_in_default>
+							<show_in_website>0</show_in_website>
+							<show_in_store>0</show_in_store>
+						</typo3termstext>
+						<typo3mediadir>
+							<label>Where to cache the menu images in [magento]/media/...</label>
+							<frontend_type>text</frontend_type>
+							<sort_order>130</sort_order>
+							<show_in_default>1</show_in_default>
+							<show_in_website>0</show_in_website>
+							<show_in_store>0</show_in_store>
+						</typo3mediadir>
+						<clearmegamenuurl>
+							<label>TYPO3 clear megemenu request URL (relative)</label>
+							<frontend_type>text</frontend_type>
+							<sort_order>140</sort_order>
+							<show_in_default>1</show_in_default>
+							<show_in_website>0</show_in_website>
+							<show_in_store>0</show_in_store>
+						</clearmegamenuurl>
+                        <logging>
+                            <label>Log the TYPO3 requests and responses into 'typo3.log'</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>150</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </logging>
+						<typo3ebill_url>
+							<label>TYPO3 e-bill URL</label>
+							<frontend_type>text</frontend_type>
+							<sort_order>160</sort_order>
+							<show_in_default>1</show_in_default>
+							<show_in_website>0</show_in_website>
+							<show_in_store>0</show_in_store>
+						</typo3ebill_url>
+						<typo3ebill_description>
+							<label>TYPO3 e-bill link description</label>
+							<frontend_type>text</frontend_type>
+							<sort_order>170</sort_order>
+							<show_in_default>1</show_in_default>
+							<show_in_website>0</show_in_website>
+							<show_in_store>0</show_in_store>
+						</typo3ebill_description>
+						<explicitloginurl>
+							<label>TYPO3 explicit login URL</label>
+							<frontend_type>text</frontend_type>
+							<sort_order>320</sort_order>
+							<show_in_default>1</show_in_default>
+							<show_in_website>0</show_in_website>
+							<show_in_store>0</show_in_store>
+						</explicitloginurl>
+						<terms_of_use_service_url>
+							<label>Terms Of Use URL-Path</label>
+							<frontend_type>text</frontend_type>
+							<sort_order>330</sort_order>
+							<show_in_default>1</show_in_default>
+							<show_in_website>0</show_in_website>
+							<show_in_store>0</show_in_store>
+						</terms_of_use_service_url>
+                    </fields>
+				</typo3>
+			</groups>
+		</schrack>
+	</sections>
+</config>

@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<config>
+    <modules>
+        <Schracklive_GeoIP>
+            <version>1.1.6</version>
+        </Schracklive_GeoIP>
+    </modules>
+    <global>
+        <models>
+            <geoip>                
+                <rewrite>
+                    <country>Schracklive_GeoIP_Model_Country</country>
+                    <api_v2>Schracklive_GeoIP_Model_Api_V2</api_v2>
+                    <log>Schracklive_GeoIP_Model_Log</log>
+                </rewrite>                               
+                <resourceModel>geoip_mysql4</resourceModel>
+            </geoip>
+            <geoip_mysql4>
+                <class>Schracklive_GeoIP_Model_Mysql4</class>
+                <entities>
+                    <log>
+                        <table>geoip_log</table>
+                    </log>                        
+                </entities>
+            </geoip_mysql4>
+        </models>
+        <events>
+          <controller_action_predispatch>
+              <observers>
+                  <check_redirect>
+                      <type>singleton</type>
+                      <class>Schracklive_GeoIP_Model_Country_Observer</class>
+                      <method>determineRedirection</method>
+                  </check_redirect>
+              </observers>
+          </controller_action_predispatch>
+      </events>
+      <helpers>
+          <geoip>
+            <class>
+                Schracklive_GeoIP_Helper
+            </class>
+          </geoip>
+      </helpers>
+        <resources>
+            <geoip_setup>
+                <setup>
+                    <module>Schracklive_GeoIP</module>
+                    <class>Mage_Customer_Model_Entity_Setup</class>
+                </setup>
+            </geoip_setup>
+        </resources>
+
+    </global>
+    <frontend>
+        <routers>
+            <geoip>
+                <use>standard</use>
+                <args>
+                    <module>Schracklive_GeoIP</module>
+                    <frontName>geoip</frontName>
+                </args>
+            </geoip>
+
+
+        </routers>
+    </frontend>
+    <default>
+        <schrack>
+            <geoip>
+                <hasRedirectWarning>
+                    0
+                </hasRedirectWarning>
+            </geoip>
+        </schrack>
+    </default>
+</config>

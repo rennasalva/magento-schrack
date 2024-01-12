@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions xmlns:typens="urn:{{var wsdl.name}}"
+             xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+             xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+             xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/"
+             xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+             name="{{var wsdl.name}}"
+             targetNamespace="urn:{{var wsdl.name}}">
+    <wsdl:types>
+        <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="urn:{{var wsdl.name}}">
+            <xsd:complexType name="accountAccountEntity">
+                <xsd:all>
+                    <xsd:element name="wws_branch_id" type="xsd:string" minOccurs="1" maxOccurs="1" />
+                    <xsd:element name="prefix" type="xsd:string" minOccurs="0" maxOccurs="1" />
+                    <xsd:element name="name1" type="xsd:string" minOccurs="1" maxOccurs="1" />
+                    <xsd:element name="name2" type="xsd:string" minOccurs="0" maxOccurs="1" />
+                    <xsd:element name="name3" type="xsd:string" minOccurs="0" maxOccurs="1" />
+                    <xsd:element name="match_code" type="xsd:string" minOccurs="0" maxOccurs="1" />
+                    <xsd:element name="street" type="xsd:string" minOccurs="0" maxOccurs="1" />
+                    <xsd:element name="postcode" type="xsd:string" minOccurs="0" maxOccurs="1" />
+                    <xsd:element name="city" type="xsd:string" minOccurs="0" maxOccurs="1" />
+                    <xsd:element name="country_id" type="xsd:string" minOccurs="0" maxOccurs="1" />
+                    <xsd:element name="description" type="xsd:string" minOccurs="0" maxOccurs="1" />
+                    <xsd:element name="information" type="xsd:string" minOccurs="0" maxOccurs="1" />
+                    <xsd:element name="advisor_principal_name" type="xsd:string" minOccurs="0" maxOccurs="1" />
+                    <xsd:element name="advisors_principal_names" type="xsd:string" minOccurs="0" maxOccurs="1" />
+                    <xsd:element name="gtc_accepted" type="xsd:boolean" minOccurs="0" maxOccurs="1" />
+                    <xsd:element name="email" type="xsd:string" minOccurs="0" maxOccurs="1" />
+                    <xsd:element name="telephone" type="xsd:string" minOccurs="0" maxOccurs="1" />
+                    <xsd:element name="fax" type="xsd:string" minOccurs="0" maxOccurs="1" />
+                    <xsd:element name="homepage" type="xsd:string" minOccurs="0" maxOccurs="1" />
+                    <xsd:element name="delivery_block" type="xsd:boolean" minOccurs="0" maxOccurs="1" />
+                    <xsd:element name="currency_code" type="xsd:string" minOccurs="0" maxOccurs="1" />
+                    <xsd:element name="vat_identification_number" type="xsd:string" minOccurs="0" maxOccurs="1" />
+                    <xsd:element name="company_registration_number" type="xsd:string" minOccurs="0" maxOccurs="1" />
+                    <xsd:element name="sales_area" type="xsd:string" minOccurs="0" maxOccurs="1" />
+                    <xsd:element name="rating" type="xsd:string" minOccurs="0" maxOccurs="1" />
+                    <xsd:element name="enterprise_size" type="xsd:string" minOccurs="0" maxOccurs="1" />
+                    <xsd:element name="account_type" type="xsd:string" minOccurs="0" maxOccurs="1" />
+                </xsd:all>
+            </xsd:complexType>
+
+            <xsd:element name="accountAccountSingleCustomerRequestParam">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element minOccurs="1" maxOccurs="1" name="sessionId" type="xsd:string" />
+                        <xsd:element minOccurs="1" maxOccurs="1" name="wwsCustomerId" type="xsd:string" />
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+            <xsd:element name="accountAccountGetResponseParam">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element minOccurs="1" maxOccurs="1" name="accountData" type="typens:accountAccountEntity" />
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+        </xsd:schema>
+    </wsdl:types>
+
+    <wsdl:message name="accountAccountSingleCustomerRequest">
+        <wsdl:part name="parameters" element="typens:accountAccountSingleCustomerRequestParam" />
+    </wsdl:message>
+    <wsdl:message name="accountAccountGetResponse">
+        <wsdl:part name="parameters" element="typens:accountAccountGetResponseParam" />
+    </wsdl:message>
+
+    <wsdl:portType name="{{var wsdl.handler}}PortType">
+       <wsdl:operation name="accountAccountGetCustomer">
+            <wsdl:documentation>Retrieve account by WWS customer id</wsdl:documentation>
+            <wsdl:input message="typens:accountAccountSingleCustomerRequest" />
+            <wsdl:output message="typens:accountAccountGetResponse" />
+        </wsdl:operation>
+    </wsdl:portType>
+
+     <wsdl:binding name="{{var wsdl.handler}}Binding" type="typens:{{var wsdl.handler}}PortType">
+        <wsdl:operation name="accountAccountGetCustomer">
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+    </wsdl:binding>
+</wsdl:definitions>

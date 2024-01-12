@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config>
+	<menu>
+		<system>
+			<children>
+				<translation translate="title" module="translation">
+					<title>Translation</title>
+					<sort_order>61</sort_order>
+					<action>translation/adminhtml_translation</action>
+				</translation>
+			</children>
+		</system>
+	</menu>
+	<acl>
+		<resources>
+			<admin>
+				<children>
+					<system>
+						<children>
+							<translation>
+								<title>Translation</title>
+								<sort_order>41</sort_order>
+							</translation>
+						</children>
+					</system>
+				</children>
+			</admin>
+		</resources>
+	</acl>
+</config>

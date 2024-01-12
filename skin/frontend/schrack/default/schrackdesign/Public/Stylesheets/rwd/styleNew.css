@@ -1,0 +1,993 @@
+ul.dropDwnListGeneric {
+    padding: 0;
+    border: 1px solid #d6d6d6;
+    z-index: 99999;
+    box-shadow: 0 3px 4px rgba(0, 0, 0, 0.2);
+    height: 380px;
+    overflow: auto;
+    margin: 0;
+    position: absolute;
+    right: 15px;
+    width: 250px;
+    top: 42px;
+}
+
+.dropDwnListGeneric li {
+    float: none !important;
+    border: 0 !important;
+    margin: 0 !important;
+    box-shadow: none !important;
+}
+
+.dropDwnListGeneric li a,
+.dropDwnListGeneric li.bgAnchor {
+    width: 100%;
+    color: #333 !important;
+    border: 0;
+    margin-bottom: 0;
+    box-shadow: none;
+    border-bottom: 1px solid #e5ebef;
+    padding: 8px 15px !important;
+    background: #f5f5f5;
+    font-size: 14px !important;
+    font-family: 'robotoregular' !important;
+}
+
+.dropDwnListGeneric li a:hover,
+.dropDwnListGeneric li.bgAnchor :hover {
+    background: #00589d;
+    color: #fff !important;
+}
+
+/* t3ex for download center */
+
+h2[class*="icon-downloadcenter"]:before {
+    margin-right: 7px;
+}
+
+/**/
+
+.onlineContactCont {
+    background: #f8f8f8;
+    border: 1px solid #d9d9d9;
+    padding: 20px;
+    font-size: 15px;
+    color: #00589d;
+    line-height: 30px;
+}
+
+.onlineContactCont .imgBx img {
+    height: 100px;
+    width: 130px;
+    border: 1px solid #d9d9d9;
+}
+
+.onlineContactCont .contentBx {
+    padding-top: 20px;
+    font-size: 15px;
+    line-height: 30px;
+}
+
+.onlineContactCont .contentBx img {
+    margin-right: 10px;
+    max-height: 100%;
+    max-width: 18px;
+}
+
+.onlineContactCont .contentBx p {
+    margin-bottom: 0;
+}
+
+.agentCont {
+    background: #f8f8f8;
+    border: 1px solid #d9d9d9;
+    padding: 30px 20px;
+    font-size: 15px;
+    color: #00589d;
+    line-height: 30px;
+}
+
+.agentCont a {
+    color: #00589d;
+}
+
+.agentCont .imgBx {
+    margin: -15px 0;
+}
+
+.agentCont .imgBx img {
+    width: 75px;
+    height: 95px;
+}
+
+
+
+.share-buttons {
+    position: absolute;
+    top: 0px;
+    right: 15px;
+}
+
+.share-buttons a {
+    margin-left: 10px;
+}
+
+a#submit {
+    z-index: 1;
+}
+
+/*Bootstrap 4.0.0 CSS*/
+
+.dropup,
+.dropdown {
+    position: relative;
+}
+
+.dropdown-toggle::after {
+    display: inline-block;
+    width: 0;
+    height: 0;
+    margin-left: 0.3em;
+    vertical-align: middle;
+    content: "\e259";
+    font-family: 'Glyphicons Halflings';
+    padding-right: 15px;
+    margin-top: -20px;
+    padding-left: 10px;
+}
+
+.dropdown-toggle:focus {
+    outline: 0;
+}
+
+.dropup .dropdown-toggle::after {
+    border-top: 0;
+    border-bottom: 0.3em solid;
+}
+
+.dropdown-menu {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    z-index: 1000;
+    display: none;
+    float: left;
+    min-width: 10rem;
+    padding: 0.5rem 0;
+    margin: 0.125rem 0 0;
+    font-size: 1rem;
+    color: #292b2c;
+    text-align: left;
+    list-style: none;
+    background-color: #fff;
+    -webkit-background-clip: padding-box;
+    background-clip: padding-box;
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    border-radius: 0.25rem;
+}
+
+.dropdown-divider {
+    height: 1px;
+    margin: 0.5rem 0;
+    overflow: hidden;
+    background-color: #eceeef;
+}
+
+.dropdown-item {
+    display: block;
+    width: 100%;
+    padding: 3px 1.5rem;
+    clear: both;
+    font-weight: normal;
+    color: #292b2c;
+    text-align: inherit;
+    white-space: nowrap;
+    background: none;
+    border: 0;
+}
+
+.dropdown-item:focus,
+.dropdown-item:hover {
+    color: #1d1e1f;
+    text-decoration: none;
+    background-color: #f7f7f9;
+}
+
+.dropdown-item.active,
+.dropdown-item:active {
+    color: #fff;
+    text-decoration: none;
+    background-color: #0275d8;
+}
+
+.dropdown-item.disabled,
+.dropdown-item:disabled {
+    color: #636c72;
+    cursor: not-allowed;
+    background-color: transparent;
+}
+
+.show>.dropdown-menu {
+    display: block;
+}
+
+.show>a {
+    outline: 0;
+}
+
+.dropdown-menu-right {
+    right: 0;
+    left: auto;
+}
+
+.dropdown-menu-left {
+    right: auto;
+    left: 0;
+}
+
+.dropdown-header {
+    display: block;
+    padding: 0.5rem 1.5rem;
+    margin-bottom: 0;
+    font-size: 0.875rem;
+    color: #636c72;
+    white-space: nowrap;
+}
+
+.dropdown-backdrop {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 990;
+}
+
+.dropup .dropdown-menu {
+    top: auto;
+    bottom: 100%;
+    margin-bottom: 0.125rem;
+}
+
+.mob-overlay {
+    display: none;
+    position: absolute;
+    background: rgba(0, 0, 0, 0.8);
+    width: 350px;
+    height: 100%;
+}
+
+.mob-overlay .remove-icon {
+    position: absolute;
+    right: 10px;
+    color: #fff;
+    font-size: 20px;
+    top: 10px;
+}
+
+
+#customerAccContainer>ul {
+    margin-top: -7px !important;
+}
+
+.priceFormatCont .box {
+    display: none;
+}
+
+.priceFormatCont .box.open {
+    display: block;
+}
+
+.datanomChkCont .left {
+    float: left;
+    width: 20px;
+    margin-right: 10px;
+}
+
+.datanomChkCont .right {
+    float: left;
+    width: 95%;
+    color: #888888;
+}
+
+.datanomChkCont .right label {
+    font-weight: normal;
+    margin: 0px;
+}
+
+.messages {
+    margin-bottom: 15px;
+    margin-top: -5px;
+}
+
+.messages .success-msg,
+.messages .error-msg,
+.notice-msg {
+    padding: 10px;
+    color: #555;
+    text-align: center;
+}
+
+.messages .success-msg {
+    background: #EBF8FC;
+    color: #01A3D9;
+    border: 1px solid #01A3D9;
+}
+
+
+
+.messages .error-msg {
+    background: #FBEEEE;
+    color: #D1222C;
+    border: 1px solid #D1222C;
+}
+
+.messages .notice-msg {
+    background: #EBF8FC;
+    color: #01A3D9;
+    border: 1px solid #01A3D9;
+}
+
+.mobile-product-slider li img {
+    display: inline-block;
+    height: auto;
+}
+
+.dead-article-contact,
+.dead-product {
+    border: 1px solid #d6d6d6;
+    margin-top: 15px;
+    margin-bottom: 15px;
+    padding: 10px;
+}
+
+.cartNoBx {
+    position: absolute;
+    top: 0px;
+    background: #d1222b;
+    width: 30px;
+    height: 30px;
+    color: #fff;
+    border-radius: 15px;
+    text-align: center;
+    left: 40%;
+    font-size: 16px;
+    font-weight: bold;
+    line-height: 30px;
+}
+
+.addToCartWhite {
+    width: 16px;
+    height: 13px;
+    display: inline-block;
+    margin-right: 6px;
+    background-size: 100% 100% !important;
+    background: url(../../Images/rwd/cartIconWht.png) top left no-repeat;
+}
+
+/*Dashboard Table Into DIV CSS*/
+body.wishlist-partslist-view table.dataTable td {
+    max-width: 200px;
+    word-wrap: break-word;
+}
+
+body.wishlist-partslist-view .tabSection .badge.partlist {
+    background-color: #d1222b;
+    padding: 5px 8px;
+    border-radius: 15px;
+    margin-left: 4px;
+    position: absolute;
+}
+
+.serchIcon .input-group-addon {
+    border-radius: 0;
+    background: #fff;
+    box-shadow: none;
+    border: 1px solid #ebebeb;
+    border-left: 0;
+}
+
+.validation-advice {
+    color: #FF0000;
+}
+
+.modal-title {
+    color: #00589d;
+    font-size: 18px;
+}
+
+.contactBx {
+    padding: 15px;
+    background: #f8f8f8;
+    border: 1px solid #d9d9d9;
+    box-shadow: 0px 0px 2px rgba(0, 0, 0, 0.3);
+}
+
+
+.modal-content .loginCont {
+    padding: 15px;
+}
+
+/* ------ */
+
+.dropdownListGeneric {
+    background: #fff;
+    position: absolute;
+    right: 15px;
+    top: 82px;
+    border: 1px solid #d6d6d6;
+    z-index: 99999;
+    box-shadow: 0px 3px 4px rgba(0, 0, 0, 0.2);
+    margin: 0;
+    padding: 0;
+    width: 250px;
+    height: 380px;
+    overflow: auto;
+    left: inherit;
+}
+
+.dropdownListGeneric {
+    right: 0;
+    top: 30px;
+}
+
+.dropdownListGeneric li {
+    border: 0;
+    margin-bottom: 0;
+    box-shadow: none;
+    border-bottom: 1px solid #e5ebef;
+    padding: 8px 15px;
+    background: #f5f5f5;
+    font-size: 14px;
+}
+
+.dropdownListGeneric li:hover {
+    background: #00589d;
+    color: #fff;
+}
+
+.dropdownListGeneric li:last-child {
+    border-bottom: 0;
+}
+
+#previewImageHover {
+    background: #fff;
+    position: absolute;
+    z-index: 10;
+    border: 1px solid #dddddd;
+    font-family: 'robotomedium';
+    text-align: center;
+    font-size: 16px;
+    box-shadow: 0px 0px 1px rgba(0, 0, 0, 0.2);
+    padding-bottom:10px;
+}
+
+.previewImageText{
+    padding:0 10px;
+}
+
+.forgotCont {
+    margin-top: 15px;
+    min-height: 300px;
+}
+
+.tooltip .tooltip-inner {
+    background: #00589d;
+    border-radius: 0;
+    color: #fff;
+    padding: 5px 10px;
+    text-align: left !important;
+}
+
+.tooltip .tooltip-arrow {
+    border-top-color: #00589d !important;
+    bottom: -3px !important;
+    margin-left: -10px !important;
+    border-width: 10px 10px 0 !important;
+}
+
+.quickadd-autocomplete {
+    left: 15px !important;
+    top: 35px !important;
+    background: #fff;
+    z-index: 1;
+    border: 1px solid #efefef;
+    /*height: 170px;
+    padding: 10px;
+    overflow: auto;*/
+    opacity: 1 !important;
+}
+
+.quickadd-autocomplete li {
+    padding: 5px 13px;
+    cursor: pointer;
+}
+
+.quickadd-autocomplete li:hover,
+.quickadd-autocomplete li.selected {
+    background: #005c9f;
+    color: #fff;
+}
+
+.info-icon {
+    cursor: pointer;
+}
+
+.product-warning {
+    z-index: 1060;
+}
+
+.purchaseProdCont {
+    margin-top: 20px;
+}
+
+.purchaseProdCont .topLink a {
+    font-size: 14px;
+}
+
+.purchaseProdCont .bx-viewport {
+    height: 260px;
+}
+
+body.wishlist-partslist-view .dropDwnListGeneric li a.selected {
+    background: #00589d;
+    color: #fff !important;
+}
+
+.image-in-text-left-33 .picContent {
+    width: auto;
+    min-width: 25%;
+
+}
+
+.picContent {
+    margin-bottom: 15px;
+    overflow: hidden;
+}
+
+.imgTextMix {
+    width: 100%;
+}
+
+.imgTextMix .imgTg {
+    float: right;
+    margin-left: 10px;
+    margin-bottom: 10px;
+}
+
+.imgTextMix ul.rte-ul {
+    margin-bottom: 20px;
+}
+
+.typopageMrgLR {
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+.btn-add,
+.btn-remove {
+    height: 45px;
+}
+
+.shareshopingCartCont {
+    padding-left: 15px;
+    padding-right: 15px;
+    padding-top: 15px;
+}
+
+body.checkout-cart-index .cartInfoHide {
+    display: none;
+}
+
+#orders-datatable-xs thead,
+#offers-datatable-xs thead {
+    display: none;
+}
+
+
+/*typo content css*/
+
+.prdouct-box .product-name .progress {
+    margin-top: 45%;
+}
+
+.progress-bar-gray {
+    background-color: #999;
+    background-size: 30px 30px;
+}
+
+#toTop {
+    position: fixed;
+    bottom: 10px;
+    right: 10px;
+    cursor: pointer;
+    display: none;
+    background-color: #00589d;
+    border-color: #00589d;
+}
+
+.mgbt15 {
+    margin-bottom: 15px;
+}
+
+p.bodytext:after {
+    display: table;
+    content: " ";
+    clear: both;
+}
+
+.font-20 a {
+    font-size: 20px;
+}
+
+.pl-15 {
+    padding-left: 15px;
+}
+
+.pr-15 {
+    padding-right: 15px;
+}
+
+.pb-15 {
+    padding-bottom: 15px;
+}
+
+.p-30 {
+    padding: 30px;
+}
+
+.pl-30 {
+    padding-left: 30px;
+}
+
+.pr-30 {
+    padding-right: 30px;
+}
+
+.req {
+    color: red;
+}
+
+label input[type="checkbox"]+span {
+    margin-left: 5px;
+}
+
+.picContent img {
+    max-width: 100%;
+}
+
+.col-fix-495 {
+    width: 495px;
+    max-height: 282px;
+    margin: 0 25px 0 0;
+}
+
+.col-fix-495 img {
+    max-height: 282px;
+}
+
+.pl-40 {
+    padding-left: 40px !important;
+}
+
+.pr-40 {
+    padding-right: 40px !important;
+}
+
+.color-gray-5,
+.color-gray-5 a {
+    color: #575959;
+}
+
+.mainContRightSec .overview-element h1 {
+    color: #fff;
+}
+
+.shadowed {
+    position: relative;
+    border: 1px solid #ececec;
+    box-shadow: 1px 1px 5px 0px rgba(0, 0, 0, 0.3);
+    text-align: center;
+}
+
+.catalogueBanner .ast * {
+    color: inherit;
+}
+
+.icon-wrapper img {
+    max-width: 100%;
+    max-height: 100%;
+    height: unset;
+}
+
+
+/* TEXT PIC styles */
+
+.rwd_design [class*="image-in-text"] p.bodytext:after {
+    display: inline;
+    content: "";
+    clear: none;
+}
+
+/* News */
+
+.abs-pos {
+    position: absolute;
+}
+
+.abs-middle {
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.listHome {
+    overflow: hidden;
+}
+
+.listHome .abs-pos {}
+
+.listHome div[class *="col-"] {
+    position: relative;
+}
+
+.listHome.fourBoxItem .textCont {
+    text-align: left;
+}
+
+.listNews .actionTxt button {
+    display: none;
+}
+
+
+/*.textCont .internal-link { line-height:35px; padding-top:0; padding-bottom: 0; }*/
+
+
+/* textpic gallery, banner */
+
+
+
+.mainContRightSec .overTxt h1,
+.staticBnr .overTxt h1 {
+    margin-bottom: 0.17em;
+}
+
+
+/* teaser blue news */
+
+.news-teaser-3 li {
+    float: left;
+    width: 33%;
+    padding: 0 15px;
+    box-sizing: border-box;
+}
+
+.news-teaser-3 article.news-article h3 {
+    margin-top: 15px;
+}
+
+/* link in RTE */
+
+.onlineContactCont a {
+    background-size: 16px 16px;
+}
+
+.onlineContactCont a[rel="fax"] {
+    background: url(../../Images/rwd/faxIcon.png) no-repeat left center;
+    padding-left: 20px;
+}
+
+.onlineContactCont a[rel="tel"] {
+    background-image: url(../../Images/rwd/call-now.png);
+    background-repeat: no-repeat;
+    background-position: left center;
+    padding-left: 20px;
+}
+
+.onlineContactCont a[rel="shop"] {
+    background: url(../../Images/rwd/shopGlobeIcon.png) no-repeat left center;
+    padding-left: 20px;
+}
+
+.onlineContactCont a.mail {
+    background: url(../../Images/rwd/new-mail-icon.png) no-repeat left center;
+    padding-left: 20px;
+}
+
+.rwd_design .carousel-inner .item img {
+    margin: 0 auto;
+}
+
+
+/* Start CSS to fix filter popup alignment on dashboard pages */
+
+#dashFilterContainer {
+    left: inherit !important;
+    right: 15px !important
+}
+
+
+/* End CSS to fix filter popup alignment on dashboard pages */
+
+
+/* T3 Expert CSS ends*/
+
+
+/*CMS CSS*/
+
+.rwd_design button.bttn-md,
+.rwd_design button.internal-link {
+    padding: 0px 25px 0 30px;
+}
+
+.rwd_design .flex-video {
+    margin-bottom: 25px;
+}
+
+.rwd_design ul.one-col-thumbs {
+    overflow: hidden;
+    margin-bottom: 20px;
+}
+
+.rwd_design ul.one-col-thumbs li {
+    border: 1px solid #d6d6d6;
+    color: #555;
+    padding: 40px 10px;
+    box-shadow: 0px 0px 5px 0px rgba(0, 0, 0, 0.2);
+    text-align: center;
+    float: left;
+    margin-right: 15px;
+}
+
+.rwd_design ul.one-col-thumbs li img {
+    display: inline-block;
+    width: 100%;
+}
+
+.tx-go-maps-ext .js-map {
+    width: 100% !important;
+    margin-bottom: 10px;
+}
+
+.grayout {
+    background: #000;
+    display: none;
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    opacity: 0.5;
+    z-index: 99998;
+}
+
+.browse-bar {
+    padding-top: 15px;
+}
+
+#share-modal .control-label .popupBox {
+    left: 0;
+}
+
+.row.padding {
+    padding-left: 15px;
+    padding-right: 15px;
+    padding-bottom: 5px;
+}
+
+.cable-drum-return th,
+.cable-drum-return td,
+.cable-drum-table th,
+.cable-drum-table td {
+    padding: 0 10px;
+}
+
+.cable-drum-pick-up-form .button-small {
+    margin: 20px 20px 0 15px;
+}
+
+.section-form {
+    margin: 20px 0;
+}
+
+.cable-drum-pick-up-form label.error {
+    color: #d1222b
+}
+
+.padding-bottom-20 {
+    padding-bottom: 20px;
+}
+
+@media print {
+    .section-form {
+        display: block;
+        visibility: visible;
+        background: red;
+        width: 100%;
+        position: relative;
+        min-height: 500px;
+    }
+    th,
+    label,
+    b {
+        font-weight: normal;
+    }
+}
+
+/* [BUG #20597] CSS of modal box had effects on other quick add box */
+.oneImage .modal-dialog {
+    text-align: center;
+    width: auto;
+}
+.oneImage .modal-content {
+    display: inline-block;
+}
+
+.imageBoxNoZoom,
+.imageBox {
+    margin-bottom: 20px;
+}
+
+.tz-gallery .thumbnail {
+    margin-bottom: 20px;
+    display: block;
+}
+
+.tz-gallery .thumbnail {
+    border: none;
+    display: none;
+}
+
+.tz-gallery .thumbnail.firstThumb {
+    display: block;
+}
+
+#baguetteBox-overlay .full-image figcaption {
+    font-size: 24px;
+    font-weight: 700;
+}
+
+/* [TASK 20660#] Add blue-message-box form rte to frontend */
+p.blue-message-box {
+    border: 1px solid #02a3d9;
+    color: #02a3d9;
+    background: url("../../Images/messages/message.png") no-repeat 8px center #ebf8fc;
+    padding: 8px 20px 8px 30px;
+    font-size: 15px;
+}
+
+/* CSS added for header change */
+
+.paddingL7 {
+    padding-left: 7px;
+}
+
+.view-all-product {
+    padding: 10px;
+    font-size: 14px;
+    display: block;
+}
+
+#filterMenu .count {
+    position: absolute;
+    left: 87%;
+    top: -12px;
+    min-width: 20px;
+    padding: 2px 5px;
+    font-size: 12px;
+    color: #fff;
+    vertical-align: middle;
+    background-color: #777;
+    border-radius: 15px;
+    height: auto;
+    text-align: center;
+}
+
+.infoBoxDelayMessage {
+    background: #ebf8fc;
+    margin-top: 25px;
+    margin-bottom: 10px;
+    color: #01a3d9;
+    text-align: center;
+    padding: 10px;
+    border: 1px solid #01A3D9;
+}

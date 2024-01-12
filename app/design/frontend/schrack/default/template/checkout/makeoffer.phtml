@@ -1,0 +1,44 @@
+<?php 
+$itemCnt  = Mage::helper('checkout/cart')->getItemsCount();
+$customer = Mage::getSingleton('customer/session')->getCustomer();
+$eMail    = $customer->getEmail();
+?>
+
+<?php echo $this->getMessagesBlock()->getGroupedHtml() ?>
+<form id="login-form" action="<?php echo Mage::getUrl('checkout/cart/requestoffer/'); ?>" method="post">
+    <div class="row">
+        <div class="large-12 columns">
+            <div class="headline a">
+                <?php echo $this->__('Make Offer'); ?>
+            </div>
+            <?php if ( $itemCnt > 0 ) : ?>
+                <div class="gray-form">
+                    <div class="headline c1">
+                        <?php echo $this->__('Request an offer for your cart content. The offer will be send as eMail to the following address:'); ?>
+                    </div>
+                    <div>
+                        <ul class="form-list">
+                            <li>
+                                <label for="login-email" class="required"><?php echo $this->__('Email Address') ?> <em>*</em></label>
+                                <div class="input-box">
+                                    <input type="text" class="input-text required-entry validate-email" name="email" id="email" value="<?php echo $eMail ?>" />
+                                </div>
+                            </li>
+                            <li>
+                                <label for="schrack-custom-order-number-label"><?php echo $this->__('Purchase Order Number') ?></label>
+                                <div class="input-box">
+                                    <input type="text" class="input-text" id="schrack-custom-order-number" name="schrack-custom-order-number" maxlength="20" size="20" />
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="buttons-set">
+                        <button type="submit" title="<?php echo $this->__('Request Offer Now') ?>" class="button-arrow small gray btn-checkout"><?php echo $this->__('Request Offer Now') ?></button>
+                    </div>
+                </div>
+            <?php endif; ?>
+            <br/><br/>
+            <a href="<?php echo Mage::getUrl('checkout/cart'); ?>" title="<?php echo $this->__('Back to Shopping Cart') ?>" class="button-blue small btn-update"><?php echo $this->__('Back to Shopping Cart') ?></a>
+        </div>
+    </div>
+</form>

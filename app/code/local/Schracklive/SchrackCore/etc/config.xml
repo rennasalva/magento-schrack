@@ -1,0 +1,50 @@
+<?xml version="1.0"?>
+<config>
+	<modules>
+		<Schracklive_SchrackCore>
+			<version>1.1.2</version>
+			<depends>
+				<Mage_Core />
+				<Schracklive_Schrack />
+			</depends>
+		</Schracklive_SchrackCore>
+	</modules>
+	<frontend>
+		<routers>
+			<schracklive_schrackcore>
+				<use>standard</use>
+				<args>
+					<module>Schracklive_SchrackCore</module>
+					<frontName>core</frontName>
+				</args>
+			</schracklive_schrackcore>
+		</routers>
+	</frontend>
+	<global>
+		<models>
+			<schrackcore>
+				<class>Schracklive_SchrackCore_Model</class>
+			</schrackcore>
+			<core>
+				<rewrite>
+					<locale>Schracklive_SchrackCore_Model_Locale</locale>
+					<translate>Schracklive_SchrackCore_Model_Translate</translate>
+					<email_template>Schracklive_SchrackCore_Model_Email_Template</email_template>
+					<email_template_filter>Schracklive_SchrackCore_Model_Email_Template_Filter</email_template_filter>
+					<store>Schracklive_SchrackCore_Model_Store</store>
+					<cookie>Schracklive_SchrackCore_Model_Cookie</cookie>
+				</rewrite>
+			</core>
+			<core_mysql4>
+				<rewrite>
+					<url_rewrite>Schracklive_SchrackCore_Model_Mysql4_Url_Rewrite</url_rewrite>
+				</rewrite>
+			</core_mysql4>           
+		</models>
+		<helpers>
+			<schrackcore>
+				<class>Schracklive_SchrackCore_Helper</class>
+			</schrackcore>
+		</helpers>
+	</global>
+</config>

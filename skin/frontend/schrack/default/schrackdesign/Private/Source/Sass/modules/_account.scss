@@ -1,0 +1,457 @@
+.my-account .addBx,
+.my-account .editBx {
+	background: #fafafa;
+	color: #00589d;
+	border: 1px solid #d6d6d6;
+	padding: 15px 0;
+	margin-bottom: 15px;
+	box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.my-account .editBx {
+	background: #fff;
+	font-size: 14px;
+	color: #666;
+}
+
+.my-account .addBx button {
+	margin-left: 40%;
+}
+
+.my-account .editBx button {
+	margin-bottom: -25px;
+	margin-top: 25px;
+	margin-left: 40%;
+}
+
+.my-account .editBx .custName {
+	font-weight: bold;
+	color: #00589d;
+}
+
+.my-account .editBx .role {
+	font-style: italic;
+	font-size: 14px;
+	color: #666;
+	display: block;
+}
+
+.my-account .editBx .action {
+	border-top: 1px solid #d1d1d1;
+	padding-top: 10px;
+	margin-top: 10px;
+}
+
+.my-account .editBx .action a {
+	color: #d1222b;
+}
+
+.userAccountCont {
+	border: 1px solid #d6d6d6;
+	font-size: 14px;
+	line-height: normal;
+	color: #555555;
+	margin-bottom: 25px;
+}
+
+.userAccountCont h2 {
+	background: #fff;
+	font-size: 16px;
+	color: #333333;
+	padding: 10px 0 10px 15px;
+	margin: 0;
+}
+
+.userAccountCont h3 {
+	font-family: 'robotomedium', Helvetica, Arial, Sans-Serif;
+	font-size: 14px;
+	color: #00589d;
+	margin-bottom: 5px;
+}
+
+.userAccountCont .contentArea {
+	padding: 20px 15px 0;
+	border: 1px solid #ededed;
+	background: #f5f5f5;
+}
+
+.userAccountCont .contentArea .box {
+	background: #fff;
+	padding: 10px 15px;
+	box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.2);
+	min-height: 190px;
+	margin-bottom: 20px;
+}
+
+.userAccountCont .contentArea .box .row {
+	margin-bottom: 15px;
+}
+
+.userAccountCont .contentArea .box {
+	word-wrap: break-word;
+}
+
+.myAccount .leftNav {
+	margin: 0;
+	border-top: 0;
+}
+
+.myAccount .leftNav li {
+	width: 32%;
+	margin-bottom: 15px;
+	margin-right: 14px;
+	float: left;
+}
+
+.myAccount .leftNav li a {
+	background: #f5f5f5;
+	color: #555555;
+	padding: 40px 15px 0 25px;
+	display: block;
+	border: 1px solid #d6d6d6;
+	box-shadow: 0px 2px 1px rgba(0, 0, 0, 0.1);
+	font-size: 16px;
+	min-height: 115px;
+}
+
+.myAccount .myAcountIcon,
+.myAccount .orderIcon,
+.myAccount .offerIcon,
+.myAccount .promotionIcon,
+.myAccount .shipmentIcon,
+.myAccount .backorderIcon,
+.myAccount .invoiceIcon,
+.myAccount .creditIcon,
+.myAccount .partlistIcon,
+.myAccount .pricelistIcon,
+.myAccount .partlistBlueBdrIcon,
+.myAccount .storeIcon,
+.myAccount .addressListIcon,
+.myAccount .changePasswordIcon,
+.myAccount .manageAccountIcon,
+.myAccount .myDefaultPaymentIcon,
+.myAccount .myDataIcon {
+	width: 40px;
+	height: 40px;
+	display: block;
+	margin-right: 10px;
+	background-size: 100% 100% !important;
+	margin-top: -5px;
+}
+
+.myAccountProfileBx {
+	border: 1px solid #d6d6d6;
+	box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.3);
+	margin-bottom: 25px;
+	margin-top: 25px;
+}
+
+.myAccountProfileBx .left {
+	padding: 10px 30px;
+	font-size: 20px;
+	color: #888888;
+}
+
+.myAccountProfileBx .left h2 {
+	font-size: 22px;
+	font-family: 'robotomedium', Helvetica, Arial, Sans-Serif;
+	color: #00589d;
+	margin-bottom: 10px;
+	margin-top: 15px;
+}
+
+.myAccountProfileBx .left .imgBx {
+	width: 105px;
+	height: 105px;
+	border-radius: 50px;
+	overflow: hidden;
+	margin-right: 25px;
+	float: left;
+}
+
+.myAccountProfileBx .right {
+	padding: 30px 15px 0px 30px;
+	border-left: 1px solid #d6d6d6;
+	background: #f9f9f9;
+	min-height: 125px;
+	font-size: 20px;
+}
+
+.customer-account-forgotpassword .breadcrumb,
+.customer-account-login .breadcrumb,
+.customer-account-create .breadcrumb,
+.customer-account-confirmation .breadcrumb {
+	display: none;
+}
+
+.customer-account-create .noHead h3 {
+	display: none;
+}
+
+.infoIconPos {
+	left: 20px;
+	top: 16px;
+}
+
+.customer-account-create .popupBox {
+	left: 125px;
+}
+
+.myAcccountSearchAddon {
+	background: #00589d !important;
+	color: #fff;
+	font-size: 16px;
+	border: 0 !important;
+	border-radius: 0 !important;
+}
+
+//
+//  Responsive
+//  ---------------------------------------------
+
+@media (min-width: 290px) and (max-width: 350px) {
+	.myAccount .leftNav li a {
+		font-size: 12px;
+	}
+
+	.myAccount .leftNav li a span.adddtnlTxt {
+		color: #c0c0c0;
+	}
+
+	.myAccountProfileBx .left {
+		width: 100%;
+	}
+
+
+
+	.userAccountCont .contentArea .box {
+		padding: 10px 10px;
+	}
+}
+
+@media (min-width: $breakpoint-up-xs) and (max-width: $breakpoint-down-md) {
+	.my-account .editBx button {
+		margin-bottom: 0;
+		margin-top: 0;
+		margin-left: 5%;
+	}
+
+	.my-account .addBx button {
+		margin-left: 5%;
+	}
+
+	.my-account .editBx .custEmail {
+		padding-left: 0;
+	}
+
+	.myAccount .leftNav li {
+		width: 48%;
+		margin-right: 2%;
+	}
+
+	.myAccount .leftNav li:nth-child(2n) {
+		margin-right: 0;
+		float: right;
+	}
+
+	.myAccount .myAcountIcon, .myAccount .orderIcon, .myAccount .offerIcon, .myAccount .promotionIcon, .myAccount .shipmentIcon, .myAccount .backorderIcon, .myAccount .invoiceIcon, .myAccount .creditIcon, .myAccount .partlistIcon, .myAccount .pricelistIcon, .myAccount .partlistBlueBdrIcon, .myAccount .storeIcon, .myAccount .addressListIcon, .myAccount .changePasswordIcon, .myAccount .manageAccountIcon, .myAccount .myDefaultPaymentIcon, .myAccount .myDataIcon {
+		width: 30px;
+		height: 30px;
+		margin-right: 5px;
+		margin-top: -5px;
+	}
+
+	.myAccount .txtalgn {
+		margin-top: -10px;
+	}
+
+	.myAccount .leftNav li a {
+		padding: 25px 8px 0 8px;
+		font-size: 14px;
+		min-height: 100px;
+		text-align: center;
+	}
+
+	.myAccount .leftNav li a span {
+		float: none;
+		display: inline-block;
+	}
+
+	.myAccount .leftNav li a span.adddtnlTxt {
+		color: #c0c0c0;
+	}
+
+	.myAccountProfileBx .left h2 {
+		font-size: 16px;
+		margin-bottom: 10px;
+		margin-top: 5px;
+	}
+
+	.myAccountProfileBx .left .imgBx {
+		width: 50px;
+		height: 50px;
+		border-radius: 45px;
+		margin-right: 10px;
+		float: none;
+		display: inline-block;
+	}
+
+	.myAccountProfileBx .left {
+		padding: 10px 4px 10px 4px;
+		font-size: 15px;
+		font-size: 18px;
+		width: 100%;
+		margin: auto;
+		float: none;
+		overflow: hidden;
+		text-align: center;
+	}
+
+	.myAccountProfileBx .rightInrSec {
+		display: inline-block;
+		vertical-align: top;
+	}
+
+	.userAccountCont h2 {
+		padding: 10px 15px 10px 15px;
+	}
+
+	.my-account .editBx .role {
+		display: inline-block;
+	}
+}
+
+@media (min-width: $breakpoint-up-md) and (max-width: $breakpoint-down-lg) {
+	.my-account .editBx button {
+		margin-bottom: -30px;
+		margin-top: 30px;
+	}
+
+	.myAccount .leftNav li:nth-child(3n) {
+		margin-right: 0;
+		float: right;
+	}
+
+	.myAccount .leftNav li a {
+		padding: 25px 8px 0 8px;
+		font-size: 14px;
+		min-height: 115px;
+		text-align: center;
+	}
+
+	.myAccount .leftNav li a span {
+		float: none;
+		display: inline-block;
+	}
+
+	.myAccount .leftNav li a span.adddtnlTxt {
+		color: #c0c0c0;
+	}
+
+	.myAccountProfileBx .left {
+		padding: 10px 20px;
+		font-size: 18px;
+		width: 100%;
+		text-align: center;
+		margin: auto;
+		float: none;
+		overflow: hidden;
+	}
+
+	.myAccountProfileBx .left .imgBx {
+		width: 95px;
+		height: 95px;
+		border-radius: 45px;
+		margin-right: 10px;
+		display: inline-block;
+		float: none;
+	}
+
+	.myAccountProfileBx .left h2 {
+		font-size: 18px;
+	}
+
+	.myAccountProfileBx .right {
+		padding: 30px 10px 0px 15px;
+		font-size: 18px;
+	}
+
+	.myAccountProfileBx .rightInrSec {
+		display: inline-block;
+		vertical-align: top;
+		padding-top: 15px;
+	}
+
+	.myAccount .partlistBlueBdrIcon {
+		width: 30px;
+		height: 30px;
+		margin-right: 5px;
+		margin-top: -5px;
+	}
+}
+
+
+@media (min-width: $breakpoint-up-lg) and (max-width: $breakpoint-down-xl) {
+
+	.myAccountProfileBx .left h2 {
+		font-size: 18px;
+	}
+	.myAccount .leftNav li {
+		width: 31%;
+	}
+	.myAccount .leftNav li a {
+		padding: 25px 8px 0 8px;
+		font-size: 14px;
+		min-height: 115px;
+		text-align: center;
+	}
+	.myAccount .leftNav li a span {
+		float: none;
+		display: inline-block;
+	}
+	.myAccount .leftNav li a span.adddtnlTxt {
+		color: #c0c0c0;
+	}
+
+	.myAccountProfileBx .left {
+		padding: 10px 10px 10px 15px;
+	}
+	.myAccountProfileBx .left .imgBx {
+		width: 100px;
+		height: 100px;
+		margin-right: 10px;
+	}
+	.myAccountProfileBx .left .rightInrSec {
+		width: 270px;
+		float: left;
+	}
+	.myAccountProfileBx .left h2 {
+		font-size: 20px;
+	}
+	.myAccountProfileBx .right {
+		padding: 20px 10px 0px 10px;
+		font-size: 17px;
+	}
+
+}
+
+
+@media (min-width: $breakpoint-up-xl) {
+	.myAccount .leftNav li {
+		width: 31%;
+	}
+	.myAccount .leftNav li a {
+		padding: 25px 8px 0 8px;
+		font-size: 14px;
+		min-height: 115px;
+		text-align: center;
+	}
+	.myAccount .leftNav li a span {
+		float: none;
+		display: inline-block;
+	}
+	.myAccount .leftNav li a span.adddtnlTxt {
+		color: #c0c0c0;
+	}
+}
+

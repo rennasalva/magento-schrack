@@ -1,0 +1,106 @@
+<div id="reset-container">
+    <style type="text/css">
+        th {
+            text-align: left;
+            vertical-align: top;
+        }
+        th, td {
+            padding: 10px;
+        }
+    </style>
+    <div class="page-title">
+        <h1><?=$this->__('Datanorm Mass Production')?></h1>
+    </div>
+    <div class="documents-filter sizing-default align-left">
+        <form id="edit_form" name="edit_form" method="post" action="<?=$this->getMassuploadPostUrl()?>">
+            <input name="form_key" type="hidden" value="<?php echo Mage::getSingleton('core/session')->getFormKey() ?>" />
+            <h4 class="icon-head head-edit-form fieldset-legend"><?=$this->__('Input Customer Ids, one per line')?></h4>
+            <fieldset id="my-fieldset">
+                <table cellspacing="0" class="form-list">
+                    <tr>
+                        <th><?=$this->__('Customer Ids')?> <span class="required">*</span></th>
+                        <td class="input-ele">
+                            <textarea style="border: 1px solid black;" name="customerIds" rows="20" cols="8"></textarea>
+                        </td>
+                        <td>
+                            <table>
+                                <tr>
+                                    <th><?=$this->__('Export Type')?></th>
+                                    <td class="input-ele">
+                                        <select name="exportType">
+                                            <option value="datanorm">Datanorm</option>
+                                            <option value="csv">CSV</option>
+                                            <option value="xml">XML</option>
+                                        </select>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th><?=$this->__('Include image Urls')?></th>
+                                    <td class="input-ele">
+                                        <input type="checkbox" name="incImgUrls" value="1" />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th><?=$this->__('Group articles by Schrack structure')?></th>
+                                    <td class="input-ele">
+                                        <input type="checkbox" name="groupArticlesBySchrackStructure" value="1" />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th><?=$this->__('Use EDS article numbers')?></th>
+                                    <td class="input-ele">
+                                        <input type="checkbox" name="useEdsArticleNumbers" value="1" />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th><?=$this->__('Without long text')?></th>
+                                    <td class="input-ele">
+                                        <input type="checkbox" name="withoutLongText" value="1" />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th><?=$this->__('Without UVP')?></th>
+                                    <td class="input-ele">
+                                        <input type="checkbox" name="withoutUVP" value="1" />
+                                    </td>
+                                </tr>
+                                <?php if ( Mage::getStoreConfig('schrack/general/country') === 'at' ): ?>
+                                    <tr>
+                                        <th><?=$this->__('Sortiment')?></th>
+                                        <td class="input-ele">
+                                            <select name="ctryCode">
+                                                    <option value="AT">AT</option>
+                                                    <option value="DE">DE</option>
+                                                    <option value="COM">COM</option>
+                                                    <option value="RU">RU</option>
+                                                    <option value="SA">SA</option>
+                                            </select>
+                                        </td>
+                                    </tr>
+                                <?php else: ?>
+                                    <input type="hidden" name="ctryCode" value="<?php echo strtoupper(Mage::helper('schrack')->getCountryTld())?>" />
+                                <?php endif;?>
+                            </table>
+                    </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">
+                            <button class="submit-button" style="width: 200px;" onclick="submitForm(); return false;" type="button"><span><?= $this->__('Create Urls')?></span></button>
+                        </td>
+                    </tr>
+                </table>
+            </fieldset>
+        </form>
+        
+    </div>
+</div>
+
+<script type="text/javascript">//<![CDATA[
+
+    function submitForm() {
+        // showOverlayMessage('notice', 'Achtung: Dieses Fenster wird nach der Bestätigung geleert. Nach Fertigstellung erhalten Sie eine Email mit den Daten!','');
+        alert('Achtung: Dieses Fenster wird nach der Bestätigung geleert. Nach Fertigstellung erhalten Sie eine Email mit den Daten!');
+        document.forms['edit_form'].submit();
+    }
+
+//]]></script>

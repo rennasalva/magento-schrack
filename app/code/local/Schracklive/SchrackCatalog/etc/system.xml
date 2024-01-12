@@ -1,0 +1,301 @@
+<?xml version="1.0"?>
+<config>
+    <sections>
+        <schrack translate="label" module="schrack">
+            <groups>
+                <product_import translate="label">
+                    <label>Product Import</label>
+                    <sort_order>40</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>0</show_in_website>
+                    <show_in_store>0</show_in_store>
+                    <fields>
+                        <stomp_url translate="label">
+                            <label>Stomp URL</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>100</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </stomp_url>
+                        <message_queue_inbound translate="label">
+                            <label>Inbound Message Queue Name</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>110</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </message_queue_inbound>
+                        <error_queue translate="label">
+                            <label>Error Message Queue Name</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>120</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </error_queue>
+                        <process_messages_per_call_count translate="label">
+                            <label>Max. Msgs Processed Per Call</label>
+                            <frontend_type>text</frontend_type>
+                            <validate>validate-number</validate>
+                            <sort_order>130</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </process_messages_per_call_count>
+                        <running_solr_exports translate="label">
+                            <label>Max. Solr export processes at once</label>
+                            <frontend_type>text</frontend_type>
+                            <validate>validate-number</validate>
+                            <sort_order>130</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </running_solr_exports>
+                    </fields>
+                </product_import>
+                <product_cache_warmup translate="label">
+                    <label>Product Cache Warmup</label>
+                    <sort_order>41</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>0</show_in_website>
+                    <show_in_store>0</show_in_store>
+                    <fields>
+                        <enable_warmup translate="label">
+                            <label>Enable Product Cache Warmup</label>
+							<frontend_type>select</frontend_type>
+							<source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>100</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </enable_warmup>
+                        <finish_warmup_time translate="label">
+                            <label>Finish Warmup Time (UTC)</label>
+                            <frontend_type>time</frontend_type>
+                            <sort_order>110</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </finish_warmup_time>
+                        <request_delay translate="label">
+                            <label>Delay in seconds between Requests</label>
+                            <frontend_type>text</frontend_type>
+                            <validate>validate-number</validate>
+                            <sort_order>120</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </request_delay>
+                    </fields>
+                </product_cache_warmup>
+                <product_import_dispatcher translate="label">
+                    <label>Product Import Dispatcher</label>
+                    <sort_order>42</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>0</show_in_website>
+                    <show_in_store>0</show_in_store>
+                    <fields>
+                        <contries_and_priorities translate="label">
+                            <label>Countries and Priorities (AT=1,BE=...)</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>100</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </contries_and_priorities>
+                        <running_processes translate="label">
+                            <label>Max. Running Processes</label>
+                            <frontend_type>text</frontend_type>
+                            <validate>validate-number</validate>
+                            <sort_order>110</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </running_processes>
+                        <running_finalize_processes translate="label">
+                            <label>Max. Running Finalize Processes</label>
+                            <frontend_type>text</frontend_type>
+                            <validate>validate-number</validate>
+                            <sort_order>111</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </running_finalize_processes>
+                        <begin_working_time translate="label">
+                            <label>Begin Working Time (UTC)</label>
+                            <frontend_type>time</frontend_type>
+                            <sort_order>120</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </begin_working_time>
+                        <end_working_and_start_finalizing_time translate="label">
+                            <label>End Working and Start Finalizes Time (UTC)</label>
+                            <frontend_type>time</frontend_type>
+                            <sort_order>130</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </end_working_and_start_finalizing_time>
+                        <latest_finalize_start_time translate="label">
+                            <label>Latest finalize start time (UTC)</label>
+                            <frontend_type>time</frontend_type>
+                            <sort_order>132</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </latest_finalize_start_time>
+                        <non_stop_weekdays translate="label">
+                            <label>Non-Stop Weekdays</label>
+                            <frontend_type>multiselect</frontend_type>
+                            <source_model>schrackcatalog/system_config_source_weekdays/system_config_source_view</source_model>
+                            <sort_order>135</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </non_stop_weekdays>
+                        <worker_script translate="label">
+                            <label>Worker Script Template (%country% for country code)</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>140</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </worker_script>
+                        <commandline translate="label">
+                            <label>Commandline (%country%, %script% vars)</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>150</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </commandline>
+                    </fields>
+                </product_import_dispatcher>
+                <media_zip_download translate="label">
+                    <label>Media Zip Download</label>
+                    <sort_order>43</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>0</show_in_website>
+                    <show_in_store>0</show_in_store>
+                    <fields>
+                        <enable_download translate="label">
+                            <label>Enable Download</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>100</sort_order>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>1</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </enable_download>
+                        <define_downloadpath translate="label">
+                            <label>Define Downloadpath</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>110</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </define_downloadpath>
+                        <define_labelformat translate="label">
+                            <label>Define Labelformat</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>schrackcatalog/labelformats</source_model>
+                            <sort_order>120</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </define_labelformat>
+                        <define_onlinedatasheet_downloadpath translate="label">
+                            <label>Define Onlinedatasheet Downloadpath</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>130</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </define_onlinedatasheet_downloadpath>
+                        <enable_full_media_download_logging translate="label">
+                            <label>Enable Full Media Download Logging</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>140</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </enable_full_media_download_logging>
+                    </fields>
+                </media_zip_download>
+                <shop translate="label">
+                    <fields>
+                        <related_products translate="label">
+                            <label>Related Products</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>23</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </related_products>
+                        <product_attribute_exclude_codes translate="label">
+                            <label>Product Attribute Exclude-Codes</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>24</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </product_attribute_exclude_codes>
+                        <do_offer_project_price translate="label">
+                            <label>Do offer project price</label>
+							<frontend_type>select</frontend_type>
+							<source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>25</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </do_offer_project_price>
+                        <do_show_list_price translate="label">
+                            <label>Do show list price</label>
+							<frontend_type>select</frontend_type>
+							<source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>26</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </do_show_list_price>
+                        <show_currency_after_price translate="label">
+                            <label>Show currency symbol after price</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>27</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </show_currency_after_price>
+                        <show_green_stamp translate="label">
+                            <label>Show green stamp info</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>28</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </show_green_stamp>
+                    </fields>
+                </shop>
+                <product>
+                    <fields>
+                        <vatCheckEmailToAddress>
+                            <label>Address for Registration VAT check email</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>30</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </vatCheckEmailToAddress>
+                    </fields>
+                </product>
+            </groups>
+        </schrack>
+    </sections>
+</config>

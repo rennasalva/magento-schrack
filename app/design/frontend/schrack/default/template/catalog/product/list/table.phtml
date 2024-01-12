@@ -1,0 +1,385 @@
+<!-- default/template/catalog/product/list/table.phtml (start) -->
+<?php
+    /* @var $_infoHelper Schracklive_SchrackCatalog_Helper_Info */
+    $_infoHelper = Mage::helper('schrackcatalog/info');
+    /* @var $_productHelper Schracklive_SchrackCatalog_Helper_Product */
+    $_productHelper = Mage::helper('schrackcatalog/product');
+    /* @var $_stockHelper Schracklive_SchrackcatalogInventory_Helper_Stock */
+    $_stockHelper = Mage::helper('schrackcataloginventory/stock');
+    /** @var Schracklive_SchrackGoogleAnalytics_Helper_Data $_gaHelper */
+    $_gaHelper = Mage::helper('googleanalytics');
+    $_partslistHelper = Mage::helper('schrackwishlist/partslist');
+    $_wishlistHelper = Mage::helper('schrackwishlist');
+    /* @var $_productListToolbar Mage_Catalog_Block_Product_List_Toolbar */
+    $_productListToolbar = Mage::getSingleton('Mage_Catalog_Block_Product_List_Toolbar');
+
+    $_customer = Mage::getSingleton('customer/session')->getCustomer();
+
+    $_imgCartUrl = $this->getSkinUrl('images/cart_raute1.png');
+    $_imgTruckUrl = $this->getSkinUrl('images/truck_white_diamond.png');
+    $_imgInvisUrl = $this->getSkinUrl('images/no_truck_no_cart.png');
+    $_category  =  Mage::registry('current_category');
+
+    $_changeQtyListIndex = $this->getRequest()->getParam('changeqtylistindex', 0);
+
+    $sessionCustomerId = Mage::getSingleton('customer/session')->getCustomer()->getId();
+    $aclRoleId = Mage::getModel('customer/customer')->load($sessionCustomerId)->getSchrackAclRoleId();
+    $isProjectant = Mage::helper('schrack/acl')->isProjectantRoleId($aclRoleId);
+?>
+
+<style>
+    .addtocart.small button {
+        margin-bottom: 0px;
+    }
+    .addtocart.small button::after {
+        content: none;
+    }
+    .distance10px {
+        margin-top: -8px !important;
+    }
+    .button-arrow-peak {
+        -moz-transform: skewX(-25deg);
+        -webkit-transform: skewX(-25deg);
+        -o-transform: skewX(-25deg);
+        -ms-transform: skewX(-25deg);
+        top: -26px;
+        margin-left: -6px;
+        width: 13px;
+        height: 26px;
+        /* transform: skewX(-25deg); */
+        background: #D1222B;
+        border-bottom: 1px solid #80151a;
+        border-right: 1px solid #80151a;
+        display: inline-block;
+    }
+</style>
+
+<?php Varien_Profiler::start('table.phtml->getLoadedProductCollection()'); ?>
+<?php $_productCollection = $this->getLoadedProductCollection() ?>
+<?php Varien_Profiler::stop('table.phtml->getLoadedProductCollection()'); ?>
+<?php if (!$_productCollection->count()): ?>
+    <?php if ( $_category->isPromotionProductsCategory() ) : ?>
+        <?php if (!Mage::getSingleton('customer/session')->isLoggedIn()) : ?>
+            <p class="note-msg callout panel text-center"><strong><?php echo $this->__('NotSignedInPromotions') ?></strong></p>
+        <?php else: ?>
+            <p class="note-msg callout panel text-center"><strong><?php echo $this->__('NoPromotions') ?></strong></p>
+        <?php endif; ?>
+    <?php else: ?>
+        <p class="note-msg"><?php echo $this->__('There are no products matching the selection.') ?></p>
+    <?php endif; ?>
+<?php else: ?>
+    <div class="toolbar-top">
+        <?php echo $this->getToolbarHtml();?>
+    </div>
+    <?php $_iterator = 0; ?>
+    <div class="product-list table" data-name="category_list">
+        <input type="hidden" id="change-qty-list-index" value="<?php echo $_changeQtyListIndex ?>" />
+        <div class="header row">
+            <div class="large-4 columns product-col"><span class="bottom-align-container-5"><?php echo $this->__('Product'); ?></span></div>
+            <div class="large-3 columns availability-col"><span class="bottom-align-container-5"><?php echo $this->__('Availability'); ?></span></div>
+            <div class="large-2 columns price-col"><span class="bottom-align-container-5"><?php echo $this->__('Your price'); ?><br />(<?php echo $this->__('net of VAT'); ?>)</span></div>
+            <div class="large-3 columns buttons-col"><span class="bottom-align-container-5"><?php echo $this->__('Buy'); ?> /<br /><?php echo $this->__('Wishlist') . ' / ' . $this->__('Compare'); ?></span></div>
+        </div>
+        <?php Varien_Profiler::start('table.phtml->preloadProductsInfo()'); ?>
+        <?php $_infoHelper->preloadProductsInfo($_productCollection, $_customer); ?>
+        <?php Varien_Profiler::stop('table.phtml->preloadProductsInfo()'); ?>
+        <?php Varien_Profiler::start('table.phtml->_productCollection_loop'); ?>
+        <?php foreach ($_productCollection as $_product): ?>
+            <?php
+                $_iterator++;
+                if ( Schracklive_SchrackCatalog_Helper_Preparator::PREPARATE_PRODUCTS ) {
+                    Mage::helper('schrackcatalog/preparator')->prepareProduct($_product);
+                }
+            ?>
+            <div class="body row product-item"<?php echo $_gaHelper->getDataTags($_product, $_iterator, $_category); ?>>
+                <?php Varien_Profiler::start('table.phtml->_productCollection_loop->product-col'); ?>
+                <div class="large-4 columns product-col">
+                    <div class="row">
+                        <div class="large-3 columns">
+                            <?php
+                            Varien_Profiler::start('table.phtml->_productCollection_loop->product-col->image1');
+                            $_product_image = $this->helper('catalog/image')->init($_product, 'small_image')->constrainOnly(true)->resize(66, 66);
+                            $_product_image_url = (string)$_product_image;
+                            Varien_Profiler::stop('table.phtml->_productCollection_loop->product-col->image1');
+                            // Removes protocol:
+                            Varien_Profiler::start('table.phtml->_productCollection_loop->product-col->image2');
+                            $_product_image_url = str_replace(array('http:', 'https:'), '', $_product_image_url);
+                            $_product_image_width = $_product_image->getWidth();
+                            $_product_image_height = $_product_image->getHeight();
+                            Varien_Profiler::stop('table.phtml->_productCollection_loop->product-col->image2');
+                            Varien_Profiler::start('table.phtml->_productCollection_loop->product-col->image3');
+                            $_hover_product_image = $this->helper('catalog/image')->init($_product, 'image');
+                            $_hover_product_image_url = (string)$_hover_product_image;
+                            Varien_Profiler::stop('table.phtml->_productCollection_loop->product-col->image3');
+                            // Removes protocol:
+                            Varien_Profiler::start('table.phtml->_productCollection_loop->product-col->image4');
+                            $_hover_product_image_url = str_replace(array('http:', 'https:'), '', $_hover_product_image_url);
+                            $_hover_product_image_width = $_hover_product_image->getWidth();
+                            $_hover_product_image_height = $_hover_product_image->getHeight();
+                            Varien_Profiler::stop('table.phtml->_productCollection_loop->product-col->image4');
+                            ?>
+                            <?php Varien_Profiler::start('table.phtml->_productCollection_loop->product-col->image5'); ?>
+                            <a data-preview-path="<?php echo $_product_image_url ?>"  class="previewImageHover <?php echo $_product->isDead() ? ' grayscale' : ''; ?>" href="<?php echo $_hover_product_image_url ?>" onClick="return false;" title="<?php echo $this->htmlEscape($_product->getName()) ?>">
+                                <img data-src="<?php echo $_product_image_url ?>" <?php echo $_product->isDead() ? ' class="grayscale lazy" ' : ' class="lazy"'; ?>width="<?php echo $_product_image_width ?>" height="<?php echo $_product_image_height ?>" alt="<?php echo $this->htmlEscape($this->getImageLabel($_product, 'small_image')) ?>" />
+                            </a>
+                            <img class="print-only" src="<?php echo $_product_image_url ?>" width="<?php echo $_product_image_width ?>" height="<?php echo $_product_image_height ?>" alt="<?php echo $this->htmlEscape($this->getImageLabel($_product, 'small_image')) ?>" />
+                            <?php Varien_Profiler::stop('table.phtml->_productCollection_loop->product-col->image5'); ?>
+                        </div>
+                        <?php Varien_Profiler::start('table.phtml->_productCollection_loop->product-col->text'); ?>
+                        <div class="large-9 columns">
+                            <h2 class="product-name hide-on-print"><a href="<?php echo $_product->getProductUrl() ?>" title="<?php echo $this->htmlEscape($_product->getName()) ?>"><?php echo $this->htmlEscape($_product->getName()) ?></a></h2>
+                            <h2 class="print-only"><?php echo $this->htmlEscape($_product->getName()) ?></h2>
+                            <?php $desc = $_product->getCuttedSchrackLongTextAddition(100); ?>
+                            <?php if ( $desc ) : ?>
+                                <div class="description"><?php echo $this->htmlEscape($desc); ?></div>
+                            <?php endif; ?>
+                            <?php if ($_product->getSku()): ?>
+                                <div class="catalog-nr"><?php echo $this->__('Art.Nr.')?> <?php echo $this->htmlEscape($_product->getSku()); ?></div>
+                            <?php endif; ?>
+                        </div>
+                        <?php Varien_Profiler::stop('table.phtml->_productCollection_loop->product-col->text'); ?>
+                    </div>
+                </div>
+                <?php Varien_Profiler::stop('table.phtml->_productCollection_loop->product-col'); ?>
+                <?php Varien_Profiler::start('table.phtml->_productCollection_loop->availability-col'); ?>
+                <div class="large-3 columns availability-col availability">
+
+                    <div class="row">
+                        <div class="large-12 columns">
+                            <?php if ( $_product->isDead() ) : ?>
+                                <span class="sale_mark gray"><?php echo $this->__('NOT AVAILABLE'); ?></span>
+                            <?php elseif ( $_productHelper->isSale($_product,$_customer) ) : ?>
+                                <span class="sale_mark red_white"><?php echo $this->__('SALE'); ?></span>
+                            <?php elseif ( $_productHelper->isPromotion($_product,$_customer) ) : ?>
+                                <span class="sale_mark full_red"><?php echo $this->__('PROMOTION'); ?></span>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+
+                    <?php $stock = $_stockHelper->getCustomerPickupStock($_customer);
+                        $stockNumber = isset($stock) ? $stock->getStockNumber() : 0;
+                    ?>
+                    <?php if ( $_product->isDownload() ) : ?>
+                        <div class="row"><div class="large-12 columns onrequest"><?php echo $this->__('as download available') ?></div></div>
+                    <?php elseif ( !$_productHelper->isAvailInAnyDeliveryStock($_product) && $_product->isSale() ): ?>
+                        <div class="row-fine avail-item">
+                            <div class="large-fine-4 columns-fine deliverable"></div>
+                            <div class="large-fine-20 columns-fine">
+                                <div class="qty"><?php echo $this->__('Deliverable') ?>: <?php echo $_productHelper->getSummarizedFormattedPickupQuantities($_product)?></div>
+                            </div>
+                         </div>
+                    <?php elseif (  $_product->isRestricted() || (! $_productHelper->isAvailInAnyStock($_product,$stockNumber)) || $_product->isHideStockQantities() ): ?>
+                        <div class="row"><div class="large-12 columns onrequest"><?php echo $this->__('on request') ?></div></div>
+                    <?php elseif ($_product->isSaleable()): ?>
+                        <?php if ( $_productHelper->isAvailInStock($_product,$stock)): ?>
+                            <div class="row-fine avail-item">
+                                <div class="large-fine-4 columns-fine pickupable"></div>
+                                <div class="large-fine-20 columns-fine">
+                                    <div class="qty"><?php echo $this->__('Pickupable') ?>: <?php echo $_productHelper->getFormattedPickupQuantity($_product);?></div>
+                                    <div><?php echo $_productHelper->trimLength($this->__('at') . ' ' . $stock->getStockName(),16); ?></div>
+                                </div>
+                            </div>
+                        <?php endif; ?>
+                        <?php if ( $_productHelper->isAvailInAnyDeliveryStock($_product) ): ?>
+                            <?php $stock = $_stockHelper->getLocalDeliveryStocks(); $stockNo = $stock ? $stock->getStockNumber() : 0;?>
+                            <?php if ( $_productHelper->isAvailInStock($_product,$stock)): ?>
+                                <div class="row-fine avail-item">
+                                    <div class="large-fine-4 columns-fine deliverable"></div>
+                                    <div class="large-fine-20 columns-fine">
+                                        <div class="qty"><?php echo $this->__('Deliverable') ?>: <?php echo $_productHelper->getFormattedDeliveryQuantity($_product);?></div>
+                                        <div><?php echo $_productHelper->getFormattedDeliveryTime($_product,$stockNo);?></div>
+                                    </div>
+                                </div>
+                            <?php endif; ?>
+                            <?php $stock = $_stockHelper->getForeignDeliveryStock(); $stockNo = $stock ? $stock->getStockNumber() : 0;?>
+                            <?php if ( $_productHelper->isAvailInStock($_product,$stock)): ?>
+                                <div class="row-fine avail-item">
+                                    <div class="large-fine-4 columns-fine deliverable"></div>
+                                    <div class="large-fine-20 columns-fine">
+                                        <div class="qty"><?php echo $_productHelper->getFormattedDeliveryQuantity($_product,$stockNo);?></div>
+                                        <div><?php echo $_productHelper->getFormattedDeliveryTime($_product,$stockNo);?></div>
+                                    </div>
+                                </div>
+                            <?php endif; ?>
+                            <?php $stockNo = $_stockHelper->getThirdPartyDeliveryStockNumber(); ?>
+                            <?php if ( ! $_product->isDiscontinuation() && $_productHelper->isAvailInStockNo($_product,$stockNo)): ?>
+                                <div class="row-fine avail-item">
+                                    <div class="large-fine-4 columns-fine deliverable"></div>
+                                    <div class="large-fine-20 columns-fine">
+                                        <div class="qty"><?php echo $_productHelper->getFormattedDeliveryQuantity($_product,$stockNo);?></div>
+                                        <div><?php echo $_productHelper->getFormattedDeliveryTime($_product,$stockNo);?></div>
+                                    </div>
+                                </div>
+                            <?php endif; ?>
+                        <?php elseif ( $_productHelper->isAvailInAnyPickupStock($_product) && $_product->isSale() ):?>
+                            <div class="row-fine avail-item">
+                                <div class="large-fine-4 columns-fine deliverable"></div>
+                                <div class="large-fine-20 columns-fine">
+                                    <div class="qty"><?php echo $this->__('Deliverable') ?>: <?php echo $_productHelper->getSummarizedFormattedPickupQuantities($_product)?></div>
+                                </div>
+                            </div>
+                        <?php endif; ?>
+                    <?php endif; ?>
+                </div>
+                <?php Varien_Profiler::stop('table.phtml->_productCollection_loop->availability-col'); ?>
+                <?php Varien_Profiler::start('table.phtml->_productCollection_loop->price-col'); ?>
+                <div class="large-2 columns price-col">
+                    <?php if ( ! $_product->isDead() && ! $_product->isRestricted() && ! $_product->isDownload() ) : ?>
+                        <div class="table">
+                            <?php echo $this->getPriceHtml($_product, true) ?>
+                        </div>
+                    <?php endif; ?>
+                </div>
+                <?php Varien_Profiler::stop('table.phtml->_productCollection_loop->price-col'); ?>
+                <?php Varien_Profiler::start('table.phtml->_productCollection_loop->buttons-col'); ?>
+                <div class="large-3 columns buttons-col hide-on-print">
+                    <?php if ( $_product->isDownload() ) : ?>
+                        <?php
+                            $imageBaseUrl = Mage::getStoreConfig('schrack/general/imageserver');
+                            $downloadAttachment = $_product->getDownloadFile();
+                            $downLoadLink = $imageBaseUrl . $downloadAttachment->getUrl();
+                            $downloadFileType = $downloadAttachment->getHumanFiletype();
+                            $downloadFileSize = $downloadAttachment->getHumanFilesize();
+                        ?>
+                        <div class="download small">
+                            <a href="<?php echo $downLoadLink; ?>" target="_blank"><button class="button" type="button" title="<?php echo $this->__('Download') ?>"><?php echo $this->__('Download') ?></button></a>
+                        </div>
+                        <div class="surcharges" style="margin-top: 15px;"><spawn><?php echo $downloadFileType ?></spawn>,&nbsp;<spawn><?php echo $downloadFileSize ?></spawn></div>
+                    <?php elseif ( $_product->isRestricted() ) : ?>
+                        <div class="row"><div class="large-12 columns onrequest"><?php echo $this->__('Currently not orderable') ?></div></div>
+                    <?php elseif ( ! $_product->isDead() ) : ?>
+                        <?php if ($_customer->isAllowed('customerOrder', 'order') && !$isProjectant): ?>
+                            <?php if ($_product->isSaleable()): ?>
+                                <?php Varien_Profiler::start('table.phtml->_productCollection_loop->buttons-col->add2cart'); ?>
+                                <form action="<?php echo $this->getAddToCartUrl($_product) ?>" method="post" name="product_addtocart_form_<?php echo $_product->getId(); ?>" id="product_addtocart_form_<?php echo $_product->getId(); ?>"<?php if ($_product->getOptions()): ?> enctype="multipart/form-data"<?php endif; ?>>
+                                    <input type="hidden" name="request-source" value="product-category-list-view" />
+                                    <input type="hidden" name="request-source-list-index" value="<?php echo $_product->getId() ?>" />
+                                    <div class="addtocart small">
+                                        <input type="text" style="padding-right: 2px !important; font-size: 0.9em; font-weight: bold; width: 45px;" class="qty" name="qty" id="qty-<?php echo $_product->getId() ?>" maxlength="12" value="" title="<?php echo $this->__('Qty'); ?>" />
+                                        <label for="qty-<?php echo $_product->getId() ?>" class="unit" title="<?php echo $_product->getSchrackQtyunit(); ?>"><?php echo $_product->getSchrackQtyunit(); ?></label>
+                                        <button type="button" <?php echo $_gaHelper->getDataTags($_product, $_iterator, $_category); ?> data-brand="" data-click="" data-event="addToCart" data-id="<?php echo $_product->getSku(); ?>"    class="btn-cart" title="<?php echo $this->__('Add to Cart'); ?>" onclick="trackListAddToCart(this, productAddToCartForm_<?php echo $_product->getId(); ?>.submit()); return AEC.ajax(this,dataLayer);">
+                                            <div><?php echo $this->__('Buy now'); ?></div>
+                                        </button>
+                                        <div class="button-arrow-peak"></div>
+                                        <br>
+                                        <div class="distance10px">&nbsp;</div>
+                                    </div>
+                                </form>
+                                <script type="text/javascript">
+                                    //<![CDATA[
+                                    var productAddToCartForm_<?php echo $_product->getId(); ?> = new VarienForm('product_addtocart_form_<?php echo $_product->getId(); ?>');
+                                    productAddToCartForm_<?php echo $_product->getId(); ?>.submit = function() {
+                                        var inputQuantity = jQuery('#qty-<?php echo $_product->getId() ?>').val();
+
+                                        if(inputQuantity == "") {
+                                            inputQuantity = "1";
+                                            jQuery('#qty-<?php echo $_product->getId() ?>').val(1);
+                                        }
+                                        if (!inputQuantity.match(/^\d+$/) || inputQuantity == 0) {
+                                            return false;
+                                        }
+                                        <?php if ( $_product->isDiscontinuation() || $_product->isRestricted() ) : ?>
+                                            jQuery.ajax("<?php echo Mage::helper('schrackcore/url')->getUrlWithCurrentProtocol('catalog/product/checkAvailability'); ?>",{
+                                                'success' : function ( data ) {
+                                                    var datax = JSON.parse(data);
+                                                    if ( datax.html ) {
+                                                        jQuery('#quantitywarningpopup').html(datax.html);
+                                                        jQuery('#quantitywarningpopup').dialog({
+                                                            'width' : '700px',
+                                                            'modal' : true
+                                                        });
+                                                    } else {
+                                                        document.forms['product_addtocart_form_<?php echo $_product->getId(); ?>'].submit();
+                                                    }
+                                                },
+                                                'type' : 'POST',
+                                                'data' : { 'sku' : '<?php echo $_product->getSku(); ?>',
+                                                    'qty' : (jQuery('#qty-<?php echo $_product->getId() ?>').val() ? jQuery('#qty-<?php echo $_product->getId() ?>').val() : 1),
+                                                    'drum' : '' }
+                                            });
+                                        <?php else : ?>
+                                        document.forms['product_addtocart_form_<?php echo $_product->getId(); ?>'].submit();
+                                        <?php endif; ?>
+                                    }.bind(productAddToCartForm_<?php echo $_product->getId(); ?>);
+
+                                    jQuery(document).ready(function () {
+                                        <?php /* Ugly construction was necessary because setting eventhandler on input element was removed somewhere else ?!? */ ?>
+                                        jQuery(document).keypress(function(ev) {
+                                            if ( jQuery(ev.target).attr('id') === 'qty-<?php echo $_product->getId() ?>' && ev.which == 13 ) {
+                                                ev.preventDefault();
+                                                trackListAddToCart(ev.target, productAddToCartForm_<?php echo $_product->getId(); ?>.submit());
+                                            }
+                                        });
+                                    });
+                                    //]]>
+                                </script>
+                                <?php Varien_Profiler::stop('table.phtml->_productCollection_loop->buttons-col->add2cart'); ?>
+                            <?php endif; ?>
+                        <?php endif; ?>
+                        <?php Varien_Profiler::start('table.phtml->_productCollection_loop->buttons-col->surcharges'); ?>
+                        <div class="surcharges">
+                            <?php echo $this->__('excl. surcharges, net of VAT'); ?><br/>
+                            <?php echo $this->__('Sales unit') . ': ' . $_product->calculateMinimumQuantityPackageToDisplay() . ' ' . $_product->getSchrackQtyunit(); ?>
+                        </div>
+                        <?php Varien_Profiler::stop('table.phtml->_productCollection_loop->buttons-col->surcharges'); ?>
+                        <?php Varien_Profiler::start('table.phtml->_productCollection_loop->buttons-col->partslist'); ?>
+                        <?php if (Mage::getSingleton('customer/session')->isLoggedIn()) : ?>
+                            <select class="dropdown-menu partslist" title="<?php echo $this->__('Add to partslist') ?>">
+                                <option></option>
+                                <option class="add-to-new-partslist no-auto-activate" onClick="partslistFE.addItemToNewList('<?php echo $this->__('New partslist') ?>', new ListRequestManager.Product(<?php echo $_product->getId() ?>, jQuery('#qty-<?php echo $_product->getId() ?>').val()));"><?php echo $this->__('Add to new partslist') ?></option>
+                                <?php if ($_partslistHelper->getPartslistCount() > 0): ?>
+                                    <?php $activePl = $_partslistHelper->getActiveOrFirstPartslist(); ?>
+                                    <option onClick="partslistFE.addItemToList(<?php echo $activePl->getId() ?>, new ListRequestManager.Product(<?php echo $_product->getId() ?>, jQuery('#qty-<?php echo $_product->getId() ?>').val()), false);" title="<?php echo $activePl->getDescription() ?>"><?php echo $this->__('Add to %s', $activePl->getDescription()) ?></option>
+                                <?php else: ?>
+                                    <?php $activePl = null; ?>
+                                <?php endif; ?>
+                                <?php foreach ($_partslistHelper->getPartslists() as $pl): ?>
+                                    <?php if ($activePl === null || $pl->getId() !== $activePl->getId()): ?>
+                                        <option onClick="partslistFE.addItemToList(<?php echo $pl->getId() ?>, new ListRequestManager.Product(<?php echo $_product->getId() ?>, jQuery('#qty-<?php echo $_product->getId() ?>').val()), false);" title="<?php echo $pl->getDescription() ?>"><?php echo $this->__('Add to %s', $pl->getDescription()) ?></option>
+                                    <?php endif; ?>
+                                <?php endforeach; ?>
+                            </select>
+                            <?php if ($_compareUrl = $this->getAddToCompareUrl($_product)): ?>
+                                <a rel="nofollow" onclick="return checkCompare();" href="<?php echo $_compareUrl ?>" class="link-compare" title="<?php echo $this->__('Add to Compare'); ?>"><div></div></a>
+                            <?php endif; ?>
+                        <?php endif; ?>
+                        <?php Varien_Profiler::stop('table.phtml->_productCollection_loop->buttons-col->partslist'); ?>
+                    <?php endif; ?>
+                </div>
+                <?php Varien_Profiler::stop('table.phtml->_productCollection_loop->buttons-col'); ?>
+            </div>
+        <?php endforeach; ?>
+        <?php Varien_Profiler::stop('table.phtml->_productCollection_loop'); ?>
+    </div>
+    <div class="toolbar-bottom">
+        <?php echo $this->getToolbarHtml() ?>
+    </div>
+<?php endif; ?>
+<div id="quantitywarningpopup" class="product-warning" title="<?php echo $this->__('Inquiry'); ?>"></div>
+
+<script type="text/javascript">
+    //<![CDATA[
+
+jQuery(document).ready(function () {
+
+    function setQty(id,qty) {
+        jQuery('#qty-' + id).val(qty);
+        myvar = 'productAddToCartForm_' + id;
+        window[myvar].submit();
+    }
+
+    jQueryLazyLoader.update();
+
+    if (jQuery('#change-qty-list-index').val() != '0') {
+        var changeQtyListIndex = jQuery('#change-qty-list-index').val();
+        if(changeQtyListIndex) {
+            var listIndexQty = changeQtyListIndex.split("_");
+            jQuery('#qty-' + listIndexQty[0]).val(listIndexQty[1]);
+        }
+    }
+
+    imagePreviewHover();
+});
+    //]]>
+</script>
+<!-- default/template/catalog/product/list/table.phtml (end) -->

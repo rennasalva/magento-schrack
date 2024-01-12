@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config>
+	<modules>
+		<Schracklive_SchrackAdminhtml>
+			<version>1.0.0</version>
+		</Schracklive_SchrackAdminhtml>
+	</modules>
+	<admin>
+		<routers>
+			<adminhtml>
+				<args>
+					<modules>
+						<my_Module before="Mage_Adminhtml">Schracklive_SchrackAdminhtml</my_Module>
+					</modules>
+				</args>
+			</adminhtml>
+		</routers>
+	</admin>
+	<global>
+		<blocks>
+			<schrackadminhtml>
+				<class>Schracklive_SchrackAdminhtml_Block</class>
+			</schrackadminhtml>
+			<adminhtml>
+				<rewrite>
+					<block_customer_edit_renderer_newpass>Schracklive_SchrackAdminhtml_Block_Customer_Edit_Renderer_Newpass</block_customer_edit_renderer_newpass>
+				</rewrite>
+			</adminhtml>
+		</blocks>
+		<models>
+			<adminhtml>
+				<rewrite>
+					<config>Schracklive_SchrackAdminhtml_Model_Config</config>
+				</rewrite>
+			</adminhtml>
+			<schrackadminhtml>
+				<class>Schracklive_SchrackAdminhtml_Model</class>
+			</schrackadminhtml>
+		</models>
+	</global>
+	<adminhtml>
+		<layout>
+			<updates>
+				<schrackadminhtml>
+					<file>schrack_general.xml</file>
+				</schrackadminhtml>
+			</updates>
+		</layout>
+	</adminhtml>
+	<admin>
+		<routers>
+			<adminhtml>
+				<args>
+					<modules>
+						<schrackadminhtml after="Mage_Adminhtml">Schracklive_SchrackAdminhtml_Adminhtml</schrackadminhtml>
+					</modules>
+				</args>
+			</adminhtml>
+		</routers>
+	</admin>
+</config>

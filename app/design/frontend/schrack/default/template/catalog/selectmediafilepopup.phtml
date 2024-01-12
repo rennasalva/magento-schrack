@@ -1,0 +1,208 @@
+<?php
+    $mediaFileData = $this->getMediaFileData();
+    // Remove big data:
+    if (isset($mediaFileData['katalogseiten'])) {
+        unset($mediaFileData['katalogseiten']);
+    }
+    // Remove big data:
+    if (isset($mediaFileData['produktkataloge'])) {
+        unset($mediaFileData['produktkataloge']);
+    }
+    $preselectedFiletypes = $this->getPreselectedFiletypes();
+    $boolBarcodeAvailable = false;
+
+    // Sorting array alphabetically (low to high) by key -> media categories:
+    ksort($mediaFileData);
+
+    if (isset($mediaFileData['barcode_labels'])) {
+        $format = Mage::getStoreConfig('schrack/media_zip_download/define_labelformat');
+        $boolBarcodeAvailable = true;
+        $barcodeLabels = array_shift($mediaFileData);
+        $mediaFileData['barcode_labels'] = $barcodeLabels;
+    }
+
+?>
+
+<div>
+    <div id="ajax-loader" style="display: none;">
+        <img src="<?php echo $this->getSkinUrl('schrackdesign/Public/Images/download_ajax_loader.gif'); ?>" class="zip-download-animation"/>
+    </div>
+    <div class="row hl">
+        <div class="large-12 columns hl">
+            <h1 class="headline b1"><?php echo $this->__('Product Media Download'); ?></h1>
+        </div>
+    </div>
+    <div class="row">
+        <div class="large-6 columns msg left" style="font-size: 15px; padding-top: 0">
+    <?php
+        foreach ($mediaFileData as $filetype => $mediaData):
+            $numberOfMediaFiles = count($mediaData);
+            $sizeTotalPerFiletype = 0;
+            $sizeTotalPerFiletypeDescription = '';
+
+            foreach ($mediaData as $ItemNumber => $itemFileData) {
+                if ($filetype == 'barcode_labels') {
+                    $sizeTotalPerFiletype += 70000; // Estimated filesize per label
+                } else {
+                    $sizeTotalPerFiletype += $itemFileData[2];
+                }
+            }
+
+            $result = array();
+            $units = array("B", "KB", "MB", "GB", "TB");
+            $c = 0;
+            $b = (float)$sizeTotalPerFiletype;
+            foreach ($units as $k => $u) {
+                if (($b / pow(1024, $k)) >= 1) {
+                    $result['bytes'] = $b / pow(1024, $k);
+                    $result['units'] = $u;
+                    $c++;
+                }
+            }
+
+            $sizeTotalPerFiletypeDescription = round($result['bytes'], 2) . ' ' .$result['units'];
+        ?>
+           <?php if ($filetype == 'barcode_labels'): ?>
+            <br>
+            <div class="row hl">
+                <div class="large-12 columns hl">
+                    <h1 class="headline b1"><?php echo $this->__('Label Download'); ?></h1>
+                </div>
+            </div>
+            <?php endif; ?>
+            <div><input type="checkbox" class="<?php echo 'fileTypeClass-' . $filetype;?>" <?php if (in_array($filetype, $preselectedFiletypes)) echo 'checked="checked"';  ?> >
+                <?php echo ucfirst($this->__($filetype)) . '  (' . $numberOfMediaFiles . ')' . ', ' . $sizeTotalPerFiletypeDescription; ?>
+            </div>
+
+        <?php endforeach; ?>
+        <?php if ($boolBarcodeAvailable) : ?>
+                <div style=" margin-left: 17px; margin-top: 4px;"><?php echo $this->__('Choose label format'); ?>:</div>
+                <select id="label-format-selection" style="color: #333; background-color: #fff; font-size: 13px; font-weight: normal; margin-top: 2px; margin-left: 17px; width: 245px;">
+                    <option value="3420" <?php if ($format == 3420) echo 'selected="selected"' ?>>Avery 3420 (1,69 x 7,00<?php echo $this->__('cm'); ?>; 3x17)</option>
+                    <option value="3425" <?php if ($format == 3425) echo 'selected="selected"' ?>>Avery 3425 (5,70 x 10,50<?php echo $this->__('cm'); ?>; 2x5)</option>
+                    <option value="3658" <?php if ($format == 3658) echo 'selected="selected"' ?>>Avery 3658 (3,38 x 6,46<?php echo $this->__('cm'); ?>; 3x8)</option>
+                    <option value="4776" <?php if ($format == 4776) echo 'selected="selected"' ?>>Avery 4776 (4,20 x 9,91<?php echo $this->__('cm'); ?>; 2x6)</option>
+                </select>
+                <div>
+                    <input type="checkbox" id="checkbox_add_label_quantity" name="checkbox_add_label_quantity" class="barcode_labels-quantity-yesno" style="margin-left: 16px; margin-top: 5px;" ><span id="checkbox_add_label_quantity-text">&nbsp;<?php echo $this->__('Print Labels With Quantity'); ?></span>
+                </div>
+        <?php endif; ?>
+        </div>
+        <div class="large-6 columns msg right" style="font-size: 15px; padding-top: 0">
+            <p class="info-box" style="background-color: #f5f5f5; text-align: justify;">
+                <span class="info right" style="font-size: 14px;">&nbsp;&nbsp;&nbsp;&nbsp;</span><br>
+                <?php echo $this->__('Schrack Technik media download offers you the opportunity to download all available product information by one click. Choose between fotos, datasheets, catalogue page or more and get all downloads for products in your shopping cart, parts list or offers.'); ?>
+            </p>
+        </div>
+    </div>
+    <?php if ( ! $this->isRestricted() ) : ?>
+        <div id="messageField" class="row"></div>
+        <div class="row">
+            <div class="large-6 columns">
+                <button id="downloadMediaFiles" class="button-arrow small"><?php echo $this->__('Download Media'); ?></button>
+            </div>
+            <div class="large-6 columns">
+                <button id="closePopup" class="button-arrow small right" onclick=";"><?php echo $this->__('Close'); ?></button>
+            </div>
+        </div>
+    <?php endif; ?>
+    <div class="row">
+        <div class="large-12 columns msg" style="font-size: 15px;">
+        </div>
+    </div>
+    <div id="error" style="color: red;"></div>
+</div>
+
+<script type="text/javascript">
+
+    jQuery(document).ready(function() {
+
+        jQuery('#downloadMediaFiles').on('click', function() {
+
+            jQuery("#ajax-loader").show();
+            jQuery('#downloadMediaFiles').hide();
+
+            var selectedFileTypes = [];
+            var printLabelWithQuantity = 'no';
+
+            jQuery("input[type='checkbox']:checked").each(
+              function() {
+                  if(!this.getAttribute('class').indexOf('fileTypeClass-')) {
+                    selectedFileTypes.push(this.getAttribute('class').replace('fileTypeClass-', ''));
+                  }
+                  if(!this.getAttribute('class').indexOf('barcode_labels-quantity-yesno')) {
+                      printLabelWithQuantity = 'yes';
+                  }
+              }
+            );
+
+            if(selectedFileTypes.length > 0) {
+                var filedownloadURL = "<?php echo Mage::helper('schrackcore/url')->getUrlWithCurrentProtocol('catalog/download/getDownloadMediaZip'); ?>";
+                var partslistID = '';
+                if (localStorage.partslistID) {
+                    partslistID = localStorage.partslistID;
+                }
+                filedownloadURL = filedownloadURL.replace("?___SID=U", "");
+                filedownloadURL = filedownloadURL.replace("?___SID=S", "");
+                jQuery.ajax(filedownloadURL, {
+                    'type': 'POST',
+                    'async': true,
+                    'data': {
+                        'source': localStorage.mediaDownloadSource,
+                        'partslistID': partslistID,
+                        'allMediaFileData': <?php echo json_encode($mediaFileData)?>,
+                        'mediaFileSelection': JSON.stringify(selectedFileTypes),
+                        'labelFormat': jQuery('#label-format-selection').val(),
+                        'printLabelWithQuantity': printLabelWithQuantity
+                    },
+                    'success': function (data) {
+                        jQuery("#ajax-loader").hide();
+                        if (data == '' || data.indexOf("error") >= 0) {
+                            //console.log('fehler');
+                            jQuery('#downloadMediaFiles').show();
+                            jQuery("#ajax-loader").hide();
+                            jQuery("#messageField").addClass('ui-state-error');
+                            jQuery("#messageField").text('<?php echo $this->__('At the moment media download is not available. Please try it again later.'); ?>');
+                            jQuery("#messageField").show();
+                            jQuery("#messageField").fadeOut(10000);
+                        } else {
+                            jQuery('#selectmediagpopup').dialog('close');
+                            var downloadPath = '';
+                            downloadPath = "<?php echo Mage::helper('schrackcore/url')->getUrlWithCurrentProtocol('catalog/download/startDownloadMediaZip'); ?>"  + 'filename/' + data + '/';
+                            downloadPath = downloadPath.replace('?___SID=U', '');
+                            downloadPath = downloadPath.replace('?___SID=S', '');
+                            window.location.href = downloadPath;
+                        }
+                    }
+                });
+            } else {
+                jQuery("#ajax-loader").hide();
+                jQuery('#downloadMediaFiles').show();
+                jQuery("#messageField").addClass('ui-state-error');
+                jQuery("#messageField").text('<?php echo $this->__('No Item Selected'); ?>');
+                jQuery("#messageField").show();
+                jQuery("#messageField").fadeOut(5000);
+            }
+        });
+
+        jQuery('#closePopup').on('click', function() {
+            jQuery('#selectmediagpopup').dialog('close');
+        });
+
+        jQuery('.fileTypeClass-barcode_labels').on('change', function() {
+            var labelPrintStatus = jQuery('.fileTypeClass-barcode_labels').prop('checked');
+
+            if (labelPrintStatus) {
+                jQuery('#label-format-selection').prop('disabled', false);
+                jQuery('#label-format-selection').css('background-color', '#fff');
+                jQuery('#checkbox_add_label_quantity').prop('disabled', false);
+            } else {
+                jQuery('#label-format-selection').prop('disabled', true);
+                jQuery('#label-format-selection').css('background-color', '##D8D8D8');
+                jQuery('#checkbox_add_label_quantity').prop('checked', false);
+                jQuery('#checkbox_add_label_quantity').prop('disabled', true);
+            }
+        });
+    });
+
+</script>

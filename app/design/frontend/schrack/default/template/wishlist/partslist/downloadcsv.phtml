@@ -1,0 +1,13 @@
+<?php
+$_customer = Mage::getSingleton('customer/session')->getCustomer();
+$_priceHelper = Mage::helper('schrackcatalog/price'); 
+?>
+"<?php echo $this->__('Product')?>";"<?php echo $this->__('Qty')?>";"<?php echo $this->__('Qty Unit')?>";"<?php echo $this->__('Product Name')?>";"<?php echo $this->__('Image')?>";"<?php echo $this->__('Price')?>"
+<?php foreach($this->getItems() as $_item): ?>
+<?php $_product = $_item->getProduct();
+?>
+"<?php echo $this->htmlEscape($_product->getSku()); ?>";"<?php echo str_replace('.', ',', $_item->getQty())?>";"<?php echo $_product->getSchrackQtyunit() ?>";"<?php echo $_product->getName()?>";"<?php $_product_image = $this->helper('catalog/image')->init($_product, 'small_image')->constrainOnly(true)->resize(66, 66);echo $_product_image ?>";"<?php $_currency = $_priceHelper->getCurrencyForCustomer($_product, $_customer);?><?php echo ($this->helper('schrackcheckout')->isPriceAvailable($_product, $_item->getSchrackBasicPrice()) ? ($_currency . ' ') : '') . ' ' . $this->helper('schrackcheckout')->formatPrice($_product, $_item->getSchrackBasicPrice()); ?>"
+<?php endforeach; ?>
+
+
+

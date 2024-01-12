@@ -1,0 +1,59 @@
+<?xml version="1.0"?>
+<config>
+  <modules>
+    <Schracklive_SchrackPayment>
+      <version>1.0.1</version>
+      <depends>
+        <Mage_Payment />
+        <Schracklive_Schrack />
+      </depends>
+    </Schracklive_SchrackPayment>
+  </modules>
+  <global>
+    <models>
+      <schrackpayment>
+        <class>Schracklive_SchrackPayment_Model</class>
+      </schrackpayment>
+    </models>
+    <events>
+      <payment_method_is_active>
+        <observers>
+          <schrackpayment_checkout>
+            <class>Schracklive_SchrackPayment_Model_Method_Observer</class>
+            <method>isActive</method>
+          </schrackpayment_checkout>
+        </observers>
+      </payment_method_is_active>
+    </events>
+    <helpers>
+        <schrackpayment>
+            <class>Schracklive_SchrackPayment_Helper</class>
+        </schrackpayment>
+    </helpers>
+  </global>
+  <default>
+    <payment>
+      <schrackcash>
+        <active>0</active>
+        <model>schrackpayment/method_cash</model>
+        <order_status>pending</order_status>
+        <title>Cash</title>
+        <allowspecific>0</allowspecific>
+      </schrackcash>
+      <schrackcod>
+        <active>0</active>
+        <model>schrackpayment/method_cod</model>
+        <order_status>pending</order_status>
+        <title>Collect on Delivery</title>
+        <allowspecific>0</allowspecific>
+      </schrackcod>
+      <schrackpo>
+        <active>0</active>
+        <model>schrackpayment/method_purchaseorder</model>
+        <order_status>pending</order_status>
+        <title>Purchase Order</title>
+        <allowspecific>0</allowspecific>
+      </schrackpo>
+    </payment>
+  </default>
+</config>

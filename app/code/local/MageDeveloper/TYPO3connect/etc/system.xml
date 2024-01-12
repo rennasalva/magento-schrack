@@ -1,0 +1,91 @@
+<?xml version="1.0"?>
+<config>
+   <sections>
+		<typo3connect translate="label" module="typo3connect">
+            <tab>service</tab>
+            <label>TYPO3connect</label>
+            <frontend_type>text</frontend_type>
+            <sort_order>500</sort_order>
+            <show_in_default>1</show_in_default>
+            <show_in_website>1</show_in_website>
+            <show_in_store>1</show_in_store>
+            <groups>
+                <t3general translate="label" module="typo3connect">
+                    <label>Login Settings</label>
+                    <frontend_type>text</frontend_type>
+                    <sort_order>0</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>1</show_in_store>
+                    <fields>
+                        <typo3_baseurl translate="label">
+                            <label>URL of the TYPO3 Login Site</label>
+							<comment>Please enter the full URL of the TYPO3 Login Site</comment>
+							<frontend_type>text</frontend_type>
+							<sort_order>50</sort_order>
+							<show_in_default>1</show_in_default>
+							<show_in_website>1</show_in_website>
+							<show_in_store>1</show_in_store>
+                        </typo3_baseurl>
+                        <decryption_key translate="label">
+                            <label>Shared Key for decryption</label>
+							<comment>Please enter the same key as used in TYPO3</comment>
+							<frontend_type>text</frontend_type>
+							<sort_order>100</sort_order>
+							<show_in_default>1</show_in_default>
+							<show_in_website>1</show_in_website>
+							<show_in_store>1</show_in_store>
+                        </decryption_key>
+                        <show_login translate="label">
+                            <label>Display Login Template</label>
+							<comment>Displays an login template, when TYPO3 connects to Magento at login</comment>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+							<sort_order>150</sort_order>
+							<show_in_default>1</show_in_default>
+							<show_in_website>1</show_in_website>
+							<show_in_store>1</show_in_store>
+                        </show_login>
+                    </fields>
+                  </t3general>
+                  <xml_adapter translate="label" module="typo3connect">
+                    <label>XML Adapter</label>
+                    <frontend_type>text</frontend_type>
+                    <sort_order>10</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>1</show_in_store>
+                    <fields>
+                        <typo3_baseurl translate="label">
+                            <label>TYPO3 Base URL</label>
+							<comment>Please enter the full URL of TYPO3 Base (e.g. http://www.mydomain.de/)</comment>
+							<frontend_type>text</frontend_type>
+							<sort_order>40</sort_order>
+							<show_in_default>1</show_in_default>
+							<show_in_website>1</show_in_website>
+							<show_in_store>1</show_in_store>
+                        </typo3_baseurl>
+                        <pages_list_url translate="label">
+                            <label>XML Sitemap URL</label>
+							<comment>Please enter the URL of the site, where the XML-Adapter Plugin \'Pages List\' is included (e.g. http://www.domain.tld/pages/)</comment>
+							<frontend_type>text</frontend_type>
+							<sort_order>40</sort_order>
+							<show_in_default>1</show_in_default>
+							<show_in_website>1</show_in_website>
+							<show_in_store>1</show_in_store>
+                        </pages_list_url>
+                        <typenum translate="label">
+                            <label>TypeNum</label>
+							<comment>Please enter the TypeNum, where the XML Data is delivered (Standard 777)</comment>
+							<frontend_type>text</frontend_type>
+							<sort_order>50</sort_order>
+							<show_in_default>1</show_in_default>
+							<show_in_website>1</show_in_website>
+							<show_in_store>1</show_in_store>
+                        </typenum>
+                    </fields>
+                  </xml_adapter>
+              </groups>
+          </typo3connect>
+    </sections>
+</config>

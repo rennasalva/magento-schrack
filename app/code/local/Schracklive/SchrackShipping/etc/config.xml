@@ -1,0 +1,109 @@
+<?xml version="1.0"?>
+<config>
+    <modules>
+        <Schracklive_SchrackShipping>
+            <version>1.1.2</version>
+            <depends>
+                <Schracklive_Schrack />
+                <Mage_Shipping />
+            </depends>
+        </Schracklive_SchrackShipping>
+    </modules>
+    <global>
+        <models>
+            <schrackshipping>
+                <class>Schracklive_SchrackShipping_Model</class>
+                <resourceModel>schrackshipping_mysql4</resourceModel>
+            </schrackshipping>
+            <schrackshipping_mysql4>
+                <class>Schracklive_SchrackShipping_Model_Mysql4</class>
+            </schrackshipping_mysql4>
+        </models>
+        <resources>
+            <schrackshipping_setup>
+                <setup>
+                    <module>Schracklive_SchrackShipping</module>
+                </setup>
+            </schrackshipping_setup>
+        </resources>
+        <helpers>
+            <schrackshipping>
+                <class>Schracklive_SchrackShipping_Helper</class>
+            </schrackshipping>
+        </helpers>
+        <blocks>            
+            <schrackshipping>
+                <class>Schracklive_SchrackShipping_Block</class>                
+            </schrackshipping>
+        </blocks>
+    </global>
+    <frontend>
+        <translate>
+            <modules>
+                <Schracklive_SchrackShipping>
+                    <files>
+                        <default>local/Schracklive_SchrackShipping.csv</default>
+                    </files>
+                </Schracklive_SchrackShipping>
+            </modules>            
+        </translate>
+        <routers>
+            <schrackshipping>
+                <use>standard</use>
+                <args>
+                    <module>Schracklive_SchrackShipping</module>
+                    <frontName>shipping</frontName>
+                </args>                
+            </schrackshipping>           
+        </routers>
+    </frontend>
+    <default>
+        <carriers>
+            <schrackinpost>
+                <active>1</active>
+                <sallowspecific>0</sallowspecific>
+                <model>schrackshipping/carrier_schrackinpost</model>
+                <title>Inpost</title>
+                <name_prefix>Warehouse</name_prefix>
+                <type>O</type><!-- per order -->
+                <specificerrmsg>This shipping method is currently unavailable. If you would like to ship using this shipping method, please contact us.</specificerrmsg>
+                <handling_type>F</handling_type><!-- fixed rate -->
+            </schrackinpost>
+            <schrackcontainer>
+                <active>1</active>
+                <sallowspecific>0</sallowspecific>
+                <model>schrackshipping/carrier_schrackcontainer</model>
+                <title>Container</title>
+                <name_prefix>Warehouse</name_prefix>
+                <type>O</type><!-- per order -->
+                <specificerrmsg>This shipping method is currently unavailable. If you would like to ship using this shipping method, please contact us.</specificerrmsg>
+                <handling_type>F</handling_type><!-- fixed rate -->
+            </schrackcontainer>
+            <schrackpickup>
+                <active>1</active>
+                <sallowspecific>0</sallowspecific>
+                <model>schrackshipping/carrier_schrackpickup</model>
+                <title>Pickup</title>
+                <name_prefix>Warehouse</name_prefix>
+                <type>O</type><!-- per order -->
+                <specificerrmsg>This shipping method is currently unavailable. If you would like to ship using this shipping method, please contact us.</specificerrmsg>
+                <handling_type>F</handling_type><!-- fixed rate -->
+            </schrackpickup>
+            <schrackdelivery>
+                <active>1</active>
+                <sallowspecific>0</sallowspecific>
+                <model>schrackshipping/carrier_schrackdelivery</model>
+                <title>Delivery</title>
+                <name_prefix>Warehouse</name_prefix>
+                <type>O</type>
+                <specificerrmsg>This shipping method is currently unavailable. If you would like to ship using this shipping method, please contact us.</specificerrmsg>
+                <handling_type>F</handling_type>
+            </schrackdelivery>    
+        </carriers>
+        <shipping>
+            <trackandtrace>
+                <wsdl>http://10.31.5.40/DataService/SchrackTechnik.Webservice/TrackingService.svc?wsdl</wsdl>
+            </trackandtrace>
+        </shipping>
+    </default>
+</config>

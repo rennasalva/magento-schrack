@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<layout version="0.1.0">
+    <default>
+        <reference name="notifications">
+            <block type="ec/notify" name="notify" template="ec/notify.phtml" />
+            <block type="ec/notify_split" name="notify.split" template="ec/split.phtml" />
+        </reference>
+    </default>
+    <adminhtml_ab_index>
+        <reference name="content">
+            <block type="ec/ab" name="ab" />
+        </reference>
+    </adminhtml_ab_index>
+</layout>

@@ -1,0 +1,314 @@
+
+.partListCont .actionBx {
+	border: 1px solid #d6d6d6;
+	padding: 10px;
+	box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.3);
+	margin-bottom: 15px;
+}
+
+.partListCont .actionBx .norLinks {
+	padding-top: 10px;
+}
+
+.partListCont .actionBx .norLinks .lnkBx {
+	padding: 0 5px;
+	font-size: 14px;
+}
+
+.partListCont .actionBx .norLinks .lnkBx a {
+	color: #888;
+}
+
+.partListCont .dropdown-toggle::after {
+	right: 10px;
+	position: absolute;
+	top: 30px;
+}
+
+.partListCont .dropdown-toggle {
+	text-align: left;
+	overflow: hidden;
+}
+
+.partListCont .dropdown-toggle .textOverFlw {
+	width: 90%;
+	overflow: hidden;
+	display: inline-block;
+}
+
+.partListCont .cartBx .leftSec img {
+	height: auto;
+	width: 85%;
+}
+
+
+.partListCont .cartBx .rightSec .productName {
+	margin-bottom: 10px;
+}
+
+// modal #listname-form
+
+// note scoped, see app/design/frontend/schrack/schrackresponsive/template/page/html/footer.phtml
+#name {
+	font-size: 16px !important;
+}
+#comment {
+	font-size: 16px !important;
+}
+#listname-formSubmit_modified {
+	margin-left: -97px;
+	display: none;
+}
+.save_new_partslist_deactivated {
+	background: #d1d1d1 !important;
+}
+.save_new_partslist_deactivated:after {
+	background: #d1d1d1 !important;
+}
+
+//
+//  Responsive
+//  ---------------------------------------------
+
+@media (min-width: 290px) and (max-width: 350px) {
+	.partListCont.tabSection li a, .partListCont.tabSection li:last-child > a {
+		font-size: 11px;
+		padding: 5px 7px 5px 6px;
+	}
+
+	.partListCont .otherActions li a, .partListCont .otherActions li:last-child a {
+		font-size: 16px;
+		padding: 10px 10px 10px 10px;
+	}
+
+	.partListCont .actionBx .norLinks .lnkBx {
+		font-size: 10px;
+	}
+
+	.sharedPartListCont .inrBx li a {
+		font-size: 10px;
+		padding: 5px 0 0 0;
+	}
+}
+
+
+@media (min-width: $breakpoint-up-xs) and (max-width: $breakpoint-down-md) {
+	.partListCont.tabSection li a, .partListCont.tabSection li:last-child > a {
+		font-size: 12px;
+		padding: 5px 10px 5px 10px;
+	}
+
+	.partListCont .actionBx .norLinks {
+		font-size: 12px;
+		padding-top: 10px;
+	}
+
+	.partListCont .cartBx .leftSec img {
+		height: auto;
+	}
+
+	.partListCont .cartBx .rightSec .productName a {
+		margin-right: 0px;
+	}
+
+	.partListCont .cartBx .rightSec .productName .actionIcon {
+		margin-left: -20px;
+	}
+
+	.partListCont .cartBx .rightSec .stock-section .cartInfoHide {
+		width: 100%;
+		display: block;
+		margin-top: 10px;
+	}
+
+	.partListCont .cartBx .rightSec .stock-section .cartInfoHide .store-icon {
+		margin-left: 0;
+	}
+
+	.partListCont .otherActions li a, .partListCont .otherActions li:last-child a {
+		font-size: 16px;
+		padding: 10px 10px 10px 10px;
+	}
+
+	.partListCont .cartBx .rightSec {
+		border-left: 0;
+	}
+
+	.partListCont .cartBx .rightSec .partslist-drop ul.dropDwnListGeneric {
+		top: 25px;
+		right: -20px;
+		left: inherit;
+	}
+
+	.partListCont .actionBx .norLinks .lnkBx {
+		padding: 0 0px 0 0;
+		font-size: 11px;
+	}
+
+	.partListCont .actionBx .norLinks .lnkBx.paddingL10 {
+		padding-left: 10px;
+	}
+
+	.partListCont .actionBx .quickaddIcon, .partListCont .actionBx .renameIcon, .partListCont .actionBx .clearIcon, .partListCont .actionBx .noteIcon, .partListCont .actionBx .deleteIcon {
+		width: 12px;
+		height: 12px;
+		display: inline-block;
+		margin-right: 1px;
+	}
+
+	.partListCont .partslist-drop {
+		padding-left: 10px;
+	}
+
+	.sharedPartListCont {
+		background: #f8f8f8;
+		padding: 10px;
+		padding-bottom: 1px;
+	}
+
+	.sharedPartListCont .inrBx {
+		background: #fff;
+		margin: -8px;
+	}
+
+	.sharedPartListCont .inrBx h2 {
+		background: #e6e6e6;
+		padding: 10px;
+		margin-bottom: 0;
+		color: #333;
+		position: relative;
+		font-size: 18px;
+	}
+
+	.sharedPartListCont .info .inrBx h2 {
+		background: #d9edf7;
+	}
+
+	.sharedPartListCont .inrBx h2 a {
+		color: #333;
+	}
+
+	.sharedPartListCont .inrBx h2 span {
+		font-size: 12px;
+		display: block;
+		color: #333;
+	}
+
+	.sharedPartListCont .inrBx h2 .artcleNo {
+		position: absolute;
+		top: 15px;
+		right: 10px;
+	}
+
+	.sharedPartListCont .inrBx ul {
+		border: 1px solid #efefef;
+	}
+
+	.sharedPartListCont .inrBx li {
+		float: left;
+		border-right: 1px solid #efefef;
+		padding: 10px 8px;
+		height: 50px;
+	}
+
+	.sharedPartListCont .inrBx li .bttn-md {
+		padding: 5px 13px 0 7px;
+	}
+
+	.sharedPartListCont .inrBx li:last-child {
+		border-right: 0;
+	}
+
+	.sharedPartListCont .inrBx .commentBx {
+		padding: 10px 15px;
+	}
+}
+
+@media (min-width: $breakpoint-up-md) and (max-width: $breakpoint-down-lg) {
+	.partListCont .actionBx .norLinks {
+		font-size: 13px;
+	}
+
+	.partListCont .cartBx .rightSec .productName a {
+		margin-right: 0px;
+		font-size: 18px;
+	}
+
+	.partListCont .otherActions li a {
+		font-size: 14px;
+		padding: 12px 5px 12px 10px;
+	}
+
+	.partlists-action .deleteIcon {
+		width: 17px;
+		height: 19px;
+		margin-right: 5px;
+	}
+
+	.partlists-action .messageIcon {
+		width: 20px;
+		height: 12px;
+		margin-right: 5px;
+	}
+
+	.partlists-action .bttn-md {
+		font-size: 14px;
+		height: 30px;
+	}
+
+	.partlists-action .bttn-md:after {
+		width: 18px;
+		height: 30px;
+	}
+
+	.partListCont .actionBx .norLinks .lnkBx {
+		padding: 0 2px;
+		font-size: 12px
+	}
+
+	.partListCont .cartBx .rightSec .partslist-drop ul.dropDwnListGeneric {
+		top: 30px;
+		right: -5px;
+		left: inherit;
+	}
+}
+
+@media (min-width: $breakpoint-up-lg) and (max-width: $breakpoint-down-xl) {
+
+	.partListCont .otherActions li a {
+		font-size: 14px;
+		padding: 12px 5px 12px 10px;
+	}
+
+	.partListCont .actionBx .norLinks .lnkBx {
+		font-size: 12px;
+		padding: inherit;
+	}
+}
+
+// modal #listname-form
+
+@media (min-width: 60px) and (max-width: 320px) {
+	.save_new_partslist {
+		height: 30px !important;
+	}
+	.save_new_partslist_deactivated {
+		height: 30px !important;
+	}
+}
+@media (min-width: 321px) and (max-width: 480px) {
+	.save_new_partslist {
+		height: 30px !important;
+	}
+	.save_new_partslist_deactivated {
+		height: 30px !important;
+	}
+}
+@media (min-width: 481px) and (max-width: 767px) {
+	.save_new_partslist {
+		height: 30px !important;
+	}
+	.save_new_partslist_deactivated {
+		height: 30px !important;
+	}
+}

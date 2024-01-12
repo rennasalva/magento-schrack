@@ -1,0 +1,404 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wsdl:definitions xmlns:typens="urn:{{var wsdl.name}}"
+             xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+             xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+             xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/"
+             xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+             name="{{var wsdl.name}}"
+             targetNamespace="urn:{{var wsdl.name}}">
+    <wsdl:types>
+        <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="urn:{{var wsdl.name}}">
+            <xsd:complexType name="GetOrderStatus">
+                <xsd:sequence>
+                    <xsd:element name="CustomerNumber"        type="xsd:string"   nillable="false" minOccurs="1" maxOccurs="1"/>
+                    <xsd:element name="OrderNumber"           type="xsd:int"      nillable="true"  minOccurs="0" maxOccurs="1"/>
+                    <xsd:element name="SetOrderTransmitted"   type="xsd:boolean"  nillable="true"  minOccurs="0" maxOccurs="1"/>
+                    <xsd:element name="MailTo"                type="xsd:string"   nillable="true"  minOccurs="0" maxOccurs="1"/>
+                </xsd:sequence>
+            </xsd:complexType>
+
+            <xsd:complexType name="Amounts">
+                <xsd:sequence>
+                    <xsd:element name="Surcharge" type="xsd:decimal" nillable="true"  minOccurs="0" maxOccurs="1"/>
+                    <xsd:element name="Net"       type="xsd:decimal" nillable="false" minOccurs="1" maxOccurs="1"/>
+                    <xsd:element name="Vat"       type="xsd:decimal" nillable="false" minOccurs="1" maxOccurs="1"/>
+                    <xsd:element name="Total"     type="xsd:decimal" nillable="false" minOccurs="1" maxOccurs="1"/>
+                </xsd:sequence>
+            </xsd:complexType>
+
+            <xsd:complexType name="References">
+                <xsd:sequence>
+                    <xsd:element name="Reference" type="xsd:string" minOccurs="0" maxOccurs="5"/>
+                </xsd:sequence>
+            </xsd:complexType>
+
+            <xsd:complexType name="OrderStatus">
+                <xsd:sequence>
+                    <xsd:element name="OrderNumber"           type="xsd:int"                     nillable="false" minOccurs="1" maxOccurs="1"/>
+                    <xsd:element name="OrderDate"             type="xsd:date"                    nillable="false" minOccurs="1" maxOccurs="1"/>
+                    <xsd:element name="OrderStatus"           type="xsd:string"                  nillable="false" minOccurs="1" maxOccurs="1"/>
+                    <xsd:element name="OfferDate"             type="xsd:date"                    nillable="true"  minOccurs="0" maxOccurs="1"/>
+                    <xsd:element name="Amounts"               type="typens:Amounts"              nillable="true"  minOccurs="0" maxOccurs="1"/>
+                    <xsd:element name="References"            type="typens:References"           nillable="true"  minOccurs="0" maxOccurs="1"/>
+                    <xsd:element name="Memo"                  type="xsd:string"                  nillable="false" minOccurs="1" maxOccurs="1"/>
+                    <xsd:element name="WarnMessage"           type="xsd:string"                  nillable="false" minOccurs="1" maxOccurs="1"/>
+                    <xsd:element name="OrderStatusPositions"  type="typens:OrderStatusPositions" nillable="false" minOccurs="1" maxOccurs="1"/>
+                    <xsd:element name="Shipments"             type="typens:Shipments"            nillable="false" minOccurs="1" maxOccurs="1"/>
+                    <xsd:element name="Invoices"              type="typens:Invoices"             nillable="false" minOccurs="1" maxOccurs="1"/>
+                    <xsd:element name="Creditmemos"           type="typens:Creditmemos"          nillable="false" minOccurs="1" maxOccurs="1"/>
+                </xsd:sequence>
+            </xsd:complexType>
+
+            <xsd:complexType name="OrderStatusPosition">
+                <xsd:sequence>
+                    <xsd:element name="ItemID"            type="xsd:string"        nillable="false" minOccurs="1" maxOccurs="1"/>
+                    <xsd:element name="Name"              type="xsd:string"        nillable="false" minOccurs="1" maxOccurs="1"/>
+                    <xsd:element name="Quantity"          type="xsd:float"         nillable="false" minOccurs="1" maxOccurs="1"/>
+                    <xsd:element name="BackorderQuantity" type="xsd:float"         nillable="false" minOccurs="1" maxOccurs="1"/>
+                    <xsd:element name="DrumType"          type="xsd:string"        nillable="true"  minOccurs="0" maxOccurs="1"/>
+                    <xsd:element name="Serialnumber"      type="xsd:string"        nillable="true"  minOccurs="0" maxOccurs="1"/>
+                    <xsd:element name="Amounts"           type="typens:Amounts"    nillable="true"  minOccurs="0" maxOccurs="1"/>
+                    <xsd:element name="References"        type="typens:References" nillable="true"  minOccurs="0" maxOccurs="1"/>
+                    <xsd:element name="Memo"              type="xsd:string"        nillable="false" minOccurs="1" maxOccurs="1"/>
+                    <xsd:element name="WarnMessage"       type="xsd:string"        nillable="false" minOccurs="1" maxOccurs="1"/>
+                </xsd:sequence>
+            </xsd:complexType>
+
+            <xsd:complexType name="Shipment">
+                <xsd:sequence>
+                    <xsd:element name="ShipmentNumber"      type="xsd:int"                  nillable="false" minOccurs="1" maxOccurs="1"/>
+                    <xsd:element name="ShipmentDate"        type="xsd:date"                 nillable="false" minOccurs="1" maxOccurs="1"/>
+                    <xsd:element name="DocumentUrl"         type="xsd:string"               nillable="true"  minOccurs="0" maxOccurs="1"/>
+                    <xsd:element name="TrackingUrl"         type="xsd:string"               nillable="true"  minOccurs="0" maxOccurs="1"/>
+                    <xsd:element name="ShipmentPositions"   type="typens:ShipmentPositions" nillable="false" minOccurs="1" maxOccurs="1"/>
+                </xsd:sequence>
+            </xsd:complexType>
+
+            <xsd:complexType name="ShipmentPosition">
+                <xsd:sequence>
+                    <xsd:element name="ItemID"            type="xsd:string"        nillable="false" minOccurs="1" maxOccurs="1"/>
+                    <xsd:element name="Quantity"          type="xsd:float"         nillable="false" minOccurs="1" maxOccurs="1"/>
+                </xsd:sequence>
+            </xsd:complexType>
+
+            <xsd:complexType name="Invoice">
+                <xsd:sequence>
+                    <xsd:element name="InvoiceNumber"      type="xsd:int"                 nillable="false" minOccurs="1" maxOccurs="1"/>
+                    <xsd:element name="InvoiceDate"        type="xsd:date"                nillable="false" minOccurs="1" maxOccurs="1"/>
+                    <xsd:element name="InvoiceCurrency"    type="xsd:string"              nillable="true"  minOccurs="0" maxOccurs="1"/>
+                    <xsd:element name="InvoiceDueDate"     type="xsd:string"              nillable="true"  minOccurs="0" maxOccurs="1"/>
+                    <xsd:element name="PaymentTerms"       type="xsd:string"              nillable="true"  minOccurs="0" maxOccurs="1"/>
+                    <xsd:element name="Amounts"            type="typens:Amounts"          nillable="true"  minOccurs="0" maxOccurs="1"/>
+                    <xsd:element name="DocumentUrl"        type="xsd:string"              nillable="true"  minOccurs="0" maxOccurs="1"/>
+                    <xsd:element name="InvoicePositions"   type="typens:InvoicePositions" nillable="false" minOccurs="1" maxOccurs="1"/>
+                </xsd:sequence>
+            </xsd:complexType>
+
+            <xsd:complexType name="InvoicePosition">
+                <xsd:sequence>
+                    <xsd:element name="ItemID"            type="xsd:string"        nillable="false" minOccurs="1" maxOccurs="1"/>
+                    <xsd:element name="Quantity"          type="xsd:float"         nillable="false" minOccurs="1" maxOccurs="1"/>
+                    <xsd:element name="Amounts"           type="typens:Amounts"    nillable="false" minOccurs="1" maxOccurs="1"/>
+                </xsd:sequence>
+            </xsd:complexType>
+
+            <xsd:complexType name="Creditmemo">
+                <xsd:sequence>
+                    <xsd:element name="CreditmemoNumber"    type="xsd:int"                    nillable="false" minOccurs="1" maxOccurs="1"/>
+                    <xsd:element name="CreditmemoDate"      type="xsd:date"                   nillable="false" minOccurs="1" maxOccurs="1"/>
+                    <xsd:element name="CreditmemoCurrency"  type="xsd:string"                 nillable="true"  minOccurs="0" maxOccurs="1"/>
+                    <xsd:element name="Amounts"             type="typens:Amounts"             nillable="true"  minOccurs="0" maxOccurs="1"/>
+                    <xsd:element name="DocumentUrl"         type="xsd:string"                 nillable="true"  minOccurs="0" maxOccurs="1"/>
+                    <xsd:element name="CreditmemoPositions" type="typens:CreditmemoPositions" nillable="false" minOccurs="1" maxOccurs="1"/>
+                </xsd:sequence>
+            </xsd:complexType>
+
+            <xsd:complexType name="CreditmemoPosition">
+                <xsd:sequence>
+                    <xsd:element name="ItemID"            type="xsd:string"        nillable="false" minOccurs="1" maxOccurs="1"/>
+                    <xsd:element name="Quantity"          type="xsd:float"         nillable="false" minOccurs="1" maxOccurs="1"/>
+                    <xsd:element name="Amounts"           type="typens:Amounts"    nillable="false" minOccurs="1" maxOccurs="1"/>
+                </xsd:sequence>
+            </xsd:complexType>
+
+            <xsd:complexType name="SetOrderTransmitted">
+                <xsd:sequence>
+                    <xsd:element name="CustomerNumber"    type="xsd:string"   nillable="false" minOccurs="1" maxOccurs="1"/>
+                    <xsd:element name="TransmittedOrders" type="typens:TransmittedOrders" nillable="false" minOccurs="1" maxOccurs="1"/>
+                </xsd:sequence>
+            </xsd:complexType>
+
+            <xsd:complexType name="SetOrderTransmittedDone">
+                <xsd:sequence>
+                    <xsd:element name="TransmittedOrders" type="typens:TransmittedOrders" nillable="false" minOccurs="1" maxOccurs="1"/>
+                </xsd:sequence>
+            </xsd:complexType>
+
+            <xsd:complexType name="TransmittedOrders">
+                <xsd:sequence>
+                    <xsd:element name="OrderNumber" type="xsd:int" nillable="false" minOccurs="1" maxOccurs="100"/>
+                </xsd:sequence>
+            </xsd:complexType>
+
+            <xsd:complexType name="Shipments">
+                <xsd:sequence>
+                    <xsd:element name="OrderNumber" type="typens:Shipment" nillable="false" minOccurs="1" maxOccurs="unbounded"/>
+                </xsd:sequence>
+            </xsd:complexType>
+
+            <xsd:complexType name="Invoices">
+                <xsd:sequence>
+                    <xsd:element name="Invoice" type="typens:Invoice" nillable="false" minOccurs="1" maxOccurs="unbounded"/>
+                </xsd:sequence>
+            </xsd:complexType>
+
+            <xsd:complexType name="Creditmemos">
+                <xsd:sequence>
+                    <xsd:element name="Creditmemo" type="typens:Creditmemo" nillable="false" minOccurs="1" maxOccurs="unbounded"/>
+                </xsd:sequence>
+            </xsd:complexType>
+
+            <xsd:complexType name="ShipmentPositions">
+                <xsd:sequence>
+                    <xsd:element name="ShipmentPosition" type="typens:ShipmentPosition" nillable="false" minOccurs="1" maxOccurs="unbounded"/>
+                </xsd:sequence>
+            </xsd:complexType>
+
+            <xsd:complexType name="InvoicePositions">
+                <xsd:sequence>
+                    <xsd:element name="InvoicePosition" type="typens:InvoicePosition" nillable="false" minOccurs="1" maxOccurs="unbounded"/>
+                </xsd:sequence>
+            </xsd:complexType>
+
+            <xsd:complexType name="CreditmemoPositions">
+                <xsd:sequence>
+                    <xsd:element name="CreditmemoPosition" type="typens:CreditmemoPosition" nillable="false" minOccurs="1" maxOccurs="unbounded"/>
+                </xsd:sequence>
+            </xsd:complexType>
+
+            <xsd:complexType name="OrderStatusPositions">
+                <xsd:sequence>
+                    <xsd:element name="OrderStatusPosition" type="typens:OrderStatusPosition" nillable="false" minOccurs="1" maxOccurs="unbounded"/>
+                </xsd:sequence>
+            </xsd:complexType>
+
+            <xsd:complexType name="OrdersStatus">
+                <xsd:sequence>
+                    <xsd:element name="OrderStatus" type="typens:OrderStatus" nillable="false" minOccurs="1" maxOccurs="unbounded"/>
+                </xsd:sequence>
+            </xsd:complexType>
+
+            <!-- ######################################################################################### -->
+
+            <xsd:complexType name="tt_schrack_order_item">
+                <xsd:sequence>
+                    <xsd:element name="OrderNumber"           type="xsd:int"     minOccurs="1" maxOccurs="1"/>
+                    <xsd:element name="Position"              type="xsd:int"     minOccurs="1" maxOccurs="1"/>
+                    <xsd:element name="StornoOrderNumber"     type="xsd:int"     minOccurs="1" maxOccurs="1"/>
+                    <xsd:element name="StornoPosition"        type="xsd:int"     minOccurs="1" maxOccurs="1"/>
+                    <xsd:element name="Sku"                   type="xsd:string"  minOccurs="1" maxOccurs="1"/>
+                    <xsd:element name="IsDirectMaterial"      type="xsd:int"     minOccurs="1" maxOccurs="1"/>
+                    <xsd:element name="Qty"                   type="xsd:decimal" minOccurs="1" maxOccurs="1"/>
+                    <xsd:element name="BackorderQty"          type="xsd:decimal" minOccurs="1" maxOccurs="1"/>
+                    <xsd:element name="Price"                 type="xsd:decimal" minOccurs="1" maxOccurs="1"/>
+                    <xsd:element name="PriceSurcharge"        type="xsd:decimal" minOccurs="1" maxOccurs="1"/>
+                    <xsd:element name="AmountSurcharge"       type="xsd:decimal" minOccurs="1" maxOccurs="1"/>
+                    <xsd:element name="AmountNet"             type="xsd:decimal" minOccurs="1" maxOccurs="1"/>
+                    <xsd:element name="VatPercent"            type="xsd:decimal" minOccurs="1" maxOccurs="1"/>
+                    <xsd:element name="AmountVat"             type="xsd:decimal" minOccurs="1" maxOccurs="1"/>
+                    <xsd:element name="AmountTot"             type="xsd:decimal" minOccurs="1" maxOccurs="1"/>
+                    <xsd:element name="ProductWeight"         type="xsd:decimal" minOccurs="1" maxOccurs="1"/>
+                    <xsd:element name="DrumNumber"            type="xsd:int"     minOccurs="1" maxOccurs="1"/>
+                    <xsd:element name="DrumShortDesc"         type="xsd:string"  minOccurs="1" maxOccurs="1"/>
+                    <xsd:element name="Description"           type="xsd:string"  minOccurs="1" maxOccurs="1"/>
+                </xsd:sequence>
+            </xsd:complexType>
+            <xsd:complexType name="ArrayOf_tt_schrack_order_item">
+                <xsd:sequence>
+                    <xsd:element name="tt_schrack_order_item" type="typens:tt_schrack_order_item" nillable="false" minOccurs="1" maxOccurs="unbounded"/>
+                </xsd:sequence>
+            </xsd:complexType>
+            <xsd:complexType name="tt_schrack_order">
+                <xsd:sequence>
+                    <xsd:element name="OrderNumber"           type="xsd:int"      minOccurs="1" maxOccurs="1"/>
+                    <xsd:element name="OrderDate"             type="xsd:dateTime" minOccurs="1" maxOccurs="1"/>
+                    <xsd:element name="OriginalOrderNumber"   type="xsd:int"      minOccurs="1" maxOccurs="1"/>
+                    <xsd:element name="QuoteNumber"           type="xsd:string"   minOccurs="1" maxOccurs="1"/>
+                    <xsd:element name="QuoteDate"             type="xsd:dateTime" minOccurs="1" maxOccurs="1"/>
+                    <xsd:element name="ShipmentNumber"        type="xsd:string"   minOccurs="1" maxOccurs="1"/>
+                    <xsd:element name="ShipmentDate"          type="xsd:dateTime" minOccurs="1" maxOccurs="1"/>
+                    <xsd:element name="ShipmentMode"          type="xsd:string"   minOccurs="1" maxOccurs="1"/>
+                    <xsd:element name="InvoiceNumber"         type="xsd:string"   minOccurs="1" maxOccurs="1"/>
+                    <xsd:element name="InvoiceDate"           type="xsd:dateTime" minOccurs="1" maxOccurs="1"/>
+                    <xsd:element name="IsCollectiveInvoice"   type="xsd:int"      minOccurs="1" maxOccurs="1"/>
+                    <xsd:element name="WWSStatus"             type="xsd:string"   minOccurs="1" maxOccurs="1"/>
+                    <xsd:element name="CustomerNumber"        type="xsd:string"   minOccurs="1" maxOccurs="1"/>
+                    <xsd:element name="Shop"                  type="xsd:string"   minOccurs="1" maxOccurs="1"/>
+                    <xsd:element name="ContactNumber"         type="xsd:int"      minOccurs="1" maxOccurs="1"/>
+                    <xsd:element name="Reference"             type="xsd:string"   minOccurs="1" maxOccurs="1"/>
+                    <xsd:element name="AmountNet"             type="xsd:decimal"  minOccurs="1" maxOccurs="1"/>
+                    <xsd:element name="AmountVat"             type="xsd:decimal"  minOccurs="1" maxOccurs="1"/>
+                    <xsd:element name="AmountTot"             type="xsd:decimal"  minOccurs="1" maxOccurs="1"/>
+                    <xsd:element name="AmountPaid"            type="xsd:decimal"  minOccurs="1" maxOccurs="1"/>
+                    <xsd:element name="AmountOpen"            type="xsd:decimal"  minOccurs="1" maxOccurs="1"/>
+                    <xsd:element name="PaymentTerms"          type="xsd:string"   minOccurs="1" maxOccurs="1"/>
+                    <xsd:element name="TrackingCode"          type="xsd:string"   minOccurs="1" maxOccurs="1"/>
+                    <xsd:element name="ShippingAmount"        type="xsd:decimal"  minOccurs="1" maxOccurs="1"/>
+                    <xsd:element name="WeightTot"             type="xsd:decimal"  minOccurs="1" maxOccurs="1"/>
+                    <xsd:element name="CurrencyCode"          type="xsd:string"   minOccurs="1" maxOccurs="1"/>
+                    <xsd:element name="Parcels"               type="xsd:string"   minOccurs="1" maxOccurs="1"/>
+
+                    <xsd:element name="OfferValidThru"        type="xsd:dateTime" minOccurs="0" maxOccurs="1"/>
+                    <xsd:element name="OfferFlagValid"        type="xsd:int"      minOccurs="1" maxOccurs="1"/>
+                    <xsd:element name="WebSendNr"             type="xsd:int"      minOccurs="0" maxOccurs="1"/>
+
+                    <xsd:element name="OperatorMail"          type="xsd:string"   minOccurs="0" maxOccurs="1"/>
+
+                    <xsd:element name="InvoiceAddrName1"      type="xsd:string"   minOccurs="1" maxOccurs="1"/>
+                    <xsd:element name="InvoiceAddrName2"      type="xsd:string"   minOccurs="1" maxOccurs="1"/>
+                    <xsd:element name="InvoiceAddrName3"      type="xsd:string"   minOccurs="1" maxOccurs="1"/>
+                    <xsd:element name="InvoiceAddrStreet"     type="xsd:string"   minOccurs="1" maxOccurs="1"/>
+                    <xsd:element name="InvoiceAddrZIP"        type="xsd:string"   minOccurs="1" maxOccurs="1"/>
+                    <xsd:element name="InvoiceAddrCity"       type="xsd:string"   minOccurs="1" maxOccurs="1"/>
+                    <xsd:element name="InvoiceAddrCountry"    type="xsd:string"   minOccurs="1" maxOccurs="1"/>
+
+                    <xsd:element name="DeliveryAddrName1"     type="xsd:string"   minOccurs="1" maxOccurs="1"/>
+                    <xsd:element name="DeliveryAddrName2"     type="xsd:string"   minOccurs="1" maxOccurs="1"/>
+                    <xsd:element name="DeliveryAddrName3"     type="xsd:string"   minOccurs="1" maxOccurs="1"/>
+                    <xsd:element name="DeliveryAddrStreet"    type="xsd:string"   minOccurs="1" maxOccurs="1"/>
+                    <xsd:element name="DeliveryAddrZIP"       type="xsd:string"   minOccurs="1" maxOccurs="1"/>
+                    <xsd:element name="DeliveryAddrCity"      type="xsd:string"   minOccurs="1" maxOccurs="1"/>
+                    <xsd:element name="DeliveryAddrCountry"   type="xsd:string"   minOccurs="1" maxOccurs="1"/>
+                </xsd:sequence>
+            </xsd:complexType>
+            <xsd:complexType name="ArrayOf_tt_schrack_order">
+                <xsd:sequence>
+                    <xsd:element name="tt_schrack_order" type="typens:tt_schrack_order" nillable="false" minOccurs="1" maxOccurs="unbounded"/>
+                </xsd:sequence>
+            </xsd:complexType>
+
+            <!-- ######################################################################################### -->
+
+            <xsd:element name="salesOrderSchrackGetOrderStatusRequestParam">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element minOccurs="1" maxOccurs="1" name="sessionId" type="xsd:string" />
+                        <xsd:element minOccurs="1" maxOccurs="1" name="filters" type="typens:GetOrderStatus" />
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+            <xsd:element name="salesOrderSchrackGetOrderStatusResponseParam">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element minOccurs="1" maxOccurs="1" name="filters" type="typens:OrdersStatus" />
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+
+            <xsd:element name="salesOrderSchrackSetOrderTransmittedRequestParam">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element minOccurs="1" maxOccurs="1" name="sessionId" type="xsd:string" />
+                        <xsd:element minOccurs="1" maxOccurs="1" name="filters" type="typens:SetOrderTransmitted" />
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+            <xsd:element name="salesOrderSchrackSetOrderTransmittedResponseParam">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element minOccurs="1" maxOccurs="1" name="filters" type="typens:SetOrderTransmitted" />
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+
+            <xsd:element name="salesOrderSchrackInsertUpdateRequestParam">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="sessionId" type="xsd:string"/>
+                        <xsd:element name="ctry_code" type="xsd:string"/>
+                        <xsd:element name="sender_id" type="xsd:string"/>
+                        <xsd:element name="data_order" type="typens:ArrayOf_tt_schrack_order"/>
+                        <xsd:element name="data_order_item" type="typens:ArrayOf_tt_schrack_order_item"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+            <xsd:element name="salesOrderSchrackInsertUpdateResponseParam">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="exit_code" type="xsd:int"/>
+                        <xsd:element name="exit_msg" type="xsd:string"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+
+        </xsd:schema>
+
+    </wsdl:types>
+
+    <wsdl:message name="salesOrderSchrackGetOrderStatusRequest">
+        <wsdl:part name="parameters" element="typens:salesOrderSchrackGetOrderStatusRequestParam" />
+    </wsdl:message>
+    <wsdl:message name="salesOrderSchrackGetOrderStatusResponse">
+        <wsdl:part name="parameters" element="typens:salesOrderSchrackGetOrderStatusResponseParam" />
+    </wsdl:message>
+
+    <wsdl:message name="salesOrderSchrackSetOrderTransmittedRequest">
+        <wsdl:part name="parameters" element="typens:salesOrderSchrackSetOrderTransmittedRequestParam" />
+    </wsdl:message>
+    <wsdl:message name="salesOrderSchrackSetOrderTransmittedResponse">
+        <wsdl:part name="parameters" element="typens:salesOrderSchrackSetOrderTransmittedResponseParam" />
+    </wsdl:message>
+
+    <wsdl:message name="salesOrderSchrackInsertUpdateRequest">
+        <wsdl:part name="parameters" element="typens:salesOrderSchrackInsertUpdateRequestParam" />
+    </wsdl:message>
+    <wsdl:message name="salesOrderSchrackInsertUpdateResponse">
+        <wsdl:part name="parameters" element="typens:salesOrderSchrackInsertUpdateResponseParam" />
+    </wsdl:message>
+
+    <wsdl:portType name="{{var wsdl.handler}}PortType">
+        <wsdl:operation name="salesOrderSchrackInsertUpdate">
+            <wsdl:documentation>Insert or update order information in a Schrack way</wsdl:documentation>
+            <wsdl:input message="typens:salesOrderSchrackInsertUpdateRequest"/>
+            <wsdl:output message="typens:salesOrderSchrackInsertUpdateResponse"/>
+        </wsdl:operation>
+        <wsdl:operation name="salesOrderSchrackGetOrderStatus">
+            <wsdl:documentation>Get order information in a Schrack way</wsdl:documentation>
+            <wsdl:input message="typens:salesOrderSchrackGetOrderStatusRequest"/>
+            <wsdl:output message="typens:salesOrderSchrackGetOrderStatusResponse"/>
+        </wsdl:operation>
+        <wsdl:operation name="salesOrderSchrackSetOrderTransmitted">
+            <wsdl:documentation>Get order retrieved flag(s)</wsdl:documentation>
+            <wsdl:input message="typens:salesOrderSchrackSetOrderTransmittedRequest"/>
+            <wsdl:output message="typens:salesOrderSchrackSetOrderTransmittedResponse"/>
+        </wsdl:operation>
+    </wsdl:portType>
+
+     <wsdl:binding name="{{var wsdl.handler}}Binding" type="typens:{{var wsdl.handler}}PortType">
+        <wsdl:operation name="salesOrderSchrackInsertUpdate">
+            <soap:operation soapAction="urn:{{var wsdl.handler}}Action"/>
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="salesOrderSchrackGetOrderStatus">
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="salesOrderSchrackSetOrderTransmitted">
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+    </wsdl:binding>
+</wsdl:definitions>

@@ -1,0 +1,59 @@
+<?xml version="1.0"?>
+<config>
+
+    <modules>
+        <Schracklive_MoCalc>
+            <version>1.0.0</version>
+        </Schracklive_MoCalc>
+    </modules>
+
+    <frontend>
+        <layout>
+            <updates>
+                <mocalc module="Schracklive_MoCalc">
+                    <file>mocalc.xml</file>
+                </mocalc>
+            </updates>
+        </layout>
+
+        <routers>
+            <MoCalc>
+                <use>standard</use>
+                <args>
+                    <module>Schracklive_MoCalc</module>
+                    <frontName>mocalc</frontName>
+                </args>
+            </MoCalc>
+        </routers>
+
+		<translate>
+			<modules>
+				<Schracklive_MoCalc>
+					<files>
+						<account>local/Schracklive_MoCalc.csv</account>
+					</files>
+				</Schracklive_MoCalc>
+			</modules>
+		</translate>
+    </frontend>
+
+    <global>
+        <blocks>
+            <page>
+                <rewrite>
+                    <html>Schracklive_MoCalc_Block_Html</html>
+                </rewrite>
+            </page>
+            <mocalc>
+                <class>Schracklive_MoCalc_Block</class>
+            </mocalc>
+        </blocks>
+
+        <helpers>
+            <moCalc>
+                <class>Schracklive_MoCalc_Helper</class>
+            </moCalc>
+        </helpers>
+    </global>
+
+</config>

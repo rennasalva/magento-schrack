@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+<config>
+  <menu>
+    <customer translate="title" module="customer">
+      <children>
+        <account translate="title">
+          <title>Manage Accounts</title>
+          <action>account/adminhtml_account</action>
+          <sort_order>5</sort_order>
+        </account>
+      </children>
+    </customer>
+  </menu>
+  <acl>
+    <resources>
+      <admin>
+        <children>
+          <customer translate="title" module="customer">
+            <children>
+              <account translate="title" module="account">
+                <title>Manage Accounts</title>
+                <sort_order>5</sort_order>
+              </account>
+            </children>
+          </customer>
+        </children>
+      </admin>
+    </resources>
+  </acl>
+  <layout>
+    <updates>
+      <account>
+        <file>account.xml</file>
+      </account>
+    </updates>
+  </layout>
+</config>

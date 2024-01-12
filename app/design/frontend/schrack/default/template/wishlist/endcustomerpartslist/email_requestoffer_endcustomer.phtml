@@ -1,0 +1,49 @@
+<?php
+$productHelper = Mage::helper('schrackcatalog/product');
+?>
+
+<html>
+<head>
+    <style type="text/css">
+        body {
+            color: #00589D;
+
+        }
+        p {
+            padding-bottom: 10px;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+<p><?php echo $this->__('Lieber Kunde,')?></p>
+<p><?php echo $this->__('Thank you for your request in the Online Showroom.')?><br/>
+    <?php echo $this->__('We will contact you shortly.')?>
+</p>
+
+<p><?php echo $this->__('Ihre Merkliste')?>:</p>
+
+<?php /* ?>
+<?php echo $this->__('Name')?>: <?php echo $params['name']?><br/>
+<?php echo $this->__('Address')?>: <?php echo $params['address']?><br/>
+<?php echo $this->__('Email')?>: <?php echo $params['email']?><br/>
+<?php echo $this->__('Message')?>: <?php echo $params['message']?><br/>
+<br/>
+<?php */ ?>
+<table>
+<?php foreach ($partslist->getItemCollection() as $item):
+    $product = $item->getProduct();
+    echo '<tr><td>' . $product->getSku() . '</td><td>' . $product->getName() . '</td><td>' . $productHelper->formatQty($product, $item->getQty()) . '</td></tr>';
+endforeach?>
+</table>
+
+<p>
+<?php echo $ecplCustomer->getCompanyName()?><br/>
+<?php if ( strlen($ecplCustomer->getAddress1()) > 0 ) { echo $ecplCustomer->getAddress1() . '<br/>'; }?>
+<?php if ( strlen($ecplCustomer->getAddress2()) > 0 ) { echo $ecplCustomer->getAddress2() . '<br/>'; }?>
+<?php if ( strlen($ecplCustomer->getAddress3()) > 0 ) { echo $ecplCustomer->getAddress3() . '<br/>'; }?>
+<?php if ( strlen($ecplCustomer->getPhone()) > 0 ) { echo $ecplCustomer->getPhone() . '<br/>'; }?>
+</p>
+
+</body>
+</html>

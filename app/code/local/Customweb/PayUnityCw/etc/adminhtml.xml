@@ -1,0 +1,57 @@
+<?xml version="1.0"?>
+<config>
+    <menu>
+         <system>
+            <children>
+                <payunitycw translate="title" module="PayUnityCw">
+                    <title><![CDATA[PayUnity]]></title>
+                    <action>adminhtml/configpayunitycw</action>
+                    <sort_order>109</sort_order>
+                </payunitycw>
+            </children>
+         </system>
+    </menu>
+    <acl>
+		<resources>
+			<admin>
+				<children>
+					<system>
+						<children>
+							<payunitycw>
+                                <title><![CDATA[PayUnity]]></title>
+                                <sort_order>16</sort_order>
+                            </payunitycw>
+							<config>
+								<children>
+									<payunitycw translate="title" module="PayUnityCw">
+										<title><![CDATA[PayUnity]]></title>
+									</payunitycw>
+								</children>
+							</config>
+						</children>
+					</system>
+					<sales>
+						<children>
+							<payunitycw>
+                                <title><![CDATA[PayUnity]]></title>
+                                <sort_order>16</sort_order>
+                                <children>
+                               		
+									<payunitycw_alias_manager translate="title" module="PayUnityCw">
+										<title><![CDATA[PayUnity: Alias Management]]></title>
+									</payunitycw_alias_manager>
+									
+									
+									<payunitycw_moto translate="title" module="PayUnityCw">
+										<title><![CDATA[PayUnity: Alias Management]]></title>
+									</payunitycw_moto>
+									
+								</children>
+                            </payunitycw>
+						</children>
+					</sales>
+				</children>
+			</admin>
+		</resources>
+	</acl>
+</config>

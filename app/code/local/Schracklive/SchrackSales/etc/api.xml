@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config>
+    <api>
+        <resources>
+            <sales_order>
+                <methods>
+                    <schrackInsertUpdate translate="title" module="sales">
+                        <title>Insert or update order information</title>
+                        <acl>sales/order/insert_update</acl>
+                    </schrackInsertUpdate>
+
+                    <schrackGetOrderStatus translate="title" module="sales">
+                        <title>Request order information</title>
+                        <acl>sales/order/info</acl>
+                    </schrackGetOrderStatus>
+                    <schrackSetOrderTransmitted translate="title" module="sales">
+                        <title>Set order transmitted flag(s)</title>
+                        <acl>sales/order/info</acl>
+                    </schrackSetOrderTransmitted>
+
+                    <schrackGetOrderStatusViaJson translate="title" module="sales">
+                        <title>Request order information</title>
+                        <acl>sales/order/info</acl>
+                    </schrackGetOrderStatusViaJson>
+                    <schrackSetOrderTransmittedViaCsv translate="title" module="sales">
+                        <title>Set order transmitted flag(s)</title>
+                        <acl>sales/order/info</acl>
+                    </schrackSetOrderTransmittedViaCsv>
+                </methods>
+            </sales_order>
+        </resources>
+        <acl>
+            <resources>
+                <sales>
+                    <order>
+                        <insert_update translate="title" module="sales">
+                            <title>Insert and Update</title>
+                        </insert_update>
+                    </order>
+                </sales>
+            </resources>
+        </acl>
+    </api>
+    
+</config>

@@ -1,0 +1,465 @@
+<?xml version="1.0" encoding="utf-8"?>
+<definitions xmlns:typens="urn:{{var wsdl.name}}" xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+             xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/"
+             xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns="http://schemas.xmlsoap.org/wsdl/" >
+  <types>
+    <schema xmlns="http://www.w3.org/2001/XMLSchema">
+      <complexType name="customerCustomerEntityToCreate">
+        <all>
+          <element name="prefix" type="xsd:string" minOccurs="0" />
+          <element name="schrack_telephone" type="xsd:string" minOccurs="0" />
+          <element name="schrack_fax" type="xsd:string" minOccurs="0" />
+          <element name="schrack_mobile_phone" type="xsd:string" minOccurs="0" />
+          <element name="schrack_department" type="xsd:string" minOccurs="0" />
+          <!-- customer -->
+          <element name="schrack_salutatory" type="xsd:string" minOccurs="0" />
+          <element name="schrack_crm_role_id" type="xsd:int" minOccurs="0" />
+          <element name="schrack_wws_address_number" type="xsd:int" minOccurs="0" />
+          <element name="schrack_main_contact" type="xsd:boolean" minOccurs="0" />
+          <element name="schrack_advisor_principal_name" type="xsd:string" minOccurs="0" />
+          <element name="schrack_advisors_principal_names" type="xsd:string" minOccurs="0" />
+          <element name="schrack_newsletter" type="xsd:boolean" minOccurs="0" />
+          <element name="schrack_comments" type="xsd:string" minOccurs="0" />
+          <element name="schrack_interests" type="xsd:string" minOccurs="0" />
+          <element name="schrack_active" type="xsd:boolean" minOccurs="0" />
+          <element name="schrack_emails" type="xsd:string" minOccurs="0" />
+          <!-- employee -->
+          <element name="schrack_wws_salesman_id" type="xsd:string" minOccurs="0" />
+          <element name="schrack_wws_branch_id" type="xsd:int" minOccurs="0" />
+        </all>
+      </complexType>
+      <complexType name="customerCustomerEntity">
+        <all>
+          <element name="prefix" type="xsd:string" minOccurs="0" />
+          <element name="gender" type="xsd:string" minOccurs="0" />
+          <element name="schrack_telephone" type="xsd:string" minOccurs="0" />
+          <element name="schrack_fax" type="xsd:string" minOccurs="0" />
+          <element name="schrack_mobile_phone" type="xsd:string" minOccurs="0" />
+          <element name="schrack_department" type="xsd:string" minOccurs="0" />
+          <element name="schrack_salutatory" type="xsd:string" minOccurs="0" />
+          <element name="schrack_crm_role_id" type="xsd:int" minOccurs="0" />
+          <element name="schrack_wws_address_number" type="xsd:int" minOccurs="0" />
+          <element name="schrack_main_contact" type="xsd:boolean" minOccurs="0" />
+          <element name="schrack_advisor_principal_name" type="xsd:string" minOccurs="0" />
+          <element name="schrack_advisors_principal_names" type="xsd:string" minOccurs="0" />
+          <element name="schrack_newsletter" type="xsd:boolean" minOccurs="0" />
+          <element name="schrack_comments" type="xsd:string" minOccurs="0" />
+          <element name="schrack_interests" type="xsd:string" minOccurs="0" />
+          <element name="schrack_active" type="xsd:boolean" minOccurs="0" />
+			<element name="schrack_emails" type="xsd:string" minOccurs="0" />
+          <element name="schrack_wws_salesman_id" type="xsd:string" minOccurs="0" />
+          <element name="schrack_wws_branch_id" type="xsd:int" minOccurs="0" />
+          <element name="schrack_wws_customer_id" type="xsd:string" minOccurs="0" />
+          <element name="schrack_wws_contact_number" type="xsd:int" minOccurs="0" />
+        </all>
+      </complexType>
+      <complexType name="customerAddressEntityCreate">
+        <all>
+          <element name="name1" type="xsd:string" minOccurs="0" />
+          <element name="name2" type="xsd:string" minOccurs="0" />
+          <element name="name3" type="xsd:string" minOccurs="0" />
+          <element name="schrack_additional_phone" type="xsd:string" minOccurs="0" />
+          <element name="schrack_comments" type="xsd:string" minOccurs="0" />
+          <element name="schrack_type" type="xsd:int" minOccurs="0" />
+        </all>
+      </complexType>
+      <complexType name="customerAddressEntityItem">
+        <all>
+          <element name="name1" type="xsd:string" minOccurs="0" />
+          <element name="name2" type="xsd:string" minOccurs="0" />
+          <element name="name3" type="xsd:string" minOccurs="0" />
+          <element name="schrack_additional_phone" type="xsd:string" minOccurs="0" />
+          <element name="schrack_comments" type="xsd:string" minOccurs="0" />
+          <element name="schrack_type" type="xsd:int" minOccurs="0" />
+        </all>
+      </complexType>
+    </schema>
+  </types>
+  <message name="customerCustomerReplaceContactRequest">
+    <part name="sessionId" type="xsd:string" />
+    <part name="wwsCustomerId" type="xsd:string" />
+    <part name="wwsContactNumber" type="xsd:positiveInteger" />
+    <part name="customerData" type="typens:customerCustomerEntityToCreate" />
+  </message>
+  <message name="customerCustomerDeleteContactRequest">
+    <part name="sessionId" type="xsd:string" />
+    <part name="wwsCustomerId" type="xsd:string" />
+    <part name="wwsContactNumber" type="xsd:positiveInteger" />
+  </message>
+  <message name="customerAddressReplaceLocationRequest">
+    <part name="sessionId" type="xsd:string" />
+    <part name="wwsCustomerId" type="xsd:string" />
+    <part name="wwsAddressNumber" type="xsd:positiveInteger" />
+    <part name="addressData" type="typens:customerAddressEntityCreate" />
+  </message>
+  <message name="customerAddressDeleteLocationRequest">
+    <part name="sessionId" type="xsd:string" />
+    <part name="wwsCustomerId" type="xsd:string" />
+    <part name="wwsAddressNumber" type="xsd:positiveInteger" />
+  </message>
+  <message name="customerCustomerGetWwsIdRequest">
+    <part name="sessionId" type="xsd:string" />
+    <part name="eMail" type="xsd:string" />
+  </message>
+  <message name="customerCustomerGetWwsIdResponse">
+    <part name="wwsId" type="xsd:string" />
+  </message>
+  <message name="customerCustomerAuthenticateUserRequest">
+    <part name="sessionId" type="xsd:string" />
+    <part name="eMail" type="xsd:string" />
+    <part name="passWord" type="xsd:string" />
+    <part name="requestType" type="xsd:string"/>
+  </message>
+  <message name="customerCustomerAuthenticateUserResponse">
+    <part name="ok" type="xsd:boolean" />
+    <part name="acl" type="xsd:string" />
+    <part name="wwsId" type="xsd:string" />
+  </message>
+  <message name="customerCustomerAuthenticateUserResponseV20">
+    <part name="ok" type="xsd:boolean" />
+    <part name="acl" type="xsd:string" />
+    <part name="wwsId" type="xsd:string" />
+    <part name="pickupStockNo" type="xsd:int" />
+    <part name="deliveryStockNo" type="xsd:int" />
+  </message>
+  <message name="customerCustomerGetLoginTokenRequest">
+      <part name="sessionId" type="xsd:string" />
+      <part name="email" type="xsd:string" />
+      <part name="password" type="xsd:string" />
+  </message>
+  <message name="customerCustomerGetLoginTokenResponse">
+      <part name="ok" type="xsd:boolean" />
+      <part name="token" type="xsd:string" />
+  </message>
+  <message name="customerCustomerResetPasswordRequest">
+      <part name="sessionId" type="xsd:string" />
+      <part name="email" type="xsd:string" />
+  </message>
+  <message name="customerCustomerResetPasswordResponse">
+      <part name="success" type="xsd:boolean" />
+  </message>
+  <message name="customerCustomerRegisterToolUserRequest">
+    <part name="sessionId" type="xsd:string" />
+    <part name="genderIsFemale" type="xsd:boolean" />
+    <part name="firstName" type="xsd:string" />
+    <part name="lastName" type="xsd:string" />
+    <part name="email" type="xsd:string" />
+    <part name="password" type="xsd:string" />
+  </message>
+  <message name="customerCustomerRegisterToolUserResponse">
+    <part name="success" type="xsd:boolean" />
+    <part name="errorNumber" type="xsd:integer" />
+    <part name="errorMessage" type="xsd:string" />
+  </message>
+  <message name="customerCustomerConfirmTermsOfUseRequest">
+    <part name="sessionId" type="xsd:string" />
+    <part name="email" type="xsd:string" />
+    <part name="timeStamp" type="xsd:string" />
+    <part name="ipAddress" type="xsd:string" />
+    <part name="termsOfUseHash" type="xsd:string" />
+  </message>
+  <message name="customerCustomerConfirmTermsOfUseResponse">
+    <part name="success" type="xsd:boolean" />
+    <part name="errorNumber" type="xsd:integer" />
+    <part name="errorMessage" type="xsd:string" />
+  </message>
+  <message name="customerCustomerFindCountryByEmailRequest">
+v    <part name="sessionId" type="xsd:string" />
+    <part name="email" type="xsd:string" />
+  </message>
+  <message name="customerCustomerFindCountryByEmailResponse">
+    <part name="countryId" type="xsd:string" />
+  </message>
+  <message name="customerCustomerChangeProspectToCustomerRequest">
+      <part name="sessionId" type="xsd:string" />
+      <part name="email" type="xsd:string" />
+      <part name="wwsCustomerID" type="xsd:string" />
+      <part name="wwsContactNumber" type="xsd:positiveInteger" />
+      <part name="debugLog" type="xsd:string" />
+  </message>
+  <message name="customerCustomerChangeProspectToCustomerResponse">
+      <part name="result" type="xsd:string" />
+  </message>
+  <message name="customerCustomerAssignProspectToCustomerRequest">
+      <part name="sessionId" type="xsd:string" />
+      <part name="email" type="xsd:string" />
+      <part name="wwsCustomerID" type="xsd:string" />
+      <part name="wwsContactNumber" type="xsd:positiveInteger" />
+      <part name="debugLog" type="xsd:string" />
+      <part name="notifyAdminsEmail" type="xsd:string" />
+  </message>
+  <message name="customerCustomerAssignProspectToCustomerResponse">
+      <part name="result" type="xsd:string" />
+  </message>
+  <message name="customerCustomerReplaceContactWithProspectRequest">
+      <part name="sessionId" type="xsd:string" />
+      <part name="email" type="xsd:string" />
+      <part name="wwsCustomerID" type="xsd:string" />
+      <part name="wwsContactNumber" type="xsd:positiveInteger" />
+    <part name="debugLog" type="xsd:string" />
+  </message>
+  <message name="customerCustomerReplaceContactWithProspectResponse">
+      <part name="result" type="xsd:string" />
+  </message>
+  <message name="customerCustomerCheckFullProspectByMailRequest">
+    <part name="sessionId" type="xsd:string" />
+    <part name="email" type="xsd:string" />
+  </message>
+  <message name="customerCustomerCheckFullProspectByMailResponse">
+    <part name="result" type="xsd:string" />
+  </message>
+  <message name="customerCustomerAssignNewS4YIdToContactRequest">
+    <part name="sessionId" type="xsd:string" />
+    <part name="email" type="xsd:string" />
+    <part name="wwsCustomerID" type="xsd:string" />
+    <part name="wwsContactNumber" type="xsd:positiveInteger" />
+    <part name="newS4YId" type="xsd:string" />
+    <part name="debugLog" type="xsd:string" />
+  </message>
+  <message name="customerCustomerAssignNewS4YIdToContactResponse">
+    <part name="result" type="xsd:string" />
+  </message>
+
+  <portType>
+    <operation name="customerCustomerReplaceContact">
+      <documentation>Replace contact (customer)</documentation>
+      <input message="typens:customerCustomerReplaceContactRequest" />
+      <output message="typens:customerCustomerCreateResponse" />
+    </operation>
+    <operation name="customerCustomerDeleteContact">
+      <documentation>Delete contact (customer)</documentation>
+      <input message="typens:customerCustomerDeleteContactRequest" />
+      <output message="typens:customerCustomerDeleteResponse" />
+    </operation>
+    <operation name="customerCustomerGetWwsId">
+      <documentation>Get WWS ID for customer</documentation>
+      <input message="typens:customerCustomerGetWwsIdRequest" />
+      <output message="typens:customerCustomerGetWwsIdResponse" />
+    </operation>
+    <operation name="customerCustomerAuthenticateUser">
+      <documentation>checks authentication for user</documentation>
+      <input message="typens:customerCustomerAuthenticateUserRequest" />
+      <output message="typens:customerCustomerAuthenticateUserResponse" />
+    </operation>
+    <operation name="customerCustomerAuthenticateUserV20">
+      <documentation>checks authentication for user</documentation>
+      <input message="typens:customerCustomerAuthenticateUserRequest" />
+      <output message="typens:customerCustomerAuthenticateUserResponseV20" />
+    </operation>
+    <operation name="customerAddressReplaceLocation">
+      <documentation>Replace address (for account)</documentation>
+      <input message="typens:customerAddressReplaceLocationRequest" />
+      <output message="typens:customerAddressCreateResponse" />
+    </operation>
+    <operation name="customerAddressDeleteLocation">
+      <documentation>Delete address (for account)</documentation>
+      <input message="typens:customerAddressDeleteLocationRequest" />
+      <output message="typens:customerAddressDeleteResponse" />
+    </operation>
+    <operation name="customerCustomerGetLoginToken">
+      <documentation>Get a login token vor valid email/password combination</documentation>
+      <input message="typens:customerCustomerGetLoginTokenRequest" />
+      <output message="typens:customerCustomerGetLoginTokenResponse" />
+    </operation>
+    <operation name="customerCustomerResetPassword">
+      <documentation>Get country id for email</documentation>
+      <input message="typens:customerCustomerResetPasswordRequest" />
+      <output message="typens:customerCustomerResetPasswordResponse" />
+    </operation>
+    <operation name="customerCustomerRegisterToolUser">
+      <documentation>Get country id for email</documentation>
+      <input message="typens:customerCustomerRegisterToolUserRequest" />
+      <output message="typens:customerCustomerRegisterToolUserResponse" />
+    </operation>
+    <operation name="customerCustomerConfirmTermsOfUse">
+      <documentation>Confirm terms of use</documentation>
+      <input message="typens:customerCustomerConfirmTermsOfUseRequest" />
+      <output message="typens:customerCustomerConfirmTermsOfUseResponse" />
+    </operation>
+      <operation name="customerCustomerFindCountryByEmail">
+          <documentation>Get country id for email</documentation>
+          <input message="typens:customerCustomerFindCountryByEmailRequest" />
+          <output message="typens:customerCustomerFindCountryByEmailResponse" />
+      </operation>
+      <operation name="customerCustomerChangeProspectToCustomer">
+          <documentation>Change a prospect to a full customer</documentation>
+          <input message="typens:customerCustomerChangeProspectToCustomerRequest" />
+          <output message="typens:customerCustomerChangeProspectToCustomerResponse" />
+      </operation>
+      <operation name="customerCustomerAssignProspectToCustomer">
+          <documentation>Assigning a prospect to an existing  customer</documentation>
+          <input message="typens:customerCustomerAssignProspectToCustomerRequest" />
+          <output message="typens:customerCustomerAssignProspectToCustomerResponse" />
+      </operation>
+      <operation name="customerCustomerReplaceContactWithProspect">
+          <documentation>Replacing existing contact with prospect</documentation>
+          <input message="typens:customerCustomerReplaceContactWithProspectRequest" />
+          <output message="typens:customerCustomerReplaceContactWithProspectResponse" />
+      </operation>
+      <operation name="customerCustomerCheckFullProspectByMail">
+        <documentation>Find out if contact is full prospect</documentation>
+        <input message="typens:customerCustomerCheckFullProspectByMailRequest" />
+        <output message="typens:customerCustomerCheckFullProspectByMailResponse" />
+      </operation>
+      <operation name="customerCustomerAssignNewS4YIdToContact">
+          <documentation>Assigning a prospect to an existing  customer</documentation>
+          <input message="typens:customerCustomerAssignNewS4YIdToContactRequest" />
+          <output message="typens:customerCustomerAssignNewS4YIdToContactResponse" />
+      </operation>
+  </portType>
+  <binding>
+    <operation name="customerCustomerReplaceContact">
+      <soap:operation soapAction="urn:{{var wsdl.handler}}Action" />
+      <input>
+        <soap:body namespace="urn:{{var wsdl.name}}" use="encoded" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </input>
+      <output>
+        <soap:body namespace="urn:{{var wsdl.name}}" use="encoded" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </output>
+    </operation>
+    <operation name="customerCustomerDeleteContact">
+      <soap:operation soapAction="urn:{{var wsdl.handler}}Action" />
+      <input>
+        <soap:body namespace="urn:{{var wsdl.name}}" use="encoded" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </input>
+      <output>
+        <soap:body namespace="urn:{{var wsdl.name}}" use="encoded" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </output>
+    </operation>
+    <operation name="customerAddressReplaceLocation">
+      <soap:operation soapAction="urn:{{var wsdl.handler}}Action" />
+      <input>
+        <soap:body namespace="urn:{{var wsdl.name}}" use="encoded" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </input>
+      <output>
+        <soap:body namespace="urn:{{var wsdl.name}}" use="encoded" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </output>
+    </operation>
+    <operation name="customerAddressDeleteLocation">
+      <soap:operation soapAction="urn:{{var wsdl.handler}}Action" />
+      <input>
+        <soap:body namespace="urn:{{var wsdl.name}}" use="encoded" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </input>
+      <output>
+        <soap:body namespace="urn:{{var wsdl.name}}" use="encoded" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </output>
+    </operation>
+    <operation name="customerCustomerGetWwsId">
+      <soap:operation soapAction="urn:{{var wsdl.handler}}Action" />
+      <input>
+        <soap:body namespace="urn:{{var wsdl.name}}" use="encoded" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </input>
+      <output>
+        <soap:body namespace="urn:{{var wsdl.name}}" use="encoded" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </output>
+    </operation>
+    <operation name="customerCustomerAuthenticateUser">
+      <soap:operation soapAction="urn:{{var wsdl.handler}}Action" />
+      <input>
+        <soap:body namespace="urn:{{var wsdl.name}}" use="encoded" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </input>
+      <output>
+        <soap:body namespace="urn:{{var wsdl.name}}" use="encoded" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </output>
+    </operation>
+    <operation name="customerCustomerAuthenticateUserV20">
+      <soap:operation soapAction="urn:{{var wsdl.handler}}Action" />
+      <input>
+        <soap:body namespace="urn:{{var wsdl.name}}" use="encoded" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </input>
+      <output>
+        <soap:body namespace="urn:{{var wsdl.name}}" use="encoded" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </output>
+    </operation>
+    <operation name="customerCustomerGetLoginToken">
+      <soap:operation soapAction="urn:{{var wsdl.handler}}Action" />
+      <input>
+        <soap:body namespace="urn:{{var wsdl.name}}" use="encoded" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </input>
+      <output>
+        <soap:body namespace="urn:{{var wsdl.name}}" use="encoded" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </output>
+    </operation>
+    <operation name="customerCustomerResetPassword">
+      <soap:operation soapAction="urn:{{var wsdl.handler}}Action" />
+      <input>
+        <soap:body namespace="urn:{{var wsdl.name}}" use="encoded" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </input>
+      <output>
+        <soap:body namespace="urn:{{var wsdl.name}}" use="encoded" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </output>
+    </operation>
+    <operation name="customerCustomerRegisterToolUser">
+      <soap:operation soapAction="urn:{{var wsdl.handler}}Action" />
+      <input>
+        <soap:body namespace="urn:{{var wsdl.name}}" use="encoded" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </input>
+      <output>
+        <soap:body namespace="urn:{{var wsdl.name}}" use="encoded" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </output>
+    </operation>
+    <operation name="customerCustomerConfirmTermsOfUse">
+      <soap:operation soapAction="urn:{{var wsdl.handler}}Action" />
+      <input>
+        <soap:body namespace="urn:{{var wsdl.name}}" use="encoded" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </input>
+      <output>
+        <soap:body namespace="urn:{{var wsdl.name}}" use="encoded" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </output>
+    </operation>
+      <operation name="customerCustomerFindCountryByEmail">
+          <soap:operation soapAction="urn:{{var wsdl.handler}}Action" />
+          <input>
+              <soap:body namespace="urn:{{var wsdl.name}}" use="encoded" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+          </input>
+          <output>
+              <soap:body namespace="urn:{{var wsdl.name}}" use="encoded" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+          </output>
+      </operation>
+      <operation name="customerCustomerChangeProspectToCustomer">
+          <soap:operation soapAction="urn:{{var wsdl.handler}}Action" />
+          <input>
+              <soap:body namespace="urn:{{var wsdl.name}}" use="encoded" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+          </input>
+          <output>
+              <soap:body namespace="urn:{{var wsdl.name}}" use="encoded" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+          </output>
+      </operation>
+      <operation name="customerCustomerAssignProspectToCustomer">
+          <soap:operation soapAction="urn:{{var wsdl.handler}}Action" />
+          <input>
+              <soap:body namespace="urn:{{var wsdl.name}}" use="encoded" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+          </input>
+          <output>
+              <soap:body namespace="urn:{{var wsdl.name}}" use="encoded" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+          </output>
+      </operation>
+      <operation name="customerCustomerReplaceContactWithProspect">
+          <soap:operation soapAction="urn:{{var wsdl.handler}}Action" />
+          <input>
+              <soap:body namespace="urn:{{var wsdl.name}}" use="encoded" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+          </input>
+          <output>
+              <soap:body namespace="urn:{{var wsdl.name}}" use="encoded" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+          </output>
+      </operation>
+      <operation name="customerCustomerCheckFullProspectByMail">
+        <soap:operation soapAction="urn:{{var wsdl.handler}}Action" />
+        <input>
+          <soap:body namespace="urn:{{var wsdl.name}}" use="encoded" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+        </input>
+        <output>
+          <soap:body namespace="urn:{{var wsdl.name}}" use="encoded" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+        </output>
+      </operation>
+      <operation name="customerCustomerAssignNewS4YIdToContact">
+          <soap:operation soapAction="urn:{{var wsdl.handler}}Action" />
+          <input>
+              <soap:body namespace="urn:{{var wsdl.name}}" use="encoded" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+          </input>
+          <output>
+              <soap:body namespace="urn:{{var wsdl.name}}" use="encoded" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+          </output>
+      </operation>
+  </binding>
+</definitions>

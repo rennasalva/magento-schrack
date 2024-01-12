@@ -1,0 +1,129 @@
+<?php $page = $this->getPage(); ?>
+<div class="content-header">
+        <h3 class="icon-head head-categories"><?php echo $this->htmlEscape($this->getHeader()) . ($this->getPageUid() ? ' (' . Mage::helper('typo3connect')->__('UID: %s', $this->getPage()->getId()) . ')' : '') ?></h3>
+        <p class="content-buttons form-buttons">
+        	<?php if ($page->getUid()): ?>
+				<?php echo $this->getSaveButtonHtml(); ?>
+			<?php endif; ?>
+        </p>
+</div>
+<?php if ($page->getUid()): ?>
+<?php echo $this->getTabsHtml() ?>
+<iframe name="iframeSave" style="display:none; width:100%;" src="<?php echo $this->getJsUrl() ?>blank.html"></iframe>
+<form target="iframeSave" id="category_edit_form" action="<?php echo $this->getImportUrl() ?>" method="post" enctype="multipart/form-data">
+    <div class="no-display">
+        <input type="hidden" name="isIframe" value="1" />
+        <input name="form_key" type="hidden" value="<?php echo $this->getFormKey() ?>" />
+    </div>
+    <div id="category_tab_content"></div>
+</form>
+	
+	
+	
+	
+	
+<?php else: ?>	
+	<h2><?php echo $this->__('Please choose a valid page in the tree on the left side') ?></h2>
+	<h4><?php echo $this->__("After you've chosen a valid content page, you are able to change and view content. With pressing the 'Import'-Button, the page is imported to Magento") ?></h4>
+<?php endif; ?>
+
+
+<script type="text/javascript">
+//<![CDATA[
+    categoryForm = new varienForm('category_edit_form');
+
+    categoryForm.submit= function (url) {
+        this.errorSections = $H({});
+        this.canShowError = true;
+        this.submitUrl = url;
+        if (this.validator && this.validator.validate()) {
+            if(this.validationUrl){
+                this._validate();
+            }
+            else{
+                if (this.isSubmitted) {
+                    return false;
+                }
+                this.isSubmitted = true;
+                this._submit();
+            }
+            displayLoadingMask();
+            return true;
+        }
+        return false;
+    };
+
+    categoryForm.getCategoryId = function () {
+        collection = $(this.formId).getInputs('hidden','general[id]');
+        if (collection.size() > 0) {
+            return collection.first().value;
+        }
+        return false;
+    };
+
+    /**
+    * Create/edit some category
+    */
+    function categorySubmit(url, useAjax) {
+    	
+        var activeTab = $('active_tab_id');
+        
+        if (activeTab) {
+            if (activeTab.tabsJsObject && activeTab.tabsJsObject.activeTab) {
+                activeTab.value = activeTab.tabsJsObject.activeTab.id;
+            }
+        }
+
+        var params = {};
+        var fields = $('category_edit_form').getElementsBySelector('input', 'select');
+        for(var i=0;i<fields.length;i++){
+            if (!fields[i].name) {
+                continue;
+            }
+            params[fields[i].name] = fields[i].getValue();
+        }
+
+        // Get info about what we're submitting - to properly update tree nodes
+        var categoryId = params['general[id]'] ? params['general[id]'] : 0;
+        var isCreating = categoryId == 0; // Separate variable is needed because '0' in javascript converts to TRUE
+
+
+        // Make operations with category tree
+        if (isCreating) {
+            /* Some specific tasks for creating category */
+            /*if (!tree.currentNodeId) {
+                // First submit of form - select some node to be current
+                tree.currentNodeId = parentId;
+            }
+            tree.addNodeTo = parentId;*/
+        } else {
+            /* Some specific tasks for editing category */
+            // Maybe change category enabled/disabled style
+            if (tree && tree.storeId==0) {
+                var currentNode = tree.getNodeById(categoryId);
+
+                if (currentNode) {
+                    if (parseInt(params['general[is_active]'])) {
+                        var oldClass = 'no-active-category';
+                        var newClass = 'active-category';
+                    } else {
+                        var oldClass = 'active-category';
+                        var newClass = 'no-active-category';
+                    }
+
+                    Element.removeClassName(currentNode.ui.wrap.firstChild, oldClass);
+                    Element.addClassName(currentNode.ui.wrap.firstChild, newClass);
+                }
+            }
+        }
+
+        // Submit form
+        categoryForm.submit();
+    }
+<?php if($this->isAjax() && ($block = $this->getLayout()->getBlock('tabs')) && ($_tabsJsObject=$block->getJsObjectName())): ?>
+    <?php echo $_tabsJsObject ?>.moveTabContentInDest();
+<?php endif; ?>
+//]]>
+</script>
+
+

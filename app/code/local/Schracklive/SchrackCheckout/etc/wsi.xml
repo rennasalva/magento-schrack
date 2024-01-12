@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions xmlns:typens="urn:{{var wsdl.name}}"
+             xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+             xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+             xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/"
+             xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+             name="{{var wsdl.name}}"
+             targetNamespace="urn:{{var wsdl.name}}">
+
+    <wsdl:types>
+        <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="urn:{{var wsdl.name}}">
+            <!-- TODO: fix redundance! -->
+            <xsd:element name="shoppingCartProductAddRequestParamX">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element minOccurs="1" maxOccurs="1" name="sessionId" type="xsd:string" />
+                        <xsd:element minOccurs="1" maxOccurs="1" name="quoteId"   type="xsd:int" />
+                        <xsd:element minOccurs="1" maxOccurs="1" name="products"  type="typens:shoppingCartProductEntityArray" />
+                        <xsd:element minOccurs="1" maxOccurs="1" name="storeId"   type="xsd:string" />
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+            <xsd:element name="shoppingCartProductAddResponseParam">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element minOccurs="1" maxOccurs="1" name="result" type="xsd:boolean" />
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+
+            <xsd:element name="shoppingCartCreateForCustomerRequestParam">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element minOccurs="1" maxOccurs="1" name="sessionId" type="xsd:string" />
+                        <xsd:element minOccurs="1" maxOccurs="1" name="eMail"     type="xsd:string" />
+                        <xsd:element minOccurs="1" maxOccurs="1" name="passWord"  type="xsd:string" />
+                        <xsd:element minOccurs="0" maxOccurs="1" name="storeId"   type="xsd:string" />
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+            <xsd:element name="shoppingCartCreateForCustomerResponseParam">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element minOccurs="1" maxOccurs="1" name="quoteId" type="xsd:int" />
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+        </xsd:schema>
+    </wsdl:types>
+
+    <wsdl:message name="shoppingCartProductAddRequest">
+        <wsdl:part name="parameters" element="typens:shoppingCartProductAddRequestParamX" />
+    </wsdl:message>
+    <wsdl:message name="shoppingCartProductAddResponse">
+        <wsdl:part name="parameters" element="typens:shoppingCartProductAddResponseParam" />
+    </wsdl:message>
+    <wsdl:message name="shoppingCartCreateForCustomerRequest">
+        <wsdl:part name="parameters" element="typens:shoppingCartCreateForCustomerRequestParam" />
+    </wsdl:message>
+    <wsdl:message name="shoppingCartCreateForCustomerResponse">
+        <wsdl:part name="parameters" element="typens:shoppingCartCreateForCustomerResponseParam" />
+    </wsdl:message>
+
+    <wsdl:portType name="{{var wsdl.handler}}PortType">
+        <wsdl:operation name="shoppingCartCreateForCustomer">
+            <wsdl:documentation>Create shopping cart for customer</wsdl:documentation>
+            <wsdl:input message="typens:shoppingCartCreateForCustomerRequest"/>
+            <wsdl:output message="typens:shoppingCartCreateForCustomerResponse"/>
+        </wsdl:operation>
+        <wsdl:operation name="shoppingCartProductAdd">
+            <wsdl:documentation>Add product(s) to shopping cart</wsdl:documentation>
+            <wsdl:input message="typens:shoppingCartProductAddRequest"/>
+            <wsdl:output message="typens:shoppingCartProductAddResponse"/>
+        </wsdl:operation>
+    </wsdl:portType>
+
+     <wsdl:binding name="{{var wsdl.handler}}Binding" type="typens:{{var wsdl.handler}}PortType">
+        <wsdl:operation name="shoppingCartCreateForCustomer">
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="shoppingCartProductAdd">
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+    </wsdl:binding>
+</wsdl:definitions>

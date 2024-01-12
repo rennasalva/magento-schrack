@@ -1,0 +1,74 @@
+<?xml version="1.0"?>
+<config>
+  <modules>
+    <Nagarro_Custom>
+      <version>0.1.0</version>
+    </Nagarro_Custom>
+  </modules>
+  <frontend>
+    <routers>
+      <custom>
+        <use>standard</use>
+          <args>
+            <module>Nagarro_Custom</module>
+            <frontName>custom</frontName>
+          </args>
+      </custom>
+      <customer>
+                <args>
+                    <modules>
+                        <Nagarro_Custom before="Mage_Customer">Nagarro_Custom</Nagarro_Custom>
+                    </modules>
+                </args>
+            </customer>
+    </routers>
+  </frontend>
+  <global>
+		<rewrite> 
+            <nagarro_custom_api_xmlrpccontroller>
+                <from><![CDATA[#^/api/xmlrpc/#]]></from> <!-- Mage_Api_XmlrpcController  -->
+                <to>/custom/api_xmlrpc/</to> <!-- Nagarro_Custom_Api_XmlrpcController  -->
+            </nagarro_custom_api_xmlrpccontroller>
+		</rewrite>
+    <helpers>
+      <custom>
+        <class>Nagarro_Custom_Helper</class>
+      </custom>
+    </helpers>
+    
+  </global>
+  <admin>
+	<routers>
+	  <custom>
+	    <use>admin</use>
+		<args>
+		  <module>Nagarro_Custom</module>
+		  <frontName>admin_custom</frontName>
+		</args>
+	  </custom>
+	</routers>
+  </admin>
+  <crontab>
+        <jobs>
+            <catalog_product_index_price_reindex_all>
+                <schedule><cron_expr> 0 0 * * * *</cron_expr></schedule>
+                <run><model>catalog/product_indexer_price::reindexAll</model></run>
+            </catalog_product_index_price_reindex_all>
+            <catalogrule_apply_all>
+                <schedule><cron_expr> 0 5 * * * *</cron_expr></schedule>
+                <run><model>catalogrule/observer::dailyCatalogUpdate</model></run>
+            </catalogrule_apply_all>
+        </jobs>
+    </crontab>
+    <admin>
+        <routers>
+            <adminhtml>
+                <args>
+                    <modules>
+                        <Nagarro_Custom before="Mage_Adminhtml">Nagarro_Custom_Adminhtml</Nagarro_Custom>
+                    </modules>
+                </args>
+            </adminhtml>
+        </routers>
+    </admin>
+</config> 

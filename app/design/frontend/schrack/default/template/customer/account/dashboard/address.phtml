@@ -1,0 +1,43 @@
+<!-- customer\account\dashboard\address.phtml (start) -->
+
+<?php
+    /* @var $this Mage_Customer_Block_Account_Dashboard_Address */
+    $customerType = $this->getCustomer()->getSchrackCustomerType(); // ProspectTypes: 'light-prospect' / 'full-prospect'
+?>
+
+
+<?php if ( !in_array($customerType, array('light-prospect')) ) : ?>
+    <div class="row name">
+        <div class="large-12 columns">
+            <div class="headline copy-bold-8"><?php echo $this->__('Addresses'); ?></div>
+        </div>
+    </div>
+    <div class="row content">
+        <div class="large-12 columns">
+            <div class="row">
+                <div class="large-12 columns">
+                    <div class="headline d"><?php echo $this->__('Default Billing Address') ?></div>
+                    <p>
+                        <?php echo $this->getPrimaryBillingAddressHtml() ?>
+                    </p>
+                </div>
+            </div>
+            <div class="row">
+                <div class="large-12 columns">
+                    <div class="headline d"><?php echo $this->__('Default Shipping Address') ?></div>
+                    <p>
+                        <?php echo $this->getPrimaryShippingAddressHtml() ?>
+                    </p>
+                </div>
+            </div>
+        </div>
+        <?php if ( !in_array($customerType, array('full-prospect')) ) : ?>
+            <div class="row-fine">
+                <div class="large-fine-9 large-offset-fine-15 columns-fine">
+                    <a class="link-arrow small" href="<?php echo $this->getAddressBookUrl() ?>"><?php echo $this->__('Manage Addresses') ?></a>
+                </div>
+            </div>
+        <?php endif; ?>
+    </div>
+<?php endif; ?>
+<!-- customer\account\dashboard\address.phtml (end) -->

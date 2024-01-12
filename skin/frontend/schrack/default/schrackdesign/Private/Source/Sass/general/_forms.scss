@@ -1,0 +1,279 @@
+/*All FORM CSS*/
+
+@mixin form-row() {
+    margin: 10px -15px;
+}
+
+@mixin form-col() {
+    position: relative;
+    min-height: 1px;
+    padding-right: 15px;
+    padding-left: 15px;
+    width: 100%;
+    float: left;
+}
+
+@mixin form-control() {
+    border-radius: 0;
+    border: 1px solid #ebebeb;
+    height: 45px;
+    box-shadow: none;
+}
+
+.frame-type-form_formframework {
+    header {
+        height: 37px;
+        padding-top: 0;
+    }
+
+    .form-group {
+        > div.clearfix {
+            @include form-row;
+            min-height: 45px;
+        }
+    }
+
+    .row,
+    .actions {
+        @include form-row;
+    }
+
+    .previous {
+        margin: 20px;
+    }
+
+    .pickup-address {
+        input[type="text"]:disabled {
+            color: #eee;
+        }
+    }
+
+    // Business card form, second side depends on setting, default not visible
+    .second-language {
+        display: none;
+    }
+
+    .form-placeholder {
+        height: 40px;
+    }
+}
+
+form {
+    margin-bottom: 15px;
+
+    input[type="file"] {
+        width: auto;
+    }
+
+    .full {
+        border: 1px solid #ebebeb;
+
+        .form-control {
+            border: 0;
+        }
+    }
+}
+
+.formContianer {
+    li {
+        margin-bottom: 10px;
+        font-size: 14px;
+        color: #555555;
+
+        label {
+            font-weight: normal;
+            padding-top: 5px;
+
+            &.bold {
+                font-weight: bold;
+            }
+        }
+
+        .form-control {
+            @include form-control;
+        }
+
+        textarea.form-control {
+            height: auto;
+        }
+    }
+}
+
+.contactFormCont li {
+    width: 49%;
+    margin-right: 1%;
+    float: left;
+    margin-bottom: 10px;
+}
+
+.contactFormCont li.full {
+    width: 99%;
+}
+
+.form-control {
+    @include form-control;
+}
+
+.signupFormCont li {
+    margin-bottom: 10px;
+}
+
+.pickup-form {
+    margin: 10px 0;
+}
+
+
+/*For Firefox*/
+
+input[type="number"] {
+    -moz-appearance: textfield;
+}
+
+input[type="number"]:hover,
+
+    /*For Chrome*/
+
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.radio {
+    margin: 10px 0 0 0;
+    padding: 10px 0 0 0;
+    position: relative;
+    top: -1.4em;
+
+    li {
+        margin: 0;
+        top: 10px;
+        position: relative;
+        list-style: none;
+        padding: 0.5em;
+        display: inline-block;
+    }
+}
+
+//
+//  Responsive
+//  ---------------------------------------------
+
+@media (min-width: $breakpoint-up-xs) and (max-width: $breakpoint-down-md) {
+    .formContianer li {
+        margin-bottom: 0;
+    }
+
+    #share-cart-form .formContianer li, #login-form .formContianer li {
+        margin-bottom: 10px;
+    }
+
+    .contactFormCont li {
+        width: 100%;
+        margin-right: 0;
+        float: none;
+        margin-bottom: 10px;
+    }
+
+    .inquiryPopup .formContianer li {
+        margin-bottom: 10px;
+    }
+}
+
+@media (max-width: $breakpoint-down-md) {
+    .rwd_design form label {
+        padding: 15px 0 10px;
+    }
+    .radio {
+        margin-left: 15px;
+
+        li {
+            padding-right: 20px;
+        }
+    }
+    .form-check {
+        margin-left: 20px;
+    }
+}
+
+// eyepin form (via CE HTML)
+// The most part of the styling is copy from bootstrap for row and col-* since it is not possible to extend bootstrap classes by using "@extend .row" etc
+.ep-form {
+    .ep-form-row {
+        @include form-row;
+
+        .ep-form-col-1 {
+            @include form-col;
+            @media (min-width: 768px) {
+                width: 33.33333333%;
+            }
+            @media (min-width: 992px) {
+                width: 25%;
+            }
+        }
+
+        .ep-form-col-2 {
+            @include form-col;
+            @media (min-width: 768px) {
+                width: 66.66666667%;
+            }
+            @media (min-width: 992px) {
+                width: 50%;
+            }
+
+            input, select {
+                @include form-control;
+                width: 100%;
+                color: #555;
+                background-color: #fff;
+                padding: 6px 12px;
+
+                &::-moz-placeholder {
+                    color: #999;
+                    opacity: 1; // Override Firefox's unusual default opacity; see https://github.com/twbs/bootstrap/pull/11526
+                }
+
+                &:-ms-input-placeholder {
+                    color: #999;
+                }
+
+                // Internet Explorer 10+
+                &::-webkit-input-placeholder {
+                    color: #999;
+                }
+
+                // Safari and Chrome
+                &:focus {
+                    border-color: #66afe9;
+                    outline: 0;
+                    -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075), 0 0 8px rgba(102, 175, 233, .6);
+                    box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075), 0 0 8px rgba(102, 175, 233, .6);
+                }
+            }
+        }
+
+        &:after {
+            content: "";
+            display: block;
+            clear: both;
+        }
+    }
+
+    input[type="submit"] {
+        @extend .button-small;
+        margin-top: 10px;
+        padding: 0 8px;
+    }
+
+    &:before {
+        content: "";
+        display: block;
+        clear: both;
+    }
+}
+.startrek{
+    padding: 0px;
+    margin: 0px;
+    display: none;
+    content: "";
+}

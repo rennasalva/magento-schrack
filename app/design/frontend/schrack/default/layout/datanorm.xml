@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<layout version="0.1.0">
+    <default>
+    </default>
+        <datanorm_index_index>
+            <reference name="head">
+                <action method="setTitle" translate="title">               
+                    <title>Datanorm</title>            
+                </action>
+            </reference>
+            <reference name="root"> 
+                <action method="setTemplate">
+                    <template>page/2columns-left.phtml</template>
+                </action>
+            </reference>         
+            <reference name="content">
+                <block type="core/template" name="datanorm_form_index" template="datanorm/form/index.phtml" />
+            </reference>
+            <reference name="left">
+                <remove name="catalog.vertnav" />
+                <block type="customer/account_menu" name="customer_account_menu" template="customer/account/menu.phtml"></block>
+            </reference>
+            <!-- reference name="footer">
+                <remove name="datanorm" />
+            </reference -->
+
+        </datanorm_index_index>
+</layout>

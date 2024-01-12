@@ -1,0 +1,299 @@
+/*Catalogue CSS*/
+
+.catalogBnrCont {
+	font-family: 'robotomedium', Helvetica, Arial, Sans-Serif;
+	color: #00589d;
+	font-size: 14px;
+	background: url(../Images/rwd/catBnrBg.png) left top repeat-x;
+	height: 228px;
+	margin-bottom: 15px;
+}
+
+.catalogBnrCont .bx-wrapper {
+	background: none;
+}
+
+.catalogBnrCont img {
+	display: inline-block;
+}
+
+.catalogBnrCont img.img-responsive {
+	width: auto;
+}
+
+.catalogBnrCont .catalogueBanner {
+	margin-bottom:30px;
+
+	& img.img-responsive {
+		max-height: 190px;
+	}
+}
+
+.catalogBnrCont .rgtSec {
+	padding: 40px 0 0;
+}
+
+.catalogBnrCont h2 {
+	font-family: 'robotolight';
+	color: #d1222b;
+	font-size: 30px;
+	margin-bottom: 15px;
+}
+
+.catalogBnrCont .title,
+.catalogBnrCont h3 {
+	font-size: 18px;
+	margin-bottom: 25px;
+}
+
+.catalogBnrCont .browseOnline,
+.catalogBnrCont .addCart,
+.catalogBnrCont .downloadNow {
+	margin-right: 30px;
+	padding-left: 20px;
+	font-size: 14px;
+}
+
+.catalogBnrCont .browseOnline,
+.catalogLstCont .browseOnline {
+	background: url(../Images/rwd/browseIcon.png) left 5px no-repeat;
+	display: inline-block;
+	margin-top: 5px;
+}
+
+.catalogBnrCont .downloadNow,
+.catalogLstCont .downloadNow {
+	background: url(../Images/rwd/downloadIcon.png) left 5px no-repeat;
+	display: inline-block;
+	margin-top: 5px;
+}
+
+.catalogLstCont .downloadBttn {
+	float: none;
+	padding: 4px 15px 0px 15px !important;
+	background: #d1222b;
+	color: #fff;
+	position: relative;
+	height: 28px;
+	display: inline-block;
+	text-align: center;
+}
+
+.catalogLstCont .downloadBttn:after {
+	width: 16px;
+	height: 28px;
+	content: "";
+	position: absolute;
+	right: -8px;
+	top: 0;
+	background: #d1222b;
+	-moz-transform: skewX(-30deg);
+	-webkit-transform: skewX(-30deg);
+	-o-transform: skewX(-30deg);
+	-ms-transform: skewX(-30deg);
+	transform: skewX(-30deg);
+}
+
+.catalogBnrCont .addCart,
+.catalogLstCont .addCart {
+	float: left;
+	padding: 4px 15px 0px 30px;
+	background: url(../Images/rwd/cartIconWht.png) 10px 8px no-repeat #d1222b;
+	color: #fff;
+	position: relative;
+	height: 28px;
+	display: block;
+	text-align: center;
+}
+
+.catalogBnrCont .addCart:after,
+.catalogLstCont .addCart:after {
+	width: 16px;
+	height: 28px;
+	content: "";
+	position: absolute;
+	right: -8px;
+	top: 0;
+	background: #d1222b;
+	-moz-transform: skewX(-30deg);
+	-webkit-transform: skewX(-30deg);
+	-o-transform: skewX(-30deg);
+	-ms-transform: skewX(-30deg);
+	transform: skewX(-30deg);
+}
+
+.catalogBnrCont .bx-controls.bx-has-controls-auto.bx-has-pager .bx-pager {
+	bottom: 20px;
+	text-align: center;
+	width: 100%;
+}
+
+.catalogBnrCont .bx-controls-direction {
+	display: none;
+}
+
+.catalogBnrCont .bx-wrapper .bx-pager.bx-default-pager a {
+	background: transparent;
+	width: 10px;
+	height: 10px;
+	border-radius: 10px;
+	border: 1px solid #00589d;
+}
+
+.catalogBnrCont .bx-pager.bx-default-pager a.active {
+	background: #00589d;
+}
+
+.catalogLstCont {
+	margin-bottom: 15px;
+	padding-bottom: 15px;
+	border-bottom: 1px solid #ebebeb;
+	font-size: 14px;
+	height: 210px;
+	margin-top: 15px;
+}
+
+.catalogAction .input-group input {
+	border-right: 0;
+}
+
+.catalogAction .input-group-addon {
+	border-radius: 0;
+	background: none;
+	border-color: #ebebeb;
+	cursor: pointer;
+	border-left: 0;
+}
+
+.catalogLstCont .catalogImg img {
+	width: 100%;
+}
+
+.catalogLstCont h5 {
+	color: #555555;
+	font-size: 12px;
+	margin-bottom: 5px;
+}
+
+.catalogLstCont h3 {
+	color: #00589d;
+	font-size: 15px;
+	margin-bottom: 15px;
+}
+
+.catalogLstCont .addCart {
+	float: none;
+	display: inline-block;
+	/*text-transform: uppercase;*/
+	padding-left: 30px;
+	font-size: 14px;
+}
+
+.catalogLstCont .browseOnline,
+.catalogLstCont .downloadNow {
+	padding-left: 26px;
+	font-size: 14px;
+}
+
+.news-catmenu ul {
+	height: 30px;
+	width: 150px;
+	border: 1px #000 solid;
+}
+
+.news-catmenu ul li {
+	padding: 5px 10px;
+	z-index: 2;
+}
+
+.news-catmenu ul li:not(.init) {
+	float: left;
+	width: 130px;
+	display: none;
+	background: #ddd;
+}
+
+.news-catmenu ul li:not(.init):hover,
+.news-catmenu ul li.selected:not(.init) {
+	background: #09f;
+}
+
+.news-catmenu li.init {
+	cursor: pointer;
+}
+
+.catalog-products {
+	margin: 5px 0 15px 0;
+}
+
+.article-number {
+	color: #555;
+	font-size: 12px;
+}
+
+.frame-type-list {
+	.tx_solr {
+		display: flex;
+		flex-wrap: wrap;
+
+		h2 {
+			flex: 100%;
+		}
+
+		.catalogLstCont {
+			height: auto;
+			flex: 100%;
+
+			@media (min-width: $breakpoint-down-md) {
+				flex: 0 1 50%;
+			}
+		}
+	}
+}
+
+.gridelement .frame-type-list .tx_solr .catalogLstCont {
+	flex: 100%;
+}
+
+
+//
+//  Responsive
+//  ---------------------------------------------
+
+@media (min-width: $breakpoint-up-xs) and (max-width: $breakpoint-down-md) {
+
+	.catalogBnrCont {
+		margin: 0 -15px 0;
+	}
+
+	.catalogBnrCont .rgtSec {
+		padding: 10px 0 0;
+	}
+
+	.catalogBnrCont .bx-controls.bx-has-controls-auto.bx-has-pager .bx-pager {
+		bottom: -25px;
+	}
+
+	.catalogBnrCont h2 {
+		margin-bottom: 5px;
+	}
+
+	.catalogBnrCont .title {
+		margin-bottom: 15px;
+	}
+
+	.catalogBnrCont img {
+		width: 100%;
+	}
+
+	.catalogLstCont img {
+		width: 100%;
+	}
+}
+
+@media (max-width: $breakpoint-down-md) {
+
+	.catalogAction {
+		margin-top:15px;
+	}
+}

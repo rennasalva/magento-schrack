@@ -1,0 +1,103 @@
+<?php
+    $msg = $this->__("User '%s' tried to order offer number %s, what was not possible automatically.");
+    $msg = sprintf($msg,$customer->getEmail(),$order->getSchrackWwsOfferNumber());
+    $msg2 = $this->__("Reason:") . ' ';
+    $msg3 = '';
+    if ( $isReorder ) {
+        $msg2 .= $this->__('This is a re-order of an already ordered offer which requires a review and creation of a new order, maybe with new conditions.');
+        if ( $sku2changedQtyMap ) {
+            $msg2 .= ' ' . $this->__('(Customer also changed quantities, see below).');
+        }
+    } else if ( $sku2changedQtyMap ) {
+        $msg2 .= $this->__('Customer changed quantities of original offer, see table below.');
+    } else if ( $exceptionText ) {
+        $msg2 .= $this->__('A technical problem in webshop occured:');
+        $msg3 = '    ' . $exceptionText;
+    } else if ( $wwsError ) {
+        $msg2 .= $this->__('WWS reported a problem:');
+        $msg3 = '    ' . $wwsError;
+    } else if ( $shopError ) {
+        $msg2 .= $this->__('Shop recognized a prevention for automatic acceptance:');
+        $msg3 = '    ' . $shopError;
+    } else {
+        $msg2 = $this->__('Unexpected condition - please report this offer to Schrack Helpdesk!');
+    }
+    $originator = $order->getSchrackWwsOperatorMail();
+    $phone = $customer->getSchrackTelephone();
+    $mobile = $customer->getSchrackMobilePhone();
+    if ( empty($phone) && empty($mobile) ) {
+        $systemContact = $customer->getSystemContact();
+        $phone = $systemContact->getSchrackTelephone();
+        $mobile = $systemContact->getSchrackMobilePhone();
+    }
+    $companyName = $customer->getAccount()->getName(true);
+    $locationMsg = '';
+    if ( $pickup ) {
+        $locationMsg = $this->__ ('Customer wants to pick up from stock %s (%s)', $pickupAddressId, $pickupAddressName);
+    } else {
+        /** @var Schracklive_SchrackCustomer_Model_Entity_Address $addr */
+        $addr = $customer->getWwsAddress($shippingAddressId);
+        $locationMsg = $this->__ ('Customer wants to get delivered to address number %s',$shippingAddressId);
+    }
+    $referenceMsg = $this->__ ("Customer wants to add the reference '%s'",$customerReference);
+?>
+<?php echo $msg; ?><br>
+
+
+<?php echo $msg2; ?><br>
+
+
+<?php echo $msg3; ?><br>
+
+<h3><?php echo $this->__('Customer information:'); ?><br></h3>
+<table>
+    <tr><td><?php echo $this->__('WWS customer number:') . '</td><td>' . $customer->getSchrackWwsCustomerId(); ?></td></tr>
+    <tr><td><?php echo $this->__('Company name:')        . '</td><td>' . $companyName; ?></td></tr>
+    <tr><td><?php echo $this->__('User/eMail:')          . '</td><td>' . $customer->getEmail(); ?></td></tr>
+    <tr><td><?php echo $this->__('User name:')           . '</td><td>' . $customer->getName(); ?></td></tr>
+    <tr><td><?php echo $this->__('Phone:')               . '</td><td>' . $phone; ?></td></tr>
+    <tr><td><?php echo $this->__('Mobile:')              . '</td><td>' . $mobile; ?></td></tr>
+</table>
+
+<h3><?php echo $this->__('Offer/Order information:'); ?><br></h3>
+<table>
+    <?php if ( isset($originator) && strlen(trim($originator)) > '' ) : ?>
+        <tr><td><?php echo $this->__('Offer originator:') . '</td><td>' . $originator; ?></td></tr>
+    <?php endif; ?>
+    <tr><td><?php echo $this->__('WWS order number:')            . '</td><td>' . $order->getSchrackWwsOrderNumber(); ?></td></tr>
+    <tr><td><?php echo $this->__('WWS offer number:')            . '</td><td>' . $order->getSchrackWwsOfferNumber(); ?></td></tr>
+    <tr><td><?php echo $this->__('Last modified in webshop at:') . '</td><td>' . $order->getUpdatedAt() . ' UTC'; ?></td></tr>
+    <tr><td><?php echo $this->__('Reference:')                   . '</td><td>' . $referenceMsg; ?></td></tr>
+    <tr><td><?php echo $this->__('Location:')                    . '</td><td>' . $locationMsg; ?></td></tr>
+    <?php if ( ! $pickup ) : ?>
+        <?php if ( $addr->getName() ) : ?>
+            <tr><td/><td><?php echo $addr->getName(); ?></td>
+        <?php endif; ?>
+        <?php foreach ( $addr->getStreet() as $row ) : ?>
+            <tr><td/><td><?php echo $row; ?></td>
+        <?php endforeach; ?>
+        <tr><td/><td><?php echo $addr->getCity(); ?></td>
+        <tr><td/><td><?php echo $addr->getPostcode(); ?></td>
+        <tr><td/><td><?php echo $addr->getCountryId(); ?></td>
+    <?php endif; ?>
+</table>
+
+<?php if ( $sku2changedQtyMap ) : ?>
+    <h3><?php echo $this->__('Changes:'); ?></h3>
+    <table>
+        <tr>
+            <th><?php echo $this->__('Offer Position');?></th><th><?php echo $this->__('Article');?></th><th><?php echo $this->__('Original quantity');?></th><th><?php echo $this->__('Changed quantity');?></th>
+        </tr>
+        <?php foreach ( $order->getAllItems() as $item ) : ?>
+            <?php $qtyNew = intval(isset($sku2changedQtyMap[$item->getSku()]) ? $sku2changedQtyMap[$item->getSku()] : $item->getQtyOrdered()); ?>
+            <?php if ( intval($item->getQtyOrdered()) == $qtyNew ) : ?>
+                <tr style="background-color: #c0d2af">
+            <?php else : ?>
+                <tr style="background-color: #ffdddd">
+            <?php endif; ?>
+                <td style="text-align: right;"><?php echo $item->getSchrackPosition();?></td><td><?php echo $item->getSku();?></td><td style="text-align: right;"><?php echo intval($item->getQtyOrdered());?></td><td style="text-align: right;"><?php echo $qtyNew;?></td>
+            </tr>
+        <?php endforeach; ?>
+    </table>
+<?php endif; ?>
+

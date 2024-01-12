@@ -1,0 +1,45 @@
+<?xml version="1.0"?>
+<config>
+  <modules>
+    <Schracklive_Ad>
+      <version>1.2.0</version>
+      <depends>
+        <Schracklive_Schrack />
+      </depends>
+    </Schracklive_Ad>
+  </modules>
+  <global>
+    <models>
+      <ad>
+        <class>Schracklive_Ad_Model</class>
+      </ad>
+    </models>
+      <resources>
+          <ad_setup>
+              <setup>
+                  <module>Schracklive_Ad</module>
+                  <class>Mage_Customer_Model_Entity_Setup</class>
+              </setup>
+          </ad_setup>
+      </resources>
+  </global>
+	<frontend>
+		<events>
+			<schrack_customer_customer_authenticate>
+				<observers>
+					<ad>
+						<model>ad/customer_observer</model>
+						<method>authenticate</method>
+					</ad>
+				</observers>
+			</schrack_customer_customer_authenticate>
+		</events>
+	</frontend>
+  <default>
+    <schrack>
+      <ad>
+        <port>3268</port>
+      </ad>
+    </schrack>
+  </default>
+</config>

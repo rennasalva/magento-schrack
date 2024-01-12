@@ -1,0 +1,28 @@
+<?php
+/* @var $this Mage_Wishlist_Block_Customer_Wishlist */
+?>
+
+<?php echo $this->getMessagesBlock()->getGroupedHtml() ?>
+<div class="wishlist">
+    <form action="<?php echo $this->getUrl('wishlist/partslist/create') ?>" method="post" id="form-validate">
+        <div class="sloped-box" style="padding:0px !important;">
+            <div class="box-content">
+                <div class="fieldset">
+                    <?php echo $this->getBlockHtml('formkey') ?>
+                    <h2 class="legend"><?php echo $this->__('New Partslist') ?></h2>
+                    <ul class="form-list">
+                        <li>
+                            <label for="description"><?php echo $this->__('Description') ?></label>
+                            <div class="input-box">
+                                <input type="text" name="description" id="description" value="" title="<?php echo $this->__('Description') ?>" class="input-text" maxlength="255"/><br/>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="buttons-set">
+                <button type="submit" title="<?php echo $this->__('Create partslist') ?>" class="button"><span><span><?php echo $this->__('Create partslist') ?></span></span></button>
+            </div>
+        </div>
+    </form>
+</div>

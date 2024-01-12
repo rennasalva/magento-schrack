@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<config>
+	<modules>
+		<Schracklive_SchrackSitemap>
+			<version>1.0.0</version>
+			<depends>
+				<Mage_Sitemap/>
+			</depends>
+		</Schracklive_SchrackSitemap>
+	</modules>
+	<global>
+		<models>
+  			<schracksitemap>
+               <class>Schracklive_SchrackSitemap_Model</class>
+           </schracksitemap>
+
+			<sitemap>
+				<rewrite>
+					<sitemap>Schracklive_SchrackSitemap_Model_Sitemap</sitemap>
+				</rewrite>
+			</sitemap>
+
+			<sitemap_resource>
+				<rewrite>
+					<catalog_product>Schracklive_SchrackSitemap_Model_Resource_Catalog_Product</catalog_product>
+				</rewrite>
+			</sitemap_resource>
+			<sitemap_mysql4>
+				<rewrite>
+					<catalog_product>Schracklive_SchrackSitemap_Model_Mysql4_Catalog_Product</catalog_product>
+				</rewrite>
+			</sitemap_mysql4>
+		</models>
+
+<!-- global/catalog/product/url_rewrite/helper -->
+
+        <helpers>
+            <catalog>
+				<rewrite>
+					<product_url_rewrite>Schracklive_SchrackSitemap_Helper_Catalog_Product_Url_Rewrite</product_url_rewrite>
+				</rewrite>
+            </catalog>
+        </helpers>
+	</global>
+</config>

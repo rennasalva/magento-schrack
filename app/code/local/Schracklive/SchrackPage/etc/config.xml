@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<config>
+	<modules>
+		<Schracklive_SchrackPage>
+			<version>1.0.0</version>
+			<depends>
+				<Mage_Page />
+				<Schracklive_Schrack />
+			</depends>
+		</Schracklive_SchrackPage>
+	</modules>
+	<frontend>
+		<translate>
+			<modules>
+				<Mage_Page>
+					<files>
+						<schrackpage>local/Schracklive_SchrackPage.csv</schrackpage>
+					</files>
+				</Mage_Page>
+			</modules>
+		</translate>
+		<routers>
+			<schracklive_schrackpage>
+				<use>standard</use>
+				<args>
+					<module>Schracklive_SchrackPage</module>
+					<frontName>schrackpage</frontName>
+				</args>
+			</schracklive_schrackpage>
+		</routers>
+	</frontend>
+	<global>
+		<blocks>
+			<page>
+				<rewrite>
+					<html_header>Schracklive_SchrackPage_Block_Html_Header</html_header>
+					<html_head>Schracklive_SchrackPage_Block_Html_Head</html_head>
+					<template_links>Schracklive_SchrackPage_Block_Template_Links</template_links>
+					<html>Schracklive_SchrackPage_Block_Html</html>
+				</rewrite>
+			</page>
+            <schrackpage>
+                <class>Schracklive_SchrackPage_Block</class>
+            </schrackpage>
+		</blocks>
+		<helpers>
+			<schrackpage>
+				<class>Schracklive_SchrackPage_Helper</class>
+			</schrackpage>
+		</helpers>
+	</global>
+</config>

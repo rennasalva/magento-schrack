@@ -1,0 +1,85 @@
+<?php
+    /* @var $_coreHelper Mage_Core_Helper_Data */
+    $_coreHelper = $this->helper('core');
+    $_product = Mage::registry('product');
+    $_customer = Mage::getSingleton('customer/session')->getCustomer();
+    $_prices = array_reverse(Mage::helper('schrackcatalog/info')->getGraduatedPricesForCustomer($_product, $_customer));
+    $_tableHelper = Mage::helper('schrackcore/table');
+    $_productHelper = Mage::helper('schrackcatalog/product');
+    $_hasAndShowPrices = count($_prices) > 0 && Mage::helper('geoip')->maySeePrices();
+    $_sku = $_product->getSku();
+
+    //************************** Hardcoded stuff ****************************************************************************************************
+    // Common:
+    $baseUrl = Mage::helper('schrackcore/url')->getUrlWithCurrentProtocol();
+    $baseUrl = explode('?',$baseUrl)[0];
+    $tooltipJsUrl = $baseUrl . 'skin/frontend/schrack/default/schrackdesign/Public/Javascript/wz_tooltip/wz_tooltip.js';
+    $defaultCountry = Mage::getStoreConfig('general/country/default');
+
+    /// --- Only AT --- ///
+    $toolTip_AT_General = '<div style=&quot;width: 250px; height: 150px; background-color: #eeeeee; color: #000000; &quot; >'
+        . '<b>10% Gutschrift von Ihrem KNX-Umsatz</b><br>'
+        . 'F&uuml;r Ihre Eink&auml;ufe von unseren KNX Produkten - Artikelnummernkreis KX - von 1.9. bis 30.11. erhalten Sie nachtr&auml;glich eine Gutschrift von 10%!<br>'
+        . 'Zus&auml;tzlich zu Ihrem vereinbarten Rabatt. Diese wird im November als Gutschrift auf Ihr Kundenkonto r&uuml;ckverg&uuml;tet. '
+        . 'Nutzen Sie diesen 10% Zusatzrabatt. Aktion nur f&uuml;r Kunden von Schrack Technik &Ouml;sterreich mit g&uuml;ltiger Kundennummer.'
+        . '</div>';
+
+    $toolTip_AT_Special = '<div style=&quot;width: 400px; height: 90px; background-color: #eeeeee; color: #000000; &quot; >'
+        . 'Eine F&#246;rderung f&#252;r eine E-Ladestation kann jeder Betrieb, unternehmerisch t&#228;tige Organisationen sowie Vereine, konfessionelle Einrichtungen und &#246;ffentliche Gebietsk&#246;rperschaften einreichen.<br>'
+        . 'Erkundigen Sie sich bei unseren E-Mobility Mitarbeitern, welche F&#246;rderung Sie bei dieser Stromtankstelle erhalten.<br>'
+        . 'Alle Informationen finden Sie auch auf unserer Infoseite f&#252;r F&#246;rderungen - klicken Sie einfach auf das Logo f&#252;r alle Detailinfos.'
+        . '</div>';
+
+    /// --- Only PL --- ///
+    $toolTip_PL_General = '<div style=&quot;width: 290px; height: 160px; background-color: #eeeeee; color: #000000; &quot; >'
+        . '<strong>ODBIERZ 10% WARTO&#346;CI ZAM&Oacute;WIENIA</strong><br>'
+        . 'Tylko w Schrack Technik otrzymaj&#261; Pa&#324;stwo zwrot 10% warto&#347;ci zam&oacute;wionych produkt&oacute;w KNX!<br>'
+        . 'Po op&#322;aceniu faktury za zakupy KNX wystawimy Pa&#324;stwu faktur&#281; koryguj&#261;c&#261; i zwr&oacute;cimy Pa&#324;stwu 10%.<br>'
+        . 'Kwota zwrotu zostanie dla Pa&#324;stwa rozliczona dopiero po zap&#322;acie faktury.<br>'
+        . '<br>'
+        . 'Akcja dotyczy wy&#322;&#261;cznie zakup&oacute;w produkt&oacute;w KNX.<br>'
+        . 'Promocja wa&#380;na od 15.10.2015 do 31.01.2016 lub do wyczerpania zapas&oacute;w.'
+        . '</div>';
+
+    $toolTip_PL_Special = '<div style=&quot;width: 280px; height: 80px; background-color: #eeeeee; color: #000000; &quot; >'
+        . '<strong>PROMCJA: TANIEJ W KOMPLECIE</strong><br>'
+        .'Zestaw zawiera opraw&#281; wraz ze &#378;r&oacute;d&#322;em LED w promocyjnej cenie.<br>'
+        .'Akcja dotyczy wy&#322;&#261;cznie produkt&oacute;w PPLISET<br>'
+        .'Promocja wa&#380;na od 15.10.2015 do 31.01.2016 lub do wyczerpania zapas&oacute;w.<br>'
+
+    //***********************************************************************************************************************************************
+?>
+<div class="price-scale">
+    <?php if ( $_hasAndShowPrices ) : ?>
+        <?php if( count($_prices) > 1): ?>
+            <div class="headline f"><?php echo $this->__('Price Scale') ?></div>
+        <?php endif;?>
+        <table class="product-prices-table" id="product-prices-table">
+            <tbody>
+                <?php if ( $_hasAndShowPrices ) : ?>
+                    <?php foreach ($_prices as $_price): ?>
+                        <tr>
+                            <td class="from"><?php echo $this->__('from') . ' ' . $_price['qty'] . ' ' . $_product->getSchrackQtyunit(); ?></td>
+                            <td class="price"><?php echo $_coreHelper->currency($_price['price'], true, false); ?></td>
+                        </tr>
+                    <?php endforeach; ?>
+                <?php endif;?>
+                <?php if ( ! $_hasAndShowPrices ):?>
+                    <tr><td>&nbsp;</td></tr>
+                    <tr><td>&nbsp;</td></tr>
+                <?php endif;?>
+            </tbody>
+        </table>
+    <?php elseif ( $defaultCountry == 'AT' && in_array(strtoupper($_sku),array('EMHOM2232P','EMHOM2363P','EMHOM413--','EMHOM413B-','EMHOM416--','EMHOM416B-','EMPUB023--','EMPUB026--','EMPUB027--','EMPUB029--','EMPUB129--','EMPUB149--','EMPUB249--','EMPUBW13--','EMPUBW16--','EMPUBW23--')) ) : ?>
+        <div>
+            <?php $imgUrl = $baseUrl . 'skin/frontend/schrack/default/schrackdesign/Public/Images/foerderung_artikeldetailseite.png'; ?>
+
+            <script type="text/javascript" src="<?php echo $tooltipJsUrl; ?>"></script>
+            <a href="http://www.schrack.at/alternativenergie/elektromobilitaet/foerderung-fuer-stromtankstellen/" target="_blank">
+                <img src="<?php echo $imgUrl; ?>" style="margin-left: -10px" " onmouseover="Tip('<?php echo $toolTip_AT_Special; ?>', BORDERWIDTH, 0, BGCOLOR, '#eeeeee', PADDING, 12)" onmouseout="UnTip()"/>
+            </a>
+        </div>
+    <?php else:?>
+        <div class="headline f">&nbsp;</div><!-- hack to keep availability table from moving left-->
+    <?php endif?>
+</div>

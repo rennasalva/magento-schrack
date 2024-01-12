@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<config>
+  <modules>
+    <Nagarro_Custom>
+      <active>true</active>
+      <codePool>local</codePool>
+      <depends>
+        <Mage_Adminhtml />
+        <Mage_Api />      
+      </depends>
+    </Nagarro_Custom>
+    <Nagarro_PHP7>
+        <active>true</active>
+        <codePool>local</codePool>
+        <depends>
+            <Mage_Core/>
+            <Mage_ImportExport/>
+            <Mage_Sales/>
+        </depends>
+    </Nagarro_PHP7>
+  </modules>
+</config>

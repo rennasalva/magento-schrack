@@ -1,0 +1,59 @@
+<?php
+/**
+ * Magento
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Academic Free License (AFL 3.0)
+ * that is bundled with this package in the file LICENSE_AFL.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/afl-3.0.php
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@magentocommerce.com so we can send you a copy immediately.
+ *
+ * DISCLAIMER
+ *
+ * Do not edit or add to this file if you wish to upgrade Magento to newer
+ * versions in the future. If you wish to customize Magento for your
+ * needs please refer to http://www.magentocommerce.com for more information.
+ *
+ * @category    design
+ * @package     base_default
+ * @copyright   Copyright (c) 2009 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @license     http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
+ */
+?>
+<?php
+/**
+ * @see Mage_Checkout_Block_Agreements
+ */
+?>
+
+<?php if (!$this->getAgreements()) return; ?>
+<form action="" id="checkout-agreements" onsubmit="return false;">
+<div class="checkout-agreements">
+<?php foreach ($this->getAgreements() as $_a): ?>
+        <div class="agreement-content"<?php echo ($_a->getContentHeight() ? ' style="height:' . $_a->getContentHeight() . '"' : '')?>>
+            <?php if ($_a->getIsHtml()):?>
+                <?php echo $_a->getContent() ?>
+            <?php else:?>
+                <?php echo nl2br($this->htmlEscape($_a->getContent())) ?>
+            <?php endif; ?>
+        </div>
+        <p class="agree">
+<?php
+$url_typo3 = Mage::getStoreConfig('schrack/typo3/typo3url');
+$url_conditions = Mage::getStoreConfig('schrack/typo3/typo3termsurl');
+$conditions_search_for = Mage::getStoreConfig('schrack/typo3/typo3termstext');
+
+$_a_checkbox_text = $this->htmlEscape($_a->getCheckboxText());
+if (strlen($url_typo3) && strlen($url_conditions) && strpos($_a_checkbox_text, $conditions_search_for) !== false) {
+	$_a_checkbox_text = str_replace($conditions_search_for, '<a href="'.$url_typo3.$url_conditions.'" target="_blank">'.$conditions_search_for.'</a>', $_a_checkbox_text);
+}
+?>
+            <input type="checkbox" id="agreement-<?php echo $_a->getId()?>" name="agreement[<?php echo $_a->getId()?>]" value="1" title="<?php echo $this->htmlEscape($_a->getCheckboxText()) ?>" class="checkbox" /> <label for="agreement-<?php echo $_a->getId()?>"><?php echo $_a_checkbox_text ?></label>
+        </p>
+<?php endforeach ?>
+</div>
+</form>

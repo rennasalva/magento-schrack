@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<config>
+	<modules>
+		<Schracklive_App>
+			<version>1.0.0</version>
+		</Schracklive_App>
+	</modules>
+	<frontend>
+		<translate>
+            <modules>
+                <Schracklive_App>
+                    <files>
+                        <schrack>local/Schracklive_App.csv</schrack>
+                    </files>
+                </Schracklive_App>
+            </modules>
+        </translate>
+	</frontend>
+</config>

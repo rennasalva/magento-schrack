@@ -1,0 +1,60 @@
+<?xml version="1.0"?>
+<config>
+  <api>
+    <resources>
+      <account translate="title" module="account">
+        <model>account/account_api</model>
+        <title>Customer (Account) API</title>
+        <methods>
+          <replaceCustomer translate="title" module="account">
+            <title>Create or update customer (account)</title>
+            <acl>account/create</acl>
+          </replaceCustomer>
+          <deleteCustomer translate="title" module="account">
+            <title>Delete customer (account)</title>
+            <acl>account/delete</acl>
+          </deleteCustomer>
+          <getCustomer translate="title" module="account">
+            <title>Retrieve customer (account)</title>
+            <acl>account/info</acl>
+          </getCustomer>
+        </methods>
+        <faults module="account">
+          <data_invalid>
+            <code>100</code>
+            <message>Invalid account data. Details in error message.</message>
+          </data_invalid>
+          <not_exists>
+            <code>102</code>
+            <message>Account does not exist.</message>
+          </not_exists>
+        </faults>
+      </account>
+    </resources>
+    <v2>
+      <resources_function_prefix>
+        <account>accountAccount</account>
+      </resources_function_prefix>
+    </v2>
+    <acl>
+      <resources>
+        <account translate="title" module="account">
+          <title>Accounts</title>
+          <sort_order>4</sort_order>
+          <create translate="title" module="account">
+            <title>Create</title>
+          </create>
+          <update translate="title" module="account">
+            <title>Update</title>
+          </update>
+          <info translate="title" module="account">
+            <title>Retrieve</title>
+          </info>
+          <delete translate="title" module="account">
+            <title>Delete</title>
+          </delete>
+        </account>
+      </resources>
+    </acl>
+  </api>
+</config>

@@ -1,0 +1,14 @@
+<ul class="messages">
+    <li class="error-msg">
+        <ul>
+            <li>
+                <span><?php echo sprintf($this->__('On %s, only customers from this country are allowed. Please click <a href="%s">here</a> to be redirected.'), $this->getRequestedUrl(), $this->getRedirectUrl())?></span>
+            </li>
+        </ul>
+    </li>
+</ul>
+<script type="text/javascript">
+    jQuery(document).ready(function() {
+        document.cookie='<?php echo $this->getCookieName()?>=<?php echo rand()?>; expires=<?php echo $this->getCookieExpires()?>; path=/';
+    });
+</script>

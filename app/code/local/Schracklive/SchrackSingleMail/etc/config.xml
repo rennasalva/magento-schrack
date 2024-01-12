@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<config>
+    <modules>
+        <Schracklive_SchrackSingleMail>
+            <version>1.0.0</version>
+        </Schracklive_SchrackSingleMail>
+    </modules>
+
+	<global>
+        <blocks>
+            <adminhtml>
+                <rewrite>
+                    <system_email_template_edit_form>Schracklive_SchrackSingleMail_Block_Adminhtml_System_Email_Template_Edit_Form</system_email_template_edit_form>
+                </rewrite>
+            </adminhtml>
+        </blocks>
+        <resources>
+            <schracksinglemail_setup>
+                <setup>
+                    <module>Schracklive_SchrackSingleMail</module>
+                </setup>
+            </schracksinglemail_setup>
+        </resources>
+        <models>
+            <schracksinglemail>
+                <class>Schracklive_SchrackSingleMail_Model</class>
+			</schracksinglemail>
+		</models>
+	</global>
+    <admin>
+        <routers>
+            <adminhtml>
+                <args>
+                    <modules>
+                        <Schracklive_SchrackSingleMail before="Mage_Adminhtml">Schracklive_SchrackSingleMail_Adminhtml</Schracklive_SchrackSingleMail>
+                    </modules>
+                </args>
+            </adminhtml>
+        </routers>
+    </admin>
+</config>

@@ -1,0 +1,739 @@
+<?xml version="1.0"?>
+<config>
+	<sections>
+		<ec translate="label" module="ec">
+			<groups>
+				<config>
+					<label>Usercentrics ID</label>
+					<sort_order>27</sort_order>
+					<show_in_default>1</show_in_default>
+					<show_in_website>1</show_in_website>
+					<show_in_store>1</show_in_store>
+					<expanded>1</expanded>
+					<fields>
+						<usercentrics-id translate="label comment">
+							<label>Usercentrics ID</label>
+							<comment>
+								<![CDATA[Usercentrics ID to activate User Consent Mode]]>
+							</comment>
+							<frontend_type>text</frontend_type>
+							<!--						<frontend_model>ec/snippet</frontend_model>   Hinders to enter into the field in Admin tool-->
+							<sort_order>0</sort_order>
+							<show_in_default>1</show_in_default>
+							<show_in_website>1</show_in_website>
+							<show_in_store>1</show_in_store>
+						</usercentrics-id>
+					</fields>
+				</config>
+			</groups>
+		</ec>
+		<general>
+			<groups>
+				<store_information>
+					<fields>
+						<schrack_fax translate="label" module="schrack">
+							<label>Store Contact Fax</label>
+							<frontend_type>text</frontend_type>
+							<sort_order>25</sort_order>
+							<show_in_default>1</show_in_default>
+							<show_in_website>1</show_in_website>
+							<show_in_store>1</show_in_store>
+						</schrack_fax>
+					</fields>
+				</store_information>
+			</groups>
+		</general>
+		<schrack translate="label" module="schrack">
+			<label>Schrack Live</label>
+			<tab>general</tab>
+			<frontend_type>text</frontend_type>
+			<sort_order>11</sort_order>
+			<show_in_default>1</show_in_default>
+			<show_in_website>0</show_in_website>
+			<show_in_store>1</show_in_store>
+			<groups>
+				<general translate="label">
+					<label>General Options</label>
+					<frontend_type>text</frontend_type>
+					<sort_order>20</sort_order>
+					<show_in_default>1</show_in_default>
+					<show_in_website>0</show_in_website>
+					<show_in_store>0</show_in_store>
+					<fields>
+						<country translate="label">
+							<label>Country TLD</label>
+							<frontend_type>text</frontend_type>
+							<sort_order>1</sort_order>
+							<show_in_default>1</show_in_default>
+							<show_in_website>0</show_in_website>
+							<show_in_store>0</show_in_store>
+						</country>
+						<wws_country translate="label">
+							<label>WWS Country Id</label>
+							<frontend_type>text</frontend_type>
+							<sort_order>2</sort_order>
+							<show_in_default>1</show_in_default>
+							<show_in_website>0</show_in_website>
+							<show_in_store>0</show_in_store>
+						</wws_country>
+						<branch translate="label">
+							<label>Default Branch Id</label>
+							<frontend_type>text</frontend_type>
+							<sort_order>3</sort_order>
+							<show_in_default>1</show_in_default>
+							<show_in_website>0</show_in_website>
+							<show_in_store>0</show_in_store>
+						</branch>
+						<warehouse translate="label">
+							<label>Default Warehouse Id</label>
+							<frontend_type>text</frontend_type>
+							<sort_order>4</sort_order>
+							<show_in_default>1</show_in_default>
+							<show_in_website>0</show_in_website>
+							<show_in_store>0</show_in_store>
+						</warehouse>
+						<imageserver translate="label">
+							<label>Image Server URL</label>
+							<frontend_type>text</frontend_type>
+							<sort_order>5</sort_order>
+							<show_in_default>1</show_in_default>
+							<show_in_website>0</show_in_website>
+							<show_in_store>0</show_in_store>
+						</imageserver>
+						<proxy_host translate="label">
+							<label>Proxy Host</label>
+							<frontend_type>text</frontend_type>
+							<sort_order>6</sort_order>
+							<show_in_default>1</show_in_default>
+							<show_in_website>0</show_in_website>
+							<show_in_store>0</show_in_store>
+						</proxy_host>
+						<proxy_port translate="label">
+							<label>Proxy Port</label>
+							<frontend_type>text</frontend_type>
+							<sort_order>7</sort_order>
+							<show_in_default>1</show_in_default>
+							<show_in_website>0</show_in_website>
+							<show_in_store>0</show_in_store>
+						</proxy_port>
+						<auto_shipping_method translate="label">
+							<label>Shipping method for imported orders</label>
+							<frontend_type>text</frontend_type>
+							<sort_order>9</sort_order>
+							<show_in_default>1</show_in_default>
+							<show_in_website>0</show_in_website>
+							<show_in_store>0</show_in_store>
+						</auto_shipping_method>
+                        <onlinebonus_url translate="label">
+                            <label>Onlinebonus URL</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>30</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </onlinebonus_url>
+                        <onlinebonus_minvalue translate="label">
+                            <label>Onlinebonus Minimal Value</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>31</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </onlinebonus_minvalue>
+						<onlinebonus_datestart translate="label">
+							<label>Onlinebonus -> Starttime (eg.: 20.03.2019 18:00)</label>
+							<frontend_type>text</frontend_type>
+							<sort_order>32</sort_order>
+							<show_in_default>1</show_in_default>
+							<show_in_website>0</show_in_website>
+							<show_in_store>0</show_in_store>
+						</onlinebonus_datestart>
+						<onlinebonus_datestop translate="label">
+							<label>Onlinebonus -> Endtime (eg.: 20.04.2019 18:00)</label>
+							<frontend_type>text</frontend_type>
+							<sort_order>33</sort_order>
+							<show_in_default>1</show_in_default>
+							<show_in_website>0</show_in_website>
+							<show_in_store>0</show_in_store>
+						</onlinebonus_datestop>
+                        <default_cutting_costs translate="label">
+                            <label>Default cutting costs</label>
+							<frontend_type>text</frontend_type>
+                            <sort_order>34</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </default_cutting_costs>
+					</fields>
+				</general>
+				<web translate="label">
+					<label>Web</label>
+					<frontend_type>text</frontend_type>
+					<sort_order>1</sort_order>
+					<show_in_default>1</show_in_default>
+					<show_in_website>0</show_in_website>
+					<show_in_store>0</show_in_store>
+					<fields>
+						<utf8_rewrites translate="label">
+							<label>Use UTF8 in URLs for Search Engine Optimization</label>
+							<frontend_type>select</frontend_type>
+							<source_model>adminhtml/system_config_source_yesno</source_model>
+							<sort_order>1</sort_order>
+							<show_in_default>1</show_in_default>
+							<show_in_website>0</show_in_website>
+							<show_in_store>0</show_in_store>
+						</utf8_rewrites>
+					</fields>
+				</web>
+				<websiteheader translate="label">
+					<label>Web Site Header Link Info</label>
+					<frontend_type>text</frontend_type>
+					<sort_order>1</sort_order>
+					<show_in_default>1</show_in_default>
+					<show_in_website>0</show_in_website>
+					<show_in_store>0</show_in_store>
+					<fields>
+						<site_header_info_status translate="label">
+							<label>Header Info Status</label>
+							<frontend_type>select</frontend_type>
+							<source_model>adminhtml/system_config_source_yesno</source_model>
+							<sort_order>2</sort_order>
+							<show_in_default>1</show_in_default>
+							<show_in_website>0</show_in_website>
+							<show_in_store>0</show_in_store>
+						</site_header_info_status>
+						<site_header_info_link translate="label">
+							<label>Header Info Link</label>
+							<frontend_type>text</frontend_type>
+							<sort_order>3</sort_order>
+							<show_in_default>1</show_in_default>
+							<show_in_website>0</show_in_website>
+							<show_in_store>0</show_in_store>
+						</site_header_info_link>
+					</fields>
+				</websiteheader>
+				<translation translate="label">
+					<label>Translation</label>
+					<frontend_type>text</frontend_type>
+					<sort_order>30</sort_order>
+					<show_in_default>1</show_in_default>
+					<show_in_website>0</show_in_website>
+					<show_in_store>0</show_in_store>
+					<fields>
+						<codes translate="label">
+							<label>Translatable languages</label>
+							<frontend_type>multiselect</frontend_type>
+							<source_model>adminhtml/system_config_source_locale</source_model>
+							<sort_order>1</sort_order>
+							<show_in_default>1</show_in_default>
+							<show_in_website>0</show_in_website>
+							<show_in_store>0</show_in_store>
+						</codes>
+						<commit>
+							<label>Commit enabled</label>
+							<frontend_type>select</frontend_type>
+							<source_model>adminhtml/system_config_source_yesno</source_model>
+							<sort_order>2</sort_order>
+							<show_in_default>1</show_in_default>
+							<show_in_website>0</show_in_website>
+							<show_in_store>0</show_in_store>
+						</commit>
+						<username>
+							<label>Username</label>
+							<frontend_type>text</frontend_type>
+							<sort_order>3</sort_order>
+							<show_in_default>1</show_in_default>
+							<show_in_website>0</show_in_website>
+							<show_in_store>0</show_in_store>
+						</username>
+						<password>
+							<label>Password</label>
+							<frontend_type>text</frontend_type>
+							<sort_order>4</sort_order>
+							<show_in_default>1</show_in_default>
+							<show_in_website>0</show_in_website>
+							<show_in_store>0</show_in_store>
+						</password>
+					</fields>
+				</translation>
+				<shop translate="label">
+					<label>Shop</label>
+					<frontend_type>text</frontend_type>
+					<sort_order>2</sort_order>
+					<show_in_default>1</show_in_default>
+					<show_in_website>0</show_in_website>
+					<show_in_store>0</show_in_store>
+					<fields>
+						<website translate="label">
+							<label>Website</label>
+							<frontend_type>select</frontend_type>
+							<source_model>adminhtml/system_config_source_website</source_model>
+							<sort_order>1</sort_order>
+							<show_in_default>1</show_in_default>
+							<show_in_website>0</show_in_website>
+							<show_in_store>0</show_in_store>
+						</website>
+						<store translate="label">
+							<label>Store</label>
+							<frontend_type>select</frontend_type>
+							<source_model>adminhtml/system_config_source_store</source_model>
+							<sort_order>2</sort_order>
+							<show_in_default>1</show_in_default>
+							<show_in_website>0</show_in_website>
+							<show_in_store>0</show_in_store>
+						</store>
+						<employee_group translate="label">
+							<label>Employee Group Id</label>
+							<frontend_type>select</frontend_type>
+							<source_model>adminhtml/system_config_source_customer_group</source_model>
+							<sort_order>3</sort_order>
+							<show_in_default>1</show_in_default>
+							<show_in_website>0</show_in_website>
+							<show_in_store>0</show_in_store>
+						</employee_group>
+						<contact_group translate="label">
+							<label>Contact Group Id</label>
+							<frontend_type>select</frontend_type>
+							<source_model>adminhtml/system_config_source_customer_group</source_model>
+							<sort_order>4</sort_order>
+							<show_in_default>1</show_in_default>
+							<show_in_website>0</show_in_website>
+							<show_in_store>0</show_in_store>
+						</contact_group>
+						<inactive_contact_group translate="label">
+							<label>Inactive Contact Group Id</label>
+							<frontend_type>select</frontend_type>
+							<source_model>adminhtml/system_config_source_customer_group</source_model>
+							<sort_order>5</sort_order>
+							<show_in_default>1</show_in_default>
+							<show_in_website>0</show_in_website>
+							<show_in_store>0</show_in_store>
+						</inactive_contact_group>
+						<deleted_contact_group translate="label">
+							<label>Deleted Contact Group Id</label>
+							<frontend_type>select</frontend_type>
+							<source_model>adminhtml/system_config_source_customer_group</source_model>
+							<sort_order>5</sort_order>
+							<show_in_default>1</show_in_default>
+							<show_in_website>0</show_in_website>
+							<show_in_store>0</show_in_store>
+						</deleted_contact_group>
+						<system_group translate="label">
+							<label>System Group Id</label>
+							<frontend_type>select</frontend_type>
+							<source_model>adminhtml/system_config_source_customer_group</source_model>
+							<sort_order>8</sort_order>
+							<show_in_default>1</show_in_default>
+							<show_in_website>0</show_in_website>
+							<show_in_store>0</show_in_store>
+						</system_group>
+						<demo_group translate="label">
+							<label>Demo-User Group Id</label>
+							<frontend_type>select</frontend_type>
+							<source_model>adminhtml/system_config_source_customer_group</source_model>
+							<sort_order>9</sort_order>
+							<show_in_default>1</show_in_default>
+							<show_in_website>0</show_in_website>
+							<show_in_store>0</show_in_store>
+						</demo_group>
+						<prospect_group translate="label">
+							<label>Prospect Group Id</label>
+							<frontend_type>select</frontend_type>
+							<source_model>adminhtml/system_config_source_customer_group</source_model>
+							<sort_order>10</sort_order>
+							<show_in_default>1</show_in_default>
+							<show_in_website>0</show_in_website>
+							<show_in_store>0</show_in_store>
+						</prospect_group>
+						<employee_images translate="label">
+							<label>Employee Image-Path</label>
+							<frontend_type>text</frontend_type>
+							<sort_order>20</sort_order>
+							<show_in_default>1</show_in_default>
+							<show_in_website>0</show_in_website>
+							<show_in_store>0</show_in_store>
+						</employee_images>
+						<default_advisor translate="label">
+							<label>Default Schrack Advisor</label>
+							<frontend_type>text</frontend_type>
+							<sort_order>21</sort_order>
+							<show_in_default>1</show_in_default>
+							<show_in_website>0</show_in_website>
+							<show_in_store>0</show_in_store>
+						</default_advisor>
+                        <personalized_default_advisor translate="label">
+                            <label>Personalized Default Schrack Advisor</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>22</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </personalized_default_advisor>
+						<manual_offer_revision translate="label">
+							<label>Offer revision email(s)</label>
+							<frontend_type>text</frontend_type>
+							<sort_order>100</sort_order>
+							<show_in_default>1</show_in_default>
+							<show_in_website>0</show_in_website>
+							<show_in_store>0</show_in_store>
+						</manual_offer_revision>
+						<manual_offer_revision_cc translate="label">
+							<label>CC(s) for offer revision email</label>
+							<frontend_type>text</frontend_type>
+							<sort_order>110</sort_order>
+							<show_in_default>1</show_in_default>
+							<show_in_website>0</show_in_website>
+							<show_in_store>0</show_in_store>
+						</manual_offer_revision_cc>
+                        <enable_custom_project_info_in_checkout translate="label">
+                            <label>Enable custom project info in checkout</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>120</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </enable_custom_project_info_in_checkout>
+						<enable_limit_depended_schrack_purchase_order_in_checkout translate="label">
+							<label>Enable limit depended purchase order in checkout</label>
+							<frontend_type>select</frontend_type>
+							<source_model>adminhtml/system_config_source_yesno</source_model>
+							<sort_order>130</sort_order>
+							<show_in_default>1</show_in_default>
+							<show_in_website>0</show_in_website>
+							<show_in_store>0</show_in_store>
+						</enable_limit_depended_schrack_purchase_order_in_checkout>
+					</fields>
+				</shop>
+				<sales translate="label">
+					<label>Sales</label>
+					<frontend_type>text</frontend_type>
+					<sort_order>2</sort_order>
+					<show_in_default>10</show_in_default>
+					<show_in_website>0</show_in_website>
+					<show_in_store>0</show_in_store>
+					<fields>
+						<vat translate="label">
+							<label>VAT</label>
+							<frontend_type>text</frontend_type>
+							<sort_order>1</sort_order>
+							<show_in_default>1</show_in_default>
+							<show_in_website>0</show_in_website>
+							<show_in_store>0</show_in_store>
+						</vat>
+						<supersaleurl translate="label">
+							<label>Super-Sale URL</label>
+							<frontend_type>text</frontend_type>
+							<sort_order>2</sort_order>
+							<show_in_default>1</show_in_default>
+							<show_in_website>0</show_in_website>
+							<show_in_store>0</show_in_store>
+						</supersaleurl>
+					</fields>
+				</sales>
+				<sso translate="label">
+					<label>Single Sign On</label>
+					<frontend_type>text</frontend_type>
+					<sort_order>20</sort_order>
+					<show_in_default>1</show_in_default>
+					<show_in_website>0</show_in_website>
+					<show_in_store>0</show_in_store>
+					<fields>
+						<authProxyIP translate="label">
+							<label>IP Address of Authenticating Forwarding Proxy</label>
+							<frontend_type>text</frontend_type>
+							<sort_order>1</sort_order>
+							<show_in_default>1</show_in_default>
+							<show_in_website>0</show_in_website>
+							<show_in_store>0</show_in_store>
+						</authProxyIP>
+					</fields>
+				</sso>
+				<availability_legend translate="label">
+					<label>Availability legend</label>
+					<frontend_type>text</frontend_type>
+					<sort_order>12</sort_order>
+					<show_in_default>1</show_in_default>
+					<show_in_website>0</show_in_website>
+					<show_in_store>0</show_in_store>
+					<fields>
+						<delivery>
+							<label>Show the following states in the availability legend for delivery (comma separated)
+							</label>
+							<frontend_type>text</frontend_type>
+							<sort_order>1</sort_order>
+							<show_in_default>1</show_in_default>
+							<show_in_website>0</show_in_website>
+							<show_in_store>0</show_in_store>
+						</delivery>
+						<pickup>
+							<label>Show the following states in the availability legend for pickup (comma separated)
+							</label>
+							<frontend_type>text</frontend_type>
+							<sort_order>1</sort_order>
+							<show_in_default>1</show_in_default>
+							<show_in_website>0</show_in_website>
+							<show_in_store>0</show_in_store>
+						</pickup>
+					</fields>
+				</availability_legend>
+				<performance>
+					<label>Performance Settings (cache refresh time, etc.)</label>
+					<sort_order>270</sort_order>
+					<show_in_default>1</show_in_default>
+					<show_in_website>0</show_in_website>
+					<show_in_store>0</show_in_store>
+					<fields>
+						<mega_menu_latest_refresh_datetime translate="label">
+							<label>Mega Menu Latest Update Datetime (ISO)</label>
+							<frontend_type>text</frontend_type>
+							<sort_order>1</sort_order>
+							<show_in_default>1</show_in_default>
+							<show_in_website>0</show_in_website>
+							<show_in_store>0</show_in_store>
+						</mega_menu_latest_refresh_datetime>
+						<search_bar_refresh_on_missing translate="label">
+							<label>Enable SearchBar AJAX-Cache-Refresh (debug option)</label>
+							<frontend_type>select</frontend_type>
+							<source_model>adminhtml/system_config_source_yesno</source_model>
+							<sort_order>10</sort_order>
+							<show_in_default>1</show_in_default>
+							<show_in_website>0</show_in_website>
+							<show_in_store>0</show_in_store>
+						</search_bar_refresh_on_missing>
+					</fields>
+				</performance>
+				<singlemail>
+					<label>Single Mail API (send over MQ to EyePin)</label>
+					<sort_order>280</sort_order>
+					<show_in_default>1</show_in_default>
+					<show_in_website>0</show_in_website>
+					<show_in_store>0</show_in_store>
+					<fields>
+                        <stomp_url translate="label">
+                            <label>Stomp URL</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>100</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </stomp_url>
+                        <message_queue_outbound translate="label">
+                            <label>Outbound Message Queue Name</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>110</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </message_queue_outbound>
+					</fields>
+				</singlemail>
+				<email>
+					<label>Email settings</label>
+					<sort_order>285</sort_order>
+					<show_in_default>1</show_in_default>
+					<show_in_website>0</show_in_website>
+					<show_in_store>0</show_in_store>
+					<fields>
+						<eyepin_check_url translate="label">
+							<label>Eyepin check URL</label>
+							<frontend_type>text</frontend_type>
+							<sort_order>100</sort_order>
+							<show_in_default>1</show_in_default>
+							<show_in_website>0</show_in_website>
+							<show_in_store>0</show_in_store>
+						</eyepin_check_url>
+						<eyepin_check_user translate="label">
+							<label>Eyepin check user</label>
+							<frontend_type>text</frontend_type>
+							<sort_order>110</sort_order>
+							<show_in_default>1</show_in_default>
+							<show_in_website>0</show_in_website>
+							<show_in_store>0</show_in_store>
+						</eyepin_check_user>
+						<eyepin_check_password translate="label">
+							<label>Eyepin check password</label>
+							<frontend_type>text</frontend_type>
+							<sort_order>120</sort_order>
+							<show_in_default>1</show_in_default>
+							<show_in_website>0</show_in_website>
+							<show_in_store>0</show_in_store>
+						</eyepin_check_password>
+						<do_check_s4s_registration_email translate="label">
+							<label>Do check s4s registration email</label>
+							<frontend_type>select</frontend_type>
+							<source_model>adminhtml/system_config_source_yesno</source_model>
+							<sort_order>130</sort_order>
+							<show_in_default>1</show_in_default>
+							<show_in_website>0</show_in_website>
+							<show_in_store>0</show_in_store>
+						</do_check_s4s_registration_email>
+						<do_check_SD_registration_email translate="label">
+							<label>Do check SchrackDesign registration email</label>
+							<frontend_type>select</frontend_type>
+							<source_model>adminhtml/system_config_source_yesno</source_model>
+							<sort_order>140</sort_order>
+							<show_in_default>1</show_in_default>
+							<show_in_website>0</show_in_website>
+							<show_in_store>0</show_in_store>
+						</do_check_SD_registration_email>
+					</fields>
+				</email>
+			</groups>
+		</schrack>
+		<schrackdev translate="label" module="schrack">
+			<label>Schrack Live Development</label>
+			<tab>advanced</tab>
+			<frontend_type>text</frontend_type>
+			<sort_order>990</sort_order>
+			<show_in_default>1</show_in_default>
+			<show_in_website>0</show_in_website>
+			<show_in_store>0</show_in_store>
+			<groups>
+				<development translate="label">
+					<label>Development</label>
+					<frontend_type>text</frontend_type>
+					<sort_order>10</sort_order>
+					<show_in_default>1</show_in_default>
+					<show_in_website>0</show_in_website>
+					<show_in_store>0</show_in_store>
+					<fields>
+						<test translate="label">
+							<label>Development/Test/QA-System</label>
+							<frontend_type>select</frontend_type>
+							<source_model>adminhtml/system_config_source_yesno</source_model>
+							<sort_order>1</sort_order>
+							<show_in_default>1</show_in_default>
+							<show_in_website>0</show_in_website>
+							<show_in_store>0</show_in_store>
+						</test>
+						<qa>
+							<label>QA-System</label>
+							<frontend_type>select</frontend_type>
+							<source_model>adminhtml/system_config_source_yesno</source_model>
+							<sort_order>1</sort_order>
+							<show_in_default>1</show_in_default>
+							<show_in_website>0</show_in_website>
+							<show_in_store>0</show_in_store>
+						</qa>
+						<debug_messages translate="label">
+							<label>Show Debug Messages</label>
+							<frontend_type>select</frontend_type>
+							<source_model>adminhtml/system_config_source_yesno</source_model>
+							<sort_order>5</sort_order>
+							<show_in_default>1</show_in_default>
+							<show_in_website>0</show_in_website>
+							<show_in_store>0</show_in_store>
+						</debug_messages>
+						<debug_bcc translate="label">
+							<label>Bcc For All Emails</label>
+							<frontend_type>text</frontend_type>
+							<sort_order>10</sort_order>
+							<show_in_default>1</show_in_default>
+							<show_in_website>0</show_in_website>
+							<show_in_store>0</show_in_store>
+						</debug_bcc>
+                        <override_email4wws translate="label">
+                            <label>Override email address for WWS requests</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>15</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </override_email4wws>
+						<ajaxdispatcher_log_productcollectionsolr translate="label">
+							<label>AjaxDispatcherProductCollectionSolr.log Enabled</label>
+							<frontend_type>text</frontend_type>
+							<sort_order>20</sort_order>
+							<show_in_default>1</show_in_default>
+							<show_in_website>0</show_in_website>
+							<show_in_store>0</show_in_store>
+						</ajaxdispatcher_log_productcollectionsolr>
+						<ajaxdispatcher_log_facetssolr translate="label">
+							<label>AjaxDispatcherFacetsSolr .log Enabled</label>
+							<frontend_type>text</frontend_type>
+							<sort_order>21</sort_order>
+							<show_in_default>1</show_in_default>
+							<show_in_website>0</show_in_website>
+							<show_in_store>0</show_in_store>
+						</ajaxdispatcher_log_facetssolr>
+						<ajaxdispatcher_log_timeconsumptions translate="label">
+							<label>AjaxDispatcherTimeConsumptions.log Enabled</label>
+							<frontend_type>text</frontend_type>
+							<sort_order>25</sort_order>
+							<show_in_default>1</show_in_default>
+							<show_in_website>0</show_in_website>
+							<show_in_store>0</show_in_store>
+						</ajaxdispatcher_log_timeconsumptions>
+						<ajaxdispatcher_log_general translate="label">
+							<label>AjaxDispatcherCall.log Enabled</label>
+							<frontend_type>text</frontend_type>
+							<sort_order>30</sort_order>
+							<show_in_default>1</show_in_default>
+							<show_in_website>0</show_in_website>
+							<show_in_store>0</show_in_store>
+						</ajaxdispatcher_log_general>
+						<ajaxdispatcher_log_general_data translate="label">
+							<label>AjaxDispatcherCallGeneralData.log Enabled</label>
+							<frontend_type>text</frontend_type>
+							<sort_order>35</sort_order>
+							<show_in_default>1</show_in_default>
+							<show_in_website>0</show_in_website>
+							<show_in_store>0</show_in_store>
+						</ajaxdispatcher_log_general_data>
+						<ajaxdispatcher_log_price_data translate="label">
+							<label>AjaxDispatcherCallPriceData.log Enabled</label>
+							<frontend_type>text</frontend_type>
+							<sort_order>40</sort_order>
+							<show_in_default>1</show_in_default>
+							<show_in_website>0</show_in_website>
+							<show_in_store>0</show_in_store>
+						</ajaxdispatcher_log_price_data>
+						<ajaxdispatcher_log_availabilty_data translate="label">
+							<label>AjaxDispatcherCallAvalabilityData.log Enabled</label>
+							<frontend_type>text</frontend_type>
+							<sort_order>45</sort_order>
+							<show_in_default>1</show_in_default>
+							<show_in_website>0</show_in_website>
+							<show_in_store>0</show_in_store>
+						</ajaxdispatcher_log_availabilty_data>
+					</fields>
+				</development>
+				<alertmails translate="label">
+					<label>Alert eMails</label>
+					<frontend_type>text</frontend_type>
+					<sort_order>15</sort_order>
+					<show_in_default>1</show_in_default>
+					<show_in_website>0</show_in_website>
+					<show_in_store>0</show_in_store>
+					<fields>
+						<recipients translate="label">
+							<label>Recipient eMail Adresses (komma seperated)</label>
+							<frontend_type>text</frontend_type>
+							<sort_order>10</sort_order>
+							<show_in_default>1</show_in_default>
+							<show_in_website>0</show_in_website>
+							<show_in_store>0</show_in_store>
+						</recipients>
+					</fields>
+				</alertmails>
+			</groups>
+		</schrackdev>
+		<web>
+			<groups>
+				<cookie>
+					<fields>
+						<keep_me_logged_in_cookie_lifetime translate="label">
+							<label>Keep-Me-Logged-In Lifetime</label>
+							<frontend_type>text</frontend_type>
+							<sort_order>5</sort_order>
+							<show_in_default>1</show_in_default>
+							<show_in_website>1</show_in_website>
+							<show_in_store>1</show_in_store>
+						</keep_me_logged_in_cookie_lifetime>
+					</fields>
+				</cookie>
+			</groups>
+		</web>
+	</sections>
+</config>

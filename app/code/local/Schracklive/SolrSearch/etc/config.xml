@@ -1,0 +1,49 @@
+<?xml version="1.0"?>
+<config>
+	<modules>
+		<Schracklive_SolrSearch>
+			<version>0.4.0</version>
+			<depends>
+				<Catalog />
+				<Schracklive_Schrack />
+				<Schracklive_SchrackCatalog />
+				<Schracklive_SchrackCatalogSearch />
+			</depends>
+		</Schracklive_SolrSearch>
+	</modules>
+	<global>
+		<models>
+			<solrsearch>
+				<class>Schracklive_SolrSearch_Model</class>
+			</solrsearch>
+		</models>
+		<blocks>
+			<solrsearch>
+				<class>Schracklive_SolrSearch_Block</class>
+			</solrsearch>
+		</blocks>
+		<helpers>
+			<solrsearch>
+				<class>Schracklive_SolrSearch_Helper</class>
+			</solrsearch>
+		</helpers>
+	</global>
+	<frontend>
+		<layout>
+			<updates>
+				<solrsearch>
+					<file>solrsearch.xml</file>
+				</solrsearch>
+			</updates>
+		</layout>
+		<translate>
+			<modules>
+				<Schracklive_SolrSearch>
+					<files>
+						<schrack>local/Schracklive_SolrSearch.csv</schrack>
+					</files>
+				</Schracklive_SolrSearch>
+			</modules>
+		</translate>
+	</frontend>
+</config>

@@ -1,0 +1,27 @@
+<?php
+	$session = Mage::getSingleton('customer/session');
+	$customer = $session->getCustomer();
+    $customer_advisor = Mage::helper('schrack')->getAdvisor();
+	if (is_object($customer_advisor)) {
+		$advisor_title = $customer_advisor->getSchrackTitle();
+		$advisor_name = $customer_advisor->getName();
+		$advisor_email = $customer_advisor->getEmail();
+		$advisor_photo = $customer_advisor->getPhotoUrl('small');
+		$advisor_telephone = $customer_advisor->getSchrackTelephone();
+?>
+<div class="block block-schrack-advisor">
+	<h2><span><?php echo __('Your personal contact person'); ?></span></h2>
+	<div class="block-content">
+<?php
+		echo '<img src="'.$advisor_photo.'" width="176" alt="'.$advisor_name.'" />
+		<p><span class="name">'.$advisor_name.
+		($advisor_title ? '<br /><span style="font-weight:normal">'.$advisor_title.'</span>' : '').'</span>
+		'.($advisor_telephone ? __('T').': <a href="tel:'.$advisor_telephone.'">'.$advisor_telephone.'</a><br />' : '').'
+		'.($advisor_email ? __('E').': <a href="javascript:void(mailTo(\''.Mage::helper('schrackcore/string')->encryptMailto($advisor_email, true).'\'));">'.$this->__('Send email').'</a>' : '').'
+		</p>';
+?>
+	</div>
+</div>
+<?php
+	}
+?>

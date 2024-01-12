@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<config>
+    <modules>
+        <Schracklive_SchrackPaypal>
+            <version>1.0.1</version>
+            <depends>
+                <Mage_Paypal />
+                <Schracklive_Schrack />
+            </depends>
+        </Schracklive_SchrackPaypal>
+    </modules>
+	<frontend>
+		<routers>
+			<paypal>
+                <use>standard</use>
+				<args>
+					<module>Schracklive_SchrackPaypal</module>
+                    <frontName>paypal</frontName>
+				</args>
+			</paypal>
+        </routers>
+	</frontend>
+    <global>
+        <models>
+            <paypal>
+                <rewrite>
+                    <ipn>Schracklive_SchrackPaypal_Model_Ipn</ipn>
+                    <standard>Schracklive_SchrackPaypal_Model_Standard</standard>
+                    <api_standard>Schracklive_SchrackPaypal_Model_Api_Standard</api_standard>
+                </rewrite>
+            </paypal>
+            <schrackpaypal>
+                <class>Schracklive_SchrackPaypal_Model</class>
+            </schrackpaypal>
+        </models>
+        <resources>
+            <schrackpaypal_setup>
+                <setup>
+                    <module>Schracklive_SchrackPaypal</module>
+                    <class>Mage_Paypal_Model_Mysql4_Setup</class>
+                </setup>
+            </schrackpaypal_setup>
+        </resources>
+    </global>
+</config>

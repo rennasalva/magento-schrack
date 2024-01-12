@@ -1,0 +1,21 @@
+<!-- template/checkout/cart/noItems.phtml (start) -->
+<?php
+    $sessionCustomerId =  Mage::getSingleton('customer/session')->getCustomer()->getId();
+    $aclRoleId = Mage::getModel('customer/customer')->load($sessionCustomerId)->getSchrackAclRoleId();
+    $isProjectant = Mage::helper('schrack/acl')->isProjectantRoleId($aclRoleId);
+?>
+
+<?php if (!$isProjectant) : ?>
+    <div class="large-12 columns">
+        <h1><span><?php echo $this->__('Shopping Cart is Empty') ?></span></h1>
+        <?php echo $this->getMessagesBlock()->getGroupedHtml() ?>
+        <p><?php echo $this->__('You have no items in your shopping cart.') ?></p>
+        <p><?php echo $this->__('Please <a href="%s">continue shopping</a>.', Mage::helper('core')->quoteEscape($this->getContinueShoppingUrl())) ?></p>
+        <div class="row info-box three-d">
+            <div class="large-12 columns">
+                <?php echo $this->getChildHtml('quickadd'); ?>
+            </div>
+        </div>
+    </div>
+<?php endif; ?>
+<!-- template/checkout/cart/noItems.phtml (end) -->

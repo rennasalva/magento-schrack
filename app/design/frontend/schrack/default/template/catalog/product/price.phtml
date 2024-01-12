@@ -1,0 +1,143 @@
+<?php
+/**
+ * Template for displaying product price in different places (products grid, product view page etc)
+ *
+ * @see Mage_Catalog_Block_Product_Abstract
+ */
+?>
+<?php
+    Varien_Profiler::start('price.phtml->init');
+    Varien_Profiler::start('price.phtml->init1');
+    $_coreHelper = $this->helper('core');
+    /* @var $_coreHelper Mage_Core_Helper_Data */
+    
+    $_priceHelper = Mage::helper('schrackcatalog/price');
+    /* @var  $_priceHelper Schracklive_SchrackCatalog_Helper_Price */
+
+    $_productHelper = Mage::helper('schrackcatalog/product');
+
+	$_customer = Mage::getSingleton('customer/session')->getCustomer();
+    $_product = $this->getProduct();
+    $_id = $_product->getId();
+    Varien_Profiler::stop('price.phtml->init1');
+    Varien_Profiler::start('price.phtml->init->GeoIP');
+    $_geoipHelper = Mage::helper('geoip/data');
+    $_maySeePrices = $_geoipHelper->maySeePrices();
+    Varien_Profiler::stop('price.phtml->init->GeoIP');
+    Varien_Profiler::start('price.phtml->init->Promotion');
+    $_isPromotion = $_productHelper->isPromotion($_product,$_customer);
+    Varien_Profiler::stop('price.phtml->init->Promotion');
+    Varien_Profiler::start('price.phtml->init->GetPrices');
+    $_prices = array_reverse(Mage::helper('schrackcatalog/info')->getGraduatedPricesForCustomer($_product, $_customer));
+    Varien_Profiler::stop('price.phtml->init->GetPrices');
+    Varien_Profiler::start('price.phtml->init->PreparePrices');
+    $_price = null;
+    $_currency = null;
+    $cnt = count($_prices);
+	if ($cnt > 0) {
+        try {
+            if ( $_prices[$cnt - 1]['qty'] != 1 ) {
+                $_price = $_priceHelper->getFormattedBasicPriceForCustomer($_product, $_customer);
+                $_prices[] = array('qty' => 1, 'price' => $_price);
+            }
+            $_price = Mage::helper('core')->formatPrice($_prices[0]['price']);
+            $_currency = $_priceHelper->getCurrencyForCustomer($_product, $_customer);
+        } catch (Schracklive_SchrackCatalog_Helper_Info_Exception $e) {
+			if ($e->getCode() != Schracklive_SchrackCatalog_Helper_Info_Exception::PRICE_UNAVAILABLE) {
+				throw $e;
+			}
+		}
+	}
+	else {
+        try {
+            Varien_Profiler::start('price.phtml->init->getFormattedBasicPriceForCustomer');
+            $_price = $_priceHelper->getFormattedBasicPriceForCustomer($_product, $_customer);
+            Varien_Profiler::stop('price.phtml->init->getFormattedBasicPriceForCustomer');
+            Varien_Profiler::start('price.phtml->init->getCurrencyForCustomer');
+            $_currency = $_priceHelper->getCurrencyForCustomer($_product, $_customer);
+            Varien_Profiler::stop('price.phtml->init->getCurrencyForCustomer');
+        } catch (Schracklive_SchrackCatalog_Helper_Info_Exception $e) {
+			if ($e->getCode() != Schracklive_SchrackCatalog_Helper_Info_Exception::PRICE_UNAVAILABLE) {
+				throw $e;
+			}
+		}
+	}
+    Varien_Profiler::stop('price.phtml->init->PreparePrices');
+    Varien_Profiler::stop('price.phtml->init');
+?>
+<?php Varien_Profiler::start('price.phtml->body'); ?>
+<?php if (!$_product->isGrouped()): ?>
+    <div class="row">
+        <?php if ($_maySeePrices):?>
+            <?php if (count($_prices) > 1):?>
+                <div class="large-3 columns from"><?php echo $this->__('from')?></div>
+                <div class="large-3 columns currency"><?php echo $_currency?></div>
+                <?php if ( $_isPromotion ) : ?>
+                    <div class="large-6 columns price large blue"><?php echo $_price?></div>
+                <?php else:?>
+                    <div class="large-6 columns large price"><?php echo $_price?></div>
+                <?php endif;?>
+            <?php elseif ($_price === null):?>
+                <div class="large-12 columns price"><?php echo $this->__('not available')?></div>
+            <?php else:?>
+                <div class="large-3 columns currency"><?php echo $_currency?></div>
+                <?php if ( $_isPromotion ) : ?>
+                    <div class="large-9 columns price large blue"><?php echo $_price?></div>
+                <?php else:?>
+                    <div class="large-9 columns price large"><?php echo $_price?></div>
+                <?php endif;?>
+            <?php endif;?>
+        <?php else:?>
+            <div class="large-12 columns price"><?php echo $this->__('on request')?></div>
+        <?php endif;?>
+    </div>
+    <?php if ( $_maySeePrices && $_isPromotion ) : ?>
+        <div class="row">
+            <?php $regularPrice = $_coreHelper->currency($_productHelper->getRegularPrice($_product,$_customer),true,false); ?>
+            <?php if (count($_prices) > 1):?>
+                <div class="large-3 columns from hidden"><?php echo $this->__('from')?></div>
+                <div class="large-3 columns currency hidden"><?php echo $_currency?></div>
+                <div class="large-6 columns price striked large"><?php echo $regularPrice;?></div>
+            <?php elseif ($_price !== null): ?>
+                <div class="large-3 columns currency hidden"><?php echo $_currency?></div>
+                <div class="large-9 columns price striked large"><?php echo $regularPrice;?></div>
+            <?php endif;?>
+        </div>
+    <?php endif; ?>
+    <?php if (count($_prices) > 1): ?>
+        <div class="scales">
+            <?php foreach ($_prices as $_price): ?>
+                <div class="row-fine">
+                    <div class="large-fine-11 columns-fine"><?php echo $this->__('from'). ' ' .$_price['qty'] . '&nbsp;' . $_product->getSchrackQtyunit(); ?></div>
+                    <div class="large-fine-13 columns-fine"><?php echo $_currency . ' ' . $_coreHelper->formatPrice($_price['price'], false); ?></div>
+                </div>
+            <?php endforeach; ?>
+        </div>
+    <?php endif; ?>
+<?php else: /* if (!$_product->isGrouped()): */ ?>
+    <?php
+            $_taxHelper  = $this->helper('tax');
+            /* @var $_taxHelper Mage_Tax_Helper_Data */
+            $_minimalPriceValue = $_product->getMinimalPrice();
+    ?>
+    <?php $_price = $_taxHelper->getPrice($_product, $_minimalPriceValue, $includingTax = null); ?>
+    <?php if ($this->getDisplayMinimalPrice() && $_minimalPriceValue): ?>
+        <div class="row">
+            <div class="large-3 columns"><?php echo $this->__('Starting at:') ?></div>
+            <div class="large-3 columns currency"><?php echo $_currency?></div>
+            <div class="large-3 columns price"><?php echo $_coreHelper->currency($_price, true, false) ?></div>
+        </div>
+    <?php endif; /* if ($this->getDisplayMinimalPrice() && $_minimalPrice): */ ?>
+<?php endif; /* if (!$_product->isGrouped()): */ ?>
+<?php if (count($_prices) < 1 && $_price !== null):?>
+    <div class="row">
+        <div class="large-12 columns"><?php echo $this->__('per') . ' ' . ($_product->getSchrackPriceunit() > 1 ? $_product->getSchrackPriceunit().' ' : '') . $_product->getSchrackQtyunit(); ?></div>
+    </div>
+<?php endif;?>
+<?php if ( $_priceHelper->doOfferProjectPrice($_product) ) : ?>
+    <div class="project-price hide-on-print" style="padding-top: 7px;">
+        <a href="<?php echo $_priceHelper->getProjectPriceUrl($_product->getSku())?>" target="_blank"><?php echo $this->__('Request project price') ?></a>
+    </div>
+<?php endif; ?>
+<?php Varien_Profiler::stop('price.phtml->body'); ?>
+

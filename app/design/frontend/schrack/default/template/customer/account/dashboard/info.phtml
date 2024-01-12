@@ -1,0 +1,67 @@
+<!-- default/template/customer/account/dashboard/info.phtml (start) -->
+
+<?php
+    $customerType = $this->getCustomer()->getSchrackCustomerType(); // ProspectTypes: 'light-prospect' / 'full-prospect'
+    $eRechnungLink = '';
+    $eRechnungLinkDescription = '';
+
+
+    // Hardcoded E-Rechnung Link (avilable also for outlogged users):
+    if (stristr(Mage::getStoreConfig('schrack/general/country'), 'at')) {
+        $eRechnungLink = '//www.schrack.at/e-rechnung/';
+        $eRechnungLinkDescription = 'E-Rechnungen';
+    }
+    if (stristr(Mage::getStoreConfig('schrack/general/country'), 'de')) {
+        $eRechnungLink = '//www.schrack-technik.de/e-rechnungen/';
+        $eRechnungLinkDescription = 'E-Rechnungen';
+    }
+?>
+
+<div class="row name">
+    <div class="large-12 columns">
+        <div class="headline copy-bold-8"><?php echo $this->__('My Data'); ?></div>
+    </div>
+</div>
+
+<div class="row content">
+    <div class="large-12 columns">
+        <div class="row">
+            <div class="large-12 columns">
+                <p>
+                    <strong><?php echo $this->htmlEscape($this->getCustomer()->getName()) ?></strong><br />
+                    <?php echo $this->htmlEscape($this->getCustomer()->getEmail()) ?><br />
+                    <br />
+                    <a href="<?php echo $this->getChangePasswordUrl() ?>"><?php echo $this->__('Change Password') ?></a>
+                </p>
+                <?php if ($this->isNewsletterEnabled()): ?>
+                    <h2><?php echo $this->__('Newsletters') ?></h2>
+                    <div class="content">
+                        <a href="<?php echo $this->getUrl('newsletter/manage') ?>"><?php echo $this->__('Edit') ?></a>
+                        <p>
+                            <?php if ($this->getIsSubscribed()): ?>
+                            <?php echo $this->__("You are currently subscribed to 'General Subscription'.") ?>
+                            <?php else: ?>
+                            <?php echo $this->__('You are currently not subscribed to any newsletter.') ?>
+                            <?php endif; ?>
+                        </p>
+                    </div>
+                <?php endif; ?>
+            </div>
+        </div>
+        <?php if ( !in_array($customerType, array('light-prospect', 'full-prospect')) ) : ?>
+            <div class="row">
+                <div class="large-5 large-offset-7 columns">
+                    <?php if ($eRechnungLink && $eRechnungLinkDescription) : ?>
+                        <a class="link-arrow small" href="<?php echo $eRechnungLink; ?>"><?php echo $eRechnungLinkDescription; ?></a>
+                    <?php endif; ?>
+                </div>
+            </div>
+            <div class="row">
+                <div class="large-5 large-offset-7 columns">
+                    <a class="link-arrow small" href="<?php echo Mage::getUrl('*/account/edit') ?>"><?php echo $this->__('Edit contact information') ?></a>
+                </div>
+            </div>
+        <?php endif; ?>
+    </div>
+</div>
+<!-- default/template/customer/account/dashboard/info.phtml (end) -->

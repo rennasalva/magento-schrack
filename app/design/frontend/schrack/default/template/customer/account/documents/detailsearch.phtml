@@ -1,0 +1,59 @@
+<div style="height: 47px;">
+    <ul id="notice-message-container-overview" class="messages" style="display: none;"">
+    <li class="notice-msg">
+        <ul>
+            <li id="notice-message-overview"></li>
+        </ul>
+    </li>
+    </ul>
+</div>
+<div class="row">
+    <div class="large-12 columns"><div class="headline a"><?php echo $this->__('Detail Search') ?></div></div>
+</div>
+<form action="<?php echo $this->getUrl('*/*/*') ?>" method="get" id="documents_form">
+    <div class="table row info-box three-d">
+        <div class="large-12 columns">
+            <div class="table row">
+                <div class="large-10 columns" style="padding-left: 15px;">
+                    <p class="standout"><?php echo $this->__('Quick navigation to desired document: Please click on selection.')?></p>
+                    <?php echo $this->getChildHtml('documents_filter') ?>
+                </div>
+                <div class="body large-2 columns icon">                        
+                </div>
+            </div>
+            <div class="table filter row fulltext-search">
+                <div class="large-10 columns">
+                    <div class="row">
+                        <div class="large-2 columns"><?php echo $this->__('Text:')?></div>
+                        <div class="large-10 columns">
+                            <?php
+                                $_textDefault = $this->__('Order/Offer Data, Names, Addresses, Article IDs');
+                                $_text = Mage::helper('schrackcore/array')->arrayDefault($_sessionParams, 'text', $_textDefault);
+                            ?>
+                            <input id="textsearch" class="search default" type="text" name="text" value="<?php echo $_text?>" onClick="switchText(this, '<?php echo $_text?>');" onBlur="switchText(this, '<?php echo $_text?>');" class="text"><button type="button" class="button-red gray small fulltext-search" title="<?php echo $this->__('Search')?>" onClick="this.form.submit();"><?php echo $this->__('Search')?></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <?php echo $this->getChildHtml('documents_results') ?>
+</form>
+
+     <script type="text/javascript">//<![CDATA[
+
+        jQuery(document).ready(function(){
+            jQuery('#textsearch').keypress(function(e) {
+            if(e.which == 13) {
+                jQuery('#documents_form').submit();
+            }
+          });
+        });
+        jQuery(function() {
+            <?php $_locale = explode('_', Mage::app()->getLocale()->getLocaleCode()); ?>
+            jQuery(".date-picker").datepicker(jQuery.datepicker.regional['<?php echo $_locale[0]; ?>']);
+        });
+    //]]>
+    </script>
+
+</div>

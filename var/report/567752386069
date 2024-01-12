@@ -1,0 +1,13 @@
+a:5:{i:0;s:48:"Source model 'customconfig/options' is not found";i:1;s:1264:"#0 /magento/app/code/core/Mage/Adminhtml/Block/System/Config/Form.php(423): Mage::throwException()
+#1 /magento/app/code/core/Mage/Adminhtml/Block/System/Config/Form.php(196): Mage_Adminhtml_Block_System_Config_Form->initFields()
+#2 /magento/app/code/core/Mage/Adminhtml/Block/System/Config/Form.php(131): Mage_Adminhtml_Block_System_Config_Form->_initGroup()
+#3 /magento/app/code/core/Mage/Adminhtml/Block/System/Config/Edit.php(91): Mage_Adminhtml_Block_System_Config_Form->initForm()
+#4 /magento/app/code/core/Mage/Adminhtml/controllers/System/ConfigController.php(107): Mage_Adminhtml_Block_System_Config_Edit->initForm()
+#5 /magento/app/code/core/Mage/Core/Controller/Varien/Action.php(421): Mage_Adminhtml_System_ConfigController->editAction()
+#6 /magento/app/code/core/Mage/Core/Controller/Varien/Router/Standard.php(255): Mage_Core_Controller_Varien_Action->dispatch()
+#7 /magento/app/code/core/Mage/Core/Controller/Varien/Front.php(181): Mage_Core_Controller_Varien_Router_Standard->match()
+#8 /magento/app/code/core/Mage/Core/Model/App.php(358): Mage_Core_Controller_Varien_Front->dispatch()
+#9 /magento/app/Mage.php(740): Mage_Core_Model_App->run()
+#10 /magento/index.php(56): Mage::run()
+#11 /magento/pub/default/index.php(25): require('...')
+#12 {main}";s:3:"url";s:74:"/index.php/admin/system_config/index/key/bb1681c3ae01a96c328db2113b3268d9/";s:11:"script_name";s:10:"/index.php";s:4:"skin";s:5:"admin";}
