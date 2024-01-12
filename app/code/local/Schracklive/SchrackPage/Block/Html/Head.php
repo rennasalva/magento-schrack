@@ -104,7 +104,7 @@ class Schracklive_SchrackPage_Block_Html_Head extends Mage_Page_Block_Html_Head 
      * @param string $cond
      * @return Mage_Page_Block_Html_Head
      */
-    public function addItem($type, $name, $params=null, $if=null, $cond=null, $addToIndex=null)
+    public function addItem($type, $name, $params=null, $if=null, $cond=null, $addToIndex=null, $before = false)
     {
 
         if ($type==='skin_css' && empty($params)) {
@@ -161,7 +161,7 @@ class Schracklive_SchrackPage_Block_Html_Head extends Mage_Page_Block_Html_Head 
     }
 
 
-    public function addJs($name, $params = "")
+    public function addJs($name, $params = "", $referenceName = '*',$before = null)
     {
         if (stristr($name, '../skin/frontend/schrack/default/schrackdesign/Public/Javascript/allPacked.js.non-mobile-version')) {
             $name = '..' . $this->addAutoVersionQueryString('/skin/frontend/schrack/default/schrackdesign/Public/Javascript/allPacked.js');

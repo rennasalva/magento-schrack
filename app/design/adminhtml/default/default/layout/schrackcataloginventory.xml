@@ -1,0 +1,13 @@
+<?xml version="1.0"?>   
+<layout>
+    <adminhtml_stock_index>
+        <reference name="content">             
+            <block type="schrackcataloginventory/adminhtml_stock" name="stock" />         
+        </reference>     
+    </adminhtml_stock_index>        
+    <adminhtml_stock_edit>         
+        <reference name="content">             
+            <block type="schrackcataloginventory/adminhtml_stock_edit" name="stock_edit" />         
+        </reference>     
+    </adminhtml_stock_edit>   
+</layout> 

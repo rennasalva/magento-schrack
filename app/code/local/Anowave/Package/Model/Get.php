@@ -51,7 +51,7 @@ class Anowave_Package_Model_Get
 	 * 
 	 * @param Anowave_Package_Helper_Data $helper
 	 */
-	final private function update(Anowave_Package_Helper_Data $helper)
+    private function update(Anowave_Package_Helper_Data $helper)
 	{
 		return true;
 	}

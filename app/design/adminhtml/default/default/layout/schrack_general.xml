@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<layout>
+    <default>
+        <reference name="head">
+            <action method="addJs"><name>../skin/frontend/schrack/default/schrackdesign/Public/Javascript/jquery-1.10.2.min.js</name></action>
+            <action method="addJs"><name>../skin/frontend/schrack/default/schrackdesign/Public/Javascript/adminhtml.js</name></action>
+        </reference>
+    </default>
+</layout>

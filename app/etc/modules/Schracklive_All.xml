@@ -18,33 +18,33 @@
 <!--        <Schracklive_Schrack />-->
 <!--      </depends>-->
 <!--    </Schracklive_Crm>-->
-<!--    <Schracklive_Ad>-->
-<!--      <active>true</active>-->
-<!--      <codePool>local</codePool>-->
-<!--      <depends>-->
-<!--        <Schracklive_Schrack />-->
-<!--      </depends>-->
-<!--    </Schracklive_Ad>-->
-<!--    <Schracklive_SchrackAdmin>-->
-<!--      <active>true</active>-->
-<!--      <codePool>local</codePool>-->
-<!--      <depends>-->
-<!--        <Mage_Admin />-->
-<!--        <Schracklive_Schrack />-->
-<!--      </depends>-->
-<!--    </Schracklive_SchrackAdmin>-->
-<!--		<Schracklive_AdminTheme2010>-->
-<!--			<active>true</active>-->
-<!--			<codePool>local</codePool>-->
-<!--		</Schracklive_AdminTheme2010>-->
-<!--    <Schracklive_SchrackAdminhtml>-->
-<!--      <active>true</active>-->
-<!--      <codePool>local</codePool>-->
-<!--      <depends>-->
-<!--        <Mage_Adminhtml />-->
-<!--        <Schracklive_Schrack />-->
-<!--      </depends>-->
-<!--    </Schracklive_SchrackAdminhtml>-->
+    <Schracklive_Ad>
+      <active>true</active>
+      <codePool>local</codePool>
+      <depends>
+        <Schracklive_Schrack />
+      </depends>
+    </Schracklive_Ad>
+    <Schracklive_SchrackAdmin>
+      <active>true</active>
+      <codePool>local</codePool>
+      <depends>
+        <Mage_Admin />
+        <Schracklive_Schrack />
+      </depends>
+    </Schracklive_SchrackAdmin>
+		<Schracklive_AdminTheme2010>
+			<active>true</active>
+			<codePool>local</codePool>
+		</Schracklive_AdminTheme2010>
+    <Schracklive_SchrackAdminhtml>
+      <active>true</active>
+      <codePool>local</codePool>
+      <depends>
+        <Mage_Adminhtml />
+        <Schracklive_Schrack />
+      </depends>
+    </Schracklive_SchrackAdminhtml>
     <Schracklive_SchrackCatalog>
       <active>true</active>
       <codePool>local</codePool>
@@ -61,14 +61,14 @@
 <!--        <Schracklive_Wws />-->
 <!--      </depends>-->
 <!--    </Schracklive_SchrackCatalogSearch>-->
-<!--    <Schracklive_SchrackCustomer>-->
-<!--      <active>true</active>-->
-<!--      <codePool>local</codePool>-->
-<!--      <depends>-->
-<!--        <Mage_Customer />-->
-<!--        <Schracklive_Ad />-->
-<!--      </depends>-->
-<!--    </Schracklive_SchrackCustomer>-->
+    <Schracklive_SchrackCustomer>
+      <active>true</active>
+      <codePool>local</codePool>
+      <depends>
+        <Mage_Customer />
+        <Schracklive_Ad />
+      </depends>
+    </Schracklive_SchrackCustomer>
 <!--    <Schracklive_Account>-->
 <!--      <active>true</active>-->
 <!--      <codePool>local</codePool>-->
@@ -91,33 +91,33 @@
 <!--        <Schracklive_Schrack />-->
 <!--      </depends>-->
 <!--    </Schracklive_SchrackApi>-->
-<!--    <Schracklive_SchrackCheckout>-->
-<!--      <active>true</active>-->
-<!--      <codePool>local</codePool>-->
-<!--      <depends>-->
-<!--        <Schracklive_SchrackCustomer />-->
-<!--      </depends>-->
-<!--    </Schracklive_SchrackCheckout>-->
-<!--    <Schracklive_SchrackSales>-->
-<!--      <active>true</active>-->
-<!--      <codePool>local</codePool>-->
-<!--      <depends>-->
-<!--        <Mage_Sales />-->
-<!--        <Schracklive_Schrack />-->
-<!--      </depends>-->
-<!--    </Schracklive_SchrackSales>-->
-<!--    <Schracklive_SchrackGoogleAnalytics>-->
-<!--      <active>true</active>-->
-<!--      <codePool>local</codePool>-->
-<!--      <depends>-->
-<!--        <Mage_GoogleAnalytics />-->
-<!--        <Schracklive_Schrack />-->
-<!--      </depends>-->
-<!--    </Schracklive_SchrackGoogleAnalytics>-->
-<!--    <Schracklive_SchrackPayment>-->
-<!--      <active>true</active>-->
-<!--      <codePool>local</codePool>-->
-<!--    </Schracklive_SchrackPayment>-->
+    <Schracklive_SchrackCheckout>
+      <active>true</active>
+      <codePool>local</codePool>
+      <depends>
+        <Schracklive_SchrackCustomer />
+      </depends>
+    </Schracklive_SchrackCheckout>
+    <Schracklive_SchrackSales>
+      <active>true</active>
+      <codePool>local</codePool>
+      <depends>
+        <Mage_Sales />
+        <Schracklive_Schrack />
+      </depends>
+    </Schracklive_SchrackSales>
+        <Schracklive_SchrackPayment>
+          <active>true</active>
+          <codePool>local</codePool>
+        </Schracklive_SchrackPayment>
+    <Schracklive_SchrackGoogleAnalytics>
+      <active>true</active>
+      <codePool>local</codePool>
+      <depends>
+        <Mage_GoogleAnalytics />
+        <Schracklive_Schrack />
+      </depends>
+    </Schracklive_SchrackGoogleAnalytics>
     <Schracklive_SchrackPage>
       <active>true</active>
       <codePool>local</codePool>
@@ -227,30 +227,30 @@
 <!--            <Schracklive_SchrackCustomer />-->
 <!--        </depends>-->
 <!--    </Schracklive_S4s>-->
-<!--    <Schracklive_Tools>-->
-<!--        <active>true</active>-->
-<!--        <codePool>local</codePool>-->
-<!--    </Schracklive_Tools>-->
-<!--    <Schracklive_SchrackSingleMail>-->
-<!--        <active>true</active>-->
-<!--        <codePool>local</codePool>-->
-<!--    </Schracklive_SchrackSingleMail>-->
-<!--    <Schracklive_Promotions>-->
-<!--        <active>true</active>-->
-<!--        <codePool>local</codePool>-->
-<!--    </Schracklive_Promotions>-->
-<!--    <Schracklive_MoCalc>-->
-<!--        <active>true</active>-->
-<!--        <codePool>local</codePool>-->
-<!--    </Schracklive_MoCalc>-->
-<!--    <Schracklive_SchrackSitemap>-->
-<!--        <active>true</active>-->
-<!--        <codePool>local</codePool>-->
-<!--    </Schracklive_SchrackSitemap>-->
-<!--    <Schracklive_MetaTag>-->
-<!--        <active>true</active>-->
-<!--        <codePool>local</codePool>-->
-<!--    </Schracklive_MetaTag>-->
+    <Schracklive_Tools>
+        <active>true</active>
+        <codePool>local</codePool>
+    </Schracklive_Tools>
+    <Schracklive_SchrackSingleMail>
+        <active>true</active>
+        <codePool>local</codePool>
+    </Schracklive_SchrackSingleMail>
+    <Schracklive_Promotions>
+        <active>true</active>
+        <codePool>local</codePool>
+    </Schracklive_Promotions>
+    <Schracklive_MoCalc>
+        <active>true</active>
+        <codePool>local</codePool>
+    </Schracklive_MoCalc>
+    <Schracklive_SchrackSitemap>
+        <active>true</active>
+        <codePool>local</codePool>
+    </Schracklive_SchrackSitemap>
+    <Schracklive_MetaTag>
+        <active>true</active>
+        <codePool>local</codePool>
+    </Schracklive_MetaTag>
   </modules>
 </config>
 
