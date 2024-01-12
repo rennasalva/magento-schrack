@@ -3,7 +3,8 @@
     "minimum-stability": "stable",
     "require": {
         "aydin-hassan/magento-core-composer-installer":"^2.1.0",
-        "openmage/magento-lts": "^20.0.0"
+        "openmage/magento-lts": "^20.0.0",
+        "solarium/solarium": "^6.3"
     },
     "extra": {
         "enable-patching": true,

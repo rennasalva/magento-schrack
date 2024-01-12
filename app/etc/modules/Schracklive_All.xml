@@ -4,13 +4,13 @@
       <active>true</active>
       <codePool>local</codePool>
     </Schracklive_Schrack>
-<!--    <Schracklive_Wws>-->
-<!--      <active>true</active>-->
-<!--      <codePool>local</codePool>-->
-<!--      <depends>-->
-<!--        <Schracklive_Schrack />-->
-<!--      </depends>-->
-<!--    </Schracklive_Wws>-->
+    <Schracklive_Wws>
+      <active>true</active>
+      <codePool>local</codePool>
+      <depends>
+        <Schracklive_Schrack />
+      </depends>
+    </Schracklive_Wws>
 <!--    <Schracklive_Crm>-->
 <!--      <active>true</active>-->
 <!--      <codePool>local</codePool>-->
@@ -53,14 +53,14 @@
         <!-- Schracklive_Wws -->
       </depends>
     </Schracklive_SchrackCatalog>
-<!--    <Schracklive_SchrackCatalogSearch>-->
-<!--      <active>true</active>-->
-<!--      <codePool>local</codePool>-->
-<!--      <depends>-->
-<!--        <Mage_CatalogSearch />-->
-<!--        <Schracklive_Wws />-->
-<!--      </depends>-->
-<!--    </Schracklive_SchrackCatalogSearch>-->
+    <Schracklive_SchrackCatalogSearch>
+      <active>true</active>
+      <codePool>local</codePool>
+      <depends>
+        <Mage_CatalogSearch />
+        <Schracklive_Wws />
+      </depends>
+    </Schracklive_SchrackCatalogSearch>
     <Schracklive_SchrackCustomer>
       <active>true</active>
       <codePool>local</codePool>
@@ -69,20 +69,20 @@
         <Schracklive_Ad />
       </depends>
     </Schracklive_SchrackCustomer>
-<!--    <Schracklive_Account>-->
-<!--      <active>true</active>-->
-<!--      <codePool>local</codePool>-->
-<!--      <depends>-->
-<!--        <Schracklive_Schrack />-->
-<!--      </depends>-->
-<!--    </Schracklive_Account>-->
-<!--    <Schracklive_Mobile>-->
-<!--      <active>true</active>-->
-<!--      <codePool>local</codePool>-->
-<!--      <depends>-->
-<!--        <Schracklive_SchrackCustomer />-->
-<!--      </depends>-->
-<!--    </Schracklive_Mobile>-->
+    <Schracklive_Account>
+      <active>true</active>
+      <codePool>local</codePool>
+      <depends>
+        <Schracklive_Schrack />
+      </depends>
+    </Schracklive_Account>
+    <Schracklive_Mobile>
+      <active>true</active>
+      <codePool>local</codePool>
+      <depends>
+        <Schracklive_SchrackCustomer />
+      </depends>
+    </Schracklive_Mobile>
 <!--    <Schracklive_SchrackApi>-->
 <!--      <active>true</active>-->
 <!--      <codePool>local</codePool>-->
