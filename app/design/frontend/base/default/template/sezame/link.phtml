@@ -1,0 +1,18 @@
+
+<?php if (is_object($this->getQrCode())) { ?>
+    Please scan this Qr code with your Sezame app:
+    <div style="padding:20px;">
+    <img src="<?php echo $this->getQrCode()->getDataUri() ?>"/>
+    </div>
+    <div class="get-it">
+        <a href="https://seza.me/app/android" target="_blank">
+            <img src="<?php echo $this->getSkinUrl('images/sezame/google-play-badge.png') ?>" width="200" height="59" style="display: inline">
+        </a>
+        <a href="https://seza.me/app/ios" target="_blank">
+            <img src="<?php echo $this->getSkinUrl('images/sezame/apple-itunes-badge.png') ?>"  width="162" height="59" style="display: inline">
+        </a>
+    </div>
+<?php } else {
+    echo $this->getMessage();
+    ?>
+<?php } ?>

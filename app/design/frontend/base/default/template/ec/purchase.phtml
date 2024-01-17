@@ -1,0 +1,408 @@
+<?php echo $this->getChildHtml('ec_datalayer') ?>
+<?php echo $this->getChildHtml('ec_visitor') ?>
+<?php echo $this->getChildHtml('ec_dimensions') ?>
+<?php echo $this->getChildHtml('ec_experiments') ?>
+<?php echo $this->getChildHtml('ec_promotions') ?>
+<script>
+
+	var EC = [], Purchase = [], FacebookProducts = [];
+
+	/* Dynamic remarketing */
+	window.google_tag_params = window.google_tag_params || {};
+
+	/* Default pagetype */
+	window.google_tag_params.ecomm_pagetype = '<?php echo $this->helper('ec')->getPageType() ?>';
+
+	/* Grouped products collection */
+	window.G = [];
+
+	/**
+	 * Global revenue 
+	 */
+	window.revenue = 0;
+
+	/**
+	 * DoubleClick
+	 */
+	window.DoubleClick = 
+	{
+		DoubleClickRevenue:	 	0,
+		DoubleClickTransaction: 0,
+		DoubleClickQuantity: 	0
+	}
+
+	/**
+	* EC Purchase
+	*
+	*/
+	<?php if ($this->getOrderIds()) : ?>
+		<?php 
+			$collection = Mage::getResourceModel('sales/order_collection')->addFieldToFilter('entity_id', array
+			(
+				'in' => $this->getOrderIds())
+			);
+			
+			foreach ($collection as $order) 
+			{
+				?>
+				var purchaseProducts = [], ecomm = 
+				{
+						i: [], /* ecomm_prodid[] array */
+						v: [], /* ecomm_pvalue[] array */
+						p: []  /* ecomm_pname[]  array */
+				};
+				
+				<?php 
+				
+				if ($order->getIsVirtual()) 
+				{
+					$address = $order->getBillingAddress();
+				} 
+				else 
+				{
+					$address = $order->getShippingAddress();
+				}
+				
+				foreach ($order->getAllVisibleItems() as $item) 
+				{
+					$product = Mage::getModel('catalog/product')->load
+					(	
+						$item->getProductId()
+					);
+					
+					$category = $this->helper('ec/session')->getTrace()->get($product);
+					
+					/**
+					 * Get product name
+					 */
+					$args = new stdClass();
+					
+					$args->id 				= $product->getSku();
+					$args->name 			= $product->getName();
+					$args->ecomm_prodid 	= $this->helper('ec/datalayer')->getAdWordsRemarketingId($product);
+					
+					?>
+
+					var entity = {}, variant = [];
+
+					<?php 	
+					
+						$variant = array();
+						
+						if ($product->getHasOptions())
+						{
+							$options = (array) $item->getProductOptions();
+							
+							if ($options && isset($options['options']))
+							{
+								foreach ($options['options'] as $option)
+								{
+									$variant[] = join(':', array
+									(
+										$this->jsQuoteEscape($option['label']),
+										$this->jsQuoteEscape($option['value'])
+									));
+								}
+							}
+						}
+						
+						if ('configurable' == $product->getTypeId())
+						{
+							if ($item instanceof Mage_Sales_Model_Quote_Item)
+							{
+								$request = new Varien_Object(unserialize($item->getOptionByCode('info_buyRequest')->getValue()));
+							}
+							else if ($item instanceof Mage_Sales_Model_Order_Item)
+							{
+								$request = new Varien_Object($item->getProductOptions());
+							}
+							
+							$options = $request->getData('info_buyRequest');
+								
+							if (isset($options['super_attribute']) && is_array($options['super_attribute']))
+							{
+								foreach ($options['super_attribute'] as $id => $option)
+								{
+									$attribute = Mage::getModel('catalog/resource_eav_attribute')->load($id);
+										
+									if ($attribute->usesSource())
+									{
+										$variant[] = join(':', array
+										(
+											$this->jsQuoteEscape($attribute->getFrontendLabel()),
+											$this->jsQuoteEscape($attribute->getSource()->getOptionText($option))
+										));
+									}
+								}
+							}
+						}
+						
+						/**
+						 * Push variant(s)
+						 */
+						if ($variant)
+						{
+							foreach ($variant as $value)
+							{
+								?>
+									variant.push('<?php echo $value ?>');
+								<?php 
+							}
+						}
+												
+						@list($parents) = @Mage::getModel('catalog/product_type_configurable')->getParentIdsByChild
+						(
+							$product->getId()
+						);
+						
+						if ($parents)
+						{
+							/**
+							 * Get parent product(s)
+							 */
+							$parent = Mage::getModel('catalog/product')->load((int) $parents);
+							
+							/**
+							 * Change name to parent product name and pass variant instead
+							 */
+							if ($parent->getId())
+							{
+								$args->id			= $parent->getSku();
+								$args->name 		= $parent->getName();
+								$args->ecomm_prodid = $this->helper('ec/datalayer')->getAdWordsRemarketingId($parent);
+								
+								$category = $this->helper('ec/session')->getTrace()->get($parent);
+							}
+						}
+						
+						
+						$category = $this->helper('ec')->getCategory($category);
+					?>
+
+					entity['name'] 		= '<?php echo $this->jsQuoteEscape($args->name) ?>';
+					entity['id'] 		= '<?php echo $this->jsQuoteEscape($args->id) ?>';
+					entity['category'] 	= '<?php echo $this->jsQuoteEscape($category) ?>';
+					entity['brand']		= '<?php echo $this->jsQuoteEscape(Mage::helper('ec')->getBrand($item->getProduct())) ?>';
+					entity['price'] 	= '<?php echo $this->getPriceItem($item, $order) ?>';
+					entity['quantity'] 	= '<?php echo $item->getQtyOrdered() ?>';
+					entity['variant'] 	= variant.join('-');
+
+					/* Add custom dimensions */					
+					<?php foreach ($this->getDimensions($product, $order, Mage::getSingleton('customer/session')->getCustomer()) as $dimension => $value) : ?>
+	
+					entity['<?php echo $dimension ?>'] = '<?php echo $value ?>';
+					
+					<?php endforeach; ?>
+
+					/* Push entity to purchase product collection */
+					purchaseProducts.push(entity);
+
+					ecomm.i.push('<?php echo $this->jsQuoteEscape($args->ecomm_prodid) ?>');
+					ecomm.v.push('<?php echo $this->getFinalPrice($product) ?>');
+					ecomm.p.push('<?php echo $this->jsQuoteEscape($args->name) ?>');
+
+					/**
+					 * Update FacebookProducts[] array with SKU
+					 */
+					FacebookProducts.push(entity.id);
+					
+					<?php
+				}
+				
+				/* Sales coupon */
+				$coupon = null;
+				
+				if ($order->getCouponCode())
+				{
+					$code = Mage::getModel('salesrule/coupon')->load($order->getCouponCode(), 'code');
+					
+					if ($code)
+					{
+						$rule = Mage::getModel('salesrule/rule')->load
+						(
+							$code->getRuleId()
+						);
+						
+						$coupon = $rule->getName();
+					}	
+				}
+
+				?>
+
+				if (purchaseProducts.length)
+				{
+					var data = 
+					{
+						'ecommerce': 
+						{
+							'currencyCode': '<?php echo Mage::app()->getStore()->getCurrentCurrencyCode() ?>',
+							'purchase': 
+							{
+								'actionField': 
+								{
+									'id': 			'<?php echo $order->getIncrementId() ?>',
+									'affiliation': 	'<?php echo $this->jsQuoteEscape(Mage::app()->getStore()->getFrontendName()) ?>',
+									'revenue': 		'<?php echo $this->getRevenue($order) ?>',
+									'tax':			'<?php echo $order->getTaxAmount() ?>',
+									'shipping': 	'<?php echo $order->getShippingInclTax() ?>',
+									'coupon':		'<?php echo $this->jsQuoteEscape($coupon) ?>'
+								},
+								'products': purchaseProducts
+							}
+						}
+					};
+
+					/**
+					 * Push data to transport layer
+					 */
+					dataLayerTransport.push(data);
+
+					<?php if ($this->helper('ec')->isInsideHead()): ?>
+					
+						data['event'] = 'purchase';
+						
+					<?php endif ?>
+
+					/**
+					 * Push purchase data
+					 */
+					Purchase.push(data);
+
+
+					/**
+					 * AdWords Dynamic Remarketing
+					 */
+					if (window.google_tag_params)
+					{
+						window.google_tag_params.ecomm_pagetype 	= 'purchase';
+						
+						window.google_tag_params.ecomm_prodid 		= ecomm.i;
+						window.google_tag_params.ecomm_pvalue		= ecomm.v;
+						window.google_tag_params.ecomm_pname		= ecomm.p;
+						window.google_tag_params.ecomm_totalvalue 	= <?php echo (float) @$this->getRevenue($order) ?>;
+					}
+
+					<?php if ($this->getAdwords()->getGoogleConversionId()) : ?>
+
+						window.google_conversion_id 		= <?php echo $this->getAdwords()->getGoogleConversionId() ?>;
+						
+						window.google_conversion_value 		= '<?php echo $this->getRevenue($order) ?>';
+						window.google_conversion_language 	= '<?php echo $this->getAdwords()->getGoogleConversionLanguage() ?>';
+						window.google_conversion_format 	= '<?php echo $this->getAdwords()->getGoogleConversionFormat() ?>';
+						window.google_conversion_label 		= '<?php echo $this->getAdwords()->getGoogleConversionLabel() ?>';
+						window.google_conversion_color		= '<?php echo $this->getAdwords()->getGoogleConversionColor() ?>';
+						window.google_conversion_currency 	= '<?php echo $this->getAdwords()->getGoogleConversionCurrency() ?>';
+					
+					<?php endif ?>
+					
+					/**
+					 * Set revenue in global variable
+					 */
+					window.revenue = data.ecommerce.purchase.actionField.revenue;
+
+					/**
+					 * Set DoubleClick FloodLight Sales Revenue
+					 */
+					window.DoubleClick.DoubleClickRevenue 		= data.ecommerce.purchase.actionField.revenue;
+					window.DoubleClick.DoubleClickTransaction 	= data.ecommerce.purchase.actionField.id;
+					window.DoubleClick.DoubleClickQuantity 		= purchaseProducts.length;
+
+					/**
+					 * AdRoll Smart Pixel
+					 */
+
+					adroll_conversion_value 	= data.ecommerce.purchase.actionField.revenue;
+					adroll_currency 			= "<?php echo Mage::app()->getStore()->getCurrentCurrencyCode() ?>"
+					adroll_custom_data 			= 
+					{
+						'ORDER_ID': data.ecommerce.purchase.actionField.id
+					}
+
+					<?php if (Mage::getSingleton('customer/session')->isLoggedIn()): ?>
+					
+						adroll_custom_data['USER_ID'] = '<?php echo Mage::getSingleton('customer/session')->getCustomer()->getId() ?>';
+						
+					<?php endif ?>
+				
+
+					/**
+					 * Push DoubleClick to purchase
+					 */
+					Purchase.push(window.DoubleClick);
+				}
+
+				<?php 
+			}
+		?>
+		
+		
+	<?php endif ?>
+
+	if (Purchase.length)
+	{
+		for (i = 0, l = Purchase.length; i < l; i++)
+		{
+			dataLayer.push(Purchase[i]);
+		}
+
+		/**
+		 * Facebook Pixel Tracking
+		 */
+		<?php if ($this->helper('ec')->facebook()): ?>
+
+			if ("undefined" !== typeof fbq)
+			{
+				fbq("track", "Purchase", 
+				{
+					content_ids:	FacebookProducts,
+					content_type: 	'product',
+					value: 			window.revenue,
+					currency: 		'<?php echo Mage::app()->getStore()->getCurrentCurrencyCode() ?>'
+				});
+			}
+
+		<?php endif ?>
+
+		/**
+		 * Clear persistant data from local storage
+		 */
+		AEC.Persist.clear();
+	}
+	
+</script>
+<?php if ($this->getOrderIds()) : ?>
+	<?php $collection = Mage::getResourceModel('sales/order_collection')->addFieldToFilter('entity_id', array('in' => $this->getOrderIds())); ?>
+	<?php if ($this->getAdwords()->getGoogleConversionId()): ?>
+<!--		<script type="text/javascript" src="//www.googleadservices.com/pagead/conversion.js"></script>-->
+	    <?php foreach ($collection as $order): ?>
+			<noscript><img height=1 width=1 border=0 src="//www.googleadservices.com/pagead/conversion/<?php echo $this->getAdwords()->getGoogleConversionId() ?>/?value=<?php echo $this->getRevenue($order) ?>&label=<?php echo $this->getAdwords()->getGoogleConversionLabel() ?>&script=0"></noscript>
+	    <?php endforeach ?>
+    <?php endif ?>
+    <?php foreach ($collection as $order): ?>
+    	<?php echo $this->getLinkShare($order) ?>
+    <?php endforeach ?>
+<?php endif ?>
+<?php echo $this->getChildHtml('ec_details') ?>
+<?php echo $this->getChildHtml('ec_impression') ?>
+<?php echo $this->getChildHtml('ec_search') ?>
+<script>
+	<?php if (Mage::getSingleton('core/session')->getCustomerLogin()): ?>
+	
+		dataLayer.push(
+		{
+			'event': 'customerLogin'
+		});
+	
+		<?php Mage::getSingleton('core/session')->unsetData('customer_login') ?>
+	
+	<?php endif ?>
+</script>
+<script>
+	<?php if (null !== $data = Mage::getSingleton('core/session')->getCartEmptyEvent()):?>
+		dataLayer.push(<?php echo $data ?>);
+		<?php Mage::getSingleton('core/session')->unsetData('cart_empty_event') ?>
+	<?php endif ?>
+</script>
+<?php echo $this->getChildHtml('ec_perfectaudience') ?>
+<?php echo $this->getChildHtml('ec_adroll') ?>
+<?php //echo $this->helper('ec')->getHeadSnippet() ?>

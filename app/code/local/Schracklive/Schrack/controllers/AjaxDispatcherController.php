@@ -449,20 +449,22 @@ EOF;
         $attributes = ['mail', 'title', 'givenname', 'sn', 'telephonenumber'];
 
         // If advisor not found in old domain (*.schrack.lan), just try to find advisor in new domain (schrack.com):
-        if ( !isset($resultData[0]) || !isset($resultData[0]['mail']) || !isset($resultData[0]['mail'][0]) || $resultData[0]['mail'][0] == null ) {
-            unset($resultData);
-            $resultData = [];
-            if ( isset($domainConfig2['useSsl']) && $domainConfig2['useSsl'] ) {
-                $ldapConnection = ldap_connect('ldaps://' . $domainConfig2['host'] . ":" .  $domainConfig2['port']);
-            } else {
-                $ldapConnection = ldap_connect($domainConfig2['host'], $domainConfig2['port']);
-            }
-            ldap_set_option($ldapConnection, LDAP_OPT_PROTOCOL_VERSION, 3); // to get utf-8 encoding
-            // ldap_set_option($ldapConnection, LDAP_OPT_NETWORK_TIMEOUT, 20); // timeout after 20s
-            $ldapBind = ldap_bind($ldapConnection, $domainConfig2['username'], $domainConfig2['password']);
-            $result = ldap_search($ldapConnection, $domainConfig2['baseDn'], $filter, $attributes, null, null, 20);
-            $resultData = ldap_get_entries($ldapConnection, $result);
-        }
+//        if ( !isset($resultData[0]) || !isset($resultData[0]['mail']) || !isset($resultData[0]['mail'][0]) || $resultData[0]['mail'][0] == null ) {
+//            unset($resultData);
+//            $resultData = [];
+//            if ( isset($domainConfig2['useSsl']) && $domainConfig2['useSsl'] ) {
+//                $ldapConnection = ldap_connect('ldaps://' . $domainConfig2['host'] . ":" .  $domainConfig2['port']);
+//            } else {
+//                $ldapConnection = ldap_connect($domainConfig2['host'], $domainConfig2['port']);
+//            }
+//            ldap_set_option($ldapConnection, LDAP_OPT_PROTOCOL_VERSION, 3); // to get utf-8 encoding
+//            // ldap_set_option($ldapConnection, LDAP_OPT_NETWORK_TIMEOUT, 20); // timeout after 20s
+//            $ldapBind = ldap_bind($ldapConnection, $domainConfig2['username'], $domainConfig2['password']);
+//            $result = ldap_search($ldapConnection, $domainConfig2['baseDn'], $filter, $attributes, null, null, 20);
+//            $resultData = ldap_get_entries($ldapConnection, $result);
+//        }
+
+        //comment  ldap authentication for the moment
 
         $data['mail'] = $resultData[0]['mail'][0];
         if ( (!isset($data['mail']) || $data['mail'] == '') && !$userPrinicipalNameAdvisorParam ) {
@@ -2876,10 +2878,10 @@ EOF;
             && $data['sku']
             && isset($data['quantity'])
             && $data['quantity'] ) {
-            $sku = $data{'sku'};
-            $qty = $data{'quantity'};
-            $isCableLeaving = isset($data{'leaving'}) && filter_var($data{'leaving'},FILTER_VALIDATE_BOOLEAN);
-            $forceAdd = isset($data{'forceAdd'}) && $data{'forceAdd'};
+            $sku = $data['sku'];
+            $qty = $data['quantity'];
+            $isCableLeaving = isset($data['leaving']) && filter_var($data['leaving'],FILTER_VALIDATE_BOOLEAN);
+            $forceAdd = isset($data['forceAdd']) && $data['forceAdd'];
             $listID = null;
             if (isset($data['list_id'])) {
                 $listID = $data['list_id'];

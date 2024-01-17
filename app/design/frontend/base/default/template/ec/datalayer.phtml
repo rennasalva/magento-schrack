@@ -1,0 +1,32 @@
+<script type="text/javascript">
+
+	/**
+ 	 * Define dataLayer[] object
+	 */
+	window.dataLayer = window.dataLayer || [];
+
+	/**
+	 * Define transport layer to use as fallback in case of Ad-Blockers
+	 * 
+	 * @copyright Anowave
+	 */
+	var dataLayerTransport = (function()
+	{
+		var data = [];
+		
+		return {
+			data:[],
+			push: function(data)
+			{
+				this.data.push(data);
+				
+				return this;
+			},
+			serialize: function()
+			{
+				return this.data;
+			}
+		}	
+	})();
+	
+</script>

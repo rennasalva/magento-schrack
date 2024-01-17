@@ -735,6 +735,75 @@ class Mage_Customer_Helper_Data extends Mage_Core_Helper_Abstract
         return new SoapClient(self::VAT_VALIDATION_WSDL_URL, ['trace' => $trace]);
     }
 
+    public function getSchrackType() {
+        if ($type = Mage::getModel('customer/address')->getSchrackType()) {
+            return $type;
+        }
+        return constant(Mage::getConfig()->getHelperClassName('schrackcustomer/address').'::DEFAULT_ADDRESS_TYPE');
+    }
+
+    /**
+     * @param $value
+     * @param $name
+     * @param $id
+     * @param $title
+     * @param $css_class
+     * @param $special_case
+     * @return string
+     */
+    public function getTypeHtmlSelect($value = null,
+                                      $name = 'shipping[schrack_address_type]',
+                                      $id = 'shipping:schrack_address_type',
+                                      $title = '',
+                                      $css_class = 'validate-select form-control',
+                                      $special_case = '') {
+
+        if (is_null($value)) {
+            $value = $this->getSchrackType();
+        }
+
+        if ($special_case == 'checkout') {
+            // Im Checkout soll in der Auswahlliste im Pflichtfeld "Adresstyp", eine explizite Auswahl erzwungen werden
+            // -> somit erfolgt die Initialisierung der Auswahlliste mit dem ersten Eintrag, der explizit leer ist:
+            $value = null;
+        }
+
+        $options = Mage::getModel('schrackcustomer/entity_address_attribute_source_type')->getStandardOptions();
+
+        if ($name == 'shipping[schrack_address_type]' && is_array($options)) {
+            array_unshift($options, array('label' => '', 'value' => ''));
+        }
+
+        $html = $this->getLayout()->createBlock('core/html_select')
+            ->setName($name)
+            ->setId($id)
+            ->setTitle(Mage::helper('schrackcustomer')->__($title))
+            ->setClass($css_class)
+            ->setValue($value)
+            ->setOptions($options)
+            ->getHtml();
+
+        return $html;
+    }
+
+    public function getAddressPhone($addressId) {
+        $address       = Mage::getModel('customer/address')->load($addressId);
+        $telephoneData = $address->getTelephone();
+        $telephoneData = str_replace(array('/', '-', '+', ' '), '', $telephoneData);
+
+        return $telephoneData;
+    }
+
+    public function setAddressPhone($addressPhoneString, $addressId) {
+        if ($addressId) {
+            $address = Mage::getModel('customer/address')->load($addressId);
+            $address->setTelephone($addressPhoneString);
+            $address->save();
+        }
+    }
+
+
+
     /**
      * Returns the country code used in VAT number which can be different from the ISO-2 country code.
      *

@@ -212,8 +212,12 @@ class Mage_Page_Block_Html_Head extends Mage_Core_Block_Template
                 continue;
             }
             if (!empty($if)) {
-                // @deprecated
-                continue;
+                // open !IE conditional using raw value
+                if (strpos($if, "><!-->") !== false) {
+                    $html .= $if . "\n";
+                } else {
+                    $html .= '<!--[if '.$if.']>' . "\n";
+                }
             }
 
             // static and skin css
@@ -234,7 +238,16 @@ class Mage_Page_Block_Html_Head extends Mage_Core_Block_Template
 
             // other stuff
             if (!empty($items['other'])) {
-                $html .= $this->_prepareOtherHtmlHeadElements($items['other']) . PHP_EOL;
+                $html .= $this->_prepareOtherHtmlHeadElements($items['other']) . "\n";
+            }
+
+            if (!empty($if)) {
+                // close !IE conditional comments correctly
+                if (strpos($if, "><!-->") !== false) {
+                    $html .= '<!--<![endif]-->' . "\n";
+                } else {
+                    $html .= '<![endif]-->' . "\n";
+                }
             }
         }
         return $html;
@@ -452,6 +465,27 @@ class Mage_Page_Block_Html_Head extends Mage_Core_Block_Template
             $this->_data['description'] = Mage::getStoreConfig('design/head/default_description');
         }
         return $this->_data['description'];
+    }
+
+    /**
+     * Retrieve content for metadescription tag
+     *
+     * @return string
+     */
+    public function getMetadata() {
+        $productCollection = Mage::registry('solrProducts');
+        Mage::register('solrCategoryId', $productCollection['schrackMainCategoryIdForTagmanager'], false);
+
+        $descriptionId = "test";
+            if(isset($productCollection)) {
+                foreach ($productCollection as $_product) {
+                    $this->_data['metadata'] = $_product['schrackMainCategoryIdForTagmanager'];
+                }
+            }
+        if (empty($this->_data['metadata'])) {
+            $this->_data['metadata'] = Mage::registry('solrCategoryId');
+        }
+        return $this->_data['metadata'];
     }
 
     /**

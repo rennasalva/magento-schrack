@@ -146,6 +146,17 @@ class Mage_Sales_Model_Quote_Payment extends Mage_Payment_Model_Info
         /**
          * Payment availability related with quote totals.
          * We have to recollect quote totals before checking
+         *
+         * !!! ATTENTION !!! ATTENTION !!! ATTENTION !!! ATTENTION !!! ATTENTION
+         * Bugfix_9443
+         * saving grand Total which will be used for sending to Paymentprovider
+         * and restore after collectTotals because method will be false/positive
+         * override the correct value sent from WWS.
+         *
+         * Further fix will be found in
+         * app/code/core/Mage/Sales/Model/Convert/Quote.php
+         *
+         * !!! ATTENTION !!! ATTENTION !!! ATTENTION !!! ATTENTION !!! ATTENTION
          */
         $this->getQuote()->collectTotals();
 

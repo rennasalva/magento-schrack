@@ -1,0 +1,85 @@
+<?php
+/** @var Finpin_Sezame_Model_Auth $model */
+$model = Mage::getModel('sezame/auth');
+
+$enabled = Mage::getStoreConfig('sezame/settings/enabled');
+
+if ($enabled) {
+?>
+
+<div class="col2-set">
+    <div class="col-1"></div>
+    <div class="col-2<?php echo (1 != @$this->noclass) ? ' account-login' : ''; ?>">
+            <button id="finpin-sezame-button" style="border:0;background-color:transparent;cursor:pointer;">
+                <img border="0" alt="Sezame Login"
+                     src="<?php echo $this->getSkinUrl('images/sezame/login-with-sezame.png') ?>"/>
+            </button>
+    </div>
+</div>
+
+<style>
+    #sezameLoginBubble {
+        background: url(<?php echo $this->getSkinUrl('images/sezame/login-bubble.png') ?>) 0 0 no-repeat;
+        display: none;
+		
+		position: fixed;
+		top: 50%;
+		left: 50%;
+		margin-left: -279px;
+		margin-top: -279px;
+		z-index: 200;
+		width: 594px;
+		height: 558px;
+		text-align: center;
+    }
+
+    #sezameLoginBubble .message {
+        font-weight: 700;
+        font-size: 20px;
+        color: #628070;
+        width: 325px;
+        line-height: 22px;
+        position: absolute;
+        top: 200px;
+        left: 110px;
+    }
+
+    #sezameLoginBubble .close {
+        position: absolute;
+        right: 6px;
+        top: 257px;
+        width: 64px;
+        height: 64px;
+    }
+	
+	@media (max-width: 736px) {
+		#sezameLoginBubble {
+			background: url(<?php echo $this->getSkinUrl('images/sezame/login-bubble-responsive-1.png') ?>) 0 0 no-repeat;
+			
+			width: 297px;
+			height: 279px;
+			
+			margin-left: -148px;
+			margin-top: -139px;
+		}
+		
+		#sezameLoginBubble .message {
+			width: 200px;
+			position: absolute;
+			top: 90px;
+			left: 40px;
+		}
+	
+		#sezameLoginBubble .close {
+			position: absolute;
+			right: 3px;
+			top: 128px;
+			width: 32px;
+			height: 32px;
+		}
+	}
+
+</style>
+
+<div id="sezameLoginBubble"><div class="close"><a href="javascript:;" title="cancel" id="finpin-sezame-cancel"><img src="<?php echo $this->getSkinUrl('images/sezame/spacer.gif') ?>" width="64" height="64" alt="cancel" title="cancel"/></a></div><div class="message"><?php echo $this->__('Please open the sezame app and authorize the authentication request!')?></div></div>'
+<?php } ?>

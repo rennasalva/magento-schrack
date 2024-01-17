@@ -28,7 +28,7 @@ abstract class Schracklive_Typo3_Block_Abstract extends Mage_Core_Block_Abstract
 	 */
 
 	protected function _toHtml() {
-		$html = '';
+		$html = [];
 
         // http://www.schrack.at/?eID=user_schrack_magentoconnect_redirect&country=at&tid=87-01-04%2387-01-04%2F37
         $uri =  Mage::getStoreConfig('schrack/typo3/typo3url') .

@@ -1,0 +1,27 @@
+<script type="text/javascript">
+
+	var visitor = 
+	{
+		visitorLoginState: 		'<?php echo $this->helper('ec')->getVisitorLoginState() ?>',
+		visitorType:			'<?php echo $this->helper('ec')->getVisitorType() ?>',
+		visitorLifetimeValue:	 <?php echo $this->helper('ec')->getVisitorLifetimeValue() ?>,
+		visitorExistingCustomer:'<?php echo $this->helper('ec')->getVisitorExistingCustomer() ?>'
+	};
+
+	<?php if (Mage::getSingleton('customer/session')->isLoggedIn()): ?>
+
+		visitor['visitorId'] = '<?php echo $this->helper('ec')->getVisitorId() ?>';
+	
+	<?php endif ?>
+
+	dataLayer.push(visitor);
+
+	<?php if (Mage::getSingleton('core/session')->getEventRegistration()):?>
+	
+		dataLayer.push(<?php echo $this->helper('ec/datalayer')->getPushEventRegistration(Mage::getSingleton('customer/session')->getCustomer()) ?>);
+
+		<?php Mage::getSingleton('core/session')->unsetData('event_registration') ?>
+	
+	<?php endif ?>
+
+</script>

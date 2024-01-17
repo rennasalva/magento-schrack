@@ -64,6 +64,7 @@ class Mage_Adminhtml_Block_Customer_Edit_Tab_Account extends Mage_Adminhtml_Bloc
         if ($customer->getId()) {
             $form->getElement('website_id')->setDisabled('disabled');
             $form->getElement('created_in')->setDisabled('disabled');
+            $form->getElement('email')->setDisabled('disabled'); // changing email address in backend does not make sense at Schrack!
         } else {
             $fieldset->removeField('created_in');
             $form->getElement('website_id')->addClass('validate-website-has-store');

@@ -1,0 +1,63 @@
+<script type="text/javascript">
+
+	/**
+	 * A/B Split Testing Experiments
+	 * 
+	 * @copyright Anowave
+ 	 * @release Requires PHP 5.4 or higher.
+	 */
+
+	 if ('undefined' === typeof AB)
+	 {
+		var AB = (function($, dataLayer)
+		{
+			var cookies = {}, experiment_cookie = 'ab', percent = 50;
+
+			/**
+			 * Get experiment(s)
+			 */
+			var experiments = {};
+
+			<?php foreach($this->getExperiments() as $experiment => $options): ?>
+			
+				experiments['<?php echo $experiment ?>'] = 
+				{
+					name: 		'<?php echo $options['name'] ?>',
+					callback: 	 <?php echo $options['di']() ?>,
+					triggered:   <?php echo $options['triggered']() ?>
+				};
+					
+			<?php endforeach ?>
+
+			return {
+				experiments: experiments,
+				experiments_data:[],
+				run: function()
+				{
+					$.each(this.experiments, function(index, experiment)
+					{
+						if (experiment.triggered)
+						{
+							experiment.callback.apply(experiment,[dataLayer]);
+						}
+					});
+
+					return this;
+				},
+				experiment: function(experiment)
+				{
+					/**
+					 * Get experiment content
+					 */
+					var content = $('[id=' + experiment + ']').html();
+
+					/**
+					 * Replace experimented content
+					 */
+					$('span[data-experiment=' + experiment + ']').html(content);
+				}
+			}
+		})(jQuery, dataLayer).run();
+	 }
+
+</script>

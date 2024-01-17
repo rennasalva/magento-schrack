@@ -1,0 +1,86 @@
+<?php if (Mage::getStoreConfig('ec/pa/active')): ?>
+	<script type="text/javascript">
+		(function() 
+		{
+		    window._pa = window._pa || {};
+	
+		    <?php if (Mage::app()->getLayout()->getBlock('ec_purchase')->getOrderIds()) : ?>
+	
+	            /**
+	             * Load order products into PerfectAudience Tag
+	             */
+		    	<?php 
+		    	
+		    		$collection = Mage::getResourceModel('sales/order_collection')->addFieldToFilter('entity_id', array
+					(
+						'in' => Mage::app()->getLayout()->getBlock('ec_purchase')->getOrderIds())
+					);
+					
+					foreach ($collection as $order) 
+					{
+						?>
+							_pa['orderId'] = '<?php echo $order->getIncrementId() ?>';
+							_pa['revenue'] = '<?php echo (float) $order->getBaseGrandTotal() ?>';
+	
+							<?php 
+								foreach ($order->getAllVisibleItems() as $item)
+								{
+									$product = Mage::getModel('catalog/product')->load
+									(	
+										$item->getProductId()
+									);
+									
+									switch ($product->getTypeId())
+									{
+										case 'simple':
+											?>
+												_pa['productId'] = '<?php echo $product->getSku() ?>';
+											<?php	
+											break;
+										case 'configurable':
+											?>
+												_pa['productId'] = '<?php echo $product->getTypeInstance()->getUsedProductCollection()->addAttributeToSelect('sku')->setPageSize(1)->getFirstItem()->getSku() ?>';
+											<?php 
+											break;
+									}
+								}
+							?>
+						<?php 
+					}
+				?>
+				
+		    <?php else: ?>
+		    
+		    	/**
+	    		 * Load product into PerfectAudience Tag
+			     */
+	
+		        <?php  
+		        	if(Mage::registry('current_product'))
+			        {
+			        	switch(Mage::registry('current_product')->getTypeId())
+			        	{
+			        		case 'simple':
+			        			?>
+	        					    _pa['productId'] = '<?php echo Mage::registry('current_product')->getSku() ?>';
+	        					<?php 
+			        			break;
+			        		case 'configurable':
+			        			?>
+			        				_pa['productId'] = '<?php echo Mage::registry('current_product')->getTypeInstance()->getUsedProductCollection()->addAttributeToSelect('sku')->setPageSize(1)->getFirstItem()->getSku() ?>';
+			        			<?php 
+			        			break;
+			        		default:
+			        				
+			        			break;
+			        	}
+			        }
+		        ?>
+		    <?php endif ?>
+	
+		    var pa = document.createElement('script'); pa.type = 'text/javascript'; pa.async = true;
+		    pa.src = ('https:' == document.location.protocol ? 'https:' : 'http:') + "//tag.marinsm.com/serve/<?php echo Mage::getStoreConfig('ec/pa/id') ?>.js";
+		    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(pa, s);
+		})();
+	</script>
+<?php endif ?>

@@ -31,7 +31,7 @@ class Schracklive_SchrackPage_Block_Html_Head extends Mage_Page_Block_Html_Head 
         'de-at' => 'https://www.schrack.at/shop/',
         'de-ch' => 'https://www.schrack.ch/shop/',
         'de-de' => 'https://www.schrack-technik.de/shop/',
-        'en-gb' => 'http://127.0.0.1/shop/',
+        'en-gb' => 'http://127.0.0.1/',
         'hr-hr' => 'https://www.schrack.hr/trgovina/',
         'hu-hu' => 'https://www.schrack.hu/shop/',
         'pl-pl' => 'https://www.schrack.pl/sklep/',
@@ -67,6 +67,8 @@ class Schracklive_SchrackPage_Block_Html_Head extends Mage_Page_Block_Html_Head 
             Mage::getStoreConfig('general/locale/code', Mage::getStoreConfig('schrack/shop/store')));
         $countryCode = strtolower($countryCode);
         $pathToShadowboxLanguageFile = "schrackdesign/Public/Javascript/shadowbox/$countryCode.js";
+
+
         if (@is_file(Mage::getDesign()->getSkinBaseDir().DS.$pathToShadowboxLanguageFile)) {
             $this->addItem('skin_js', $pathToShadowboxLanguageFile);
         }
@@ -159,6 +161,7 @@ class Schracklive_SchrackPage_Block_Html_Head extends Mage_Page_Block_Html_Head 
         //var_dump($this->_data['items'][$index]);
         return $this;
     }
+
 
 
     public function addJs($name, $params = "", $referenceName = '*',$before = null)

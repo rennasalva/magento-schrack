@@ -57,10 +57,26 @@ class Mage_Sales_Model_Convert_Quote extends Varien_Object
         if (!($order instanceof Mage_Sales_Model_Order)) {
             $order = $this->toOrder($address->getQuote());
         }
-
+        //----------------------------------------------------------------------
         Mage::helper('core')->copyFieldset('sales_convert_quote_address', 'to_order', $address, $order);
-
-        Mage::dispatchEvent('sales_convert_quote_address_to_order', ['address' => $address, 'order' => $order]);
+        //----------------------------------------------------------------------
+        /**
+         *
+         * !!! ATTENTION !!! ATTENTION !!! ATTENTION !!! ATTENTION !!! ATTENTION
+         * Bugfix_9443
+         * saving grand Total which will be used for sending to Paymentprovider
+         * and restore after collectTotals because method will be false/positive
+         * override the correct value sent from WWS.
+         *
+         * Further fix will be found in
+         * app/code/core/Mage/Sales/Model/Quote/Payment.php
+         *
+         * !!! ATTENTION !!! ATTENTION !!! ATTENTION !!! ATTENTION !!! ATTENTION
+         */
+        $order->setGrandTotal($address->getQuote()->getGrandTotal());
+        $order->setBaseGrandTotal($address->getQuote()->getBaseGrandTotal());
+        //----------------------------------------------------------------------
+        Mage::dispatchEvent('sales_convert_quote_address_to_order', array('address'=>$address, 'order'=>$order));
         return $order;
     }
 

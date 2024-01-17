@@ -57,6 +57,17 @@ class Mage_Customer_Model_Resource_Customer extends Mage_Eav_Model_Entity_Abstra
         parent::_beforeSave($customer);
 
         if (!$customer->getEmail()) {
+            // log mancanza email
+            $data = openssl_random_pseudo_bytes(16);
+            assert(strlen($data) == 16);
+
+            $data[6] = chr(ord($data[6]) & 0x0f | 0x40); // set version to 0100
+            $data[8] = chr(ord($data[8]) & 0x3f | 0x80); // set bits 6-7 to 10
+
+            $uuid = vsprintf('%s%s-%s-%s-%s-%s%s%s', str_split(bin2hex($data), 4));
+
+            Mage::log($uuid . ' - Saved Customer Object as follows:', null, 'customer_email_is_required.log');
+            Mage::log($customer, null, 'customer_email_is_required.log');
 
             throw Mage::exception('Mage_Customer', Mage::helper('customer')->__('Customer email is required'));
         }
@@ -80,7 +91,7 @@ class Mage_Customer_Model_Resource_Customer extends Mage_Eav_Model_Entity_Abstra
         if ($result) {
             throw Mage::exception(
                 'Mage_Customer',
-                Mage::helper('customer')->__('This customer email already exists'),
+                Mage::helper('customer')->__('This customer email already exists'). ' (CASE #0001234)',
                 Mage_Customer_Model_Customer::EXCEPTION_EMAIL_EXISTS
             );
         }

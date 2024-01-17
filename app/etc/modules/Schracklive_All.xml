@@ -11,13 +11,13 @@
         <Schracklive_Schrack />
       </depends>
     </Schracklive_Wws>
-<!--    <Schracklive_Crm>-->
-<!--      <active>true</active>-->
-<!--      <codePool>local</codePool>-->
-<!--      <depends>-->
-<!--        <Schracklive_Schrack />-->
-<!--      </depends>-->
-<!--    </Schracklive_Crm>-->
+    <Schracklive_Crm>
+      <active>true</active>
+      <codePool>local</codePool>
+      <depends>
+        <Schracklive_Schrack />
+      </depends>
+    </Schracklive_Crm>
     <Schracklive_Ad>
       <active>true</active>
       <codePool>local</codePool>
@@ -83,14 +83,14 @@
         <Schracklive_SchrackCustomer />
       </depends>
     </Schracklive_Mobile>
-<!--    <Schracklive_SchrackApi>-->
-<!--      <active>true</active>-->
-<!--      <codePool>local</codePool>-->
-<!--      <depends>-->
-<!--        <Mage_Api />-->
-<!--        <Schracklive_Schrack />-->
-<!--      </depends>-->
-<!--    </Schracklive_SchrackApi>-->
+    <Schracklive_SchrackApi>
+      <active>true</active>
+      <codePool>local</codePool>
+      <depends>
+        <Mage_Api />
+        <Schracklive_Schrack />
+      </depends>
+    </Schracklive_SchrackApi>
     <Schracklive_SchrackCheckout>
       <active>true</active>
       <codePool>local</codePool>
@@ -122,111 +122,111 @@
       <active>true</active>
       <codePool>local</codePool>
     </Schracklive_SchrackPage>
-<!--    <Schracklive_SchrackShipping>-->
-<!--      <active>true</active>-->
-<!--      <codePool>local</codePool>-->
-<!--    </Schracklive_SchrackShipping>-->
-<!--    <Schracklive_Search>-->
-<!--      <active>true</active>-->
-<!--      <codePool>local</codePool>-->
-<!--    </Schracklive_Search>-->
-<!--    <Schracklive_SolrSearch>-->
-<!--      <active>true</active>-->
-<!--      <codePool>local</codePool>-->
-<!--    </Schracklive_SolrSearch>-->
-<!--    <Schracklive_SchrackCore>-->
-<!--      <active>true</active>-->
-<!--      <codePool>local</codePool>-->
-<!--      <depends>-->
-<!--        <Mage_Core />-->
-<!--        <Schracklive_Schrack />-->
-<!--      </depends>-->
-<!--    </Schracklive_SchrackCore>-->
-<!--    <Schracklive_Austria>-->
-<!--      <active>true</active>-->
-<!--      <codePool>local</codePool>-->
-<!--      <depends>-->
-<!--        <Schracklive_Schrack />-->
-<!--      </depends>-->
-<!--    </Schracklive_Austria>-->
-<!--    <Schracklive_Typo3>-->
-<!--      <active>true</active>-->
-<!--      <codePool>local</codePool>-->
-<!--      <depends>-->
-<!--        <Schracklive_Schrack />-->
-<!--      </depends>-->
-<!--    </Schracklive_Typo3>-->
-<!--    <Schracklive_Translation>-->
-<!--      <active>true</active>-->
-<!--      <codePool>local</codePool>-->
-<!--      <depends>-->
-<!--        <Schracklive_Schrack />-->
-<!--      </depends>-->
-<!--    </Schracklive_Translation>-->
-<!--    <Schracklive_Branch>-->
-<!--      <active>true</active>-->
-<!--      <codePool>local</codePool>-->
-<!--      <depends>-->
-<!--        <Schracklive_Schrack />-->
-<!--      </depends>-->
-<!--    </Schracklive_Branch>-->
-<!--    <Schracklive_GeoIP>-->
-<!--      <active>true</active>-->
-<!--      <codePool>local</codePool>-->
-<!--      <depends>-->
-<!--        <Schracklive_Schrack />-->
-<!--      </depends>-->
-<!--    </Schracklive_GeoIP>-->
-<!--   <Schracklive_Datanorm>-->
-<!--      <active>true</active>-->
-<!--      <codePool>local</codePool>-->
-<!--      <depends>-->
-<!--        <Schracklive_Schrack />-->
-<!--        <Schracklive_Wws />-->
-<!--      </depends>-->
-<!--   </Schracklive_Datanorm>-->
-<!--    <Schracklive_SchrackCatalogInventory>-->
-<!--      <active>true</active>-->
-<!--      <codePool>local</codePool>-->
-<!--      <depends>-->
-<!--        <Mage_CatalogInventory />-->
-<!--        <Schracklive_Schrack />-->
-<!--      </depends>-->
-<!--    </Schracklive_SchrackCatalogInventory>-->
-<!--    <Schracklive_SchrackPaypal>-->
-<!--        <active>true</active>-->
-<!--        <codePool>local</codePool>-->
-<!--        <depends>-->
-<!--            <Mage_Paypal />-->
-<!--            <Schracklive_Schrack />-->
-<!--        </depends>-->
-<!--    </Schracklive_SchrackPaypal>-->
-<!--    <Schracklive_App>-->
-<!--        <active>true</active>-->
-<!--        <codePool>local</codePool>-->
-<!--    </Schracklive_App>-->
-<!--    <Schracklive_SchrackWishlist>-->
-<!--        <active>true</active>-->
-<!--        <codePool>local</codePool>-->
-<!--        <depends>-->
-<!--            <Mage_Wishlist />-->
-<!--        </depends>-->
-<!--    </Schracklive_SchrackWishlist>-->
-<!--    <Schracklive_LvPortal>-->
-<!--        <active>true</active>-->
-<!--        <codePool>local</codePool>-->
-<!--    </Schracklive_LvPortal>-->
-<!--    <Schracklive_SchrackCron>-->
-<!--        <active>true</active>-->
-<!--        <codePool>local</codePool>-->
-<!--    </Schracklive_SchrackCron>-->
-<!--    <Schracklive_S4s>-->
-<!--        <active>true</active>-->
-<!--        <codePool>local</codePool>-->
-<!--        <depends>-->
-<!--            <Schracklive_SchrackCustomer />-->
-<!--        </depends>-->
-<!--    </Schracklive_S4s>-->
+    <Schracklive_SchrackShipping>
+      <active>true</active>
+      <codePool>local</codePool>
+    </Schracklive_SchrackShipping>
+    <Schracklive_Search>
+      <active>true</active>
+      <codePool>local</codePool>
+    </Schracklive_Search>
+    <Schracklive_SolrSearch>
+      <active>true</active>
+      <codePool>local</codePool>
+    </Schracklive_SolrSearch>
+    <Schracklive_SchrackCore>
+      <active>true</active>
+      <codePool>local</codePool>
+      <depends>
+        <Mage_Core />
+        <Schracklive_Schrack />
+      </depends>
+    </Schracklive_SchrackCore>
+    <Schracklive_Austria>
+      <active>true</active>
+      <codePool>local</codePool>
+      <depends>
+        <Schracklive_Schrack />
+      </depends>
+    </Schracklive_Austria>
+    <Schracklive_Typo3>
+      <active>true</active>
+      <codePool>local</codePool>
+      <depends>
+        <Schracklive_Schrack />
+      </depends>
+    </Schracklive_Typo3>
+    <Schracklive_Translation>
+      <active>true</active>
+      <codePool>local</codePool>
+      <depends>
+        <Schracklive_Schrack />
+      </depends>
+    </Schracklive_Translation>
+    <Schracklive_Branch>
+      <active>true</active>
+      <codePool>local</codePool>
+      <depends>
+        <Schracklive_Schrack />
+      </depends>
+    </Schracklive_Branch>
+    <Schracklive_GeoIP>
+      <active>true</active>
+      <codePool>local</codePool>
+      <depends>
+        <Schracklive_Schrack />
+      </depends>
+    </Schracklive_GeoIP>
+   <Schracklive_Datanorm>
+      <active>true</active>
+      <codePool>local</codePool>
+      <depends>
+        <Schracklive_Schrack />
+        <Schracklive_Wws />
+      </depends>
+   </Schracklive_Datanorm>
+    <Schracklive_SchrackCatalogInventory>
+      <active>true</active>
+      <codePool>local</codePool>
+      <depends>
+        <Mage_CatalogInventory />
+        <Schracklive_Schrack />
+      </depends>
+    </Schracklive_SchrackCatalogInventory>
+    <Schracklive_SchrackPaypal>
+        <active>true</active>
+        <codePool>local</codePool>
+        <depends>
+            <Mage_Paypal />
+            <Schracklive_Schrack />
+        </depends>
+    </Schracklive_SchrackPaypal>
+    <Schracklive_App>
+        <active>true</active>
+        <codePool>local</codePool>
+    </Schracklive_App>
+    <Schracklive_SchrackWishlist>
+        <active>true</active>
+        <codePool>local</codePool>
+        <depends>
+            <Mage_Wishlist />
+        </depends>
+    </Schracklive_SchrackWishlist>
+    <Schracklive_LvPortal>
+        <active>true</active>
+        <codePool>local</codePool>
+    </Schracklive_LvPortal>
+    <Schracklive_SchrackCron>
+        <active>true</active>
+        <codePool>local</codePool>
+    </Schracklive_SchrackCron>
+    <Schracklive_S4s>
+        <active>true</active>
+        <codePool>local</codePool>
+        <depends>
+            <Schracklive_SchrackCustomer />
+        </depends>
+    </Schracklive_S4s>
     <Schracklive_Tools>
         <active>true</active>
         <codePool>local</codePool>

@@ -1,0 +1,16 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN"> 
+<html>
+	<head>
+		<title>Business Catalog</title>
+		<meta http-equiv="content-type" content="text/html; charset=utf-8">
+		<meta http-equiv="Content-Script-Type" content="text/javascript">
+		<meta http-equiv="Content-Style-Type" content="text/css">
+</head>
+<body onload="document.ReturnValidate.submit()">
+	<form name="ReturnValidate" action="<?php echo $this->getActionUrl(); ?>" method="post" target="<?php echo $this->getTarget(); ?>">
+		<?php foreach($this->getItem() as $key => $value):?>
+			<input name="<?php echo $key ?>" value="<?php echo $value ?>" type="hidden" />
+		<?php endforeach; ?>
+	</form>
+</body>
+</html>

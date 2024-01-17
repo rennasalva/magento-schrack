@@ -1,0 +1,54 @@
+<script>
+	/**
+ 	 * Enhanced Ecommerce Event(s) Tracking
+ 	 * 
+ 	 * @copyright Anowave 2016
+	 */
+	if ('undefined' !== typeof jQuery && 'undefined' !== typeof dataLayer)
+	{
+		(function($, dataLayer)
+		{
+			var events = 
+			{
+				addToCart: function()
+				{
+					<?php
+					/**
+					 * @todo Complete impementation
+					 */
+					?>
+				},
+				removeFromCart: function()
+				{
+					<?php
+					/**
+					 * @todo Complete impementation
+					 */
+					?>
+				},
+				productClick: function()
+				{
+					<?php
+					/**
+					 * @todo Complete impementation
+					 */
+					?>	
+				}
+			};
+
+			$.each(events, function(event, callback)
+			{
+				var elements = $('[data-event]').filter(function()
+				{
+					return $(this).data('event') == event;
+				});
+
+				elements.each(function()
+				{
+					$(this).off('click.ec').on('click.ec', callback);
+				});
+			});
+			
+		})(jQuery, dataLayer);
+	}
+</script>

@@ -50,7 +50,7 @@ class Schracklive_SchrackCatalogSearch_Helper_Data extends Mage_CatalogSearch_He
 		$cntValidTerms = 0;
 		foreach ($queryTerms[0] as $queryTerm) {
 			$queryTerm = trim(stripslashes($queryTerm));
-			$prefix = $queryTerm{0};
+			$prefix = $queryTerm[0];
 			if ($prefix == "+" || $prefix == "-") {
 				$queryTerm = substr($queryTerm, 1);
 			} else {

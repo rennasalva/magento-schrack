@@ -7,10 +7,8 @@
  * @package     schracklive_default
  *
  */
-
 -->
 <layout version="1.0.1">
-
     <shipping_trackandtrace_index translate="label">
         <reference name="head">
             <action method="setTitle" translate="title">               
@@ -64,5 +62,4 @@
             <block type="customer/account_menu" name="customer_account_menu" template="customer/account/menu.phtml"></block>
         </reference>  
     </shipping_trackandtrace_index>
-
 </layout>

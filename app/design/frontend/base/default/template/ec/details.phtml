@@ -1,0 +1,77 @@
+<script type="text/javascript">
+
+	/**
+ 	 * Push tracking 
+	 */
+	<?php if ($data = $this->helper('ec/datalayer')->getPushDetail()):?>
+	
+		dataLayer.push(<?php echo $data->data ?>);
+
+		/**
+		 * AdWords Dynamic Remarketing
+		 */
+		window.google_tag_params.ecomm_pagetype 	= 'product';
+		window.google_tag_params.ecomm_prodid 		=  <?php echo $data->google_tag_params['ecomm_prodid'] ?>;
+		window.google_tag_params.ecomm_pname 		=  <?php echo $data->google_tag_params['ecomm_pname'] ?>;
+		window.google_tag_params.ecomm_pvalue 		=  <?php echo $data->google_tag_params['ecomm_pvalue'] ?>;
+		window.google_tag_params.ecomm_totalvalue 	= '<?php echo $data->google_tag_params['ecomm_totalvalue'] ?>';
+		window.google_tag_params.ecomm_category		= '<?php echo $data->google_tag_params['ecomm_category'] ?>';
+
+		/**
+		 * Facebook Pixel Tracking
+		 */
+		<?php if ($this->helper('ec')->facebook()): ?>
+
+			if ("undefined" !== typeof fbq)
+			{
+				fbq('track', 'ViewContent', <?php echo $data->fbq ?>);
+			}
+		<?php endif ?>
+
+		<?php foreach($data->grouped as $entity): ?>
+		
+				window.G.push(
+				{
+					id:			'<?php echo $this->jsQuoteEscape($entity->getId()) ?>',
+					sku:		'<?php echo $this->jsQuoteEscape($entity->getSku()) ?>',
+					name:		'<?php echo $this->jsQuoteEscape($entity->getName()) ?>',
+					price:		'<?php echo Mage::helper('ec/price')->getPrice($entity) ?>',
+					category:	'<?php echo $this->jsQuoteEscape(Mage::helper('ec')->getCategory($entity->getCategory())) ?>',
+					brand:		'<?php echo $this->jsQuoteEscape(Mage::helper('ec')->getBrand($entity)) ?>'
+				});
+		<?php endforeach ?>
+		
+	<?php endif ?>
+
+	<?php
+	/**
+	 * Change "Add to cart" data-price attribute upon variant/option selection
+	 * 
+	 * @experimental
+	 */
+	?>
+	if ('undefined' !== typeof Product && Product.OptionsPrice.prototype.hasOwnProperty('formatPrice'))
+	{
+		Product.OptionsPrice.prototype.reload = Product.OptionsPrice.prototype.reload.wrap(function(parentMethod)
+		{
+			parentMethod();
+
+			AEC.Callbacks.queue(function(price)
+			{
+				var price = parseFloat(price).toFixed(2);
+
+				jQuery('[data-event="addToCart"]').data('price', price).attr('data-price', price);
+			});
+		});
+		
+		Product.OptionsPrice.prototype.formatPrice = Product.OptionsPrice.prototype.formatPrice.wrap(function(parentMethod, price)
+		{
+			AEC.Callbacks.apply(price);
+			
+			var price = parentMethod(price);
+
+			return price;
+		});
+	}
+	
+</script>

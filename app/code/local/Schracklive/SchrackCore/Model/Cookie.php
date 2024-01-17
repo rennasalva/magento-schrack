@@ -9,7 +9,7 @@ class Schracklive_SchrackCore_Model_Cookie extends Mage_Core_Model_Cookie
     /**
      *
      */
-    public function set($name, $value, $period = null, $path = null, $domain = null, $secure = null, $httponly = null)
+    public function set($name, $value, $period = null, $path = null, $domain = null, $secure = null, $httponly = null,$sameSite = null)
     {
         $rememberme = false;
 

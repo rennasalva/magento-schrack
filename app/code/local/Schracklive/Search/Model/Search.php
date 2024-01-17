@@ -9,6 +9,7 @@ use Solarium\QueryType\Select\Query\Query;
 use Solarium\QueryType\Select\Result\Document;
 use Solarium\QueryType\Select\Result\Grouping\ValueGroup;
 use Solarium\QueryType\Select\Result\Result;
+use Symfony\Component\EventDispatcher\EventDispatcher;
 
 class Schracklive_Search_Model_Search extends Mage_Core_Model_Abstract
 {
@@ -408,7 +409,11 @@ class Schracklive_Search_Model_Search extends Mage_Core_Model_Abstract
                     'localhost' => $solrServerUrl,
                 ),
             );
-            $client = new Client($config);
+
+            //modify sintax
+            $adapter = new Solarium\Core\Client\Adapter\Curl();
+            $eventDispatcher = new EventDispatcher();
+            $client = new Client($adapter, $eventDispatcher,$config);
             $client->getPlugin('postbigrequest');
             $this->_client = $client;
         }
@@ -438,7 +443,10 @@ class Schracklive_Search_Model_Search extends Mage_Core_Model_Abstract
                     'localhost' => $solrServerUrl,
                 ),
             );
-            $this->_commonClient = new Client($config);
+
+            $adapter = new Solarium\Core\Client\Adapter\Curl();
+            $eventDispatcher = new EventDispatcher();
+            $this->_commonClient =  new Client($adapter, $eventDispatcher,$config);
         }
 
         return $this->_commonClient;

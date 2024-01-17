@@ -11,8 +11,9 @@ class Amasty_Fpc_Model_Config
 
     public function getConfig()
     {
+
         if (!$this->_config)
-            $this->_config = Mage::app()->getConfig()->getNode('global/amfpc')->asArray();
+            $this->_config = Mage::app()->getConfig()?->getNode('global/amfpc')?->asArray();
 
         if (Mage::getSingleton('amfpc/fpc_front')->getDbConfig('web/cookie/cookie_restriction'))
             $this->_config['blocks'][self::getCookieNoticeBlockName()] = array();

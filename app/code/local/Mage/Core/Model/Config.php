@@ -874,7 +874,36 @@ class Mage_Core_Model_Config extends Mage_Core_Model_Config_Base
 
         // load modules declarations
         foreach ($moduleFiles as $file) {
-            $fileConfig->loadFile($file);
+            $activatedRedisSessionModule = false;
+
+            $resource = Mage::getSingleton('core/resource');
+            $readConnection  = $resource->getConnection('core_read');
+
+            $query = "SELECT `value` FROM core_config_data WHERE path LIKE 'schrack/tools/activate_redis_session_module'";
+
+            $queryResult = $readConnection->query($query);
+            if ($queryResult->rowCount() > 0) {
+                foreach ($queryResult as $recordset) {
+                    if($recordset['value'] == 1) {
+                        $activatedRedisSessionModule = true;
+                    }
+                }
+            }
+
+            if(stristr($file, 'Cm_RedisSession.xml') && $activatedRedisSessionModule) {
+                $activeModuleXMLString  = '<config>';
+                $activeModuleXMLString .= '<modules>';
+                $activeModuleXMLString .= '<Cm_RedisSession>';
+                $activeModuleXMLString .= '<active>true</active>';
+                $activeModuleXMLString .= '<codePool>community</codePool>';
+                $activeModuleXMLString .= '</Cm_RedisSession>';
+                $activeModuleXMLString .= '</modules>';
+                $activeModuleXMLString .= '</config>';
+
+                $fileConfig->loadString($activeModuleXMLString);
+            } else {
+                $fileConfig->loadFile($file);
+            }
             $unsortedConfig->extend($fileConfig);
         }
 
@@ -905,6 +934,10 @@ class Mage_Core_Model_Config extends Mage_Core_Model_Config_Base
         $sortedConfig->loadString('<config><modules/></config>');
 
         foreach ($unsortedConfig->getNode()->children() as $nodeName => $node) {
+            if ( $moduleName == 'Schracklive_Schrack') {
+                echo '';
+            }
+
             if ($nodeName != 'modules') {
                 $sortedConfig->getNode()->appendChild($node);
             }
@@ -930,6 +963,10 @@ class Mage_Core_Model_Config extends Mage_Core_Model_Config_Base
     protected function _sortModuleDepends($modules)
     {
         foreach ($modules as $moduleName => $moduleProps) {
+            if ( $moduleName == 'Schracklive_Schrack') {
+                echo '';
+            }
+
             $depends = $moduleProps['depends'];
             foreach ($moduleProps['depends'] as $depend => $true) {
                 if ($moduleProps['active'] && ((!isset($modules[$depend])) || empty($modules[$depend]['active']))) {
@@ -1598,10 +1635,12 @@ class Mage_Core_Model_Config extends Mage_Core_Model_Config_Base
             return false;
         }
 
+        // DLA 20210316: removing that new stuff because it breakes our backend API stuff
         // If unsecure base url is https, then all urls should be secure
-        if (str_starts_with(Mage::getStoreConfig(Mage_Core_Model_Store::XML_PATH_UNSECURE_BASE_URL), 'https://')) {
+        /*if (str_starts_with(Mage::getStoreConfig(Mage_Core_Model_Store::XML_PATH_UNSECURE_BASE_URL), 'https://')) {
             return true;
         }
+        */
 
         if (!isset($this->_secureUrlCache[$url])) {
             $this->_secureUrlCache[$url] = false;

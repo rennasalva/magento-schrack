@@ -4,7 +4,9 @@
     "require": {
         "aydin-hassan/magento-core-composer-installer":"^2.1.0",
         "openmage/magento-lts": "^20.0.0",
-        "solarium/solarium": "^6.3"
+        "solarium/solarium": "^6.3",
+        "symfony/event-dispatcher": "^7.0",
+        "phpseclib/phpseclib": "^3.0"
     },
     "extra": {
         "enable-patching": true,

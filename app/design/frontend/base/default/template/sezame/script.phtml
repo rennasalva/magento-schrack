@@ -1,0 +1,68 @@
+
+<script type="text/javascript" src="<?php echo Mage::getBaseUrl('js').'finpin/sezame/jquery.blockUI.js'; ?>"></script>
+<script type="text/javascript">
+//<![CDATA[
+    jQuery(function () {
+
+        var sezameTimer = false;
+
+        var statusFunction = function () {
+            jQuery.ajax({
+                type: "GET",
+                url: <?php echo json_encode($this->getUrl('sezame/auth/status', Array('_secure' => true))) ?>,
+                dataType: 'json',
+                contentType: 'application/json; charset=utf-8'
+            }).always(function (authinfo) {
+
+                if (authinfo.status == 'initiated' && sezameTimer) {
+                    sezameTimer = setTimeout(statusFunction, 1000);
+                } else {
+                    if (authinfo.redirect)
+                        document.location.href = authinfo.redirect;
+                    else
+                        document.location.reload(true);
+                }
+            });
+        };
+
+        jQuery("#finpin-sezame-cancel").click(function (evt) {
+            jQuery.unblockUI();
+            if (sezameTimer) clearTimeout(sezameTimer);
+        });
+
+        jQuery("#finpin-sezame-button").click(function (evt) {
+            jQuery('#message').css('visibility', 'hidden').text('');
+            var data = {
+                auth: {
+                    username: jQuery('#email').val() || jQuery('#login-email').val()
+                }
+            };
+
+            jQuery.blockUI({
+                message: jQuery('#sezameLoginBubble'),
+                css: {
+                    border: 'none',
+                    backgroundColor: 'none',
+                    top: '20%'
+                }
+            });
+
+            jQuery.ajax({
+                type: "POST",
+                url: <?php echo json_encode($this->getUrl('sezame/auth/login', Array('_secure' => true))) ?>,
+                dataType: 'json',
+                contentType: 'application/json; charset=utf-8',
+                context: data,
+                data: JSON.stringify(data)
+            }).always(function (authinfo) {
+                if (authinfo.status == 'initiated') {
+                    sezameTimer = true;
+                    statusFunction();
+                } else {
+                    document.location.reload(true);
+                }
+            });
+        });
+    });
+//]]>
+</script>

@@ -1,0 +1,15 @@
+<?php
+
+$orig = $this->getTemplate();
+
+// Load original template
+$this->setTemplate('persistent/checkout/onepage/login.phtml');
+echo $this->fetchView($this->getTemplateFile());
+
+// append sezame Button
+$this->noclass = 1;
+$this->setTemplate('sezame/button.phtml');
+echo $this->fetchView($this->getTemplateFile());
+
+$this->setTemplate($orig); // reset
+

@@ -1,0 +1,43 @@
+<?php
+/**
+ * orcamultimedia
+ * http://www.orca-multimedia.de
+ *
+ * @author		Thomas Wild
+ * @package		Orcamultimedia_Sapoci
+ * @copyright	Copyright (c) 2017 orcamultimedia Thomas Wild (http://www.orca-multimedia.de)
+ *
+ **/
+?>
+
+<?php if ($this->isSapociCheckout()):?>
+<!-- app/design/frontend/base/default/template/sapoci/checkout/onepage/link.phtml (start) -->
+<form name="sapoci-4"
+      action="<?php echo $this->getActionUrl();?>"
+      method="post"
+    <?php if ($this->getTarget()):?>
+        target="<?php echo $this->getTarget();?>"
+    <?php endif?>
+></form>
+	<div class="actions">
+		<form name="sapoci"
+		    action="<?php echo $this->getActionUrl();?>"
+		    method="post"
+		    <?php if ($this->getTarget()):?>
+		        target="<?php echo $this->getTarget();?>"
+		    <?php endif?>
+		>
+			<?php
+			    foreach($this->cartItems() as $key => $value) :
+			?>
+				<input name="<?php echo $key ?>" value="<?php echo $value ?>" type="hidden" />
+			<?php endforeach; ?>
+			<button type="submit" title="<?php echo $this->__('SAP OCI Punchout') ?>" class="button btn-proceed-checkout btn-checkout"><span><span><?php echo $this->__('SAP OCI Punchout') ?></span></span></button>
+		</form>
+	</div>
+<?php else:?>
+	<?php if ($this->isPossibleOnepageCheckout()):?>
+		<button type="button" title="<?php echo $this->__('Proceed to Checkout') ?>" class="button btn-proceed-checkout btn-checkout<?php if ($this->isDisabled()):?> no-checkout<?php endif; ?>"<?php if ($this->isDisabled()):?> disabled="disabled"<?php endif; ?> onclick="window.location='<?php echo $this->getCheckoutUrl() ?>';"><span><span><?php echo $this->__('Proceed to Checkout') ?></span></span></button>
+	<?php endif?>
+<?php endif?>
+<!-- app/design/frontend/base/default/template/sapoci/checkout/onepage/link.phtml (end) -->

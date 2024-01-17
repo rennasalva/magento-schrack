@@ -1,0 +1,366 @@
+<script type="text/javascript">
+
+	/* Set ecomm_pagetype */
+	window.google_tag_params.ecomm_pagetype = 'cart';
+
+	<?php
+	/**
+	 * Checkout products collection
+	 */
+	?>
+	var checkoutProducts = [];
+	var pid = [];
+
+	<?php foreach (Mage::getSingleton('checkout/session')->getQuote()->getAllVisibleItems() as $item) : ?>
+
+		<?php
+
+			/**
+			 * Get product name
+			 */
+			$args = new stdClass();
+
+			$args->id 	= $item->getProduct()->getSku();
+			$args->name = $item->getName();
+
+			$variant = array();
+
+			if ($item->getProduct()->isConfigurable())
+			{
+				$parent = Mage::getModel('catalog/product')->load
+				(
+					$item->getProductId()
+				);
+
+				$args->id	= $parent->getSku();
+				$args->name = $parent->getName();
+
+				if ($item instanceof Mage_Sales_Model_Quote_Item)
+				{
+					$request = new Varien_Object(unserialize($item->getOptionByCode('info_buyRequest')->getValue()));
+				}
+				else if ($item instanceof Mage_Sales_Model_Order_Item)
+				{
+					$request = new Varien_Object($item->getProductOptions());
+				}
+
+				$options = $request->getData();
+
+				if (isset($options['super_attribute']) && is_array($options['super_attribute']))
+				{
+					foreach ($options['super_attribute'] as $id => $option)
+					{
+						$attribute = Mage::getModel('catalog/resource_eav_attribute')->load($id);
+
+						if ($attribute->usesSource())
+						{
+							$variant[] = join(':', array
+							(
+								$this->jsQuoteEscape($attribute->getFrontendLabel()),
+								$this->jsQuoteEscape($attribute->getSource()->getOptionText($option))
+							));
+						}
+					}
+				}
+			}
+
+			if (1 === (int) $item->getProduct()->getHasOptions())
+			{
+				if ($item instanceof Mage_Sales_Model_Quote_Item)
+				{
+					$request = new Varien_Object(unserialize($item->getOptionByCode('info_buyRequest')->getValue()));
+				}
+				else if ($item instanceof Mage_Sales_Model_Order_Item)
+				{
+					$request = new Varien_Object($item->getProductOptions());
+				}
+
+				if ((int) $request->getProduct() > 0)
+				{
+					$parent = Mage::getModel('catalog/product')->load($request->getProduct());
+
+					$args->id	= $parent->getSku();
+					$args->name = $parent->getName();
+
+					/**
+					 * Get field to use for variants
+					 *
+					 * @var string
+					 */
+					$field = Mage::helper('ec')->getOptionUseField();
+
+					foreach ($parent->getProductOptionsCollection() as $option)
+					{
+						$data = $parent->getOptionById($option['option_id']);
+
+						switch($data->getType())
+						{
+							case 'drop_down':
+								foreach ($data->getValues() as $value)
+								{
+									$options[] = array
+									(
+										'id' 	=> $value->getOptionTypeId(),
+										'value' => $value->getData($field),
+										'title' => $data->getTitle(),
+									);
+
+								}
+								break;
+							case 'field':
+								$options[] = array
+								(
+									'value' => (string) $data->getData($field)
+								);
+								break;
+						}
+					}
+
+					if ($request->getOptions() && is_array($request->getOptions()))
+					{
+						foreach ($options as $option)
+						{
+							foreach ($request->getOptions() as $current)
+							{
+								if ((int) $current === (int) $option['id'])
+								{
+									$variant[] = join(':',array
+									(
+										$this->jsQuoteEscape($option['title']),
+										$this->jsQuoteEscape($option['value'])
+									));
+								}
+							}
+						}
+					}
+				}
+			}
+
+			$category = $this->helper('ec')->getCategory
+			(
+				$this->helper('ec/session')->getTrace()->get($item->getProduct())
+			);
+		?>
+		pid.push('<?php echo $this->jsQuoteEscape($args->id) ?>');
+		checkoutProducts.push(
+		{
+			'id': 			'<?php echo $this->jsQuoteEscape($args->id) ?>',
+			'name': 		'<?php echo $this->jsQuoteEscape($args->name) ?>',
+			'category': 	'<?php echo $this->jsQuoteEscape($category) ?>',
+			'brand':		'<?php echo $this->jsQuoteEscape(Mage::helper('ec')->getBrandBySku($args->id)) ?>',
+			'price': 		'<?php echo $this->getFinalPrice($item->getProduct()) ?>',
+			'quantity': 	'<?php echo $item->getQty() ?>',
+			'variant':		'<?php echo join('-', $variant) ?>'
+		});
+
+		FacebookProducts.push('<?php echo $args->id ?>');
+
+	<?php endforeach; ?>
+
+	AEC.getSteps = function(selector)
+	{
+		var find = function()
+		{
+			return document.querySelectorAll('.opc');
+		}
+
+		var element = find();
+
+		if (element && 1 == element.length)
+		{
+			return element[0].children;
+		}
+
+		return null;
+	};
+
+	AEC.getStep = function(section, steps)
+	{
+		for (i = 0, l = steps.length; i < l; i++)
+		{
+			if (-1 != steps[i].id.indexOf(section))
+			{
+				return {
+					index: i,
+					step: steps[i]
+				}
+			}
+		}
+
+		return {
+			index: -1,
+			step: null
+		}
+	};
+
+	AEC.trackStepCallbacks =
+	{
+		checkoutMethod: function(response)
+		{
+			return response.checkoutMethod;
+		},
+		payment: function(response)
+		{
+			return response.paymentMethod;
+		},
+		shippingMethod: function(response)
+		{
+			return response.shippingMethod;
+		}
+	}
+
+	AEC.trackStepOptions = function(step)
+	{
+		var filter = function(content)
+		{
+			return content;
+		}
+
+		var format = function(content)
+		{
+			 switch(content)
+			 {
+			 	case 'guest': 		return filter('<?php echo __('Checkout as Guest') ?>');
+			 	case 'login_in':	return filter('<?php echo __('Checkout as Logged') ?>');
+			 	case 'register': 	return filter('<?php echo __('Register') ?>');
+			 }
+
+			 return filter(content);
+		}
+
+		jQuery.get(AEC.Const.URL + 'ec/index/options', function(response)
+		{
+			var data =
+			[
+			 	{
+				 	step: 1,
+				 	option: format(response.checkoutMethod)
+				},
+				{
+				 	step: 2,
+				 	option: ''
+				},
+				{
+				 	step: 3,
+				 	option: ''
+				},
+				{
+				 	step: 4,
+				 	option: format(response.shippingMethod)
+				},
+				{
+				 	step: 5,
+				 	option: format(response.paymentMethod)
+				}
+			];
+
+			for (i = 0, l = data.length; i < l; i++)
+			{
+				if (data[i].step == step && 0 < data[i].option.toString().length)
+				{
+					dataLayer.push(
+					{
+						'event': 'checkoutOption',
+						'ecommerce':
+						{
+							'checkout_option':
+							{
+								'actionField': data[i]
+							}
+						}
+					});
+				}
+			}
+
+		},'json');
+	};
+
+	/**
+	 * Check if customer is logged in
+	 */
+	var logged = <?php echo @Mage::getSingleton('customer/session')->isLoggedIn() ? 1 : 0 ?>;
+
+	Checkout.prototype.gotoSection = Checkout.prototype.gotoSection.wrap(function(parentMethod, section, reloadProgressBlock)
+	{
+		parentMethod(section, reloadProgressBlock);
+
+		var steps = AEC.getSteps(), step = AEC.getStep(section, steps), index = step.index;
+
+		if (-1 !== index)
+		{
+			/**
+			 * Check if customer is logged and shift steps by 1 to align step indexes to missing "Login/Welcome" step
+			 */
+			if (logged)
+			{
+				index += 1;
+			}
+
+			/**
+			 * Push data
+			 */
+			dataLayer.push(
+			{
+				'event':'checkout',
+				'eventLabel': pid.join(','),
+				'ecommerce': 
+				{
+					'checkout': 
+					{
+						'actionField': 
+						{
+							'step': ++index
+						},
+						'products': checkoutProducts
+					}
+				}
+			});
+
+			/**
+			 * Track previous step option(s)
+			 */
+			AEC.trackStepOptions(index - 1);
+
+			/**
+			 * Track time 
+			 */
+			AEC.Time.trackContinue(dataLayer, AEC.Const.TIMING_CATEGORY_CHECKOUT_STEP, index, "Step " + index);	
+		}		
+	});
+
+	/**
+	 * Fire first step
+	 */
+	EC.push(function(dataLayer)
+	{
+		dataLayer.push(
+		{
+			'event':'checkout',
+			'ecommerce': 
+			{
+				'checkout': 
+				{
+					'actionField': 
+					{
+						'step': (logged ? 2 : 1)
+					},
+					'products': checkoutProducts
+				}
+			}
+		});
+
+		AEC.trackStepOptions((logged ? 2 : 1)-1);
+	});
+
+	if ("undefined" !== typeof fbq)
+	{
+		fbq("track", "InitiateCheckout", 
+		{
+			content_type: 	'product',
+			content_name: 	'checkout',
+			content_ids:	FacebookProducts,
+			num_items:		FacebookProducts.length,
+			currency: 		'<?php echo Mage::app()->getStore()->getCurrentCurrencyCode() ?>'
+		});
+	}
+</script>
