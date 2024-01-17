@@ -1,0 +1,403 @@
+<!-- app/design/frontend/schrack/schrackresponsive/template/page/template/links.phtml (start) -->
+<?php
+    // @var $this Schracklive_SchrackPage_Block_Html_Header
+    // @see Schracklive_Typo3_Block_Page_Html_Header
+    $_session = Mage::getSingleton('customer/session');
+    $currentUrl = Mage::helper('core/url')->getCurrentUrl();
+
+    if ($_session->getCustomer()) {
+        $sessionCustomerId = $_session->getCustomer()->getId();
+    }
+    $aclRoleId = Mage::getModel('customer/customer')->load($sessionCustomerId)->getSchrackAclRoleId();
+    $isProjectant = Mage::helper('schrack/acl')->isProjectantRoleId($aclRoleId);
+
+    $boolCustomerLoggedIn = false;
+
+    if (Mage::getSingleton('customer/session')->isLoggedIn()) {
+        $boolCustomerLoggedIn = true;
+    }
+
+    $warningStartDatetimestamp   = strtotime(Mage::getStoreConfig('schrack/messages/triggerTopLinkHeaderMessageStartDatetime'));
+    $warningEndDatetimestamp     = strtotime(Mage::getStoreConfig('schrack/messages/triggerTopLinkHeaderMessageEndDatetime'));
+    $warnigMessageActive         = false;
+    $currentDatetimestamp        = strtotime(date('Y-m-d H:i:s'));
+    $warningMessageOptionEnabled = Mage::getStoreConfig('schrack/messages/triggerTopLinkHeaderMessage');
+
+    if (Mage::getStoreConfig('schrack/messages/triggerTopLinkHeaderMessage')) {
+        if ($currentDatetimestamp > $warningStartDatetimestamp && $currentDatetimestamp < $warningEndDatetimestamp) {
+            $warnigMessageActive = true;
+        }
+    }
+
+?>
+
+
+
+<style>
+
+#advisor_telephone_symbol {
+    margin-top: -3px;
+}
+
+.advisor_panel {
+    cursor: default;
+}
+
+.other_advisors_button {
+    cursor: pointer !important;
+    margin-top: 10px;
+    margin-left: 2px;
+    float: left;
+    width: 128px;
+    height: 32px;
+    color: #00589d;
+    border: 1px solid #b0b0b0;
+    font-size: 16px;
+    font-family: robotoregular,Helvetica,Arial,Sans-Serif;
+}
+
+.logout_act_as_customer {
+    height: 30px;
+    padding-top: 3px;
+    padding-bottom: 3px;
+    padding-left: 7px;
+    padding-right: 7px;
+    background: #d1222b;
+    color: #fff!important;
+    font-size: 14px;
+    margin-right: 0;
+    border: none;
+}
+
+.cart_icon_header {
+    width: 42px;
+    margin-top: 3px !important;
+}
+
+@media (min-width: 200px) and (max-width: 600px) {
+    #showActAsACustomerEmailField {
+        margin-bottom: 11px !important;
+        font-size: 0.8em !important;
+    }
+    .logout_act_as_customer {
+        font-size: 0.8em !important;
+        height: 19px !important;
+    }
+    #advisor_telephone_symbol {
+        font-size: 2.6em;
+    }
+}
+
+@media (min-width: 601px) and (max-width: 766px) {
+    #showActAsACustomerEmailField {
+        margin-bottom: 11px !important;
+        font-size: 0.8em !important;
+    }
+    .logout_act_as_customer {
+        font-size: 0.8em !important;
+        height: 19px !important;
+    }
+    #advisor_telephone_symbol {
+        font-size: 2.6em;
+    }
+}
+
+@media (min-width: 767px) and (max-width: 1024px) {
+    #showActAsACustomerEmailField {
+        margin-bottom: 11px !important;
+        font-size: 1em !important;
+    }
+    .logout_act_as_customer {
+        font-size: 1em !important;
+        height: 19px !important;
+    }
+    #advisor_telephone_symbol {
+        font-size: 3.36em;
+    }
+}
+
+@media (min-width: 1025px) and (max-width: 1119px) {
+    #showActAsACustomerEmailField {
+        margin-bottom: 11px !important;
+        font-size: 1em !important;
+    }
+    #advisor_telephone_symbol {
+        font-size: 3.36em;
+    }
+}
+
+@media (min-width: 1120px) and (max-width: 4000px) {
+    #showActAsACustomerEmailField {
+        margin-bottom: 11px !important;
+        font-size: 1em !important;
+    }
+    #advisor_telephone_symbol {
+        font-size: 3.36em;
+    }
+}
+
+.multiple_advisor_pic_container {
+    float: left;
+    width: 72px;
+    margin: 10px 0 10px 10px;
+}
+
+.multiple_advisor_pic {
+    border: 1px solid #d9d9d9;
+    width: 100%;
+    max-width: 100%;
+    height: 105px;
+}
+
+.multiple_advisor_contact_data_container {
+    float: left;
+    width: 180px;
+    margin: 10px;
+}
+
+.multiple_advisor_designation_data {
+    display: block;
+    color: #00589d;
+    font-size: 14px;
+}
+
+.multiple_advisor_contact_data {
+    display: block;
+    color: #7b7b7b;
+    font-size: 14px;
+    line-height: normal;
+}
+.multiple_advisor_name {
+    display: block;
+    color: #00589d;
+    font-size: 18px;
+    line-height: 19px;
+}
+
+.advisor_phone_icon, .advisor_mobile_icon{
+    display:inline-block;
+    position: relative;
+    width:  16px;
+    height: 16px;
+}
+
+.advisor_mobile_icon{
+
+}
+
+</style>
+
+
+
+<div id="siteMessageWarning" class="alert alert-danger" style="display: none; position: absolute; margin-top:40px; margin-left:-164px; z-index: 9999;">&nbsp;</div>
+<input type="hidden" id="links_phtml_uncached_timestamp" value="<?php echo date('Y-m-d H:i:s'); ?>">
+
+<ul id="headerLinks" class="hdRgtSec">
+    <li>
+        <a href="<?php echo Mage::getUrl('wishlist/partslist/view') ?>#active-tab" title="<?php echo $this->__('My Active Partslist'); ?>">
+            <span id="headerPLCaptionIcon" class="pin-icon partlistGrayIcon marginT5 marginR0"></span>
+        </a>
+    </li>
+
+    <li class="user-login" style="cursor: pointer;">
+        <div class="pull-left" id="agentInfoHead" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true" title="<?php echo $this->__('Your Personal Contact'); ?>">
+            <!-- <div class="agentFrm"></div> -->
+            <!-- img src="<?php //echo $this->getSkinUrl('schrackdesign/Public/Images/rwd/dmmuuserImg.png') ?>" alt="" -->
+        </div>
+        <!-- Header Dropdown HTML -->
+        <ul class="dropdown-menu online-contact advisor_panel" aria-labelledby="agentInfoHead">
+
+            <li id="advisor_heading_normalmode_block">
+                <div class="cnt-heading"><?php echo $this->__('Your Personal Contact') ?></div>
+                <div class="cnt-txt"><?php echo $this->__('We would be pleased to receive your request! Call us or Write us an e-mail!') ?>
+                </div>
+                <div class="cnt-btn">
+                    <div style="text-align: center">
+                    <a type="button" id="mailto">
+                       <img src="<?php echo $this->getSkinUrl('schrackdesign/Public/Images/rwd/new-mail-icon.png') ?>" alt="" class="mail-icon" />
+                        <span><?php echo $this->__('E-mail'); ?></span>
+                    </a>
+                    <a type="button" id="callto">
+                        <img src="<?php echo $this->getSkinUrl('schrackdesign/Public/Images/rwd/call-now.png') ?>" alt="" class="call-icon" />
+                        <span><?php echo $this->__('Call'); ?></span>
+                    </a>
+                    </div>
+                    <div style="text-align: center">
+                        <a type="button" style="width:265px; margin-top: 10px; margin-right: auto; margin-left: auto !important;" id="vcard" href="<?php echo Mage::getUrl('customer/account/vcard');?> ">
+                            <img src="<?php echo $this->getSkinUrl('schrackdesign/Public/Images/rwd/downloadIcon.png') ?>" alt="" class="vcard-icon" />
+                            <span><?php echo $this->__('Save Contact'); ?></span>
+                        </a>
+                    </div>
+                </div>
+            </li>
+
+            <li id="advisor_detail_normalmode_block" class="user-detail clearfix">
+                <div class="detail-container">
+                    <div class="user-pic"></div>
+                    <div class="user-info">
+                        <span class="name"></span>
+                        <span class="designation"></span>
+                        <span class="contact"></span>
+                    </div>
+                </div>
+                <?php if ($boolCustomerLoggedIn == true) : ?>
+                    <div>
+                        <button class="other_advisors_button"><?php echo $this->__('Advisors Team'); ?></button>
+                    </div>
+                <?php endif; ?>
+                <div class="enquire-now">
+                    <a class="btn-enquire" href="<?php echo Mage::getStoreConfig('schrack/typo3/typo3url') . 'onlinecontact'; ?>"><span>x<?php echo $this->__('Inquire Now'); ?></span></a>
+                </div>
+            </li>
+
+           <!-- TIME Advisor One: <?php echo date("Y-m-d H:i:s") . ' boolCustomerLoggenIn = ' . $boolCustomerLoggedIn; ?> -->
+           <li id="advisor_one_block" class="user-detail clearfix" style="padding: 4px 4px 2px 4px;">
+                <div class="detail-container">
+                    <div class="user-pic-one multiple_advisor_pic_container">
+                        <img id="multiple_advisor_one_pic" src="" alt="Online Sales" class="loading multiple_advisor_pic" data-was-processed="true">
+                    </div>
+                    <div class="user-info multiple_advisor_contact_data_container">
+                        <span id="multiple_advisor_one_name" class="name-one multiple_advisor_name"></span>
+                        <span id="multiple_advisor_one_title" class="designation-one multiple_advisor_designation_data"></span>
+                        <div class="contact-one multiple_advisor_contact_data">
+                            <span id="multiple_advisor_one_mail"></span>
+                            <br>
+                            <span id="multiple_advisor_one_phone"></span>
+                            <br>
+                            <span id="multiple_advisor_one_mobile"></span>
+                            <br>
+                            <span id="multiple_advisor_one_fax"></span>
+                            <br>
+                            <span id="multiple_advisor_one_branch"></span>
+                        </div>
+                    </div>
+                </div>
+            </li>
+
+            <li id="advisor_two_block" class="user-detail clearfix" style="padding: 4px 4px 2px 4px;">
+                <div class="detail-container">
+                    <div class="user-pic-two multiple_advisor_pic_container">
+                        <img id="multiple_advisor_two_pic" src="" alt="Online Sales" class="loading multiple_advisor_pic" data-was-processed="true">
+                    </div>
+                    <div class="user-info multiple_advisor_contact_data_container">
+                        <span id="multiple_advisor_two_name" class="name-two multiple_advisor_name"></span>
+                        <span id="multiple_advisor_two_title" class="designation-two multiple_advisor_designation_data"></span>
+                        <div class="contact-two multiple_advisor_contact_data">
+                            <span id="multiple_advisor_two_mail"></span>
+                            <br>
+                            <span id="multiple_advisor_two_phone"></span>
+                            <br>
+                            <span id="multiple_advisor_two_mobile"></span>
+                            <br>
+                            <span id="multiple_advisor_two_fax"></span>
+                            <br>
+                            <span id="multiple_advisor_two_branch"></span>
+                        </div>
+                    </div>
+                </div>
+            </li>
+
+            <li id="advisor_three_block" class="user-detail clearfix" style="padding: 4px 4px 2px 4px;">
+                <div class="detail-container">
+                    <div class="user-pic-three multiple_advisor_pic_container">
+                        <img id="multiple_advisor_three_pic" src="" alt="Online Sales" class="loading multiple_advisor_pic" data-was-processed="true">
+                    </div>
+                    <div class="user-info multiple_advisor_contact_data_container">
+                        <span id="multiple_advisor_three_name" class="name-three multiple_advisor_name"></span>
+                        <span id="multiple_advisor_three_title" class="designation-three multiple_advisor_designation_data"></span>
+                        <div class="contact-three multiple_advisor_contact_data">
+                            <span id="multiple_advisor_three_mail"></span>
+                            <br>
+                            <span id="multiple_advisor_three_phone"></span>
+                            <br>
+                            <span id="multiple_advisor_three_mobile"></span>
+                            <br>
+                            <span id="multiple_advisor_three_fax"></span>
+                            <br>
+                            <span id="multiple_advisor_three_branch"></span>
+                        </div>
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </li>
+    <li id="customerProfileLink" style="cursor: pointer;">
+        <div class="dropdown pull-left">
+            <ul class="dropdown-menu"></ul>
+        </div>        
+    </li>
+    <li>
+        <a href="<?php echo Mage::getUrl('checkout/cart', array('_secure' => true)) ?>"
+           class="MyCart"
+           title="<?php echo $this->__('My Cart'); ?>">
+           <img class="cart_icon_header" src="<?php echo $this->getSkinUrl('schrackdesign/Public/Images/cartIcon.png') ?>" alt=""/>
+        </a>
+    </li>
+</ul>
+
+<script type="text/javascript">
+    //<![CDATA[
+    jQuery("#headerLinks").hide();
+
+    console.log(">>>>>> Loading Template: schrackresponsive/template/page/template/links.phtml");
+
+    jQuery(document).ready(function () {
+
+       localStorage.removeItem('customerNotLoggedIn');
+
+		<?php if ($boolCustomerLoggedIn): ?>
+					localStorage.setItem('customerNotLoggedIn', 0);
+		<?php else: ?>
+					localStorage.setItem('customerNotLoggedIn', 1);
+		<?php endif ?>
+
+        console.log('schrackresponsive/template/page/template/links.phtml: Inverse Login Status: ' + localStorage.getItem('customerNotLoggedIn'));
+        console.log('schrackresponsive/template/page/template/links.phtml: Reset Checkout Status: opc-shipping_method');
+        localStorage.newCheckoutProcessCurrentStep = 'opc-shipping_method';
+
+
+        jQuery('#warning-message-close').on('click', function() {
+            localStorage.isAlreadyDisabledByCustomer = 1;
+            localStorage.isAlreadyDisabledByCustomerTimestamp = Date.now();
+        });
+
+        var realLoggedInUser = localStorage.customerLoggedInEmail;
+
+        if ( localStorage.actAsACustomer == 1 || (typeof realLoggedInUser == 'string' && realLoggedInUser.match(/live.schrack.com/i)) ) {
+            var systemContactMail = localStorage.customerLoggedInEmail;
+            var wwsCustomerIdArr = systemContactMail.match(/\d+/g).map(Number);
+            var wwsCustomerId = wwsCustomerIdArr[0];
+            var actAsCustomerCompanyName = '';
+            if (localStorage.customerLoggedInCompanyName) {
+                actAsCustomerCompanyName = ' ' + localStorage.customerLoggedInCompanyName;
+        }
+            var loggedInAsACustomerSuffix = "<?php echo $this->__('Is Logged In As Customer'); ?>" + actAsCustomerCompanyName + ' (' + wwsCustomerId + ') ';
+            var loggedInAsACustomerSuffixButton = '<a href="<?php echo $this->getUrl('customer/account/unactAsuser'); ?>" class="logout_act_as_customer">' + '<?php echo $this->__('Logout As A Customer'); ?>' + '</a>';
+            validateActAsACustomer (localStorage.actAsACustomerRealEmail, localStorage.customerLoggedInEmail, loggedInAsACustomerSuffix, loggedInAsACustomerSuffixButton);
+        } else {
+            console.log('Act-As-Customer not available #01');
+            jQuery('#showActAsACustomerEmailField').hide();
+            jQuery('#showActAsACustomerEmail').html('');
+        }
+
+        jQuery('.logout_act_as_customer').on('click', function() {
+            localStorage.actAsACustomer = 0;
+            localStorage.actAsACustomerRealEmail = '';
+            localStorage.customerLoggedInEmail = '';
+        });
+
+<?php if (Mage::helper('sapoci')->isSapociCheckout()) : ?>
+       console.log('SAP OCI Checkout >>> ACTIVE');
+<?php else: ?>
+        console.log('SAP OCI Checkout >>> NOT ACTIVE');
+<?php endif;?>
+        jQuery('.other_advisors_button').on('click', function() {
+            window.location = '<?php echo Mage::getUrl('customer/account/editotheradvisors') ?>';
+        });
+
+    });
+
+    //]]>
+</script>
+
+<!-- app/design/frontend/schrack/schrackresponsive/template/page/template/links.phtml (end) -->

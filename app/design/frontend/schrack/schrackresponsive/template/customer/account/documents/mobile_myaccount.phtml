@@ -1,0 +1,136 @@
+<!-- app/design/frontend/schrack/schrackresponsive/template/customer/account/documents/mobile_myaccount.phtml (start) -->
+<?php
+    $_customer = $this->getCustomer();	// Get customer object
+    $aclroleClass = '';
+    $aclrole = $_customer->getSchrackAclRole();
+    if($aclrole == 'staff' || $aclrole == 'projectant' || $aclrole == 'customer'|| $aclrole == 'list_price_customer'){
+        $aclroleClass = 'hide';
+    }
+    $customerType = $_customer->getSchrackCustomerType(); // ProspectTypes: 'light-prospect' / 'full-prospect'
+    $_schrackWwsCustomerId = null;
+    $_customerAccountName = null;
+    $_warehouseName = null;
+    $_maySeePrices = false;
+    if ($_customer) {
+        $_customerAccount = $_customer->getAccount();
+        $_schrackWwsCustomerId = $_customer->getSchrackWwsCustomerId();
+        if ($_customerAccount)
+            $_customerAccountName = $_customerAccount->getName();
+        $_pickup = $_customer->getSchrackPickup();
+        if ($_pickup) {
+            $_warehouse = $this->helper('schrackshipping/pickup')->getWarehouse($_pickup);
+            if ($_warehouse)
+                $_warehouseName = $_warehouse->getName();
+        }
+        $_maySeePrices = $_customer->isAllowed('price', 'view');
+    }
+    $country = Mage::getStoreConfig('schrack/general/country');
+    /* @var $promoHelper Schracklive_Promotions_Helper_Data */
+    $promoHelper = Mage::helper('promotions');
+    $_hasPromotions =  $promoHelper->hasPromotions();
+?>
+
+<style>
+    #detailSrcTxt {
+        font-size: 16px !important;
+    }
+    .sezame_pairing_menu_row_icon_active {
+        color: #ffffff;
+        font-weight: 200;
+        margin-left: 5px;
+    }
+    .sezame_pairing_menu_row_icon_inactive {
+        color: #005B9F;
+        font-weight: 200;
+        margin-left: 5px;
+    }
+</style>
+
+<div class="hidden-md hidden-lg myAccount">
+    <ul class="leftNav shop_tracking_leftNav">
+        <li><a href="<?php echo Mage::getUrl('customer/account/offers', array('reset' => 1)); ?>"><span class="offerIcon"></span><br><?php echo $this->__('Offers') ?></a></li>
+        <li><a href="<?php echo Mage::getUrl('customer/account/orders', array('reset' => 1)); ?>"><span class="orderIcon"></span><br><?php echo $this->__('Orders') ?></a></li>
+        <li><a href="<?php echo Mage::getUrl('customer/account/shipments', array('reset' => 1)); ?>"><span class="shipmentIcon" style="width: 49px !important; height: 24px !important; margin-top: 4px !important;"></span><br><?php echo $this->__('Shipments') ?></a></li>
+        <li><a href="<?php echo Mage::getUrl('customer/account/backorders'); ?>"><span class="backorderIcon" style="width: 30px !important; height: 28px !important; margin-top: 0px !important;"></span><br><?php echo $this->__('Backorders') ?></a></li>
+        <li><a href="<?php echo Mage::getUrl('customer/account/invoices', array('reset' => 1)); ?>"><span class="invoiceIcon"></span><br><?php echo $this->__('Invoices') ?></a></li>
+        <li><a href="<?php echo Mage::getUrl('customer/account/creditmemos', array('reset' => 1)); ?>"><span class="creditIcon"></span><br><?php echo $this->__('Credits') ?></a></li>
+        <li><a href="<?php echo Mage::getUrl('customer/account/documentsDetailsearch', array('reset' => 1)); ?>"><span class="detailSearchIcon"></span><br><?php echo $this->__('Detail Search') ?></a></li>
+        <?php if ( $_hasPromotions ) : ?>
+            <li><a href='<?php echo Mage::getBaseUrl() . 'promotions'; ?>'><span class="promotionIcon"></span><br><?php echo $this->__('Promotions') ?></a></li>
+        <?php endif; ?>
+        <li><a href="<?php echo Mage::getUrl('wishlist/partslist/view'); ?>"><span class="partlistBlueBdrIcon"></span><br><?php echo $this->__('Parts list') ?></a></li>
+        <li><a href="<?php echo $this->getUrl('account/account/index/'); ?>"><span class="myAcountIcon"></span><br><?php echo $this->__('Manage Account') ?></a></li>
+        <li><a href="<?php echo $this->getUrl('datanorm') ?>"><span class="pricelistIcon txtalgn"></span><br><?php echo $this->__('Pricelists / Datanorm') ?></a></li>
+
+        <?php if (Mage::getStoreConfig('sezame/settings/enabled')) : ?>
+            <?php
+            $cssClassDSezamePairingOption = '';
+            $cssClassDSezamePairingMenu   = 'sezame_pairing_menu_row_icon_inactive';
+
+            // Highlighting of menu point :
+            if (stristr(Mage::helper('core/url')->getCurrentUrl(), 'sezame/link')) {
+                $cssClassDSezamePairingOption = 'active';
+                $cssClassDSezamePairingMenu   = 'sezame_pairing_menu_row_icon_active';
+            }
+            ?>
+            <li class="<?php echo $cssClassDSezamePairingOption; ?>">
+                <a style="padding-top: 12%;" href="<?php echo Mage::getUrl('sezame/link') ?>" >
+                    <span style="font-size: 1.9em; width: 100%;" class="<?php echo $cssClassDSezamePairingMenu; ?> glyphicon glyphicon-qrcode"></span>
+                    <span id="sezame_pairing_menu_row">
+                        <?php echo $this->__('Sezame Pairing'); ?>
+                    </span>
+                </a>
+            </li>
+
+        <?php endif;?>
+
+        <li style="visibility:hidden" id="add-to-home-screen-li" class="active">
+            <a id="add-to-home-screen-a" style="padding-top: 12%;" href="javascript:void(0);">
+                <span style="font-size: 1.9em; width: 100%;" class="glyphicon glyphicon-save"></span>
+                <span>
+                    <?php echo $this->__('Add to home screen'); ?>
+                </span>
+            </a>
+        </li>
+
+
+        <?php if ( $_customer && Mage::helper('schrackcustomer')->mayActAsUser($_customer) ) : ?>
+            <li><a style="color: red !important;" href="<?php echo Mage::getStoreConfig('schrack/typo3/explicitloginurl'); ?>"><?php if (Mage::getStoreConfig('schrack/typo3/explicitloginurl')) echo $this->__('Typo Login'); else echo $this->__('No Typo Login Link Defined'); ?></a></li>
+        <?php endif; ?>
+    </ul>
+</div
+<?php if ($_maySeePrices) : ?>
+    <form action="<?php echo $this->getUrl('*/*/*') ?>" method="get" id="documents_form">
+        <?php echo $this->getChildHtml('documents_latestorders') ?>
+        <br>
+        <?php echo $this->getChildHtml('documents_latestoffers') ?>
+    </form>    
+<?php endif; ?>
+
+<script type="text/javascript">//<![CDATA[
+
+    jQuery(document).ready(function () {
+
+        if ( typeof localStorage.a2hsPrompt != 'undefined' ) {
+            jQuery('#add-to-home-screen-li').setStyle("visibility:visible");
+
+            jQuery('#add-to-home-screen-a').on('click',function(e) {
+              // Show the prompt
+              localStorage.a2hsPrompt.prompt();
+              // Wait for the user to respond to the prompt
+              localStorage.a2hsPrompt.userChoice
+                .then((choiceResult), function() {
+                  if (choiceResult.outcome === 'accepted') {
+                    console.log('User accepted the A2HS prompt');
+                  } else {
+                    console.log('User dismissed the A2HS prompt');
+                  }
+                  localStorage.a2hsPrompt = null;
+                  jQuery('#add-to-home-screen-id').setStyle("visibility:hidden");
+                });
+            });
+        }
+    });
+//]]>
+</script>
+<!-- app/design/frontend/schrack/schrackresponsive/template/customer/account/documents/mobile_myaccount.phtml (end) -->

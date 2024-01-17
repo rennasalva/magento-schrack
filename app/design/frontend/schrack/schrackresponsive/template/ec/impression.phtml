@@ -1,0 +1,123 @@
+<?php if (Mage::getStoreConfig('ec/config/active')): ?>
+<script type="text/javascript">
+
+	var GOOGLE_PAYLOAD_SIZE = 8192;
+	
+	/**
+	 *
+ 	 * Calculate payload size (approx.)
+ 	 *  
+ 	 * @return int bytes
+	 */
+	var getPayloadSize = function(object) 
+	{
+	    var objects = [object];
+	    var size = 0;
+	
+	    for (var index = 0; index < objects.length; index++) 
+	    {
+	        switch (typeof objects[index]) 
+	        {
+	            case 'boolean':
+	                size += 4;
+	                break;
+	            case 'number':
+	                size += 8;
+	                break;
+	            case 'string':
+	                size += 2 * objects[index].length;
+	                break;
+	            case 'object':
+	                if (Object.prototype.toString.call(objects[index]) != '[object Array]') 
+	                {
+	                    for (var key in objects[index]) size += 2 * key.length;
+	                }
+	                for (var key in objects[index]) 
+	                {
+	                    var processed = false;
+	                    
+	                    for (var search = 0; search < objects.length; search++) 
+	                    {
+	                        if (objects[search] === objects[index][key]) {
+	                            processed = true;
+	                            break;
+	                        }
+	                    }
+	                    if (!processed) objects.push(objects[index][key]);
+	                }
+	        }
+	    }
+	    return size;
+	};
+
+	/**
+	 * Chunk payload
+	 */
+	var getPayloadChunks = function(arr, len) 
+	{
+		var chunks = [],i = 0, n = arr.length;
+
+		while (i < n) 
+		{
+		    chunks.push(arr.slice(i, i += len));
+		}
+
+		return chunks;
+	}
+
+	<?php
+	/**
+	 * Track category impressions
+	 */
+	?>
+	<?php if ($data = $this->helper('ec/datalayer')->getPushImpressions()):?>
+
+		var impressionData = <?php echo $data->data ?>, payloadSize = getPayloadSize(impressionData.ecommerce.impressions);
+
+		if (GOOGLE_PAYLOAD_SIZE > payloadSize)
+		{
+			dataLayer.push(impressionData);
+		}
+		else 
+		{
+			var chunks = getPayloadChunks(impressionData.ecommerce.impressions, Math.ceil(impressionData.ecommerce.impressions.length/Math.ceil(payloadSize/GOOGLE_PAYLOAD_SIZE)));
+
+			var lazyPush = function(chunks)
+			{
+				if (chunks.length)
+				{
+					var chunk = chunks.shift(), chunkPush = jQuery.extend({}, impressionData);
+
+					chunkPush['event'] 					= 'impression';
+					chunkPush.ecommerce['impressions']  = chunk;
+					chunkPush['eventCallback'] 			= (function(chunks)
+					{
+						return function()
+						{
+							lazyPush(chunks);
+						}
+					})(chunks);
+
+					(function(data)
+					{
+						dataLayer.push(data);
+						
+					})(chunkPush);
+				}
+			};
+
+			/**
+			 * Call lazy push
+			 */
+			lazyPush(chunks);
+		}
+		
+		/**	
+		 * AdWords Dynamic Remarketing Category
+		 */
+		window.google_tag_params.ecomm_category = '<?php echo $data->google_tag_params['ecomm_category'] ?>';
+		
+	<?php endif ?>
+
+</script>
+<?php endif ?>

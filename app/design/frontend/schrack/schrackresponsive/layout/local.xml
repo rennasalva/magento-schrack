@@ -1,0 +1,411 @@
+<?xml version="1.0"?>
+<layout>
+	<default>
+		<!-- page.xml start -->
+        <reference name="root">
+            <block type="page/html_breadcrumbs" after="right" name="breadcrumbs" as="breadcrumbs" template="page/html/breadcrumbs.phtml"/>
+            <action method="setTemplate">
+                <template>page/1column.phtml</template>
+            </action>
+        </reference>
+		<reference name="top.links">
+			<block type="checkout/links" name="checkout_cart_link">
+				<action method="addQuickaddLink"></action>
+			</block>
+		</reference>
+                  
+        <reference name="before_body_end">
+            <block type="core/template" name="checkout.cart.quickadd" as="quickadd" template="checkout/cart/quickadd.phtml" />
+        </reference>
+        <reference name="head">
+            <action method="addItem">
+                <type>skin_css</type>
+            <name>schrackdesign/Public/Stylesheets/rwd/allPacked.css.non-mobile-version</name>
+            </action>
+            <!-- NOTE: for reasons yet unknown, including the i18n extension here
+                doesn't work, so for now it is included directly in the page body code
+                @TODO find out and fix
+            <action method="addItem">
+                <type>skin_js</type>
+                <name>js/jquery-ui-i18n.js</name>
+            </action>
+            -->
+            <action method="removeItem"><type>skin_css</type><name>css/styles.css</name></action>
+            <action method="removeItem"><type>skin_css</type><name>css/print.css</name></action>
+
+            <action method="removeItem"><type>js</type><name>prototype/prototype.js</name></action>
+            <action method="removeItem"><type>js</type><name>prototype/validation.js</name></action>
+
+            <action method="removeItem"><type>js</type><name>lib/ccard.js</name></action>
+
+            <action method="removeItem"><type>js</type><name>scriptaculous/builder.js</name></action>
+            <action method="removeItem"><type>js</type><name>scriptaculous/effects.js</name></action>
+            <action method="removeItem"><type>js</type><name>scriptaculous/dragdrop.js</name></action>
+            <action method="removeItem"><type>js</type><name>scriptaculous/controls.js</name></action>
+            <action method="removeItem"><type>js</type><name>scriptaculous/slider.js</name></action>
+
+            <action method="removeItem"><type>js</type><name>varien/js.js</name></action>
+            <action method="removeItem"><type>js</type><name>varien/form.js</name></action>
+            <action method="removeItem"><type>js</type><name>varien/menu.js</name></action>
+            <action method="removeItem"><type>js</type><name>varien/product.js</name></action>
+            <action method="removeItem"><type>js</type><name>varien/product_options.js</name></action> <!-- removal still does not work -->
+            <action method="removeItem"><type>js</type><name>varien/configurable.js</name></action>
+
+            <action method="removeItem"><type>js</type><name>calendar/calendar.js</name></action>
+            <action method="removeItem"><type>js</type><name>calendar/calendar-setup.js</name></action>
+
+            <action method="removeItem"><type>js</type><name>mage/translate.js</name></action>
+            <action method="removeItem"><type>js</type><name>mage/cookies.js</name></action>
+            <action method="removeItem"><type>js</type><name>varien/weee.js</name></action> <!-- removal still does not work -->
+            <action method="removeItem"><type>js</type><name>mage/captcha.js</name></action>
+
+            <action method="removeItem"><type>js_css</type><name>calendar/calendar-win2k-1.css</name></action> <!-- removal still does not work -->
+            <action method="removeItem"><type>skin_css</type><name>css/widgets.css</name></action>
+            
+            <!-- production -->
+            <action method="addJs"><name>../skin/frontend/schrack/default/schrackdesign/Public/Javascript/prototype.compacted.js</name></action>
+            <action method="addJs"><name>../skin/frontend/schrack/default/schrackdesign/Public/Javascript/allPacked.js.non-mobile-version</name></action>
+            <action method="addJs"><name>../skin/frontend/schrack/default/schrackdesign/Public/Javascript/commonPacked.js.non-mobile-version</name></action>
+
+            <!-- <action method="addJs"><script>../skin/frontend/schrack/default/schrackdesign/Public/Javascript/allPacked.js.non-mobile-version</script></action> -->
+            <!--action method="addItem"><type>skin_js</type><name>schrackdesign/Public/Javascript/newFiles/js/jquery-3.1.1.min.js</name></action>
+            <action method="addItem"><type>skin_js</type><name>schrackdesign/Public/Javascript/newFiles/js/bootstrap.js</name></action>
+            <action method="addItem"><type>skin_js</type><name>schrackdesign/Public/Javascript/newFiles/js/jquery.bxslider.min.js</name></action>
+            <action method="addItem"><type>skin_js</type><name>schrackdesign/Public/Javascript/newFiles/js/commonJs.js</name></action-->
+
+            <block type="core/template" name="applicationjs" as="applicationjs" template="page/html/applicationjs.phtml"/>
+        </reference>
+                <reference name="header">
+                    <block type="schrackpage/html_megamenu" name="megamenu" template="page/html/megamenu.phtml">
+                        <!--block type="core/template" name="top.search" as="topSearch" template="catalogsearch/form.mini.phtml"/-->
+                    </block>
+                </reference>
+		<reference name="footer">
+			<reference name="footer_links">
+				<action method="setTemplate">
+					<template>page/template/links-follow.phtml</template>
+				</action>
+			</reference>
+		</reference>
+		<reference name="before_body_end">
+			<block type="page/html_head" name="footer_js" as="footerJs" after="-" template="page/html/footerJs.phtml">
+				<action method="addItem">
+					<type>skin_js</type>
+					 <name>schrackdesign/Public/Javascript/packedFooter.js.non-mobile-version</name>
+				</action>
+			</block>
+		</reference> 
+		<!-- page.xml end -->
+		<!-- catalog.xml start -->
+		<reference name="top.menu">
+			<remove name="catalog.topnav" />
+		</reference>
+		<!-- catalog.xml end -->
+		<reference name="left">
+			<block type="catalog/navigation" name="catalog.vertnav" template="catalog/navigation/vert_nav.phtml"/> 
+                        <remove name="sale.reorder.sidebar"/>           
+		</reference>
+		<reference name="right">
+			<!-- checkout.xml start -->
+			<remove name="cart_sidebar" />
+			<!-- checkout.xml end -->
+			<!-- catalog.xml start -->
+			<remove name="right.permanent.callout" />
+			<!-- catalog.xml ende -->
+			<!-- reports.xml start -->
+			<remove name="right.reports.product.compared" />
+            <remove name="right.reports.product.viewed" />
+			<!-- reports.xml end -->
+			<!-- paypal.xml start -->
+			<remove name="paypal.partner.right.logo" />
+			<!-- paypal.xml end -->
+			<!--<block  type="core/template" name="right.permanent.rubric" before="catalog.compare.sidebar" template="callouts/schrack_rubric.phtml" />-->
+			<!-- block  type="core/template" name="right.permanent.legend" template="callouts/schrack_availability_legend.phtml" /-->
+			<!--<block  type="core/template" name="right.permanent.service" before="catalog.compare.sidebar" template="callouts/schrack_advisor_box.phtml" />-->
+		</reference>
+
+	</default>
+    <cms_index_index>
+        <remove name="catalog.vertnav"/>
+        <!--reference name="left">
+            <block type="customer/account_menu" name="customer_account_menu" template="customer/account/menu.phtml"></block>    
+        </reference-->
+    </cms_index_index>
+	<!-- sales.xml start -->
+	<customer_account>
+		<reference name="customer_account_navigation">
+			<action method="removeLink">
+				<name>billing_agreements</name>
+			</action>
+			<action method="removeLink">
+				<name>recurring_profiles</name>
+			</action>
+                        <action method="removeLink">
+				<name>orders</name>
+			</action>
+	</reference>
+	</customer_account>
+	<!-- sales.xml end -->
+	<catalog_category_default>
+		<reference name="root">
+			<action method="setTemplate">
+				<template>page/1column.phtml</template>
+			</action>
+		</reference>
+        <reference name="left">
+			<remove name="catalog.leftnav" />
+            <block type="customer/account_menu" name="customer_account_menu" template="customer/account/menu.phtml" />
+        </reference>
+        <reference name="category.products">
+            <block type="core/template" name="category.headline"    template="catalog/category/headline.phtml"/>
+            <block type="core/template" name="category.description" template="catalog/category/description.phtml"/>
+            <block type="core/template" name="category.subcats"     template="catalog/category/subcats.phtml"/>
+            <block type="core/template" name="category.attachments" template="catalog/category/attachments.phtml"/>
+            <block type="schracklive_typo3/catalog_category_cmsContent" name="category.cms_content"/>
+        </reference>
+        <reference name="product_list">
+            <block type="catalog/product_list" name="product_list_table" template="catalog/product/list/table_solr.phtml">
+            </block>
+        </reference>
+	</catalog_category_default>
+
+	<catalog_category_layered>
+		<reference name="left">
+			<remove name="catalog.leftnav" />
+            <block type="customer/account_menu" name="customer_account_menu" template="customer/account/menu.phtml" />
+		</reference>
+	</catalog_category_layered>
+
+    <catalog_category_layered_nochildren translate="label">
+        <reference name="left">
+            <remove name="catalog.leftnav" />
+        </reference>
+        <reference name="root">
+            <action method="setTemplate">
+                <template>page/1column.phtml</template>
+            </action>
+        </reference>
+    </catalog_category_layered_nochildren>
+
+
+	<catalog_product_compare_index>
+        <reference name="root">
+            <action method="setTemplate">
+                <template>page/2columns-left.phtml</template>
+            </action>
+        </reference>
+        <remove name="wishlist_sidebar"/>
+        <remove name="reorder"/>
+        <remove name="catalog.compare.sidebar"/>
+        <remove name="sale.reorder.sidebar"/>
+        <reference name="left">
+            <remove name="catalog.vertnav"/>
+            <block type="customer/account_menu" name="customer_account_menu" template="customer/account/menu.phtml"></block>
+        </reference>
+	</catalog_product_compare_index>
+	<catalog_product_view>
+        <reference name="root">
+            <action method="setTemplate">
+                <template>page/1column.phtml</template>
+            </action>
+        </reference>
+        <reference name="head">
+            <action method="removeItem"><type>js</type><name>varien/product.js</name></action>
+            <action method="removeItem"><type>js</type><name>varien/configurable.js</name></action>
+            <action method="removeItem"><type>js</type><name>varien/product_options.js</name></action>
+            <action method="removeItem"><type>js</type><name>calendar/calendar.js</name></action>
+            <action method="removeItem"><type>js</type><name>calendar/calendar-setup.js</name></action>
+            <action method="removeItem"><type>js</type><name>mage/captcha.js</name></action>
+        </reference>
+        <reference name="right">
+            <remove name="catalog.product.related"></remove>
+        </reference>
+		<reference name="product.info">
+            <block type="core/template" name="product.meta" as="meta" template="catalog/product/view/meta.phtml"/>
+            <block type="core/template" name="product.hint" as="hint" template="catalog/product/view/hint.phtml"/>
+            <block type="core/template" name="product.dead" as="dead" template="catalog/product/view/dead.phtml"/>
+            <block type="core/template" name="product.deadreplacing" as="deadreplacing" template="catalog/product/view/deadreplacing.phtml"/>
+            <block type="core/template" name="product.download" as="download" template="catalog/product/view/download.phtml"/>
+            <block type="core/template" name="product.prices" as="prices" template="catalog/product/view/prices.phtml"/>
+            <block type="core/template" name="product.priceexplanation" as="priceexplanation" template="catalog/product/view/priceexplanation.phtml"/>
+			<block type="core/template" name="product.stock" as="stock" template="catalog/product/view/stock.phtml"/>
+            <block type="core/template" name="product.moreactions" as="moreactions" template="catalog/product/view/moreactions.phtml"/>
+            <block type="core/template" name="product.browseblock" as="browseblock" template="catalog/product/view/browseblock.phtml"/>
+            <block type="catalog/product_view_related" name="catalog.product.view.related" as="related" template="catalog/product/view/related.phtml" />
+            <block type="catalog/product_view_attributes" name="product.attributes" as="additional" template="catalog/product/view/attributes.phtml" >
+                <block type="catalog/product_view_attributes" name="product.otherbatches" as="otherbatches" template="catalog/product/view/otherbatches.phtml"/>
+            </block>
+            <block type="catalog/product_view_accessories" name="product.accessories" as="accessories" template="catalog/product/view/accessories.phtml"/>
+		</reference>
+	</catalog_product_view>
+	<catalog_product_send translate="label">
+        <reference name="root">
+            <action method="setTemplate">
+                <template>page/2columns-right.phtml</template>
+            </action>
+        </reference>
+	</catalog_product_send>
+	<catalogsearch_result_index>
+        <reference name="root">
+            <action method="setTemplate">
+                <template>page/1column.phtml</template>
+            </action>
+        </reference>
+	</catalogsearch_result_index>
+	<checkout_onepage_index>
+        <reference name="root">
+            <action method="setTemplate">
+                <template>page/1column.phtml</template>
+            </action>
+        </reference>
+        <reference name="head">
+            <action method="addItem">
+				<type>skin_js</type>
+				<name>schrackdesign/Public/Javascript/packedOpcheckout.js.non-mobile-version</name>
+			</action>
+        </reference>
+        <reference name="header">
+            <remove name="megamenu"/>
+        </reference>
+        <reference name="checkout.onepage">
+            <block type="checkout/onepage_address" name="checkout.onepage.address" as="address" template="checkout/onepage/address.phtml"/>
+        </reference>
+	</checkout_onepage_index>
+	<checkout_onepage_paymentmethod>
+		<reference name="root">
+			<block type="core/text_list" name="checkout.onepage.payment.before" as="payment_before"/>
+		</reference>
+	</checkout_onepage_paymentmethod>
+    <checkout_onepage_success translate="label">
+		<label>One Page Success</label>
+		<reference name="root">
+			<action method="setTemplate">
+				<template>page/2columns-left.phtml</template>
+			</action>
+		</reference>
+         <reference name="left">
+            <remove name="catalog.vertnav"></remove>
+            <action method="unsetChildren"></action>         
+        </reference>
+		<reference name="content">
+			<block type="schrackcheckout/onepage_success" name="checkout.error" template="checkout/onepage/success.phtml"/>
+		</reference>
+        <remove name="right.reports.product.compared" />
+	</checkout_onepage_success>
+	<checkout_onepage_error translate="label">
+		<label>One Page Checkout Error</label>
+		<reference name="root">
+			<action method="setTemplate">
+				<template>page/2columns-left.phtml</template>
+			</action>
+		</reference>
+         <reference name="left">
+            <remove name="catalog.vertnav"></remove>
+            <action method="unsetChildren"></action>         
+        </reference>
+		<reference name="content">
+			<block type="schrackcheckout/onepage_error" name="checkout.error" template="checkout/onepage/error.phtml"/>
+		</reference>
+        <remove name="right.reports.product.compared" />
+	</checkout_onepage_error>
+	<wishlist_index_index>
+		<reference name="root">
+			<action method="setTemplate">
+				<template>page/2columns-right.phtml</template>
+			</action>
+		</reference>
+		<remove name="wishlist_sidebar"></remove>
+	</wishlist_index_index>
+	<cms_page translate="label">
+		<reference name="cms.wrapper">
+			<action method="setElementClass">
+				<value>cms-content</value>
+			</action>
+			<block type="schracklive_typo3/cms_page" name="cms_page"/>
+			<block type="schracklive_typo3/cms_content" name="cms_content"/>
+		</reference>
+	</cms_page>
+        <checkout_cart_index>
+            <reference name="root">
+                <action method="setTemplate">
+                    <template>page/1column.phtml</template>
+                </action>
+                <block type="core/text_list" name="left" as="left" translate="label">
+                    <label>Left Column</label>
+                </block>
+            </reference>
+            <reference name="left">
+                <remove name="catalog.vertnav"></remove>
+                <action method="unsetChildren"></action>
+                <block type="customer/account_menu" name="customer_account_menu" template="customer/account/menu.phtml"></block>            
+            </reference>
+            <reference name="content">            
+                <reference name="checkout.cart">
+                    <block type="core/template" name="checkout.cart.rightcartnav" as="rightcartnav" template="checkout/cart/rightcartnav.phtml" />
+                </reference>
+            </reference>
+            <reference name="content">            
+                <reference name="checkout.cart">
+                    <block type="core/template" name="checkout.cart.rightcartnavmobile" as="rightcartnavmobile" template="checkout/cart/rightcartnavmobile.phtml" />
+                </reference>
+            </reference>
+        </checkout_cart_index>
+    
+    <catalog_product_downloadpowerlosscsv>
+        <reference name="root">
+            <action method="setTemplate">
+                <template>page/2columns-left.phtml</template>
+            </action>
+            <block type="schrackcatalog/product_powerlosscsv" name="catalog.product.powerlosscsv" as="powerlosscsv" template="catalog/product/powerlosscsv.phtml"/>
+        </reference>
+        <reference name="content">
+            <block type="core/template" name="catalog.product.powerlosscsv.view" as="powerlosscsvview" template="catalog/product/powerlosscsvview.phtml"/>
+        </reference>
+        <reference name="right">
+            <remove name="tags_popular"/>
+            <remove name="right.permanent.rubric" />
+        </reference>
+        <remove name="catalog.vertnav"/>
+        <reference name="left">
+            <block type="customer/account_menu" name="customer_account_menu" template="customer/account/menu.phtml"></block>
+        </reference>
+    </catalog_product_downloadpowerlosscsv>
+
+    <checkout_cart_teststartmenu>
+        <reference name="head">
+            <action method="setTitle" translate="title">               
+                <title>Test Startmenu</title>            
+            </action>
+        </reference>
+        
+        <reference name="root">
+            <action method="setTemplate">
+                <template>page/2columns-left.phtml</template>
+            </action>
+        </reference>        
+        <reference name="content">             
+            <block type="core/template" name="page_html_startmenu" template="page/html/startmenu.phtml"/>
+        </reference>     
+    </checkout_cart_teststartmenu>
+
+    <geoip_redirect_warn>
+        <reference name="root">
+            <block type="core/template" name="geoip_redirect_warning" template="geoip/redirect_warning.phtml"/>
+        </reference>
+    </geoip_redirect_warn>
+    <catalog_quantitywarningpopup translate="label">
+        <label>Tralala</label>
+        <reference name="root">
+            <action method="setTemplate">
+                <template>catalog/quantitywarningpopup.phtml</template>
+            </action>
+        </reference>
+    </catalog_quantitywarningpopup>
+
+    <schracklive_schrack_productdownloads_index>
+        <reference name="content">
+            <block type="core/template" name="productdownloads_country_selection" template="sd/productdownloadsselection.phtml" />
+        </reference>
+    </schracklive_schrack_productdownloads_index>
+
+</layout>

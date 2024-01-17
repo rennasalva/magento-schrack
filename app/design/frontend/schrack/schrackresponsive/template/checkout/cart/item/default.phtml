@@ -1,0 +1,1345 @@
+<!-- app/design/frontend/schrack/schrackresponsive/template/checkout/cart/item/default.phtml (start) -->
+
+<?php
+    // @var $this Schracklive_SchrackCheckout_Block_Cart_Item_Renderer
+    $_customer = Mage::getSingleton('customer/session')->getCustomer();
+    $_item = $this->getItem();
+    $_product = $this->getProduct();
+if (Schracklive_SchrackCatalog_Helper_Preparator::PREPARATE_PRODUCTS) {
+        Mage::helper('schrackcatalog/preparator')->prepareProduct($_product);
+    }
+    //--------------------------------------------------------------------------
+    $countryCode = Mage::getStoreConfig('general/country/default');
+    //--------------------------------------------------------------------------
+    $_infoHelper = Mage::helper('schrackcatalog/info');
+    $_productHelper = Mage::helper('schrackcatalog/product');
+    /* @var $_stockListToolbar Schracklive_SchrackcatalogInventory_Helper_Stock */
+    $_stockHelper = Mage::helper('schrackcataloginventory/stock');
+    /* @var $_infoHelper Schracklive_SchrackCatalog_Helper_Info */
+    $_qty = $this->getQty();
+    $_imgCartUrl = $this->getSkinUrl('images/cart_raute1.png');
+    $_imgTruckUrl = $this->getSkinUrl('images/truck_white_diamond.png');
+    $_imgInvisUrl = $this->getSkinUrl('images/no_truck_no_cart.png');
+    $_imgPromoStickerUrl = $this->getSkinUrl('schrackdesign/Public/Images/rwd/promotion/promotion_sticker_rot.svg');
+    $_partslistHelper = Mage::helper('schrackwishlist/partslist');
+    $_priceHelper = Mage::helper('schrackcatalog/price');
+    $_maySeePrices = Mage::helper('geoip')->maySeePrices();
+    // ### $_currency = $_priceHelper->getCurrencyForCustomer($_product, $_customer,$_qty);
+
+    $dataArray = array();
+    if (Mage::getStoreConfig('ec/config/active')) {
+        $trackingEnabled = 'enabled';
+    } else {
+        $trackingEnabled = 'disabled';
+    }
+    $_sku2promoMap = Mage::registry('sku2promoMap')
+?>
+
+<style>
+    html, body {
+        max-width: 100% !important;
+        overflow-x: hidden !important;
+    }
+
+    .glyphicon.glyphicon-info-sign.info-icon{
+        color:#00589d;
+    }
+
+    .exampleInputName2Label {
+        font-size: 0.8em !important;
+    }
+    .schrack_qty_unit {
+        font-size: 0.8em !important;
+    }
+    .trigger-item-position-description {
+        float: left;
+        margin-top: 2px;
+        cursor: pointer;
+    }
+
+    .triggerDescriptionCartItemPositionRow {
+        margin-bottom: 10px;
+        color: #333;
+        height: 25px;
+        padding-left: 2px;
+        padding-top: 2px;
+    }
+
+    .descriptionContainerCartItemPosition {
+        background: #F5F5F5;
+        margin-bottom: 2px;
+    }
+
+    .headlineAddCartPositionDescription {
+        margin-left: 5px;
+        float: left;
+        font-size: 0.8em;
+    }
+
+    .triggerDescriptionCartItemPositionRowText {
+        display: none;
+        height: 35px;
+    }
+
+    .triggerDescriptionCartItemPositionRowTextInput {
+        width: 99%;
+        color: #000000;
+        padding-left: 6px;
+        height: 31px;
+        font-size: 16px !important;
+    }
+
+    .triggerDescriptionCartItemPositionRowSaveMessage {
+        color: white;
+        text-align: center;
+        background: #D1222B;
+        display: none;
+        float: right;
+        padding: 3px 22px;
+        font-size: 0.9em;
+        letter-spacing: 1px;
+        margin-top: -2px;
+        border-radius: 7px;
+        opacity: 0.8;
+    }
+
+    .clearBoth {
+        clear: both;
+    }
+
+    .autocomplete {
+        /*the container must be positioned relative:*/
+        position: relative;
+        display: inline-block;
+    }
+
+    .autocomplete-items {
+        position: absolute;
+        border: 1px solid #d4d4d4;
+        border-bottom: none;
+        border-top: none;
+        z-index: 99;
+        /*position the autocomplete items to be the same width as the container:*/
+        top: 100%;
+        left: 0;
+        right: 0;
+    }
+    .autocomplete-items div {
+        padding: 10px;
+        background-color: #fff;
+        border-bottom: 1px solid #d4d4d4;
+        height: 40px;
+    }
+    .autocomplete-items div:hover {
+        /*when hovering an item:*/
+        background-color: #005B9F !important;
+        color: #ffffff;
+    }
+    .autocomplete-active {
+        /*when navigating through the items using the arrow keys:*/
+        background-color: #005B9F !important;
+        color: #ffffff;
+    }
+
+    .product_price_icon {
+        font-size: 18px !important;
+    }
+
+    a.replacing_product_details_link {
+        background: #d1222b;
+        color: #fff;
+        font-size: 15px;
+        text-align: center;
+        min-width: 100%;
+        max-width: 100%;
+        border: 0;
+        position: relative;
+        padding: 10px 0;
+        margin-bottom: 10px;
+        display: inline-block;
+        vertical-align: top;
+        top: 0px;
+    }
+
+    a.replacing_product_details_link span{
+        /*top: 17px;*/
+        /*left: 14px;*/
+    }
+
+    @media (min-width: 1px) and (max-width: 320px) {
+        .logstics-icon {
+            margin-top: 0 !important;
+            width: 32px !important;
+            height: 19px !important;
+        }
+        .store-icon{
+            width: 23px !important;
+            height: 29px !important;
+            margin-top: 4px !important;
+        }
+        .yes-no-button {
+            height: 30px !important;
+        }
+        .quantity-input-field {
+            height: 27px !important;
+            width: 99px !important;
+            font-size: 16px !important;
+        }
+        .span_currentprice3 {
+            font-size: 1.2em !important;
+            font-weight: bold !important;
+        }
+        .span_finalprice {
+            font-size: 1.2em !important;
+            font-weight: bold !important;
+        }
+        .stock_quantity_div {
+            margin-bottom: 1px !important;
+            font-size: 0.8em !important;
+        }
+        .sales_unit_div {
+            margin-bottom: 1px !important;
+            font-size: 0.8em !important;
+        }
+        .pickupable_quantity_div_top {
+            margin-top: 0 !important;
+            font-size: 0.8em !important;
+        }
+        .pickupable_quantity_div {
+            margin-bottom: 1px !important;
+            font-size: 1em !important;
+        }
+        .product_name_header_parent {
+            line-height: 1.1 !important;
+        }
+        .product_name_header {
+            font-size: 0.7em !important;
+        }
+        .link_delete_mobile {
+            margin-right: 5px !important;
+        }
+        .link_delete_mobile_button {
+            z-index: 10 !important;
+        }
+        .link_partslist_mobile {
+            margin-right: 5px !important;
+        }
+        .quantity_input_mobile {
+            height: 34px !important;
+            margin-top: 23px !important;
+            margin-bottom: 0 !important;
+        }
+        .product_price_surcharges_info {
+            font-size: 0.8em !important;
+        }
+    }
+
+    @media (min-width: 321px) and (max-width: 360px) {
+        .logstics-icon {
+            margin-top: 0 !important;
+            width: 32px !important;
+            height: 19px !important;
+        }
+        .store-icon{
+            width: 23px !important;
+            height: 29px !important;
+            margin-top: 4px !important;
+        }
+        .yes-no-button {
+            height: 30px !important;
+        }
+        .quantity-input-field {
+            height: 27px !important;
+            width: 99px !important;
+            font-size: 16px !important;
+        }
+        .span_currentprice3 {
+            font-size: 1.2em !important;
+            font-weight: bold !important;
+        }
+        .span_finalprice {
+            font-size: 1.2em !important;
+            font-weight: bold !important;
+        }
+        .on_request_line {
+            margin-bottom: 1px !important;
+            font-size: 0.8em !important;
+        }
+        .stock_quantity_div {
+            margin-bottom: 1px !important;
+            font-size: 0.8em !important;
+        }
+        .sales_unit_div {
+            margin-bottom: 1px !important;
+            font-size: 0.8em !important;
+        }
+        .pickupable_quantity_div_top {
+            margin-top: 0 !important;
+            font-size: 0.8em !important;
+        }
+        .pickupable_quantity_div {
+            margin-bottom: 1px !important;
+            font-size: 1em !important;
+        }
+        .product_name_header_parent {
+            line-height: 1.1 !important;
+        }
+        .product_name_header {
+            font-size: 0.7em !important;
+        }
+        .link_delete_mobile {
+            margin-right: 5px !important;
+        }
+        .link_delete_mobile_button {
+            z-index: 10 !important;
+        }
+        .link_partslist_mobile {
+            margin-right: 5px !important;
+        }
+        .quantity_input_mobile {
+            height: 34px !important;
+            margin-top: 23px !important;
+            margin-bottom: 0 !important;
+        }
+        .product_price_surcharges_info {
+            font-size: 0.8em !important;
+        }
+        .productItemWrapper {
+            padding-right: 6px !important;
+            width: 91.5% !important;;
+            margin-left: 16px !important;;
+        }
+    }
+
+    @media (min-width: 361px) and (max-width: 410px) {
+        .logstics-icon {
+            margin-top: 0 !important;
+            width: 32px !important;
+            height: 19px !important;
+        }
+        .store-icon{
+            width: 23px !important;
+            height: 29px !important;
+            margin-top: 4px !important;
+        }
+        .yes-no-button {
+            height: 30px !important;
+        }
+        .quantity-input-field {
+            height: 27px !important;
+            width: 99px !important;
+            font-size: 16px !important;
+        }
+        .span_currentprice3 {
+            font-size: 1.2em !important;
+            font-weight: bold !important;
+        }
+        .span_finalprice {
+            font-size: 1.2em !important;
+            font-weight: bold !important;
+        }
+        .on_request_line {
+            margin-bottom: 1px !important;
+            font-size: 0.8em !important;
+        }
+        .stock_quantity_div {
+            margin-bottom: 1px !important;
+            font-size: 0.8em !important;
+        }
+        .sales_unit_div {
+            margin-bottom: 1px !important;
+            font-size: 0.8em !important;
+        }
+        .pickupable_quantity_div_top {
+            margin-top: 0 !important;
+            font-size: 0.8em !important;
+        }
+        .pickupable_quantity_div {
+            margin-bottom: 1px !important;
+            font-size: 1em !important;
+        }
+        .product_name_header_parent {
+            line-height: 1.1 !important;
+        }
+        .product_name_header {
+            font-size: 0.7em !important;
+        }
+        .link_delete_mobile {
+            margin-right: 5px !important;
+        }
+        .link_delete_mobile_button {
+            z-index: 10 !important;
+        }
+        .link_partslist_mobile {
+            margin-right: 5px !important;
+        }
+        .quantity_input_mobile {
+            height: 34px !important;
+            margin-top: 23px !important;
+            margin-bottom: 0 !important;
+        }
+        .product_price_surcharges_info {
+            font-size: 0.8em !important;
+        }
+        .productItemWrapper {
+            padding-right: 24px !important;
+        }
+    }
+
+    @media (min-width: 361px) and (max-width: 410px) {
+        .logstics-icon {
+            margin-top: 0 !important;
+            width: 32px !important;
+            height: 19px !important;
+        }
+        .store-icon{
+            width: 23px !important;
+            height: 29px !important;
+            margin-top: 4px !important;
+        }
+        .yes-no-button {
+            height: 30px !important;
+        }
+        .quantity-input-field {
+            height: 27px !important;
+            width: 99px !important;
+            font-size: 16px !important;
+        }
+        .span_currentprice3 {
+            font-size: 1.2em !important;
+            font-weight: bold !important;
+        }
+        .span_finalprice {
+            font-size: 1.2em !important;
+            font-weight: bold !important;
+        }
+        .on_request_line {
+            margin-bottom: 1px !important;
+            font-size: 0.8em !important;
+        }
+        .stock_quantity_div {
+            margin-bottom: 1px !important;
+            font-size: 0.8em !important;
+        }
+        .sales_unit_div {
+            margin-bottom: 1px !important;
+            font-size: 0.8em !important;
+        }
+        .pickupable_quantity_div_top {
+            margin-top: 0 !important;
+            font-size: 0.8em !important;
+        }
+        .pickupable_quantity_div {
+            margin-bottom: 1px !important;
+            font-size: 1em !important;
+        }
+        .product_name_header_parent {
+            line-height: 1.1 !important;
+        }
+        .product_name_header {
+            font-size: 0.7em !important;
+        }
+        .link_delete_mobile {
+            margin-right: 5px !important;
+        }
+        .link_delete_mobile_button {
+            z-index: 10 !important;
+        }
+        .link_partslist_mobile {
+            margin-right: 5px !important;
+        }
+        .quantity_input_mobile {
+            height: 34px !important;
+            margin-top: 23px !important;
+            margin-bottom: 0 !important;
+        }
+        .product_price_surcharges_info {
+            font-size: 0.8em !important;
+        }
+        .cartBx {
+            width: 97.5% !important;
+            padding-right: 6px !important;
+        }
+        .productItemWrapper {
+            margin-left: 10px !important;
+        }
+    }
+
+    @media (min-width: 411px) and (max-width: 460px) {
+        .logstics-icon {
+            margin-top: 0 !important;
+            width: 32px !important;
+            height: 19px !important;
+        }
+        .store-icon{
+            width: 23px !important;
+            height: 29px !important;
+            margin-top: 4px !important;
+        }
+        .yes-no-button {
+            height: 30px !important;
+        }
+        .quantity-input-field {
+            height: 27px !important;
+            width: 99px !important;
+            font-size: 16px !important;
+        }
+        .span_currentprice3 {
+            font-size: 1.2em !important;
+            font-weight: bold !important;
+        }
+        .span_finalprice {
+            font-size: 1.2em !important;
+            font-weight: bold !important;
+        }
+        .on_request_line {
+            margin-bottom: 1px !important;
+            font-size: 0.8em !important;
+        }
+        .stock_quantity_div {
+            margin-bottom: 1px !important;
+            font-size: 0.8em !important;
+        }
+        .sales_unit_div {
+            margin-bottom: 1px !important;
+            font-size: 0.8em !important;
+        }
+        .pickupable_quantity_div_top {
+            margin-top: 0 !important;
+            font-size: 0.8em !important;
+        }
+        .pickupable_quantity_div {
+            margin-bottom: 1px !important;
+            font-size: 1em !important;
+        }
+        .product_name_header_parent {
+            line-height: 1.1 !important;
+        }
+        .product_name_header {
+            font-size: 0.7em !important;
+        }
+        .link_delete_mobile {
+            margin-right: 5px !important;
+        }
+        .link_delete_mobile_button {
+            z-index: 10 !important;
+        }
+        .link_partslist_mobile {
+            margin-right: 5px !important;
+        }
+        .quantity_input_mobile {
+            height: 34px !important;
+            margin-top: 23px !important;
+            margin-bottom: 0 !important;
+        }
+        .product_price_surcharges_info {
+            font-size: 0.8em !important;
+        }
+        .cartBx {
+            width: 97.5% !important;
+            padding-right: 6px !important;
+        }
+    }
+
+    @media (min-width: 461px) and (max-width: 480px) {
+        .logstics-icon {
+            margin-top: 0 !important;
+            width: 32px !important;
+            height: 19px !important;
+        }
+        .store-icon{
+            width: 23px !important;
+            height: 29px !important;
+            margin-top: 4px !important;
+        }
+        .yes-no-button {
+            height: 30px !important;
+        }
+        .quantity-input-field {
+            height: 27px !important;
+            width: 99px !important;
+            font-size: 16px !important;
+        }
+        .span_currentprice3 {
+            font-size: 1.2em !important;
+            font-weight: bold !important;
+        }
+        .span_finalprice {
+            font-size: 1.2em !important;
+            font-weight: bold !important;
+        }
+        .on_request_line {
+            margin-bottom: 1px !important;
+            font-size: 0.8em !important;
+        }
+        .stock_quantity_div {
+            margin-bottom: 1px !important;
+            font-size: 0.8em !important;
+        }
+        .sales_unit_div {
+            margin-bottom: 1px !important;
+            font-size: 0.8em !important;
+        }
+        .pickupable_quantity_div_top {
+            margin-top: 0 !important;
+            font-size: 0.8em !important;
+        }
+        .pickupable_quantity_div {
+            margin-bottom: 1px !important;
+            font-size: 1em !important;
+        }
+        .product_name_header_parent {
+            line-height: 1.1 !important;
+        }
+        .product_name_header {
+            font-size: 0.7em !important;
+        }
+        .link_delete_mobile {
+            margin-right: 5px !important;
+        }
+        .link_delete_mobile_button {
+            z-index: 10 !important;
+        }
+        .link_partslist_mobile {
+            margin-right: 5px !important;
+        }
+        .quantity_input_mobile {
+            height: 34px !important;
+            margin-top: 23px !important;
+            margin-bottom: 0 !important;
+        }
+        .product_price_surcharges_info {
+            font-size: 0.8em !important;
+        }
+    }
+
+    @media (min-width: 481px) and (max-width: 560px) {
+        .logstics-icon {
+            margin-top: 0 !important;
+            width: 32px !important;
+            height: 19px !important;
+        }
+        .store-icon{
+            width: 23px !important;
+            height: 29px !important;
+            margin-top: 4px !important;
+        }
+        .yes-no-button {
+            height: 30px !important;
+        }
+        .quantity-input-field {
+            height: 27px !important;
+            width: 99px !important;
+            font-size: 16px !important;
+        }
+        .span_currentprice3 {
+            font-size: 1.2em !important;
+            font-weight: bold !important;
+        }
+        .span_finalprice {
+            font-size: 1.2em !important;
+            font-weight: bold !important;
+        }
+        .on_request_line {
+            margin-bottom: 1px !important;
+            font-size: 0.8em !important;
+        }
+        .stock_quantity_div {
+            margin-bottom: 1px !important;
+            font-size: 0.8em !important;
+        }
+        .sales_unit_div {
+            margin-bottom: 1px !important;
+            font-size: 0.8em !important;
+        }
+        .pickupable_quantity_div_top {
+            margin-top: 0 !important;
+            font-size: 0.8em !important;
+        }
+        .pickupable_quantity_div {
+            margin-bottom: 1px !important;
+            font-size: 1em !important;
+        }
+        .product_name_header_parent {
+            line-height: 1.1 !important;
+        }
+        .product_name_header {
+            font-size: 0.7em !important;
+        }
+        .link_delete_mobile {
+            margin-right: 5px !important;
+        }
+        .link_delete_mobile_button {
+            z-index: 10 !important;
+        }
+        .link_partslist_mobile {
+            margin-right: 5px !important;
+        }
+        .quantity_input_mobile {
+            height: 34px !important;
+            margin-top: 23px !important;
+            margin-bottom: 0 !important;
+        }
+        .product_price_surcharges_info {
+            font-size: 0.8em !important;
+        }
+    }
+
+    @media (min-width: 561px) and (max-width: 639px) {
+        .logstics-icon {
+            margin-top: 0 !important;
+            width: 32px !important;
+            height: 19px !important;
+        }
+        .store-icon{
+            width: 23px !important;
+            height: 29px !important;
+            margin-top: 4px !important;
+        }
+        .yes-no-button {
+            height: 30px !important;
+        }
+        .quantity-input-field {
+            height: 27px !important;
+            width: 99px !important;
+            font-size: 16px !important;
+        }
+        .span_currentprice3 {
+            font-size: 1.2em !important;
+            font-weight: bold !important;
+        }
+        .span_finalprice {
+            font-size: 1.2em !important;
+            font-weight: bold !important;
+        }
+        .on_request_line {
+            margin-bottom: 1px !important;
+            font-size: 0.8em !important;
+        }
+        .stock_quantity_div {
+            margin-bottom: 1px !important;
+            font-size: 0.8em !important;
+        }
+        .sales_unit_div {
+            margin-bottom: 1px !important;
+            font-size: 0.8em !important;
+        }
+        .pickupable_quantity_div_top {
+            margin-top: 0 !important;
+            font-size: 0.8em !important;
+        }
+        .pickupable_quantity_div {
+            margin-bottom: 1px !important;
+            font-size: 1em !important;
+        }
+        .product_name_header_parent {
+            line-height: 1.1 !important;
+        }
+        .product_name_header {
+            font-size: 0.7em !important;
+        }
+        .link_delete_mobile {
+            margin-right: 5px !important;
+        }
+        .link_delete_mobile_button {
+            z-index: 10 !important;
+        }
+        .link_partslist_mobile {
+            margin-right: 5px !important;
+        }
+        .quantity_input_mobile {
+            height: 34px !important;
+            margin-top: 23px !important;
+            margin-bottom: 0 !important;
+        }
+        .product_price_surcharges_info {
+            font-size: 0.8em !important;
+        }
+        .productItemWrapper {
+            padding-right: 24px !important;
+            width: 97.5% !important;
+            margin-left: 8px !important;
+        }
+    }
+
+    @media (min-width: 640px) and (max-width: 767px) {
+        #addtocartpartlist {
+            padding-left: 0 !important;
+        }
+        .logstics-icon {
+            margin-top: 0 !important;
+            width: 32px !important;
+            height: 19px !important;
+        }
+        .store-icon{
+            width: 23px !important;
+            height: 29px !important;
+            margin-top: 4px !important;
+        }
+        .yes-no-button {
+            height: 30px !important;
+        }
+        .quantity-input-field {
+            height: 27px !important;
+            width: 99px !important;
+            font-size: 16px !important;
+        }
+        .span_currentprice3 {
+            font-size: 1.2em !important;
+            font-weight: bold !important;
+        }
+        .span_finalprice {
+            font-size: 1.2em !important;
+            font-weight: bold !important;
+        }
+        .on_request_line {
+            margin-bottom: 1px !important;
+            font-size: 0.8em !important;
+        }
+        .stock_quantity_div {
+            margin-bottom: 1px !important;
+            font-size: 0.8em !important;
+        }
+        .sales_unit_div {
+            margin-bottom: 1px !important;
+            font-size: 0.8em !important;
+        }
+        .pickupable_quantity_div_top {
+            margin-top: 0 !important;
+            font-size: 0.8em !important;
+        }
+        .pickupable_quantity_div {
+            margin-bottom: 1px !important;
+            font-size: 1em !important;
+        }
+        .product_name_header_parent {
+            line-height: 1.1 !important;
+        }
+        .product_name_header {
+            font-size: 0.7em !important;
+        }
+        .link_delete_mobile {
+            margin-right: 5px !important;
+        }
+        .link_delete_mobile_button {
+            z-index: 10 !important;
+        }
+        .link_partslist_mobile {
+            margin-right: 5px !important;
+        }
+        .quantity_input_mobile {
+            height: 34px !important;
+            margin-top: 23px !important;
+            margin-bottom: 0 !important;
+        }
+        .product_price_surcharges_info {
+            font-size: 0.8em !important;
+        }
+        .cartItemActionButtons {
+            padding-right: 10px !important;
+        }
+        .productItemWrapper {
+            width: 102.2% !important;
+        }
+    }
+
+    @media (min-width: 768px) and (max-width: 1024px) {
+        .logstics-icon {
+            margin-top: 0 !important;
+            width: 32px !important;
+            height: 19px !important;
+        }
+        .store-icon{
+            width: 23px !important;
+            height: 29px !important;
+            margin-top: 4px !important;
+        }
+        .yes-no-button {
+            height: 34px !important;
+        }
+        .link_delete_mobile_button {
+            z-index: 10 !important;
+        }
+    }
+
+    @media (min-width: 1025px) and (max-width: 1370px) {
+        .logstics-icon {
+            margin-top: 0 !important;
+            width: 32px !important;
+            height: 19px !important;
+        }
+        .store-icon{
+            width: 23px !important;
+            height: 29px !important;
+            margin-top: 4px !important;
+        }
+        .yes-no-button {
+            height: 39px !important;
+        }
+    }
+
+    @media (min-width: 1371px) and (max-width: 1919px) {
+        .logstics-icon {
+            margin-top: 0 !important;
+            width: 32px !important;
+            height: 19px !important;
+        }
+        .store-icon{
+            width: 23px !important;
+            height: 29px !important;
+            margin-top: 4px !important;
+        }
+        .yes-no-button {
+            height: 39px !important;
+        }
+    }
+
+    @media (min-width: 1920px) and (max-width: 4000px) {
+        .logstics-icon {
+            margin-top: 0 !important;
+            width: 32px !important;
+            height: 19px !important;
+        }
+        .store-icon{
+            width: 23px !important;
+            height: 29px !important;
+            margin-top: 4px !important;
+        }
+        .yes-no-button {
+            height: 39px !important;
+        }
+    }
+</style>
+
+<div id="product_<?php echo $_product->getSku(); ?>" class="productItemWrapper cartBx clearfix row-fine product-item body product-item-row-<?php echo $_item->getId() ?>"<?php echo Mage::helper('googleanalytics')->getDataTags($_product,null,null,$_qty); ?>>
+    <div class="col-xs-3 leftSec product-col columns-fine hide-on-print">
+        <div>
+            <div>
+                <?php
+                $_mainImageUrl = $_product->getMainImageUrl();
+                $_product_image_url = Schracklive_SchrackCatalog_Helper_Image::getImageUrl($_mainImageUrl,Schracklive_SchrackCatalog_Helper_Image::CART);
+
+                $_product_image_width = null;
+                $_product_image_height = null;
+                ?>
+                <input type="checkbox" class="rowId product-checkbox" data-sku="<?php echo $_product->getSku() ?>" data-qty="<?php echo $_qty ?>" id="rowId-<?php echo $_item->getId() ?>" checked="checked" style="display:none" / >
+                <input type="hidden" id="sku-<?php echo $_item->getId() ?>" value="<?php echo $_product->getSku() ?>"/>
+                <input type="hidden" id="qty-<?php echo $_item->getId() ?>" value="<?php echo $_qty ?>"/>
+                <a class="hide-on-print" onClick="return false;" title="<?php echo $this->htmlEscape($this->getImageLabel($_product, 'small_image')) ?>" class="product-image">
+                    <img src="<?php echo $_product_image_url ?>" width="<?php echo $_product_image_width ?>" height="<?php echo $_product_image_height ?>" alt="<?php echo $this->htmlEscape($this->getImageLabel($_product, 'thumbnail')) ?>" />
+                </a>
+                <img class="print-only" src="<?php echo $_product_image_url ?>" width="<?php echo $_product_image_width ?>" height="<?php echo $_product_image_height ?>" alt="<?php echo $this->htmlEscape($this->getImageLabel($_product, 'thumbnail')) ?>" />
+            </div>
+            <?php if ($_product->getSku()): ?>
+                <div class="catalog-nr">
+                    <div><?php echo $this->__('Art.Nr.') ?></div>
+                    <div><?php echo $this->htmlEscape($_product->getSku()); ?></div>
+                </div>
+            <?php endif; ?>
+        </div>
+
+        <div class="availability-col columns-fine availability">
+            <div class="">
+                <div class="">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xs-3 leftSec product-col columns-fine print-only">
+        <div class="row">
+            <div class="large-4 columns">
+                <?php $_product_image = $this->helper('catalog/image')->init($_product, 'small_image')->constrainOnly(true)->resize(88, 164); ?>
+                <img class="product-image" src="<?php echo $_product_image ?>" width="<?php echo $_product_image->getWidth() ?>" height="<?php echo $_product_image->getHeight() ?>" alt="<?php echo $this->htmlEscape($this->getImageLabel($_product, 'small_image')) ?>" />
+            </div>
+            <div class="large-8 columns">
+                <div class="row"><div class="large-12 columns">
+                        <div class="product-name headline c1 "><?php echo $this->htmlEscape($_product->getName()) ?></div>
+                    </div>
+                </div>
+                <?php if ($_product->getSku()): ?>
+                    <div class="row">
+                        <div class="large-12 columns">
+                            <div class="catalog-nr"><?php echo $this->__('Art.Nr.') ?> <?php echo $this->htmlEscape($_product->getSku()); ?></div>
+                        </div>
+                    </div>
+                <?php endif; ?>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xs-9 rightSec bdrLftGray">
+        <div class="productName product-name">
+            <div class="row">
+                <div class="col-xs-9 col-sm-9 padR0 product_name_header_parent">
+                    <a class="product_name_header track_product_link_in_cart"
+                       href="<?php echo $_product->getProductUrl() ?>"
+                       data-sku="<?php echo $this->htmlEscape($_product->getSku()); ?>"
+                       title="<?php echo $this->htmlEscape($_product->getName()) ?>">
+                        <?php echo $this->htmlEscape($_product->getName()) ?>
+                    </a>
+                </div>
+                <?php if ( $vpe = $_product->getMainVpeName() ) : ?>
+                    <div class="col-xs-9 col-sm-9 padR0" style="font-size: 12px; color: #9b9b9b;"><?php echo $vpe; ?></div>
+                <?php endif; ?>
+                <div class="col-xs-3 col-sm-3">
+                    <div class="actionIcon cartItemActionButtons">
+                        <span class="link_partslist_mobile lgtGray glyphicon glyphicon-pushpin <?php if (Mage::getSingleton('customer/session')->isLoggedIn()) : echo "blueTxt"; endif; ?>" id="parlistdropdownbtn-<?php echo $_product->getSku(); ?>" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true" title="<?php echo $this->__('Add to partlist') ?>" style="cursor:pointer;"></span>
+                        <ul class="dropdown-list dropdown-menu withoutLgn" aria-labelledby="parlistdropdownbtn-<?php echo $_product->getSku(); ?>">
+                            <li><a href='<?php echo Mage::getUrl('customer/account/login', array('referer' => base64_encode(Mage::getUrl('checkout/cart')))) ?>' title='<?php echo $this->__('Please login first!'); ?>'><?php echo $this->__('Please login first!'); ?></a></li>
+                        </ul>
+                        <br>
+                        <br>
+                        <?php if(!Mage::helper('ids')->isWKSAction()) : ?>
+                            <a  class="link-delete link_delete_mobile singleRemoveFromCartTrackingButton"
+                                id="<?php echo $_item->getId() . '_' . $_product->getSku(); ?>"
+                                href="javascript:void(0);"
+                                title="<?php echo $this->__('Remove item') ?>"
+                                data-id="<?php echo $_item->getId() ?>"
+                                data-sku="<?php echo $_product->getSku(); ?>"
+                                data-category="<?php echo $_product->getCategoryId4googleTagManager(); ?>"
+                                data-quantity="<?php echo $_qty ?>"
+                                data-metric1="<?php echo $this->helper('schrackcheckout')->formatPrice($_product, $_item->getRowTotal()); ?>" >
+                                <span class="glyphicon glyphicon-trash link_delete_mobile_button"></span>
+                            </a>
+                        <?php endif; ?>
+                    </div>
+                </div>
+
+                <?php if ( $_sku2promoMap[$_product->getSku()] ) : ?>
+                    <img src="<?php echo $_imgPromoStickerUrl; ?>"
+                         style="position: absolute; top: 0px; right: 30px" height="28px" />
+                <?php endif; ?>
+
+
+            </div>
+        </div>
+
+        <div class="row qty">
+            <div class="col-xs-12 col-sm-6 col-md-6">
+                <?php
+                $drumNo = $this->getDrumNumber();
+                $sumQty = $this->getSummarizedQtyForProduct();
+                $isPickup = $this->isQuotePickup();
+                //---------------------------------------------------- VTC Check
+                $availabilityInfo = $_productHelper->getAvailibilityProductInfo([$_product['sku']]);
+                $nearestDeliveryQty = $availabilityInfo[$_product['sku']]['nearestDeliveryQty'];
+                $vtcDataAttr = "";
+                if(isset($nearestDeliveryQty['providerName']) && $nearestDeliveryQty['providerName'] == "VTC"){
+                    $vtcDataAttr = "data-vtcMaxQty='".$availabilityInfo[$_product['sku']]['deliveryQtySum']."'";
+                }
+
+                //----------------- Color Array for Energy Labels & Energy Value
+                $energyLabelColorCode = array("A" => "#1b6335", "B" => "#267c3b", "C" => "#bed522", "D" => "#fff937",
+                    "E" => "#facd2f", "F" => "#db6022", "G" => "#d73a2e");
+
+                // getting value from sts
+                #$energyLabelValue = $_product->getSchrackPenergieeffizienzklas();
+                $sku = $_product->getData('sku');
+
+
+                $conn = Mage::getSingleton('core/resource')->getConnection('core_read');
+                $query = "SELECT p.sku, optval.value FROM catalog_product_entity_text v
+                                JOIN catalog_product_entity p ON v.entity_id = p.entity_id AND sku IN ('$sku')
+                                JOIN eav_attribute eav ON attribute_code = 'schrack_newenergieeffizienzkl' AND eav.attribute_id = v.attribute_id
+                                LEFT JOIN eav_attribute_option opt ON opt.attribute_id = v.attribute_id
+                                JOIN eav_attribute_option_value optval ON optval.option_id = opt.option_id AND optval.option_id=v.value;";
+
+                $result = $conn->fetchAll($query);
+                $energyLabelValue = $result[0]["value"];
+                $colorCodeSet = $energyLabelColorCode[$energyLabelValue . ''];
+
+
+                $imageBaseUrl = Mage::getStoreConfig('schrack/general/imageserver');
+                $attachment = $_product->getAttachment('produktdatenblatt');
+                $eprelDatasheet = $attachment  ? $imageBaseUrl.$attachment->getUrl() : false;
+
+                if( $eprelDatasheet != $imageBaseUrl."eprel_datenblaetter/ed_".strtolower($sku).".pdf") {
+                    $eprelDatasheet = false;
+                }
+
+
+                $skuParts = preg_match_all('/([0-9]+|[a-zA-Z]+)/',$sku,$matches);
+                $letters = strtolower($matches[0][0]);
+                $numbers = $matches[0][1];
+                $skuLowerCase = $letters . $numbers;
+
+
+                $etiquettePath = Mage::getStoreConfig('schrack/general/imageserver');
+                $etiquette = $etiquettePath . "energieeffizienzklasse/e_$skuLowerCase.jpg";
+
+                ?>
+                <div class="form-inline">
+                    <div class="form-group quantity_input_mobile">
+                        <label class="exampleInputName2Label" for="exampleInputName2"><?php echo $_product->getQtyLabel() ?>:</label>
+                        <input type="number"
+                            <?php if ($_product->isCable()) : ?>
+                                readonly="readonly"
+                                style="cursor: not-allowed; background: #e5e5e5; color: #282828; border: none;"
+                            <?php endif; ?>
+                               class="form-control quantity-input-field quantityUpdateAction"
+                            <?php echo ' '.$vtcDataAttr.' '; ?>
+                               ref="cart-qty-<?php echo $_product->getId() ?>"
+                               id="cart_<?php echo $_item->getId() ?>"
+                               name="cart[<?php echo $_item->getId() ?>][qty]"
+                               value="<?php echo $_qty ?>"
+                               size="4"
+                               title="<?php echo $this->__('Qty') ?>"
+                               maxlength="12"
+                               data-id="<?php echo $_item->getId(); ?>"
+                               data-sku="<?php echo $_product->getSku(); ?>"
+                        />
+                        <input name="qty" id="qty-<?php echo $_product->getSku(); ?>" value="<?php echo $_qty ?>" type="hidden">
+                        <input name="productId" id="productId-<?php echo $_product->getSku(); ?>" value="<?php echo $_product->getSku(); ?>" type="hidden">
+                        <span class="lightGray schrack_qty_unit">
+							<span class="print-only"><?php echo $_qty ?></span> <?php echo $_product->getSchrackQtyunit() ?>
+						</span>
+                        <input type="hidden" name="cart[<?php echo $_item->getId() ?>][sku]" id="sku-<?php echo $_product->getId() ?>" value="<?php echo $_product->getSku() ?>"/>
+                        <input type="hidden" name="cart[<?php echo $_item->getId() ?>][drum]"  id="drum-<?php echo $_product->getId() ?>" value="<?php echo $_product->isCable() ? $this->getDrumId() : '' ?>"/>
+                        <input type="hidden" id="product-id-<?php echo $_item->getId() ?>" value="<?php echo $_product->getId() ?>">
+                        <span>&nbsp;</span>
+                        <?php if ( ! $_product->hasSubProducts() ): ?>
+                            <span><?php echo $this->htmlEscape($this->getDrumDescription()); ?>&nbsp;</span>
+                        <?php endif; ?>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xs-12 col-sm-6 col-md-5 price padL0 price-leftbound large-fine-3 columns-fine price-col">
+                <?php if ($_maySeePrices): ?>
+                    <div style="display: inline-flex">
+                        <span class="sml product-price posRel">
+                            <span class="glyphicon glyphicon-info-sign info-icon blueTxt" id="product-price-icon-<?php echo $_product->getSku(); ?>" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true"></span>
+                            <div class="popupBox qtyBoxCont dropdown-menu" aria-labelledby="product-price-icon-<?php echo $_product->getSku(); ?>"></div>
+                        </span>
+                    </div>
+                    <span>&nbsp;</span>
+                    <div class="sml product_price_surcharges_info"><?php echo $this->__('excl. surcharges, net of VAT'); ?></div>
+                    <div class="hidden-sm hidden-md hidden-lg marginT10" id="product-item-total-mobile-<?php echo $_item->getId() ?>">
+                        <span class="sml" id="product-item-total-mobile-currency-<?php echo $_item->getId() ?>"></span>
+                        <span class="finalPrice span_finalprice" id="product-item-total-mobile-price-<?php echo $_item->getId() ?>" ></span>
+                        <div class="sml product_price_surcharges_info"><?php echo $this->__("incl. surcharge excl. fees and VAT"); ?></div>
+                    </div>
+                <?php else: ?>
+                    <?php echo $this->__('Price') . '&nbsp;' . $this->__('on request'); ?>
+                <?php endif; ?>
+            </div>
+        </div>
+        <div class="row instock sales_unit_div">
+            <div class="col-xs-12 col-sm-6 col-md-6">
+                <?php echo $this->__('Sales unit') . ':<span class="lightGray">' . $_product->calculateMinimumQuantityPackageToDisplay() . ' ' . $_product->getSchrackQtyunit() . '</span>'; ?>
+            </div>
+        </div>
+
+        <div class="stock-section hide">
+            <div class="product-stock stock_quantity_div">
+                <div class="in-stock posRel">
+                    <!--                    --><?php
+                    //                        if (stristr($this->__('In Stock'), '∑')) {
+                    //                            $inStock = str_replace('∑', '', $this->__('In Stock'));
+                    //                        } else {
+                    //                            $inStock = $this->__('In Stock');
+                    //                        }
+                    //                    ?>
+                    <!--                    --><?php //if (stristr($this->__('In Stock'), '∑')) : ?>
+                    <!--                        <span>&Sigma;</span>-->
+                    <!--                    --><?php //endif; ?>
+                    <!--                    <span>--><?php //echo $inStock; ?><!--: </span>-->
+                    <!--                    <span class="stock-qty lightGray"></span>-->
+                    <!--                    <span class="">-->
+                    <!--                        <span class="glyphicon glyphicon-info-sign info-icon blueTxt product_price_icon"  id="product-stock-icon---><?php //echo $_product->getSku(); ?><!--" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true"></span>-->
+                    <!--                        <div class="popupBox qtyBoxCont dropdown-menu" aria-labelledby="product-stock-icon---><?php //echo $_product->getSku(); ?><!--"></div>-->
+                    <!--                    </span>-->
+                </div>
+            </div>
+            <div class="delivery row pickupable_quantity_div_top">
+                <div class="col-xs-12 col-sm-6 col-md-6">
+                    <div class="pc-store product-store pickupable_quantity_div"></div>
+                </div>
+                <div class="col-xs-12 col-sm-6 col-md-5 price padL0 hidden-xs">
+                    <span class="sml" id="product-item-total-currency-<?php echo $_item->getId() ?>" ></span>
+                    <span class="finalPrice" id="product-item-total-price-<?php echo $_item->getId() ?>" ></span>
+                    <div class="sml product_price_surcharges_info"><?php echo $this->__("incl. surcharge excl. fees and VAT"); ?></div>
+                </div>
+            </div>
+        </div>
+        <?php if($energyLabelValue && $eprelDatasheet) : ?>
+            <div id="energyLableSetCheckout" style="display:inline-flex>; margin-left: 283px">
+                <!----------------- Energy Label -> SVG ---------->
+                <div id="energyLabel" class="info-icon" data-toggle="modal" data-target="#myModal_<?= $sku ?>"
+                     style="width:50px;height:27px;border:solid 0px green; margin-left: 10px; margin-top: -3px">
+                    <svg viewbox="0 0 290 150" style="width:100%;height:auto" >
+                        <polygon points="0,0 0,150 220,150 290,75 220,0"
+                                 style="stroke-width:1;stroke:rgb(0,0,0);fill:<?= $colorCodeSet ?>;" />
+                        <rect width="50" height="148" x="1" y="1"
+                              style="fill:rgb(255,255,255);stroke-width:1;stroke:rgb(0,0,0);" />
+                        <text x="9" y="40" style="fill:black;font-size:35pt;font-family:Arial;font-weight:bold;">A</text>
+                        <polyline points="26,50 40,75 30,68 30,95 23,95 23,68 13,75 26,50"
+                                  style="fill:black;stroke:black;stroke-width:1" />
+                        <text x="7" y="142"
+                              style="fill:black;font-size:35pt;font-family:Arial;font-weight:bold;">G</text>
+                        <text x="90" y="120"
+                              style="fill:black;font-size:90pt;font-family:Arial;fill:rgb(255,255,255);
+                                              stroke-width:1;stroke:rgb(30,30,30);"><?= $energyLabelValue ?></text>
+                    </svg>
+                </div>
+                <!--------------- Modal popup for Energy Label ------->
+                <div id="myModal_<?= $sku ?>" class="modal fade" role="dialog">
+                    <div class="modal-dialog modal-sm">
+                        <div id="modal-content">
+                            <div class="modal-body">
+                                <img src="<?= $etiquette ?>"
+                                     alt="energylabel"
+                                     style="width: 95%;"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!--------------- Energy Label Text Link DEFAULT------->
+
+                <span style="font-size: 13px; margin-left: 10px; margin-top: -1px; text-decoration: underline;">
+                                    <a style="color: #888;"
+                                       id="energyLableText"
+                                       href="<?= $eprelDatasheet ?>"
+                                       rel="nofollow"
+                                       target="_blank">Datasheet</a>
+                                </span>
+            </div>
+        <?php endif; ?>
+        <div id="descriptionContainerCartItemPosition-<?php echo $_item->getId(); ?>" class="descriptionContainerCartItemPosition">
+            <input type="hidden" id="descriptionHeadCartItemPositionTextBlocker-<?php echo $_item->getId() ?>" value="inactive">
+            <input type="hidden" id="editFieldBefore-<?php echo $_item->getId() ?>" value="">
+            <input type="hidden" id="editFieldAfter-<?php echo $_item->getId() ?>" value="">
+            <div id="descriptionHeadCartItemPosition-<?php echo $_item->getId(); ?>" class="triggerDescriptionCartItemPositionRow">
+                <i id="<?php echo $_item->getId() ?>" name="triggerDescriptionCartItemPosition-<?php echo $_item->getId() ?>" class="fa fa-plus-square-o fa-lg trigger-item-position-description"></i>
+                <span id="headlineAddCartPositionDescription-<?php echo $_item->getId(); ?>" class="headlineAddCartPositionDescription"><?php if ($_item->getSchrackItemDescription()) echo $_item->getSchrackItemDescription(); else echo $this->__('Add Comment To Cart Position'); ?></span>
+                <span id="triggerDescriptionCartItemPositionRowSaveMessage-<?php echo $_item->getId() ?>" class="triggerDescriptionCartItemPositionRowSaveMessage"><?php echo $this->__('Saved'); ?></span>
+                <div class="clearBoth"></div>
+            </div>
+            <div id="descriptionHeadCartItemPositionText-<?php echo $_item->getId(); ?>" class="triggerDescriptionCartItemPositionRowText">
+                <input type="text" maxlength="100" class="triggerDescriptionCartItemPositionRowTextInput form-control nodefault" id="triggerDescriptionCartItemPositionRowTextInput-<?php echo $_item->getId(); ?>" name="descriptionCartItemPositionRowTextContent" autocomplete="off" value="<?php if ($_item->getSchrackItemDescription()) echo $_item->getSchrackItemDescription(); ?>" />
+            </div>
+        </div>
+    </div>
+</div>
+
+<input id="removalItemId" type="hidden" />
+<input id="removalProductSKU" type="hidden" />
+
+<script type="text/javascript">//<![CDATA[
+    jQuery('.singleRemoveFromCartTrackingButton').on('click', function(){
+        var dataId  = jQuery(this).attr('data-id');
+        var dataSku = jQuery(this).attr('data-sku');
+        confirmRemoveItemFromCart(dataId, dataSku);
+    });
+
+    function singleRemoveFromCartTracking(deleteButtonElementId) {
+        var removeItemData          = jQuery('#' + deleteButtonElementId);
+        var eventTrackingData       = new Object();
+        eventTrackingData.cartItems = new Array();
+        var productTrackingData     = new Object();
+
+        productTrackingData.dimension8    = 'cart'; // -> pagetype
+        productTrackingData.dimension9    = removeItemData.attr("data-category");
+        productTrackingData.dimension14   = 'Standard'; // -> modification-source
+        productTrackingData.dimension15   = removeItemData.attr("data-sku"); // -> product-id
+        productTrackingData.quantity      = removeItemData.attr("data-quantity");
+        productTrackingData.id            = removeItemData.attr("data-sku");
+        productTrackingData.name          = removeItemData.attr("data-name");
+        //productTrackingData.price         = removeItemData.attr("data-price");
+        productTrackingData.category      = removeItemData.attr("data-category");
+
+        eventTrackingData.trackingEnabled = '<?php echo $trackingEnabled; ?>';
+        eventTrackingData.currencyCode    = '<?php echo Mage::app()->getStore()->getCurrentCurrencyCode() ?>';
+        eventTrackingData.cartItems.push(productTrackingData);
+
+        removeFromCartTracking(eventTrackingData);
+    }
+
+    confirmRemoveItemFromCart = function(item_id, product_sku, callback) {
+        jQuery('#removalItemId').val(item_id);
+        jQuery('#removalProductSKU').val(product_sku);
+
+        var message = '<?php echo $this->__("Are you sure you would like to remove this item from the shopping cart?") ?>';
+
+        if(jQuery("#bootstrap-confirm-box-modal").length == 0) {
+            jQuery("body").append('<div id="bootstrap-confirm-box-modal" class="modal fade">\
+            <div class="modal-dialog" style="margin-top: 100px;">\
+                <div class="modal-content">\
+                    <div class="modal-header" style="min-height:40px;">\
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>\
+                        <h4 class="modal-title"></h4>\
+                    </div>\
+                    <div class="modal-body"><p style="text-align: center; font-weight: bold;"></p></div>\
+                    <div class="modal-footer">\
+                        <button href="#" style="margin-left: 22px !important;" data-dismiss="modal" class="bttn-md yes-no-button"><?php echo $this->__('Cancel'); ?></a>\
+                        <button href="#" style="float: right; margin-right: 40px;" class="bttn-md confirm_yes yes-no-button">' + '<?php echo $this->__('Yes'); ?>' + '</a>\
+                    </div>\
+                </div>\
+            </div>\
+        </div>');
+            jQuery("#bootstrap-confirm-box-modal .modal-footer .confirm_yes").on('click', function () {
+                jQuery("#bootstrap-confirm-box-modal").modal('hide');
+                var ajaxDispatcherURL = '<?php echo Mage::helper('schrackcore/url')->getUrlWithCurrentProtocol('sd/AjaxDispatcher/setGetData'); ?>';
+                console.log('Removing Item-ID = ' + jQuery('#removalItemId').val() + ' from Cart');
+                cartUpdate(ajaxDispatcherURL, jQuery('#removalItemId').val(), jQuery('#removalProductSKU').val(), 'true');
+                <?php if ($trackingEnabled == 'enabled') : ?>
+                var deleteButtonElementId = jQuery('#removalItemId').val() + '_' + jQuery('#removalProductSKU').val();
+                singleRemoveFromCartTracking(deleteButtonElementId);
+                <?php endif; ?>
+                return false;
+            });
+            jQuery("#bootstrap-confirm-box-modal").on('hide.bs.modal', function () {
+                if(callback) callback(jQuery("#bootstrap-confirm-box-modal").data('confirm-yes'));
+            });
+        }
+
+        // jQuery("#bootstrap-confirm-box-modal .modal-header h4").text(title || "");
+        jQuery("#bootstrap-confirm-box-modal .modal-body p").text(message || "");
+        jQuery("#bootstrap-confirm-box-modal").modal('show');
+    };
+
+    jQuery('[data-toggle="tooltip"]').tooltip();
+
+    jQuery(document).ready(function () {
+
+        jQuery('#energyLableText').text(Translator.translate('Datasheet'));
+
+        jQuery('.cart-qty').on('change', function () {
+            pageIsDirty = true;
+        });
+
+        jQuery('.cart-qty').on('keypress', function (e) {
+            pageIsDirty = true;
+            //-------------------------------------------------------- VTC Check
+            if( typeof jQuery(this).data("vtcmaxqty") !== 'undefined' &&
+                inputQuantity > jQuery(this).data("vtcmaxqty")){
+                //--------------------------------------------------------------
+                appendMessageUl([Translator.translate("Your selected quantity may result in a longer delivery time. Please select the available quantity currently in stock or pick an alternative item. Get in touch if you would like us to recommend a suitable article.")], 'messages_hidden', 'error-msg', 'glyphicon glyphicon-exclamation-sign');
+                unsetOverlayLoader();
+                console.log('appendMessageUl #vtc cart');
+                return;
+            }
+            return runUpdateCart(e);
+        });
+        //updatePriceAndStock();
+    });
+
+    var getAmountFromSKUValue = function (produktId) {
+        var amount = 0;
+        //amount = jQuery('input[name="cart[' + produktId + '][qty]"]').val();
+        amount = jQuery('#cart-qty-' + produktId).val(); // TODO
+        return amount;
+    }
+
+    function runUpdateCart(e) {
+        // All browser cross compatible solution:
+        var evt = e || window.event;
+        var keyID = (evt.charCode) ? evt.charCode : ((evt.which) ? evt.which : evt.keyCode);
+        if (keyID == 13) {
+            cartUpdate();
+            return false;
+        }
+    }
+
+    //]]></script>
+<!-- app/design/frontend/schrack/schrackresponsive/template/checkout/cart/item/default.phtml (end) -->

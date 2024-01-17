@@ -1,0 +1,325 @@
+<!-- app/design/frontend/schrack/schrackresponsive/template/checkout/onepage.phtml (start) -->
+<?php
+    $customer = $this->getCustomer();
+    if ($customer) {
+        $customerType = $customer->getSchrackCustomerType(); // ProspectTypes: 'light-prospect' / 'full-prospect'
+    }
+
+    $prospectFull  = false;
+    $prospectLight = false;
+
+    if ($customerType == 'light-prospect') {
+        $prospectLight = true;
+    }
+
+    if ($customerType == 'full-prospect') {
+        $prospectFull = true;
+    }
+
+    $customerIsLoggedIn = $this->helper('customer')->isLoggedIn();
+
+    $activeStep = $this->getActiveStep();
+
+    $displayCh = "none";
+    $countryCheck = Mage::getStoreConfig('schrack/general/country');
+    # $tax = Mage::helper('tax')->__('Subtotal (Excl. Tax)'); #$this->getTotal()->getAddress()->getTaxAmount();
+?>
+
+<style>
+    #headline-commercial-warning {
+        background: #00589D;
+        color: white;
+        font-weight: bold;
+        font-size: 1.2em;
+        padding-top: 10px;
+        padding-bottom: 10px;
+        padding-left: 15px;
+        padding-right: 25px;
+        width: 100%;
+        margin-left: 0;
+        margin-top: 10px;
+        height: 100%;
+    }
+
+    #headline-commercial-warning a {
+        color: white !important;
+    }
+
+    #shipping-form-container {
+        background-color: #EEE;
+        border: 2px solid #D6D6D6;
+        border-radius: 6px;
+    }
+
+    .searchContiner {
+        display: none !important;
+    }
+</style>
+
+<div>
+    <div class="large-12 columns">
+        <div class="headline a">
+
+        </div>
+    </div>
+</div>
+
+<?php if ($prospectLight == true) : ?>
+<div>
+    <header id="headline-commercial-warning"><?php echo $this->__('login.popup.registration-hint-only') ?></header>
+</div>
+<?php endif; ?>
+
+<script type="text/javascript" src="<?php echo $this->getJsUrl('varien/accordion.js') ?>"></script>
+<script type="text/javascript">//<![CDATA[
+countryRegions = <?php echo $this->helper('directory')->getRegionJson() ?>
+//]]></script>
+
+<br>
+<div class="opc" id="checkoutSteps">
+
+    <?php     echo '<input id="checkout_current_step_test" type="hidden" val="' . $activeStep . '">'; ?>
+<?php $i=0; foreach($this->getSteps() as $_stepId => $_stepInfo): ?>
+<?php if (!$this->getChild($_stepId) || !$this->getChild($_stepId)->isShow()): continue; endif; $i++ ?>
+    <?php
+        $hidden_status = '';
+        if ($_stepId == $activeStep) {
+            $active_status = 'checkout_step_active_tab';
+            $active_tab_already_reached = true;
+            echo '<input id="checkout_current_step" type="hidden" val="' . $_stepId . '">';
+        } else {
+            $active_status = 'checkout_step_inactive_tab';
+        }
+        if ($active_tab_already_reached == true && $active_status == 'checkout_step_inactive_tab') {
+            $active_status = 'checkout_step_inactive_untouched_tab';
+        }
+
+        if ($_stepId == 'billing') {
+            $hidden_status = 'hidden';
+        }
+    ?>
+    <div id="opc-<?php echo $_stepId ?>" class="section<?php echo !empty($_stepInfo['allow'])?' allow':'' ?><?php echo !empty($_stepInfo['complete'])?' saved':'' ?>">
+        <?php if ($_stepId != 'login') : ?>
+            <div id ="checkout_tab_header_<?php echo $_stepId; ?>"
+                 class="checkout_dropdown_toggle_<?php echo $_stepId; ?> <?php echo $active_status; ?> <?php echo $hidden_status; ?> ">
+                <?php if ($_stepId == 'shipping_method') $number = '1'; ?>
+                <?php if ($_stepId == 'billing') $number = '2'; ?>
+                <?php if ($_stepId == 'shipping') $number = '2'; ?>
+                <?php if ($_stepId == 'payment') {
+                        $number = '3';
+                        $_stepInfo['label'] =  $this->__('Payment Method');
+                    }
+                ?>
+                <?php if ($_stepId == 'review') $number = '4'; ?>
+                <?php //echo $number . ' / '; ?>
+                <div class="checkout_tab_header_description"><?php echo $_stepInfo['label']; ?></div>
+                <div class="checkout_tab_header_description_dropdown checkout_dropdown_toggle"></div>
+                <div style="clear: both;"></div>
+            </div>
+        <?php endif; ?>
+        <div id="checkout-step-<?php echo $_stepId ?>" class="step a-item" style="display:<?= $displayCh ?>;">
+            <?php echo $this->getChildHtml($_stepId) ?>
+        </div>
+    </div>
+<?php endforeach ?>
+
+</div>
+<script type="text/javascript">
+//<![CDATA[
+    console.log('checkout.onpage.phtml SUCCESFULLY LOADED');
+
+    var jsdebug = 0;
+    <?php if ($this->getRequest()->getParam('jsdebug') == 1) : ?>
+        jsdebug = 1;
+        console.log(">>> JS-Debug-Mode ENABLED <<<");
+    <?php endif; ?>
+
+    console.log('checkout.onepage.phtml -- LocalStorage Reset: newCheckoutProspectRole = none');
+    localStorage.newCheckoutProspectRole = 'none';
+    console.log('checkout.onepage.phtml -- LocalStorage Reset: newCheckoutShippingMethod = delivery');
+    localStorage.newCheckoutShippingMethod = 'delivery';
+    console.log('checkout.onepage.phtml -- LocalStorage Reset: newCheckoutActionPath = ""');
+    localStorage.newCheckoutActionPath = '';
+    localStorage.newCheckoutSelectedPickupLocation = '';
+
+<?php if ($customerIsLoggedIn) : ?>
+    localStorage.
+        newCheckoutProcessCurrentRole = 'login-user';
+    localStorage.newCheckoutRunningProcess     = 'processCheckoutAsLoggedInUser';
+    localStorage.customerNotLoggedIn = "0";
+    <?php if ($prospectLight || $prospectFull) : ?>
+        localStorage.newCheckoutProcessCurrentRole = 'prospect-user';
+    <?php endif; ?>
+    <?php if ($prospectLight) : ?>
+        localStorage.newCheckoutProspectRole = 'prospect-light';
+    <?php endif; ?>
+    <?php if ($prospectFull) : ?>
+        localStorage.newCheckoutProspectRole = 'prospect-full';
+    <?php endif; ?>
+<?php else : ?>
+    localStorage.newCheckoutRunningProcess = 'processCheckoutAsNonLoggedInUser';
+    // guest = non-registering-user
+    //localStorage.newCheckoutProcessCurrentRole = 'guest';
+    localStorage.customerNotLoggedIn = "1";
+<?php endif; ?>
+
+    if (localStorage.newCheckoutProspectRole == 'prospect-light' ||
+        localStorage.newCheckoutProcessSpecialAction == 'full-register-prospect-application') {
+        localStorage.newCheckoutProcessSpecialAction = 'full-register-prospect-application';
+    } else {
+        localStorage.newCheckoutProcessSpecialAction = 'none';
+    }
+    var accordion = new Accordion('checkoutSteps', '.step-title', true);
+    <?php if($activeStep): ?>
+    Element.addClassName($('opc-<?php echo $activeStep ?>'), 'allow');
+    accordion.openSection('opc-<?php echo $activeStep ?>');
+    <?php endif ?>
+    var checkout = new Checkout(accordion,{
+        progress: '<?php echo $this->getUrl('checkout/onepage/progress') ?>',
+        review: '<?php echo $this->getUrl('checkout/onepage/review') ?>',
+        saveMethod: '<?php echo $this->getUrl('checkout/onepage/saveMethod') ?>',
+        failure: '<?php echo $this->getUrl('checkout/cart') ?>'}
+    );
+    jQuery(document).ready(function() {
+<?php if ($activeStep == 'login') : ?>
+        console.log('onepage.phtml -> Current Active Step = LOGIN');
+        // Progress bar refresh:
+        jQuery('#step_one_progress_circle').html('&#10122;');
+        jQuery('#step_one_progress_circle').removeClass('checkout_progress_color_active');
+        jQuery('#step_one_progress_circle').addClass('checkout_progress_color_inactive');
+        jQuery('#step_one_progress_circle').removeClass('checkout_progress_link');
+        jQuery('#step_two_progress_circle').html('&#10123;');
+        jQuery('#step_two_progress_circle').removeClass('checkout_progress_color_active');
+        jQuery('#step_two_progress_circle').addClass('checkout_progress_color_inactive');
+        jQuery('#step_two_progress_circle').removeClass('checkout_progress_link');
+        jQuery('#step_three_progress_circle').html('&#10124;');
+        jQuery('#step_three_progress_circle').removeClass('checkout_progress_color_active');
+        jQuery('#step_three_progress_circle').addClass('checkout_progress_color_inactive');
+        jQuery('#step_three_progress_circle').removeClass('checkout_progress_link');
+        jQuery('#step_one_two_progress_circle_line').removeClass('checkout_progress_hr_line_active');
+        jQuery('#step_one_two_progress_circle_line').addClass('checkout_progress_hr_line_inactive');
+        jQuery('#step_two_three_progress_circle_line').removeClass('checkout_progress_hr_line_active');
+        jQuery('#step_two_three_progress_circle_line').addClass('checkout_progress_hr_line_inactive');
+        jQuery('#step_three_four_progress_circle_line').removeClass('checkout_progress_hr_line_active');
+        jQuery('#step_three_four_progress_circle_line').addClass('checkout_progress_hr_line_inactive');
+        jQuery('#step_four_progress_circle').html('&#10125;');
+        jQuery('#step_four_progress_circle').removeClass('checkout_progress_color_active');
+        jQuery('#step_four_progress_circle').addClass('checkout_progress_color_inactive');
+<?php endif; ?>
+
+<?php if ($activeStep == 'shipping_method') : ?>
+        console.log('onepage.phtml -> Current Active Step = SHIPPING Method');
+
+        localStorage.newCheckoutProcessCurrentStep = 'opc-shipping_method';
+
+        // Progress bar refresh:
+        jQuery('#step_one_progress_circle').html('&#10122;');
+        jQuery('#step_one_progress_circle').addClass('checkout_progress_color_active');
+        // Reset progress bar-display to current status (remove deprecated CSS-Classes):
+        jQuery('#step_one_progress_circle').removeClass('checkout_progress_link');
+        jQuery('#step_two_progress_circle').removeClass('checkout_progress_link');
+        jQuery('#step_two_progress_circle').html('&#10123;');
+        jQuery('#step_three_progress_circle').removeClass('checkout_progress_link');
+        jQuery('#step_three_progress_circle').html('&#10124;');
+        jQuery('#step_three_progress_circle').addClass('checkout_progress_color_inactive');
+        jQuery('#step_four_progress_circle').html('&#10125;');
+        jQuery('#step_one_two_progress_circle_line').removeClass('checkout_progress_hr_line_active');
+        jQuery('#step_two_three_progress_circle_line').removeClass('checkout_progress_hr_line_active');
+        jQuery('#step_three_four_progress_circle_line').removeClass('checkout_progress_hr_line_active');
+        jQuery('#step_two_progress_circle').removeClass('checkout_progress_color_active');
+        jQuery('#step_three_progress_circle').removeClass('checkout_progress_color_active');
+        jQuery('#step_four_progress_circle').removeClass('checkout_progress_color_active');
+
+        jQuery('#opc-shipping').css('height', '100%');
+<?php endif; ?>
+
+<?php if ($activeStep == 'billing') : ?>
+        console.log('onepage.phtml -> Current Active Step = BILLING');
+        // Progress bar refresh:
+        jQuery('#step_one_progress_circle').html('&#10112;');
+        jQuery('#step_one_progress_circle').addClass('checkout_progress_link');
+        jQuery('#step_one_progress_circle').addClass('checkout_progress_color_active');
+        jQuery('#step_one_two_progress_circle_line').addClass('checkout_progress_hr_line_active');
+        jQuery('#step_two_progress_circle').html('&#10123;');
+        jQuery('#step_two_progress_circle').addClass('checkout_progress_color_active');
+        // Reset progress bar-display to current status (remove deprecated CSS-Classes):
+        jQuery('#step_two_progress_circle').removeClass('checkout_progress_link');
+        jQuery('#step_three_progress_circle').removeClass('checkout_progress_link');
+        jQuery('#step_three_progress_circle').html('&#10124;');
+        jQuery('#step_four_progress_circle').html('&#10125;');
+        jQuery('#step_two_three_progress_circle_line').removeClass('checkout_progress_hr_line_active');
+        jQuery('#step_three_four_progress_circle_line').removeClass('checkout_progress_hr_line_active');
+        jQuery('#step_three_progress_circle').removeClass('checkout_progress_color_active');
+        jQuery('#step_four_progress_circle').removeClass('checkout_progress_color_active');
+
+        jQuery('#opc-shipping').css('height', '100%');
+<?php endif; ?>
+
+<?php if ($activeStep == 'shipping') : ?>
+        console.log('onepage.phtml -> Current Active Step = SHIPPING');
+        // Progress bar refresh:
+        jQuery('#step_one_progress_circle').html('&#10112;');
+        jQuery('#step_one_progress_circle').addClass('checkout_progress_link');
+        jQuery('#step_one_progress_circle').addClass('checkout_progress_color_active');
+        jQuery('#step_one_two_progress_circle_line').addClass('checkout_progress_hr_line_active');
+        jQuery('#step_two_progress_circle').html('&#10123;');
+        jQuery('#step_two_progress_circle').addClass('checkout_progress_color_active');
+        // Reset progress bar-display to current status (remove deprecated CSS-Classes):
+        jQuery('#step_two_progress_circle').removeClass('checkout_progress_link');
+        jQuery('#step_three_progress_circle').removeClass('checkout_progress_link');
+        jQuery('#step_three_progress_circle').html('&#10124;');
+        jQuery('#step_four_progress_circle').html('&#10125;');
+        jQuery('#step_two_three_progress_circle_line').removeClass('checkout_progress_hr_line_active');
+        jQuery('#step_three_four_progress_circle_line').removeClass('checkout_progress_hr_line_active');
+        jQuery('#step_three_progress_circle').removeClass('checkout_progress_color_active');
+        jQuery('#step_four_progress_circle').removeClass('checkout_progress_color_active');
+        jQuery('#opc-shipping').css('height', '100%');
+<?php endif; ?>
+
+<?php if ($activeStep == 'payment') : ?>
+        console.log('onepage.phtml -> Current Active Step = PAYMENT');
+        // Progress bar refresh:
+        jQuery('#step_one_progress_circle').html('&#10112;');
+        jQuery('#step_one_progress_circle').addClass('checkout_progress_link');
+        jQuery('#step_one_progress_circle').addClass('checkout_progress_color_active');
+        jQuery('#step_one_two_progress_circle_line').addClass('checkout_progress_hr_line_active');
+        jQuery('#step_two_progress_circle').html('&#10113;');
+        jQuery('#step_two_progress_circle').addClass('checkout_progress_link');
+        jQuery('#step_two_progress_circle').addClass('checkout_progress_color_active');
+        jQuery('#step_two_three_progress_circle_line').addClass('checkout_progress_hr_line_active');
+        jQuery('#step_three_progress_circle').addClass('checkout_progress_color_active');
+
+        jQuery('#opc-shipping').css('height', '50px');
+<?php endif; ?>
+
+<?php if ($activeStep == 'review') : ?>
+        console.log('onepage.phtml -> Current Active Step = REVIEW');
+    // Progress bar refresh:
+        jQuery('#step_one_progress_circle').html('&#10112;');
+        jQuery('#step_one_progress_circle').addClass('checkout_progress_link');
+        jQuery('#step_one_progress_circle').addClass('checkout_progress_color_active');
+        jQuery('#step_one_two_progress_circle_line').addClass('checkout_progress_hr_line_active');
+        jQuery('#step_two_progress_circle').html('&#10113;');
+        jQuery('#step_two_progress_circle').addClass('checkout_progress_link');
+        jQuery('#step_two_progress_circle').addClass('checkout_progress_color_active');
+        jQuery('#step_two_three_progress_circle_line').addClass('checkout_progress_hr_line_active');
+        jQuery('#step_three_progress_circle').html('&#10114;');
+        jQuery('#step_three_progress_circle').addClass('checkout_progress_link');
+        jQuery('#step_three_progress_circle').addClass('checkout_progress_color_active');
+        jQuery('#step_three_four_progress_circle_line').addClass('checkout_progress_hr_line_active');
+        jQuery('#step_four_progress_circle').addClass('checkout_progress_color_active');
+<?php endif; ?>
+
+        console.log('Hiding search container');
+        jQuery('.searchContiner').hide();
+
+        Translator.add('Product','<?php echo $this->__('Product')?>');
+        Translator.add('In Cart','<?php echo $this->__('In Cart')?>');
+        Translator.add('Pickupable','<?php echo $this->__('Pickupable')?>');
+        Translator.add('Your order can not be completed at this time as there is no shipping methods available for it. Please make neccessary changes in your shipping address.','<?php echo $this->__('Your order can not be completed at this time as there is no shipping methods available for it. Please make neccessary changes in your shipping address.')?>');
+
+    });
+
+//]]>
+</script>
+<!-- app/design/frontend/schrack/schrackresponsive/template/checkout/onepage.phtml (end) -->

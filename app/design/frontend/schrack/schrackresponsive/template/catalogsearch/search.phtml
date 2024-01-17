@@ -1,0 +1,2363 @@
+<!-- app\design\frontend\schrack\schrackresponsive\template\catalogsearch\search.phtml (start) -->
+<?php
+    $priceInfo = false;
+    $_productCollection = Mage::registry('productCollectionSolr');
+    $_childCats = Mage::registry('categoryCollectionSolr');
+    $saleProductsCollection = Mage::registry('saleProductsCollectionSolr');
+    $pagesCollection = Mage::registry('pagesCollectionSolr');
+    $countryCode = Mage::getStoreConfig('general/country/default');
+//    $showArticles = count($_productCollection) < 1 && count($pagesCollection) > 0;
+//    was changed because of new instructions based on  RedMine ticket #72424
+    $showArticles = false;
+    //-------------------------------------------------------- VTC delivery info
+    $vtcDeliveryInfo = Mage::registry('vtcDeliveryInfo');
+    $vtcDeliveryInfoInitSearch = Mage::registry('vtcDeliveryInfoInitSearch');
+    //--------------------------------------------------------------------------
+    $_facets = Mage::registry('facetsCollectionSolr');
+    $productStatus = Mage::registry('productStatus');
+    $saleStatus = Mage::registry('saleStatus');
+    $pagesStatus = Mage::registry('pagesStatus');
+    $saleStatus = Mage::registry('saleStatus');
+    $pagesStatus = Mage::registry('pagesStatus');
+    $suggestions = Mage::registry('suggestions');
+    $coreBaseURL = Mage::helper('schrackcore/url')->getUrlWithCurrentProtocol();
+    $promoMap = Mage::registry('promoMap');
+    $imgPromoBookmarkUrl = $this->getSkinUrl('schrackdesign/Public/Images/rwd/promotion/promotion_sticker_rot.svg');
+    $chBxCount = 0;
+    $queryString = urlencode(Mage::registry('queryString'));
+    $hrefUrlParams = '?q=' . $queryString;
+
+    //--- Energy Label
+    $energyLabelColorCode = array("A" => "#1b6335", "B" => "#267c3b", "C" => "#bed522", "D" => "#fff937", "E" => "#facd2f",
+                                  "F" => "#db6022", "G" => "#d73a2e");
+    $marginLeft = 602;
+    // --- datasheet url
+//    $basePath = Mage::helper('schrackcore/url')->getUrlWithCurrentProtocol('catalog/download/deliverOnlineDataSheet');
+    // --- energylabel url
+    $etiquettePath = Mage::getStoreConfig('schrack/general/imageserver');
+
+    $energyLabelDisplay = "none";
+
+    //=========================================================== iterateCatTree
+    function iterateCatTree($_childCats, $selectedCategoryId, $selectedCategoryName){
+    //==========================================================================
+        $childCatHtml = '';
+        $i = 0; $childCatCount = count($_childCats);
+        //------ build child categories to display in first or second level list
+        foreach ($_childCats as $_childCat){
+            $childCatHtml .=
+                '<li class="level11">' .
+                '<a href="#" id="'.$_childCat['id'].'" >' .
+                '<h3>' . $_childCat['name'] .
+                '<span class="">(' . $_childCat['count'] . ')</span>' .
+                '</h3>' .
+                '</a>' .
+                '</li>';
+        }
+        //----------------------------------------------- build first level List
+        $html = '<ul class="firstLevel">';
+        if ($selectedCategoryId != '') {
+            //------------ build second level list if child categories available
+            $secondLevelUl = count($_childCats) ? '<ul class="secondLevel">' . $childCatHtml . '</ul>' : '';
+            //----------------------------------- build first level list entries
+            $html .=
+                '<li>' .
+                    '<a id="backtoAllCategoriesLink" href="#" >' .
+                        '<h3>' .
+                            '<div class="glyphicon glyphicon-triangle-left category_sign"></div>' .
+                            Mage::helper('schrack')->__("Back to all categories") .
+                        '</h3>' .
+                    '</a>' .
+                '</li>' .
+                '<li>' .
+                    '<a id="backtoPrevCategorieLink" href="javascript:void(0)" >' .
+                        '<h3>' .
+                            '<div class="glyphicon glyphicon-triangle-top category_sign"></div>' .
+                            Mage::helper('schrack')->__("Back To Previous Category") .
+                        '</h3>' .
+                    '</a>' .
+                '</li>' .
+                '<li class="level10">' .
+                    '<a href="#" id="'.$selectedCategoryId.'" >' .
+                        '<h3 class="blueTxt">' . $selectedCategoryName .'</h3>' .
+                    '</a>' .
+                    $secondLevelUl .
+                '</li>';
+        } else {
+            $html .= $childCatHtml;
+        }
+        //----------------------------------------------------------------------
+        $html .= '</ul>';
+        //--------------------------------------------------------------- output
+        return $html;
+    } //=============================================== iterateCatTree ***END***
+
+
+    //============================================= iterateCatTreeDesktopSpecial
+    function iterateCatTreeDesktopSpecial($_childCats, $productStatus){
+    //==========================================================================
+        $selectedCategoryId = $productStatus['categoryId'];
+        $selectedCategoryName = $productStatus['categoryName'];
+        $selectedCategoryChildCount = $productStatus['count'];
+        $category = Mage::getModel('catalog/category')->load($selectedCategoryId);
+        $selectedCategoryImage = $category->getSchrackImageUrl();
+        //----------------------------------------------------------------------
+        $boxSeparatorCounter = 0; $childCatContent = '';
+        $childCatCount = count($_childCats);
+        $miniClass = $childCatCount > 6 ? 'minimized' : '';
+        $miniClass2 = $selectedCategoryName."." == "." ? 'smallPanel' : '';
+        $HideNavBtnClass = $selectedCategoryName."." == "." ? 'hide' : '';
+        //----------------------------------------------------------------------
+        $imgBase = Mage::getStoreConfig('schrack/general/imageserver');
+        //----------------------------------------------------- first level list
+        $html = '<div class="category_filter_wrapper '.$miniClass.'"><ul class="firstLevel category_filter_navigation_panel '.$miniClass.' '.$miniClass2.'">';
+        //-------------------------------------------- first line: "results for"
+        $html .= '<li class="results_for_line">' .
+            //-------------------------------- hide category name on first level
+            '<div class="category_filter_navigation_panel_headline">' .
+            ( $selectedCategoryName."." != "." ?
+                '<b><i>' . ($selectedCategoryName) . ' ('.$selectedCategoryChildCount.')</i></b>'
+                : '<b><i>' . Mage::helper('schrack')->__("All Categories") . '</i></b>'
+            ) .
+            '</div>'.
+            '<hr class="blue_headline_horizontal_bar">' .
+            '</li>';
+        //-------------------------- add navigation "back one cat" or "back top"
+        $html .=
+            '<li class="backToNavBtnLine '.$HideNavBtnClass.'">'.
+                '<div class="backNavigationBtn">' .
+                    '<a id="backtoAllCategoriesLinkDesktop" class="no_link_decoration light_blue" href="#" >' .
+                        '<div class="glyphicon glyphicon-triangle-left category_sign"></div>' .
+                        '<div>' . Mage::helper('schrack')->__("Back to all categories") . '</div>' .
+                    '</a>' .
+                    '<a id="backtoPrevCategorieLinkDesktop" class="no_link_decoration light_blue" href="javascript:void(0)" >' .
+                        '<div class="glyphicon glyphicon-triangle-top category_sign"></div>' .
+                        '<div>' . Mage::helper('schrack')->__("Back To Previous Category") . '</div>' .
+                    '</a>' .
+                '</div>'.
+            '</li>';
+
+        //----------------------------------- build secondLevel child categories
+        foreach ($_childCats as $_childCat){
+            $boxSeparatorCounter++;
+            $space = (($boxSeparatorCounter % 3) > 0) ? 'space5' : '';
+            $childCatContent .=
+                '<li class="level11 column30_hover lightgrey_bottom '.$space.'">' .
+                    '<a href="#" id="'.$_childCat['id'].'" >' .
+                        '<div class="image_mini_panel column20">' .
+                            '<img class="image_mini_panel_content" src="' . $imgBase . $_childCat['image'] . '">' .
+                        '</div>' .
+                        '<div class="getSearchCategoryLevel11 column80">' .
+                            '<div>' .
+                                '<div class="cat_text">' . $_childCat['name'] .
+                                    '<span class="small_count">(' . $_childCat['count'] . ')</span>' .
+                                '</div>' .
+                            '</div>' .
+                        '</div>' .
+                    '</a>' .
+                '</li>';
+        }
+        //------------------------------------ add child categories if available
+        if ( $childCatCount > 0 ) {  $html .= $childCatContent; }
+        //----------------------------------------------------------------------
+        $html .= '</ul>';
+        if( $childCatCount > 6){
+            $html .= '<div class="more_results_btn"><span class="more_results_btn_txt">' . Mage::helper('schrack')->__("See More") . '</span><br><i class="glyphicon glyphicon-triangle-bottom more_results_btn_icon"></i></div>';
+            $html .= '<div class="less_results_btn hide"><i class="glyphicon glyphicon-triangle-top more_results_btn_icon"></i><br><span class="less_results_btn_txt">' . Mage::helper('schrack')->__("See Less") . '</span></div>';
+        }
+        return $html."</div>";
+    } //================================= iterateCatTreeDesktopSpecial ***END***
+
+    /******************************************  !!!BUGFIX #7242:!!! WJ 10.05.22
+     * Check for active/selected general filters to prevent filterbox from
+     * unintended collapsing/closing.
+     * Execution happens in JS Code -> search for (#7242)
+     **************************************************************************/
+    $generalFiltersActive = "N";
+    foreach($_facets as $facet => $entry){
+        if($facet == "general_filters" && is_array($entry)){
+            foreach($entry as $option => $value){
+                if(is_array($value) && $option == "options"){
+                    foreach($value as $optionsetting => $settingValue) {
+                        if($settingValue["type"] && $settingValue["type"] == "active"){
+                            $generalFiltersActive = "Y";
+                        }
+                    }
+                }
+            }
+        }
+    }
+?>
+
+<style>
+    .light_blue:hover {
+        color: #0185ea;
+    }
+    .cat_text {
+        float: left;
+    }
+
+    .space5{ margin-right:5%; }
+
+    .level11 i { display: inline-block; line-height: 60pt; }
+
+    .firstLevel, .backNavigationBtn { float:left; width:100%; margin:10px 0;}
+    .category_filter_wrapper{ float:left; margin-bottom: 20px; width:100%; }
+    .category_filter_wrapper.minimized{ max-height: 340px; overflow: hidden; }
+    .results_for_line, .more_results, .more_results_btn, .less_results, .less_results_btn {float:left; width:100%;}
+    .more_results_btn, .less_results_btn{ text-align: center;border-top: solid 1px #cdcdcd; padding: 15px 0 0 0; margin-top: 5px; cursor: pointer;line-height:10pt; font-size: 14pt;}
+    .more_results_btn:hover, .less_results_btn:hover{ color:#00589d; }
+
+    #backtoAllCategoriesLinkDesktop, #backtoPrevCategorieLinkDesktop { font-size: 14pt;float: left; display: inline-block; min-width: 350px; }
+    .small_count {
+        margin-left: 5px;
+        font-size: 11px;
+        margin-top: 2px;
+    }
+    .category_sign {
+        float: left;
+        margin-right: 9px;
+        font-size: 19pt;
+    }
+    .no_link_decoration {
+        text-decoration: none !important;
+    }
+    .box_separator {
+        width: 5%;
+        float: left;
+    }
+    .lightgrey_bottom {
+        border-bottom: 1px solid lightgrey;
+        padding-bottom: 12px;
+        padding-left: 13px;
+    }
+    .blue_headline_horizontal_bar {
+        border: 1px solid #00589d;
+        margin-top: 6px;
+        margin-bottom: 0;
+    }
+    .column20 {
+        width: 20%;
+        float: left;
+        margin-top: 0;
+    }
+    .column30 {
+        width: 30%;
+        float: left;
+        padding-top: 12px;
+    }
+    .column30_hover {
+        width: 30%;
+        float: left;
+        padding-top: 12px;
+    }
+    .column30_hover:hover {
+        background: ghostwhite;
+    }
+    .column66 {
+        width: 66%;
+        float: left;
+        margin-top: 20px;
+    }
+    .column80 {
+        width: 80%;
+        float: left;
+        margin-top: 0;
+    }
+    .oldCategorySearchNavigationPanel {
+        display: none;
+    }
+    .category_filter_navigation_panel {
+        padding: 15px;
+    }
+    .category_filter_navigation_panel.minimized{ max-height: 270px; overflow: hidden; }
+    .category_filter_navigation_panel.minimized.smallPanel{ max-height: 220px;}
+    .category_filter_navigation_panel_headline {
+        font-size: 1.2em;
+        color: #00589d;
+        letter-spacing: .1px;
+        font-family: robotomedium,Helvetica,Arial,sans-serif;
+    }
+    .image_mini_panel {
+        padding-left: 5px;
+        float: left;
+        height: 63px;
+        display: flex;
+        align-items: center;
+    }
+    .image_mini_panel_content {
+        max-width: 63px;
+        max-height: 63px;
+    }
+    .getSearchCategoryLevel10 {
+        float: left;
+        font-family: robotomedium,Helvetica,Arial,sans-serif;
+        color: #00589d;
+        font-size: 1em;
+        padding-left: 10px;
+        padding-right: 9px;
+        display: flex;
+        align-items: center;
+        justify-content: left;
+        height: 63px;
+        margin-top: 4px;
+    }
+    .getSearchCategoryLevel11 {
+        float: left;
+        font-family: robotomedium,Helvetica,Arial,sans-serif;
+        color: #00589d;
+        font-size: 1em;
+        padding-left: 10px;
+        padding-right: 9px;
+        display: flex;
+        align-items: center;
+        justify-content: left;
+        height: 63px;
+        margin-top: 4px;
+    }
+    .border_fix {
+        background: #edecec !important;
+        box-shadow: none !important;
+    }
+    .search-page-container {
+        padding: 10px 17px !important;
+    }
+    .break_word {
+        word-break: break-word !important;
+    }
+    .redColor {
+        color: #d1222b !important;
+    }
+    .prodListingSales {
+        display: table !important;
+    }
+    .search_result_list_tile_sales {
+        height: 310px !important;
+        float: left !important;
+        position: relative;
+        width: 180px;
+    }
+    .search_result_list_subtile_sales {
+        float: left;
+    }
+
+    .search_result_list_subtile_sales .general_current_addtocart_container_sales{
+        width: calc(100% - 15px);
+        display: inline-flex;
+        flex-direction: row;
+        justify-content: space-evenly;
+    }
+
+    .imgCont {
+        margin-bottom: 2px !important;
+    }
+    .loginSuggest {
+        font-weight: 400;
+        font-size: 18px;
+        height: auto !important;
+        width: 208px !important;
+        padding: 10px;
+        margin-left: -187px;
+        text-align: center;
+    }
+
+    .add-to-new-partslist {
+        width: 100% !important;
+        height: 55px !important;
+        margin-bottom: 0 !important;
+        margin-right: 0 !important;
+        text-align: left !important;
+        padding-left: 10px !important;
+        padding-top: 9px !important;
+        background: #f5f5f5 !important;
+        color: black !important;
+        cursor: pointer !important;
+        border: 0 !important;
+        border-bottom: 1px solid #e5ebef !important;
+        box-shadow: none;
+    }
+    .add-to-new-partslist:hover {
+        background: #00589d !important;
+        color: #fff !important;
+    }
+    .partslistRow {
+        width: 100% !important;
+        background: #f5f5f5 !important;
+        color: black !important;
+        font-size: 14px !important;
+        height: auto !important;
+        margin: 0 !important;
+        padding-top: 8px !important;
+        padding-bottom: 8px !important;
+        padding-left: 10px !important;
+        text-align: left !important;
+        cursor: pointer !important;
+        border: 0 !important;
+        border-bottom: 1px solid #e5ebef !important;
+        box-shadow: none;
+    }
+    .partslistRow:hover {
+        background: #00589d !important;
+        color: #fff !important;
+    }
+
+    .modified_partslist_icon {
+        position: absolute;
+        top: 10px;
+        right: 7px;
+    }
+    .modified_partslist_icon_sales {
+        position: absolute;
+        top: 11px;
+        right: 15px;
+    }
+
+    .modified_price_label {
+        width: 100% !important;
+        height: 43px;
+        position: absolute;
+        bottom: 34px;
+        left: 0;
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+        align-items: center;
+
+    }
+
+    #gridListView.gridView.grid li.sppl-entry .trinity_sign {
+        display: inline-block !important;
+        z-index: 1;
+        align-self: center;
+        width: 90px !important;
+        margin-bottom: -18px;
+        padding: 5px 0;
+        background: #555555 !important;
+        color: #fff !important;
+        font-size: 10px;
+        letter-spacing: 3px !important;
+        line-height: 8px;
+        font-weight: 600 !important;
+    }
+    #gridListView.listView.list li.sppl-entry .trinity_sign {
+        display: inline-block !important;
+        z-index: 1;
+        align-self: center;
+        width: 140px !important;
+        margin-bottom: -14px;
+        padding: 7px 0;
+        background: #555555 !important;
+        color: #fff !important;
+        font-size: 10px;
+        letter-spacing: 3px !important;
+        line-height: 8px;
+        font-weight: 600 !important;
+    }
+    #gridListView.compactView.compact li.sppl-entry .trinity_sign {
+        display: inline-block !important;
+        background: #555555 !important;
+        color: #fff !important;
+        font-size: 8px;
+        letter-spacing: 2px;
+        line-height: 3px;
+        font-weight: 600 !important;
+        width: 60px !important;
+        margin-bottom: 0px;
+        z-index: 1;
+        padding: 5px 0px;
+        margin-left: -15px;
+        margin-top: -4px;
+        align-self: inherit;
+    }
+
+    .vignette_sign {
+        position: relative !important;
+        display: inline-block !important;
+        vertical-align: top !important;
+        border: 3px solid #d1222b !important;
+        background: #d1222b !important;
+        color: #fff !important;
+        font-size: 10px;
+        letter-spacing: 3px !important;
+        line-height: 8px;
+        font-weight: 600 !important;
+        left: auto !important;
+        right: auto !important;
+        padding-left: 9px !important;
+        padding-right: 7px !important;
+        padding-top: 1px !important;
+        padding-bottom: 1px !important;
+        width: 90px !important;
+    }
+
+    /* promotions badge */
+    .promo_sign {
+        position: relative;
+        top: 6px;
+        left: 6px;
+        height: 27px;
+        width: 27px;
+        z-index: 3;
+    }
+    /* list and grid view */
+    .search-page-container .search-page-product-list.list li.sppl-entry .image_sku_container .promo_sign,
+    .search-page-container .search-page-product-list.grid li.sppl-entry .image_sku_container .promo_sign{
+        top: -4px;
+        left: 4px;
+        width: 27px;
+        margin-bottom: -27px;
+        height: 27px;
+    }
+    .search-page-product-list.grid .info-icon.energyLabel {
+        margin-top: 10px;
+        margin-left: 48px;
+    }
+    .search-page-product-list.list .info-icon.energyLabel {
+        margin-top: 10px;
+        margin-left: 15px;
+    }
+
+
+    .search-page-product-list.compact .info-icon.energyLabel {
+        margin-top: 15px;
+        margin-left: 374px;
+    }
+
+    #chnageOnSaleFilter.col-sm-12 .search-page-product-list.compact .info-icon.energyLabel {
+        margin-top: 15px;
+        margin-left: 600px;
+    }
+
+    .search-page-product-list.list .energyLabelDatasheet {
+        margin-top: 17px;
+    }
+    .search-page-product-list.grid .energyLabelDatasheet {
+        margin-top: 17px;
+    }
+    .search-page-product-list.compact .energyLabelDatasheet {
+        margin-top: 22px;
+    }
+    .energyLabelSales {
+        position: absolute;
+        bottom: -2px;
+        margin-left: 21px;
+    }
+    .energyLabelSales .energyLabelDatasheet {
+        margin-top: 7px;
+    }
+    /* compact view */
+    .search-page-container .search-page-product-list.compact li.sppl-entry .image_sku_container .promo_sign {
+        top: -9px;
+        left: -7px;
+        width: 25px;
+        margin-bottom: -25px;
+        height: 25px;
+    }
+
+    .search_result_availability_data {
+        color: #555;
+        text-align: left;
+        padding: 0 10px 0 10px;
+        display: block;
+        /* font-family: robotoregular,Helvetica,Arial,Sans-Serif;
+        font-weight: bold;
+        font-size: 12px; */
+    }
+
+    .qty_underlined {
+        margin-top: 4px;
+        border-bottom: 1px solid #555;
+        font-weight: bold;
+    }
+
+    .stock_switch_icon {
+        position: absolute;
+        right: 0px;
+        top: 36px;
+        padding: 2px;
+        color: white !important;
+        font-size: 22px;
+        font-weight: bold;
+        background: #005b9f;
+        cursor: pointer;
+    }
+
+    .search_result_list_tile_sales .avail_tab_container {
+        position: absolute;
+        left: 0px;
+        top: 0px;
+        width: 100%;
+        height:100%;
+        background: white;
+        z-index: 2;
+        display: none;
+        padding: 10px 0 0 0 !important;
+        overflow: hidden;
+    }
+
+    .ajaxSpinnerOverlayPriceLoading.small{
+        width: 21px;
+        height: 21px;
+    }
+    /* will be set in commonJS -> getProductAvailabilitiesList !!!!!! DO NOT DELETE !!!!!*/
+    .popupBox li span.pickup_store_name{
+        float: left;
+        padding: 0;
+        font-size: 9pt;
+    }
+
+    .popupBox li span.nds-time {
+        float: left;
+        padding: 0;
+    }
+
+    .popupBox li span.pickup_store_name.schrack_txt_highlight{
+        float: left;
+        color: #005b9f;
+        padding: 0;
+        font-size: 11pt;
+        font-weight: 700;
+    }
+
+    .popupBox li .fav_store{
+        margin: 3px 2px;
+        color: #d1222b;
+    }
+
+    .new_category_search_navigation_panel .moreData .note-msg {
+        color: #00589d;
+        font-weight: bold;
+        font-size: 14pt;
+        text-align: center;
+        padding: 20px 0;
+    }
+
+    .search-page-product-list.compact li.sppl-entry .stock-section .popupBox li span.nds-time {
+        display: inline-block;
+    }
+
+
+    .search-page-container .search-page-product-list.grid li.sppl-entry .add_to_cart_wrapper .general_current_addtocart_container .qtyaddtocartbutton.inactive,
+    .search-page-container .search-page-product-list.grid li.sppl-entry .add_to_cart_wrapper .general_current_addtocart_container_sales .qtyaddtocartbutton.inactive,
+    .search-page-container .search-page-product-list.grid li.sppl-entry .add_to_cart_wrapper .general_current_addtocart_container .qtyaddtocartbutton.inactive,
+    .search-page-container .search-page-product-list.grid li.sppl-entry .add_to_cart_wrapper .general_current_addtocart_container_sales .qtyaddtocartbutton.inactive {
+        background: #b9b9b9;
+        border-top: 1px solid #b9b9b9;
+        border-bottom: 1px solid #b9b9b9;
+    }
+
+    .search-page-container .search-page-product-list.grid li.sppl-entry .add_to_cart_wrapper .general_current_addtocart_container .qtyaddtocartbutton.inactive:after,
+    .search-page-container .search-page-product-list.grid li.sppl-entry .add_to_cart_wrapper .general_current_addtocart_container_sales .qtyaddtocartbutton.inactive:after{
+        background: #b9b9b9;
+        border-top: 1px solid #b9b9b9;
+        border-bottom: 1px solid #b9b9b9;
+        top: -1px;
+    }
+
+    .search-page-container .search-page-product-list.list li.sppl-entry .add_to_cart_wrapper .general_current_addtocart_container .qtyaddtocartbutton.inactive,
+    .search-page-container .search-page-product-list.list li.sppl-entry .add_to_cart_wrapper .general_current_addtocart_container_sales .qtyaddtocartbutton.inactive,
+    .search-page-container .search-page-product-list.list li.sppl-entry .add_to_cart_wrapper .general_current_addtocart_container .qtyaddtocartbutton.inactive,
+    .search-page-container .search-page-product-list.list li.sppl-entry .add_to_cart_wrapper .general_current_addtocart_container_sales .qtyaddtocartbutton.inactive {
+        background: #b9b9b9;
+        border-top: 1px solid #b9b9b9;
+        border-bottom: 1px solid #b9b9b9;
+    }
+
+    .search-page-container .search-page-product-list.list li.sppl-entry .add_to_cart_wrapper .general_current_addtocart_container .qtyaddtocartbutton.inactive:after,
+    .search-page-container .search-page-product-list.list li.sppl-entry .add_to_cart_wrapper .general_current_addtocart_container_sales .qtyaddtocartbutton.inactive:after{
+        background: #b9b9b9;
+        border-top: 1px solid #b9b9b9;
+        border-bottom: 1px solid #b9b9b9;
+        top: -1px;
+    }
+
+    .search-page-container .search-page-product-list.compact li.sppl-entry .add_to_cart_wrapper .general_current_addtocart_container .qtyaddtocartbutton.inactive,
+    .search-page-container .search-page-product-list.compact li.sppl-entry .add_to_cart_wrapper .general_current_addtocart_container_sales .qtyaddtocartbutton.inactive,
+    .search-page-container .search-page-product-list.compact li.sppl-entry .add_to_cart_wrapper .general_current_addtocart_container .qtyaddtocartbutton.inactive:after,
+    .search-page-container .search-page-product-list.compact li.sppl-entry .add_to_cart_wrapper .general_current_addtocart_container_sales .qtyaddtocartbutton.inactive:after {
+        background: #b9b9b9;
+        border-top: 1px solid #b9b9b9;
+        border-bottom: 1px solid #b9b9b9;
+    }
+
+    .search-page-container .search-page-product-list.compact li.sppl-entry .add_to_cart_wrapper .general_current_addtocart_container .qtyaddtocartbutton.inactive:after,
+    .search-page-container .search-page-product-list.compact li.sppl-entry .add_to_cart_wrapper .general_current_addtocart_container_sales .qtyaddtocartbutton.inactive:after{
+        top: -1px;
+    }
+    .search-page-product-list.grid li.sppl-entry .stock-section span.logstics-icon-text.on_request,
+    .search-page-product-list.list li.sppl-entry .stock-section span.logstics-icon-text.on_request,
+    .search-page-product-list.compact li.sppl-entry .stock-section span.logstics-icon-text.on_request,
+    .qtyBoxCont ul li.on_request{
+        font-weight: bold;
+        color: #d1222b;
+    }
+
+    @media (min-width: 401px) {
+        .qty_right {
+/*
+            position: absolute;
+            right: 10px;
+*/
+            float: right;
+        }
+    }
+    @media (min-width: 1px) and (max-width: 400px) {
+        .qty_right {
+            /* position: absolute;
+            right: 10px; */
+        }
+    }
+
+    @media (min-width: 1px) and (max-width: 320px) {
+        .search-page-container {
+            padding: 0 1px !important;
+        }
+        .searchResultPartslistIcon {
+            margin-right: -16px;
+            margin-top: -5px;
+        }
+        .trinity_sign {
+            line-height: 3px !important;
+            font-size: 8px !important;
+            top: 22px !important;
+        }
+        .vignette_sign {
+            line-height: 3px !important;
+            font-size: 8px !important;
+            top: 22px !important;
+        }
+        .promo_sign {
+            top: 2px;
+            left: 1px;
+            height: 22px;
+            width: 22px;
+        }
+        .shop_specific_height {
+            font-size: 1em !important;
+        }
+        .modified_partslist_icon {
+            right: 18px;
+        }
+        .modified_partslist_icon_sales {
+            right: 26px;
+        }
+        .general_current_price_container {
+            margin-left: 12px;
+        }
+        .general_current_addtocart_container {
+            margin-left: -32px;
+            padding-left: 23px;
+            padding-top: 10px;
+        }
+        .general_current_addtocart_container_sales {
+            margin-left: 13px !important;
+        }
+        .qtyaddtocartbutton {
+            width: 35px;
+        }
+        .addToCartListViewOffset {
+            margin-left: 9%!important;
+        }
+        .loginSuggest {
+            margin-left: -100px;
+            width: 132px !important;
+            font-size: 14px;
+        }
+        .search_result_list_tile_sales {
+            width: 100%;
+        }
+        .search_result_list_subtile_sales {
+            margin-left: 14%;
+            width: 79%;
+        }
+    }
+
+    @media (min-width: 321px) and (max-width: 360px) {
+        .trinity_sign {
+            line-height: 3px !important;
+            font-size: 8px !important;
+            top: 18px !important;
+        }
+        .vignette_sign {
+            line-height: 3px !important;
+            font-size: 8px !important;
+            top: 18px !important;
+        }
+        .promo_sign {
+            top: 2px;
+            left: 1px;
+            height: 22px;
+            width: 22px;
+        }
+        .shop_specific_height {
+            font-size: 0.9em !important;
+        }
+        .modified_partslist_icon {
+            right: 18px;
+        }
+        .modified_partslist_icon_sales {
+            right: 26px;
+        }
+        .general_current_addtocart_container {
+            margin-left: -39px;
+        }
+        .general_current_addtocart_container_sales {
+            margin-left: 29px !important;
+        }
+        .addToCartListViewOffset {
+            margin-left: 10%!important;
+        }
+        .loginSuggest {
+            margin-left: -106px;
+            width: 132px !important;
+            font-size: 14px;
+        }
+        .search_result_list_tile_sales {
+            width: 100%;
+        }
+        .search_result_list_subtile_sales {
+            margin-left: 0;
+            width: 100%;
+        }
+    }
+
+    @media (min-width: 361px) and (max-width: 410px) {
+        .trinity_sign {
+            line-height: 3px !important;
+            font-size: 8px !important;
+            top: 21px !important;
+        }
+        .vignette_sign {
+            line-height: 3px !important;
+            font-size: 8px !important;
+            top: 21px !important;
+        }
+        .promo_sign {
+            top: 4px;
+            left: 4px;
+            height: 22px;
+            width: 22px;
+        }
+        .shop_specific_height {
+            font-size: 1em !important;
+        }
+        .modified_partslist_icon {
+            right: 18px;
+        }
+        .modified_partslist_icon_sales {
+            right: 26px;
+        }
+        .general_current_addtocart_container {
+            margin-left: -11px;
+        }
+        .general_current_addtocart_container_sales {
+            margin-left: 48px !important;
+        }
+        .addToCartListViewOffset {
+            margin-left: 13%!important;
+        }
+        .loginSuggest {
+            margin-left: -138px;
+            width: 167px !important;
+            font-size: 14px;
+        }
+        .search_result_list_tile_sales {
+             width: 100%;
+        }
+        .search_result_list_subtile_sales {
+            margin-left: 0;
+        }
+    }
+
+    @media (min-width: 411px) and (max-width: 460px) {
+        .shop_specific_height {
+            font-size: 1em !important;
+        }
+        .trinity_sign {
+            line-height: 4px !important;
+            font-size: 8px !important;
+            top: 21px !important;
+        }
+        .vignette_sign {
+            line-height: 4px !important;
+            font-size: 8px !important;
+            top: 21px !important;
+        }
+        .promo_sign {
+            top: 7px;
+            left: 7px;
+            height: 22px;
+            width: 22px;
+        }
+        .modified_partslist_icon {
+            right: 18px;
+        }
+        .modified_partslist_icon_sales {
+            right: 26px;
+        }
+        .general_current_addtocart_container {
+            margin-left: -11px;
+        }
+        .general_current_addtocart_container_sales {
+            margin-left: 57px !important;
+        }
+        .addToCartListViewOffset {
+            margin-left: 16%!important;
+        }
+        .loginSuggest {
+            margin-left: -150px;
+            width: 177px !important;
+            font-size: 14px;
+        }
+        .search_result_list_tile_sales {
+            width: 100%;
+        }
+        .search_result_list_subtile_sales {
+            margin-left: 4%;
+        }
+    }
+
+    @media (min-width: 461px) and (max-width: 480px) {
+        .trinity_sign {
+            line-height: 4px !important;
+            font-size: 8px !important;
+            top: 21px !important;
+        }
+        .vignette_sign {
+            line-height: 4px !important;
+            font-size: 8px !important;
+            top: 21px !important;
+        }
+        .promo_sign {
+            top: 2px;
+            left: 1px;
+            height: 22px;
+            width: 22px;
+        }
+        .modified_partslist_icon {
+            right: 19px;
+        }
+        .modified_partslist_icon_sales {
+            right: 27px;
+        }
+        .general_current_addtocart_container {
+            margin-left: -6px;
+        }
+        .general_current_addtocart_container_sales {
+            margin-left: 69px !important;
+        }
+        .addToCartListViewOffset {
+            margin-left: 18%!important;
+        }
+        .loginSuggest {
+            margin-left: -171px;
+            width: 197px !important;
+            font-size: 14px;
+        }
+        .search_result_list_tile_sales {
+            width: 100%;
+        }
+        .search_result_list_subtile_sales {
+            margin-left: 2%;
+        }
+    }
+
+    @media (min-width: 481px) and (max-width: 560px) {
+        .trinity_sign {
+            line-height: 4px !important;
+            font-size: 8px !important;
+            top: 21px !important;
+        }
+        .vignette_sign {
+            line-height: 4px !important;
+            font-size: 8px !important;
+            top: 21px !important;
+        }
+        .promo_sign {
+            top: 2px;
+            left: 1px;
+            height: 22px;
+            width: 22px;
+        }
+        .modified_partslist_icon {
+            right: 19px;
+        }
+        .modified_partslist_icon_sales {
+            right: 27px;
+        }
+        .general_current_addtocart_container {
+            margin-left: 8px;
+        }
+        .general_current_addtocart_container_sales {
+            margin-left: 82px;
+        }
+        .addToCartListViewOffset {
+            margin-left: 19%!important;
+        }
+        .loginSuggest {
+            margin-left: -199px;
+            width: 228px !important;
+            font-size: 14px;
+        }
+        .search_result_list_tile_sales {
+            width: 100%;
+        }
+        .search_result_list_subtile_sales {
+             margin-left: 7%;
+        }
+    }
+
+    @media (min-width: 561px) and (max-width: 639px) {
+        .trinity_sign {
+            line-height: 4px !important;
+            font-size: 8px !important;
+            top: 21px !important;
+        }
+        .vignette_sign {
+            line-height: 4px !important;
+            font-size: 8px !important;
+            top: 21px !important;
+        }
+        .promo_sign {
+            top: 2px;
+            left: 49px;
+            height: 22px;
+            width: 22px;
+        }
+        .modified_partslist_icon {
+            right: 16px;
+        }
+        .modified_partslist_icon_sales {
+            right: 24px;
+        }
+        .general_current_addtocart_container {
+            margin-left: 22px;
+        }
+        .general_current_addtocart_container_sales {
+            margin-left: 111px;
+        }
+        .general_current_price_container{
+            margin-top: 1px !important;
+            margin-left: 61px;
+        }
+        .addToCartListViewOffset {
+            margin-left: 21%!important;
+        }
+        .loginSuggest {
+            margin-left: -242px;
+            width: 268px !important;
+            font-size: 14px;
+        }
+        .search_result_list_tile_sales {
+            width: 100%;
+        }
+        .search_result_list_subtile_sales {
+            margin-left: 14%;
+        }
+    }
+
+    @media (min-width: 640px) and (max-width: 767px) {
+        .trinity_sign {
+            line-height: 4px !important;
+            font-size: 8px !important;
+            top: 21px !important;
+        }
+        .vignette_sign {
+            line-height: 4px !important;
+            font-size: 8px !important;
+            top: 21px !important;
+        }
+        .promo_sign {
+            top: 2px;
+            left: 87px;
+            height: 22px;
+            width: 22px;
+        }
+        .modified_partslist_icon {
+            right: 16px;
+        }
+        .modified_partslist_icon_sales {
+            right: 24px;
+        }
+        .general_current_addtocart_container {
+            margin-left: 40px;
+        }
+        .general_current_addtocart_container_sales {
+            margin-left: 149px;
+        }
+        .addToCartListViewOffset {
+            margin-left: 23%!important;
+        }
+        .loginSuggest {
+            margin-left: -287px;
+            width: 312px !important;
+            font-size: 15px;
+        }
+        .search_result_list_tile_sales {
+            width: 100%;
+        }
+        .search_result_list_subtile_sales {
+            margin-left: 20%;
+        }
+    }
+
+    @media (min-width: 768px) and (max-width: 768px) {
+        .trinity_sign {
+            line-height: 4px !important;
+            font-size: 8px !important;
+            top: 26px !important;
+        }
+        .vignette_sign {
+            line-height: 4px !important;
+            font-size: 8px !important;
+            top: 26px !important;
+            letter-spacing: 0.2em !important;
+        }
+        .promo_sign {
+            top: 2px;
+            left: 1px;
+            height: 22px;
+            width: 22px;
+        }
+        .modified_partslist_icon {
+            right: 16px;
+        }
+        .modified_partslist_icon_sales {
+            right: 24px;
+        }
+        .general_current_addtocart_container {
+            margin-left: 11px;
+        }
+        .general_current_addtocart_container_sales {
+            margin-left: 4px;
+        }
+        .addToCartListViewOffset {
+            margin-left: 24%!important;
+        }
+        .loginSuggest {
+            margin-left: -196px;
+            width: 226px !important;
+            font-size: 15px;
+        }
+        .search_result_list_tile_sales {
+            width: 100%;
+        }
+        .search_result_list_subtile_sales {
+            margin-left: 0%;
+        }
+    }
+
+    @media (min-width: 769px) and (max-width: 992px) {
+        .general_current_addtocart_container {
+            margin-left: 11px;
+        }
+        .general_current_addtocart_container_sales {
+            margin-left: 0;
+        }
+        .loginSuggest {
+            margin-left: -205px;
+            width: 226px !important;
+            font-size: 15px;
+        }
+        .search_result_list_tile_sales {
+            width: 100%;
+        }
+        .search_result_list_subtile_sales {
+            margin-left: 3%;
+        }
+        .vignette_sign {
+            top: 26px !important;
+            letter-spacing: 0.2em !important;
+        }
+        .promo_sign {
+            top: 2px;
+            left: 38px;
+            height: 22px;
+            width: 22px;
+        }
+    }
+
+    @media (min-width: 1024px) and (max-width: 1280px) {
+        .vignette_sign {
+            top: 26px !important;
+            letter-spacing: 0.2em !important;
+        }
+        #stockCleranceMob {
+            width: 19% !important;
+        }
+        .promo_sign {
+            top: 2px;
+            left: 87px;
+            height: 22px;
+            width: 22px;
+        }
+    }
+
+    @media (min-width: 1281px) and (max-width: 2047px) {
+        .vignette_sign {
+            letter-spacing: 0.2em !important;
+        }
+    }
+
+    @media (min-width: 1px) and (max-width: 1199px) {
+        .category_filter_wrapper {
+            display: none;
+        }
+    }
+
+    @media (max-width: 375px) {
+        .energyLabelSet .modal-dialog {
+            max-width: 80%;
+        }
+    }
+</style>
+
+<div class="search-page-container">
+    <!-- Main tabs -->
+    <div class="tabSection">
+        <ul class="clearfix">
+            <li class="<?php echo (! $showArticles ? 'active ' : '') ?> shop_specific shop_specific_height"
+                id="tab_show_products_panel">
+                <a href="#prodCont"
+                    class="shop_specific shop_specific_height"
+                    role="tab"
+                    data-toggle="tab">
+                    <?php echo $this->__('Products'); ?> (<?php echo $productStatus['count']; ?>)
+                </a>
+            </li>
+            <li class="hidden-sm hidden-md hidden-lg shop_specific shop_specific_height"
+                style="<?php if (!isset($saleStatus['count']) || $saleStatus['count'] == 222) : ?> display: none !important; <?php endif; ?>"
+            >
+                <a href="#stockCleranceMobCon"
+                   class="shop_specific shop_specific_height"
+                   role="tab"
+                   data-toggle="tab"
+                   onclick="jQuery('#activeproductcontainer').val('prodListingSales');">
+                   <?php echo $this->__('Stock Clearance'); ?> (<?php echo isset($saleStatus['count']) ? $saleStatus['count'] : 0; ?>)
+                </a>
+            </li>
+            <?php
+                $pageStatusStyle = '';
+                if (!isset($pagesStatus['count']) || $pagesStatus['count'] == 222) {
+                    $pageStatusStyle = 'display: none !important';
+                }
+            ?>
+            <li class="<?php echo ($showArticles ? 'active ' : '') ?> shop_specific shop_specific_height"
+                id="tab_show_worth_knowing_panel"
+                style="<?php echo $pageStatusStyle; ?>">
+                <a href="#articleCont"
+                   class="shop_specific shop_specific_height"
+                   role="tab"
+                   data-toggle="tab">
+                   <?php echo $this->__('Articles/ Content'); ?> (<?php echo isset($pagesStatus['count']) ? $pagesStatus['count'] : 0; ?>)
+                </a>
+            </li>
+        </ul>
+    </div>
+    <!-- End Main tabs -->
+    <div class="tab-content">
+        <div id="newCategorySearchNavigationPanel" class="new_category_search_navigation_panel">
+            <div class="moreData">
+                <?php
+                    if (!isset($productStatus['categoryId'])) $productStatus['categoryId'] = false;
+                    if (!isset($productStatus['categoryName'])) $productStatus['categoryName'] = false;
+                    if (count($_childCats) > 0 || $productStatus['categoryId']):
+                        echo iterateCatTreeDesktopSpecial($_childCats, $productStatus);
+                    else:
+                        echo '<p class="note-msg">' . $this->__('There are no products matching the selection.') . '</p>';
+                    endif; 
+                ?>
+            </div>
+        </div>
+        <div class="tab-pane fade <?php echo (! $showArticles ? 'active in row' : '') ?>" id="prodCont">
+            <div class="col-xs-3 hidden-xs hidden-sm hidden-md">
+                <!-- Categories -->
+                <div class="catResultBx oldCategorySearchNavigationPanel" id="moreDataDesktop">
+                    <h2><?php echo $this->__('Show Results for'); ?>:</h2>
+                    <div class="moreData"><!-- update by js --></div>
+                    <div class="clearfix">
+                        <div class="col-xs-12">
+                            <a href="javascript://" id="moreBttn" class="moreBttn moreBttnToggle hide"> + <?php echo $this->__('See More'); ?></a>
+                        </div>
+                    </div>
+                </div>
+                <!-- Categories End -->
+                <div class="row">
+                    <div class="col-xs-12">
+                        <div class="dropdown-menu filterPopup openedBx search-attributes-desktop">
+                            <?php if (count($_facets)) { ?>
+                                <!-- will update by js -->
+                            <?php }else{ ?>
+                                <button id="clearFilter" class="btn btn-default marginTB10 marginL15" onclick="clearSearchFilter()"><?php echo $this->__('Clear Filters') ?></button>
+                            <?php } ?>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xs-12 col-sm-12 col-lg-9">
+                <!--div class="row hidden-xs hidden-sm paddingTB15 hide">
+                        <div class="col-xs-12">
+                                <strong>Other Search Suggestions::</strong><br>
+                                <a href="#">Plug-in Relays (202)</a> | <a href="#">Timer Relays (20)</a> | <a href="#">Print Relays (70)</a> <a href="#">Impulse Relays (70)</a> | <a href="#">Relays Sockets (74)</a>
+                        </div>
+                </div-->
+                <div class="catResultBx hidden-lg print-hide-imp" id="moreDataMob">
+                    <h2><?php echo $this->__('Show Results for'); ?>:</h2>
+                    <div class="moreData">
+                        <?php
+                            if (!isset($productStatus['categoryId'])) $productStatus['categoryId'] = false;
+                            if (!isset($productStatus['categoryName'])) $productStatus['categoryName'] = false;
+                            if (count($_childCats) > 0 || $productStatus['categoryId']):
+                                echo iterateCatTree($_childCats, $productStatus['categoryId'], $productStatus['categoryName']);
+                            endif;
+                        ?>
+                    </div>
+
+                    <div class="clearfix">
+                        <div class="col-xs-6">
+                            <a href="javascript://" id="moreBttnMob" class="moreBttn moreBttnToggle hide">+ <?php echo $this->__('See More'); ?></a>
+                        </div>
+                        <!-- Filter -->
+                        <div class="col-xs-6 text-right" id="solrsearch-container">
+                            <?php if (count($_facets)) { ?>
+                                <a href="#" onclick="return false;" class="btn pull-right btn-default filter-btn marginT0" id="filterMenu">
+                                    <?php echo $this->__('Filter'); ?> <span class="filter-btn-icon"></span><span class="count"></span>
+                                </a>
+                                <div class="dropdown-menu filterPopup search-attributes hide-on-print">
+                                    <div class="tabSection posRel">
+                                        <span class="glyphicon glyphicon-remove filterCrossIcon hidden-md hidden-lg" onclick="jQuery('#filterMenu').click(); return false;"></span>
+                                        <!-- Filter tabs -->
+                                        <ul class="clearfix" role="tablist">
+                                            <li role="presentation" class="shop_specific shop_specific_height active">
+                                                <a class="shop_specific_height"
+                                                   href="#topFilter"
+                                                   role="tab"
+                                                   data-toggle="tab"
+                                                   onclick="toggleFilterState = 'topFilter';" id="topFilterBtn">
+                                                    <?php echo $this->__('Filter'); ?>
+                                                </a>
+                                            </li>
+                                            <li role="presentation" class="shop_specific shop_specific_height" <?php if(count($_facets) <= Schracklive_Search_Helper_Search::TOP_FILTER_COUNT){ ?>style="display:none" <?php } ?>>
+                                                <a class="shop_specific_height" href="#moreFilter" role="tab" data-toggle="tab"
+                                                   onclick="toggleFilterState = 'moreFilter';" id="moreFilterBtn">
+                                                    <?php echo $this->__('More Filters'); ?>
+                                                </a>
+                                            </li>
+                                        </ul>
+                                        <!-- Filter tab Data -->
+                                        <div class="tab-content">
+                                            <div class="tab-pane active products-tab" id="topFilter">
+                                                <button id="clearFilter" class="btn btn-default marginTB10 marginL15" onclick="clearSearchFilter()"><?php echo $this->__('Clear Filters') ?></button>
+                                                <div class="panel-group" id="topFilterAccordion" role="tablist" aria-multiselectable="true">
+                                                    <script type="text/javascript">
+                                                        console.log('generalFiltersActive = <?php echo $generalFiltersActive; ?>');
+                                                    </script>
+                                                    <?php $i = 1; foreach ($_facets as $facet => $entries) {  if ( $facet != null ||strlen($facet) > 0 ): ?>
+                                                        <div class="panel panel-default facet" id="<?php echo $facet; ?>">
+                                                            <div class="panel-heading" role="tab">
+                                                                <h4 class="panel-title">
+                                                                      <a role="button" class="accordion-toggle<?php if($facet != 'general_filters'): echo 'collapsed'; endif; ?>" data-toggle="collapse" href="#facet-<?php echo $i?>" aria-expanded="true" aria-controls="facet-<?php echo $i?>">
+                                                                          <span class="facetlabel"><?php echo $entries['label']; ?>:</span>
+                                                                          <!--span class="glyphicon glyphicon-menu-down pull-right arrow-icon"></span-->
+                                                                          <span class="selected-filter" id="selectedFilter-<?php echo $facet; ?>"><span></span></span>
+                                                                      </a>
+                                                                </h4>
+                                                            </div>
+                                                            <div id="facet-<?php echo $i?>" class="panel-collapse <?php if($facet == 'general_filters'): echo 'collapse in'; else: echo 'collapse'; endif; ?>" role="tabpanel">
+                                                                <div class="panel-body">
+                                                                    <a href="#" onclick="performFilterSearchAjax(this, 'showall'); return false;" class="filter-deselect hide" style="font-size: 0.9em; color: #174573;">
+                                                                        <i style="font-size: 1em; position: absolute; margin-top: 5px;" class="fa fa-eject fa-lg"></i> <span style="margin-left: 19px;"><?php echo $this->__('Deselect All'); ?></span>
+                                                                    </a>
+                                                                    <ul>
+                                                                        <?php $j = 0; $selectedFilters = '';
+                                                                            foreach ($entries['options'] as $entry) {
+                                                                                ++$j;  ++$chBxCount;
+                                                                                $_isActive = ($entry['type'] == 'active');
+                                                                                if($_isActive){  $selectedFilters .= $entry['label'] . ', '; }
+                                                                                if( !isset($entry['filter_type']) ){ $entry['filter_type'] = null; }
+                                                                        ?>
+                                                                            <li position="<?php echo $j;?>">
+                                                                                <input id="checkbox-<?php echo $i.'-'.$j;?>"
+                                                                                   class="checkbox-filter-selection" type="checkbox"
+                                                                                   <?php if($_isActive):?> checked="checked"<?php endif;?>
+                                                                                   value="<?php echo $entry['label']; ?>"
+                                                                                   data-showwhat="<?php echo ($entry['count'] == '*' ? 'showall' : 'current'); ?>"
+                                                                                   filtertype="<?php echo $entry['filter_type'] ?>" />
+                                                                                <label for="checkbox-<?php echo $i.'-'.$j;?>">
+                                                                                    <a id="link-<?php echo $i.'-'.$j;?>"
+                                                                                       class="checkbox-filter-selection-label-link"
+                                                                                       rel="nofollow" data-index="<?php echo $i ?>"
+                                                                                       data-pos="<?php echo $j ?>"
+                                                                                       filtertype="<?php echo $entry['filter_type'] ?>" >
+                                                                                          <?php echo $entry['label']; ?>
+                                                                                    </a>
+                                                                                    <?php if($entry['count']) { echo '<span class="count">('.$entry['count'].')</span>'; } ?>
+                                                                                </label>
+                                                                            </li>
+                                                                        <?php } ?>
+                                                                    </ul>
+                                                                </div>
+                                                            </div>
+                                                            <div class="hide" id="selectedFilterTemp-<?php echo $facet; ?>">
+                                                                <?php echo rtrim($selectedFilters,' ,'); ?>
+                                                            </div>
+                                                        </div>
+                                                        <?php if ($i == Schracklive_Search_Helper_Search::TOP_FILTER_COUNT):?>
+                                                                </div>
+                                                            </div>
+                                                            <div class="tab-pane products-tab" id="moreFilter">
+                                                                <div class="panel-group" id="moreFilterAccordion" role="tablist" aria-multiselectable="true">
+                                                        <?php endif;?>
+                                                <?php endif;  ++$i; } ?>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            <?php }else{ ?>
+                                <button id="clearFilter" class="btn btn-default marginTB10 marginL15" onclick="clearSearchFilter()"><?php echo $this->__('Clear Filters') ?></button>
+                            <?php } ?>
+                        </div>
+                        <!-- End Filter -->
+                    </div>
+                </div>
+                <!-- Sorting -->
+                <div class="row  <?php if(count($_childCats) == 0) echo 'hide' ?>">
+                    <div class="col-xs-12">
+                        <div class="row prodListHd">
+                            <div class="col-xs-12 col-sm-6 text-right pull-right print-hide-imp">
+                                <?php echo $this->__('Sort by'); ?>:
+                                <select name="sort" id="sort" onchange="sortBySearch(this.value)">
+                                    <option value="ranking" <?php if($this->getSort() == 'ranking') echo 'selected="selected"' ?>><?php echo $this->__('Best Sellers') ?></option>
+                                    <option value="score" <?php if($this->getSort() == 'score') echo 'selected="selected"' ?>><?php echo $this->__('Best Match') ?></option>
+                                    <option value="name" <?php if($this->getSort() == 'name') echo 'selected="selected"' ?>><?php echo $this->__('Alphabetical') ?></option>
+                                </select>
+
+                                <a href="#" class="gridViewBttn blueTxt"><span class="glyphicon glyphicon-th"></span></a>
+                                <a href="#" class="listViewBttn"><span class="glyphicon glyphicon-th-list"></span></a>
+                                <a href="#" class="compactlistViewBttn"><span class="glyphicon glyphicon-list"></span></a>
+                            </div>
+                            <div class="col-xs-12 col-sm-6"><h3 class="search"><?php echo $this->__("Products for: '%s'", $this->getQ()); ?></h3></div>
+                        </div>
+                    </div>
+                </div>
+                <!-- End Sorting -->
+                <div class="row">
+                    <!-- search products Start -->
+                    <div class="col-xs-12 col-sm-8 col-md-9 left" id='chnageOnSaleFilter'>
+
+
+<?php
+    $SPPLEntries = '<ul class="search-page-product-list" id="gridListView" data-name="results_list1">';
+    //-------------------------------------------------------- no products found
+    if (!count($_productCollection)):
+        //----------------------------------------------------- Suggestions text
+        $suggestionsTxt = '';
+        if($suggestions):
+            $suggestionsTxt .= $this->__('Did you mean');
+            foreach ($suggestions as $suggestion):
+                $href = $coreBaseURL . 'catalogsearch/result/?q=' . $suggestion['query'];
+                $suggestionsTxt .= '<a href="' . $href .'">' .
+                                        $suggestion['query'] .
+                                    '</a>';
+            endforeach;
+        endif;
+        //----------------------------------------------------------- List entry
+        $SPPLEntries .= ''.
+            '<li class="sppl-entry suggestions">'.
+                '<p class="note-msg">' .
+                    $this->__('There are no products matching the selection.') .
+                '</p>'.
+                $suggestionsTxt .
+            '</li>';
+    else:
+        //----------------------------------------------------------------------
+        foreach ($_productCollection as $_product):
+            //--------------------- energy label path and value + datasheet path
+            $promocheck = $_product['priceInfo']['promotype'];
+            //------------------------------------------------------------------
+            $energyLabelValue = $_product['energyLabel'];
+            $colorCodeSet = $energyLabelColorCode[$energyLabelValue];
+            //------------------------------------------------------------------
+            $energyPath = $_product['downloadEnergyLabelLink'];
+            $etiquette = $etiquettePath . $energyPath;
+            //------------------------------------------------------------------
+            $datasheetPath = $_product['downloadLink'];
+            $imageBaseUrl = Mage::getStoreConfig('schrack/general/imageserver');
+            $datasheet = $imageBaseUrl . $datasheetPath;
+            //------------------------------------------------------------------
+            $energyLabelDisplay = "none";
+            if($energyLabelValue != NULL && $energyPath != NULL && $datasheet != NULL) {
+                $energyLabelDisplay = "inline-flex";
+            }
+            //------------------------------------------------------------------
+            $marginLeft = ($promocheck == 'sales') ? 375 : 602;
+            //------------------------------------------------------------------
+            $availabilityInfo = $_product['availabilityInfo'];
+            //------------------------------------------------------------------
+            $nearestDeliveryData = $availabilityInfo['nearestDeliveryQty'];
+            $thirdPartyDeliveryProvider = "no";
+            $deliveryQtySum = $availabilityInfo['deliveryQtySum'];
+            //------------------------------------------------------------------
+            $promoSign = '';
+            if( $promoMap && isset($_product['sku']) && $promoMap[$_product['sku']] ):
+                $promoSign = '<img class="promo_sign" src="' . $imgPromoBookmarkUrl .'" />';
+            endif;
+            //------------------------------------------------------------------
+            $headlineSKU = '<h2 class="p-sku">' . $this->htmlEscape($_product['sku']) .'</h2>';
+            //------------------------------------------------------------------
+            $trinity = ''; $vignette = '';
+            $salemark = '<span class="sale_mark sale-btn hidden"></span>';
+            //------------------------------------------------------------------
+            if (stristr($_product['schrackMainProducer'], 'Trinity') && !stristr($_product['schrackStsPromotionLabel'], 'Vignette')):
+                $trinity = '<span class="trinity_sign">Trinity</span>';
+            endif;
+            //------------------------------------------------------------------
+            if (stristr($_product['schrackStsPromotionLabel'], 'Vignette')):
+                $vignette = '<span class="vignette_sign">Vignette</span>';
+            endif;
+            //----------------------------------------- image with link and zoom
+            $pSKU = $this->htmlEscape($_product['sku']);
+            $pSKUTxt = $_product['sku'];
+            $imageHref = $coreBaseURL . $_product['path'] . $hrefUrlParams;
+            $dataPreviewPath = Schracklive_SchrackCatalog_Helper_Image::getImageUrl($_product['image'],Schracklive_SchrackCatalog_Helper_Image::SEARCH_RESULT_PAGE_MOUSEOVER);
+            $dataSource = Schracklive_SchrackCatalog_Helper_Image::getImageUrl($_product['image'],Schracklive_SchrackCatalog_Helper_Image::SEARCH_RESULT_PAGE_MAIN);
+            $imageID = 'imageLink_' . $pSKU;
+            $textID = 'textLink_' . $pSKU;
+            $cssIsDead = $_product['isDead'] ? ' grayscale' : '';
+            $cssImage = 'lazy'.$cssIsDead;
+            //------------------------------------------------------------------
+            $imageWithLink = '<a data-preview-path="' . $dataPreviewPath .'"' .
+                               ' id="' . $imageID . '"' .
+                               ' class="print-hide p-img previewImageHover track_product_click' . $cssIsDead . '"' .
+                               ' data-sku="' . $pSKU .'"' .
+                               ' href="' . $imageHref . '"' .
+                               ' previewimage="' . $dataPreviewPath . '"' .
+                               ' title="">'.
+                                    '<img data-src="' . $dataSource . '"' .
+                                        ' class="' . $cssImage . '"' .
+                                        ' alt="' . $pSKU . '" />' .
+                               '</a>';
+            //------------------------------------------------------------------
+            $imagePrintOnly = '<img class="print-only" src="' . $dataSource . '"' .
+                                    ' alt="' . $pSKU . '" />';
+            //------------------------------------------------------------------
+            $imageContainer = ''.
+                '<div class="imgCont" style="">'.
+                    $trinity .
+                    $vignette .
+                    $salemark .
+                    $imageWithLink .
+                    $imagePrintOnly .
+                '</div>';
+            //------------------------------------------------------------------
+            $productName = $_product['name'];
+            //------------------------------------------------------------------
+            $mainPackingUnitContainer = '';
+            if ( $_product['mainPackingUnit'] != '' ) :
+                $mainPackingUnitContainer = '<div class="mainVpeText">' . $_product['mainPackingUnit'] . '</div>';
+            endif;
+            //------------------------------------------------------------------
+            $schrack_qtyunit_stringS = '';
+            if ( isset($_product['schrack_qtyunit_stringS']) ) :
+                $schrack_qtyunit_stringS = $_product['schrack_qtyunit_stringS'];
+            endif;
+            //----------------------------------- product detail description div
+            $productDetailDescription = '';
+            if($_product['detailDescription']):
+                $productDetailDescription = '<div class="gray normalTxt productDescriptionTxt" >' .
+                                                $_product['detailDescription'] .
+                                            '</div>';
+            endif;
+            //------------------------------------------------------------------
+            $descriptionContainer =
+                '<span class="hide-on-print p-name">' .
+                    '<a id="' . $textID . '"' .
+                        ' href="' . $imageHref . '"' .
+                        ' title=""' .
+                        ' data-sku="' . $pSKU . '"' .
+                        ' class="searchtresult_productdetail_link track_product_click">' .
+                        $productName .
+                    '</a>' .
+                '</span>' .
+                '<div class="descriptionBox">' .
+                    $productDetailDescription .
+                    $mainPackingUnitContainer .
+                '</div>';
+            //------------------------------------------------------------------
+            $redClass = "";
+            if ($priceInfo && ($priceInfo['promotype'] == 'promotion' || $priceInfo['promotype'] == 'sales')) {
+                $redClass = ' redColor';
+            }
+            //------------------------------------------------------------------
+            $strPriceHTML = "";
+            if ($priceInfo) {
+                $strPriceHTML = $priceInfo['currency'] . '&nbsp;' . $priceInfo['currentprice'];
+            }
+            //------------------------------------------------------------------
+            $pricePopup = '<span>' .
+                               '<span class="glyphicon glyphicon-info-sign info-icon"' .
+                                   ' id="product-price-icon-' . $_product['sku'] .'"' .
+                                   ' data-toggle="dropdown"' .
+                                   ' aria-haspopup="true"' .
+                                   ' aria-expanded="true">' .
+                               '</span>' .
+                               //----------------------------------- price popup
+                               '<div class="popupBox qtyBoxCont dropdown-menu"' .
+                                    ' aria-labelledby="product-price-icon-' . $_product['sku'] . '">' .
+                               '</div>' .
+                          '</span>';
+            //------------------------------------------------------------------
+            $ajaxLoaderGifSrc = $this->getSkinUrl('schrackdesign/Public/Images/download_ajax_loader.gif');
+            $ajaxLoaderGif = '';
+            if (!isset($priceInfo['currentprice'])) :
+                $ajaxLoaderGif = '<img class="ajaxSpinnerOverlayPriceLoading small" src="'.$ajaxLoaderGifSrc.'" />';
+            endif;
+            //------------------------------------------------------------------
+            $detailExpand = 'detail-expand-inactive';
+            if($_product['detailDescription']):
+                $detailExpand = 'detail-expand';
+            endif;
+            //------------------------------------------------------------------
+            $modified_price_label =
+                '<div class="modified_price_label_new' . $redClass . '">' .
+                    $strPriceHTML .
+                    $ajaxLoaderGif .
+                    $pricePopup .
+                '</div>'.
+                //------------------------------------------------- cart wrapper
+                '<div class="add_to_cart_wrapper"></div>'.
+                '<div class="modified_partslist_icon_new"></div>'.
+                '<div class="glyphicon glyphicon-chevron-down ' . $detailExpand . '"></div>';
+            //------------------------------------------------------------------
+            $imageBaseUrl = Mage::getStoreConfig('schrack/general/imageserver');
+            $downLoadLink = $imageBaseUrl . $_product['downloadLink'];
+            $downloadFileType = isset($_product['downloadFileType']) ? $_product['downloadFileType'] : null;
+            $downloadFileSize = isset($downloadFileSize) ? $_product['downloadFileSize'] : null;
+            $downloadTxt = $this->__('Download');
+            //------------------------------------------------------------------
+            $downloadContainer = '';
+            if ( $_product['isDownload'] ):
+                $downloadContainer =
+                    '<div id="isDownload" class="hide">' .
+                        '<div class="download clearfix">' .
+                            '<div class="add-cart-btn hgt60">' .
+                                '<a class="cart-btn" href="' . $downLoadLink .'" target="_blank">' .
+                                    '<span class="pull-left cart-iconDwnld glyphicon glyphicon-download-alt"></span>' .
+                                    '<span class="downld">' . $downloadTxt . '</span>' .
+                                '</a>' .
+                            '</div>' .
+                        '</div>' .
+                        '<div class="clear"></div>' .
+                        '<div class="after-addtocart marginT10">' .
+                            '<div class="font-small">' .
+                                '<div>' .
+                                    '<spawn>' .
+                                        $downloadFileType .
+                                    '</spawn>,&nbsp;' .
+                                    '<spawn>' .
+                                        $downloadFileSize .
+                                    '</spawn>' .
+                                '</div>' .
+                            '</div>' .
+                        '</div>' .
+                    '</div>';
+            endif;
+            //------------------------------------------------------------------
+            $stockSection = '<div class="stock-section">' .
+                                '<div class="pc-store product-store"></div>' .
+                            '</div>' .
+                            '<div id="engeryLabelSet" class="energyLabelSet" style="display:' . $energyLabelDisplay .'; order:8;">' .
+                                // ----------------- Energy Label -> SVG ------------
+                                '<div id="energyLable" class="info-icon energyLabel" data-toggle="modal" data-target="#myModal_' . $pSKU . '"
+                                      style="width:43px;border:solid 0px green;">' .
+                                    '<svg viewbox="0 0 290 150" style="width:100%;height:auto" >' .
+                                        '<polygon points="0,0 0,150 220,150 290,75 220,0"
+                                                      style="stroke-width:1;stroke:rgb(0,0,0);fill:' . $colorCodeSet .'"/>' .
+                                        '<rect width="50" height="148" x="1" y="1"
+                                                   style="fill:rgb(255,255,255);stroke-width:1;stroke:rgb(0,0,0);" />' .
+                                        '<text x="9" y="40" style="fill:black;font-size:35pt;font-family:Arial;font-weight:bold;">A</text>' .
+                                        '<polyline points="26,50 40,75 30,68 30,95 23,95 23,68 13,75 26,50"
+                                                       style="fill:black;stroke:black;stroke-width:1" />' .
+                                        '<text x="7" y="142"
+                                                   style="fill:black;font-size:35pt;font-family:Arial;font-weight:bold;">G</text>' .
+                                        '<text x="90" y="120"
+                                                   style="fill:black;font-size:90pt;font-family:Arial;fill:rgb(255,255,255);
+                                                   stroke-width:1;stroke:rgb(30,30,30);">' . $energyLabelValue . '</text>' .
+                                    '</svg>' .
+                                '</div>' .
+                                // ----------------- Modal popup for Engery Label -------
+                                '<div  id="myModal_' . $pSKU . '" class="modal fade"  role="dialog" >' .
+                                    '<div class="modal-dialog modal-sm">' .
+                                        '<div id="modal-content">' .
+                                            '<div class="modal-body">' .
+                                                '<img src="' . $etiquette . '"' .
+                                                    'alt="energylabel"
+                                                    width="95%"/>' .
+                                            '</div>' .
+                                        '</div>' .
+                                    '</div>' .
+                                '</div>' .
+                                // ----------------- Energy Label Text Link -------
+                                '<span class="energyLabelDatasheet" style="font-size: 13px; margin-left: 10px; text-decoration: underline">' .
+                                    '<a id="energyLableText" style="color: #888;"
+                                        href="' . $datasheet . '"' . 'rel="nofollow"' .
+                                        'target="_blank" >Datasheet' .
+                                    '</a>' .
+                                '</span>' .
+                            '</div>';
+            //------------------------------------------------------------------
+            $SPPLEntries .= ''.
+                '<li class="sppl-entry" id="product_' . $_product['sku'] .'"  data-sku="' . $pSKUTxt . '">'.
+                    '<div class="image_sku_container">' .
+                        $promoSign .
+                        $headlineSKU .
+                        $imageContainer .
+                    '</div>' .
+                    $descriptionContainer .
+                    $modified_price_label .
+                    $downloadContainer .
+                    $stockSection .
+                '</li>';
+        endforeach;
+        $SPPLEntries .= '</ul>';
+        echo $SPPLEntries;
+    endif;
+?>
+
+                    </div>
+                    <!-- search products End -->
+                    <!-- Stock Clearance Start -->
+                    <div class="col-xs-12 col-sm-4 col-md-3 right hidden-xs" id="stockCleranceMob">
+                        <ul class="prodListingSales" data-name="results_list_sales" id="prodListingSales">
+                            <li class="hd hidden-xs"><?php echo $this->__('Stock Clearance'); ?></li>
+                            <?php if (!count($saleProductsCollection)): $i = 0 ?>
+                                <li>
+                                    <p class="note-msg"><?php echo $this->__('There are no products matching the selection.') ?></p>
+                                </li>
+                            <?php else: ?>
+                                <?php foreach ($saleProductsCollection as $_product): ?>
+                                    <?php
+                                        // --- energy label path and value + datasheet path
+                                        $energyLabelValue = $_product['energyLabel'];
+                                        $colorCodeSet = $energyLabelColorCode[$energyLabelValue];
+
+                                        $energyPath = $_product['downloadEnergyLabelLink'];
+                                        $etiquette = $etiquettePath . $energyPath;
+
+
+                                    if( $_product['downloadLink'] == "eprel_datenblaetter/ed_".strtolower($_product['sku']).".pdf") {
+                                        $datasheetPath = $_product['downloadLink'];
+                                        $imageBaseUrl = Mage::getStoreConfig('schrack/general/imageserver');
+                                        $datasheet = $imageBaseUrl . $datasheetPath; //. '&realUser=yes';
+                                    }
+//                                        $datasheetPath = $_product['downloadDataSheetLink'];
+//                                        $datasheet =  $basePath . $datasheetPath. '&realUser=yes';
+
+                                        if($energyLabelValue != NULL && $energyPath != NULL && $datasheet != NULL) {
+                                            $energyLabelDisplay = "inline-flex";
+                                        } else {
+                                            $energyLabelDisplay = "none";
+                                        }
+                                    ?>
+                                    <li class="search_result_list_tile_sales" id="product_<?php echo $_product['sku']; ?>">
+                                        <span class="glyphicon glyphicon-menu-left info-icon blueTxt product_price_icon product-stock-icon stock_switch_icon" title="<?php echo $this->__('Show Availabilities') ?>" data-sku="<?php echo $_product['sku']; ?>"></span>
+                                        <div class="search_result_list_subtile_sales">
+                                            <h2 class="p-sku headline_list_tile_sku">
+                                                <?php echo $this->htmlEscape($_product['sku']); ?>
+                                            </h2>
+                                            <div class="imgCont" style="min-height: 90px;">
+                                                <span class="sale_mark sale-btn hidden"></span>
+                                                <?php
+                                                    $arg1 = $_product['image'];
+                                                    $arg2 = Schracklive_SchrackCatalog_Helper_Image::SEARCH_RESULT_PAGE_MOUSEOVER;
+                                                    $arg3 = Schracklive_SchrackCatalog_Helper_Image::SEARCH_RESULT_PAGE_MAIN;
+                                                    $imgPath1 = Schracklive_SchrackCatalog_Helper_Image::getImageUrl($arg1, $arg2);
+                                                    $imgPath2 = Schracklive_SchrackCatalog_Helper_Image::getImageUrl($arg1, $arg3);
+                                                    if(isset($_product['isDead'])) $class = ' grayscale'; else $class = '';
+                                                    $resClass = "previewImageHover" . $class;
+                                                    $quickViewIcon = $this->getSkinUrl('schrackdesign/Public/Images/rwd/quickViewIcon.png');
+                                                    $sku = $_product['sku'];
+                                                    if($_product['isDownload']) $isDownload = 'isDownload'; else $isDownload = 'false';
+                                                ?>
+                                                <a data-sku="<?php echo $_product['sku']; ?>"
+                                                data-preview-path="<?php echo $imgPath1; ?>"
+                                                id="imageLink_<?php echo $this->htmlEscape($_product['sku']) ?>"
+                                                class="stock_clearance_tracking print-hide p-img <?php echo $resClass; ?>"
+                                                href="<?php echo $coreBaseURL . $_product['path'] ?>"
+                                                previewimage="<?php echo $imgPath1; ?>"
+                                                onClick="return false;"
+                                                title="">
+                                                    <img data-src="<?php echo $imgPath2; ?>"
+                                                        class="lazy <?php echo $class; ?>"
+                                                        alt="<?php echo $this->htmlEscape($_product['sku']) ?>"
+                                                    />
+                                                </a>
+                                                <img class="print-only"
+                                                    src="<?php echo $imgPath2; ?>"
+                                                    alt="<?php echo $this->htmlEscape($_product['sku']) ?>" />
+                                            </div>
+                                            <div class="modified_price_label red">
+                                                <?php if ($priceInfo): echo $priceInfo['currency'] . '&nbsp;' . $priceInfo['currentprice']; endif;?>
+                                                <?php if (!isset($priceInfo['currentprice'])) : ?>
+                                                    <img class="ajaxSpinnerOverlayPriceLoading" src="<?php echo $this->getSkinUrl('schrackdesign/Public/Images/download_ajax_loader.gif'); ?>" style="width: 21px !important; height: 21px !important;" >
+                                                <?php endif;?>
+                                            </div>
+                                            <div class="modified_partslist_icon_sales"></div>
+                                            <div class="descriptionBox p-name break_word">
+                                                <a class="stock_clearance_tracking"
+                                                data-sku="<?php echo $_product['sku']; ?>"
+                                                id="textLink_<?php echo $this->htmlEscape($_product['sku']) ?>"
+                                                href="<?php echo $coreBaseURL . $_product['path'] ?>"
+                                                title=""><?php echo $_product['name'] ?>
+                                                </a>
+                                            </div>
+                                            <div class="energyLabelSales">
+                                                <?php
+                                                    '<div id="engeryLabelSet" class="energyLabelSet" style="display:' . $energyLabelDisplay .'; order:8;">' .
+                                                    // ----------------- Energy Label -> SVG ------------
+                                                        '<div id="energyLable" class="info-icon-energyLabel info-icon" data-toggle="modal" data-target="#myModal_' . $pSKU . '"style="width:43px;border:solid 0px green;">' .
+                                                            '<svg viewbox="0 0 290 150" style="width:100%;height:auto" >' .
+                                                                '<polygon points="0,0 0,150 220,150 290,75 220,0"
+                                                                          style="stroke-width:1;stroke:rgb(0,0,0);fill:' . $colorCodeSet .'"/>' .
+                                                                '<rect width="50" height="148" x="1" y="1"
+                                                                       style="fill:rgb(255,255,255);stroke-width:1;stroke:rgb(0,0,0);" />' .
+                                                                '<text x="9" y="40" style="fill:black;font-size:35pt;font-family:Arial;font-weight:bold;">A</text>' .
+                                                                '<polyline points="26,50 40,75 30,68 30,95 23,95 23,68 13,75 26,50"
+                                                                           style="fill:black;stroke:black;stroke-width:1" />' .
+                                                                '<text x="7" y="142"
+                                                                       style="fill:black;font-size:35pt;font-family:Arial;font-weight:bold;">G</text>' .
+                                                                '<text x="90" y="120"
+                                                                       style="fill:black;font-size:90pt;font-family:Arial;fill:rgb(255,255,255);
+                                                                       stroke-width:1;stroke:rgb(30,30,30);">' . $energyLabelValue . '</text>' .
+                                                            '</svg>' .
+                                                        '</div>' .
+                                                        // ----------------- Modal popup for Engery Label -------
+                                                        '<div  id="myModal_' . $pSKU . '" class="modal fade"  role="dialog" >' .
+                                                            '<div class="modal-dialog modal-sm">' .
+                                                                '<div id="modal-content">' .
+                                                                    '<div class="modal-body">' .
+                                                                        '<img src="' . $etiquette . '"' .
+                                                                             'alt="energylabel"
+                                                                              width="95%"/>' .
+                                                                    '</div>' .
+                                                                '</div>' .
+                                                            '</div>' .
+                                                        '</div>' .
+                                                        // ----------------- Energy Label Text Link -------
+                                                        '<span class="energyLabelDatasheet" style="font-size: 13px; margin-left: 10px; text-decoration: underline">' .
+                                                            '<a id="energyLableText" style="color: #888;"
+                                                                href="' . $datasheet . '"' .
+                                                               'target="_blank" >Datasheet' .
+                                                            '</a>' .
+                                                        '</span>' .
+                                                    '</div>';
+                                                ?>
+                                            </div>
+                                        </div>
+                                        <div id="availtab_<?php echo $_product['sku'] ?>" class="avail_tab_container" data-loaded="0">
+                                            <span class="glyphicon glyphicon-menu-right info-icon blueTxt product_price_icon product-stock-icon-close stock_switch_icon"
+                                                title="<?php echo $this->__('Hide Availabilities') ?>"
+                                                data-sku="<?php echo $_product['sku']; ?>"></span>
+                                            <h2 class="p-sku headline_list_tile_sku"><?php echo $this->htmlEscape($_product['sku']); ?></h2>
+                                            <img id="ajaxSpinnerOverlay_<?php echo $_product['sku']; ?>" class="ajaxSpinnerOverlay loaded"
+                                                src="<?php echo $this->getSkinUrl('schrackdesign/Public/Images/download_ajax_loader.gif'); ?>"
+                                                title="<?php echo $this->__('Processing...'); ?>"
+                                                style="width: 100% !important;"
+                                            />
+                                        </div>
+                                    </li>
+                                <?php ++$i; endforeach; ?>
+                                <?php if($saleStatus['count'] > 7) : ?>
+                                    <li class="hidden-xs border_fix">
+                                        <a href="#" class="moreBttn" onclick="jQuery('#checkbox-1-5').click(); jQuery('#stockCleranceMob').hide();">+ <?php echo $this->__('See More'); ?></a>
+                                    </li>
+                                <?php endif; ?>
+                            <?php endif; ?>
+                        </ul>
+                    </div>
+                    <!-- Stock Clearance End -->
+                </div>
+            </div>
+        </div>
+        <!-- Stock Clearance Start for mobile -->
+        <div class="tab-pane fade" id="stockCleranceMobCon">
+            <div class="col-xs-12 col-sm-4 col-md-3 right">
+                <!-- will update by JS -->
+            </div>
+        </div>
+        <!-- Stock Clearance End for mobile -->
+        <!-- Article Tab Start -->
+        <div class="tab-pane fade <?php echo ($showArticles ? 'active in row' : '') ?>" id="articleCont">
+            <?php if (!count($pagesCollection)): $i = 0 ?>
+                <p class="note-msg"><?php echo $this->__('There are no pages matching the selection.') ?></p>
+            <?php else: ?>
+                <?php foreach ($pagesCollection as $page): ?>
+                    <div class="articleBx" id="page_<?php echo $page['id'] ?>">
+                        <h2><a href="<?php echo $page['url'] ?>"><?php echo $page['title'] ?></a></h2>
+                        <div class="row">
+                            <?php if($page['thumbnail']) { ?>
+                                <div class="col-xs-3 col-sm-2 col-md-1">
+                                    <img data-src="<?php echo Mage::getStoreConfig('schrack/general/imageserver').$page['thumbnail'] ?>" alt="<?php echo $page['title'] ?>" class="lazy"/>
+                                </div>
+                            <?php } ?>
+                            <?php if($page['description']) { ?>
+                                <div class="col-xs-9 col-sm-10 col-md-11">
+                                    <?php $cleanup = ']]>'; ?>
+                                    <p><?php echo str_replace($cleanup, '',$page['description']); ?> ...</p>
+                                </div>
+                            <?php } ?>
+                        </div>
+
+                    </div>
+                    <?php ++$i; endforeach; ?>
+            <?php endif; ?>
+        </div>
+        <!-- Article Tab End -->
+    </div>
+</div>
+<script type="text/javascript">
+
+    if (jQuery(window).width() <= 740) {
+        if(jQuery(".listViewBttn").is(":visible")){
+            jQuery('.listViewBttn, .compactlistViewBttn').hide();
+            jQuery('.gridViewBttn').trigger("click");
+        }
+    }
+    jQuery(window).on('resize', function(){
+        var win = jQuery(this);
+        if (win.width() <= 740) {
+            if(jQuery(".listViewBttn").is(":visible")){
+                jQuery('.listViewBttn, .compactlistViewBttn').hide();
+                jQuery('.gridViewBttn').trigger("click");
+            }
+        } else {
+            if(!jQuery(".listViewBttn").is(":visible")){
+                jQuery('.listViewBttn, .compactlistViewBttn').show();
+            }
+        }
+    });
+
+    //------------------------------------ set actual store country for commonJS
+    if (localStorage.getItem("actualShopCountry") === null) {
+        localStorage.actualShopCountry = '<?php echo strtoupper($countryCode); ?>';
+    }
+    //------------------------------------------- handle list view user settings
+    var list_view_user_setting = localStorage.getItem('list_view_user_setting');
+    //---------------------------------------------------- check if value exists
+    if (list_view_user_setting === null || list_view_user_setting === 'undefined') {
+        //------------------------------------- if not => default view is "list"
+        localStorage.setItem('list_view_user_setting', 'grid');
+        list_view_user_setting = localStorage.getItem('list_view_user_setting');
+    }
+    //---------------------------------------------- update active button status
+    jQuery('.compactlistViewBttn').on('click', function(evt){
+        evt.preventDefault();
+        jQuery('#gridListView').removeClass('listView gridView').addClass('compactView');
+        jQuery('.search-page-product-list').removeClass('list grid').addClass('compact');
+        jQuery('.compactlistViewBttn').addClass('blueTxt');
+        jQuery('.gridViewBttn, .listViewBttn').removeClass('blueTxt');
+        globalSEARCH_RESULT_VIEW_MODE = 'compactView';
+        // Add Style Offset: Add To Cart Fields (list view)
+        jQuery('.general_current_addtocart_container').addClass('addToCartListViewOffset');
+        localStorage.setItem('list_view_user_setting', 'compact');
+    });
+
+    jQuery('.listViewBttn').on('click', function(evt){
+        evt.preventDefault();
+        jQuery('#gridListView').removeClass('compactView gridView').addClass('listView');
+        jQuery('.search-page-product-list').removeClass('compact grid').addClass('list');
+        jQuery('.listViewBttn ').addClass('blueTxt');
+        jQuery('.gridViewBttn, .compactlistViewBttn').removeClass('blueTxt');
+        globalSEARCH_RESULT_VIEW_MODE = 'listView';
+        // Add Style Offset: Add To Cart Fields (list view)
+        jQuery('.general_current_addtocart_container').addClass('addToCartListViewOffset');
+        localStorage.setItem('list_view_user_setting', 'list');
+    });
+
+    jQuery('.gridViewBttn').on('click', function(evt){
+        evt.preventDefault();
+        jQuery('#gridListView').removeClass('compactView listView').addClass('gridView');
+        jQuery('.search-page-product-list').removeClass('compact list').addClass('grid');
+        jQuery('.gridViewBttn ').addClass('blueTxt');
+        jQuery('.listViewBttn, .compactlistViewBttn').removeClass('blueTxt');
+        globalSEARCH_RESULT_VIEW_MODE = 'gridView';
+        // Remove Style Offset: Add To Cart Fields (normal view)
+        jQuery('.general_current_addtocart_container').removeClass('addToCartListViewOffset');
+        localStorage.setItem('list_view_user_setting', 'grid');
+    });
+
+    //=========================================================== countdownTimer
+    function countdownTimer(remainingSeconds, remainTimeStopTime, alternateStopTimeMessage) {
+    //==========================================================================
+        // Update the count down every 1 second
+        var originalDistance   = (remainingSeconds - 1);
+        var calculatedDistance = (remainingSeconds - 1);
+        var hours     = 0;
+        var minutes   = 0;
+        var seconds   = 0;
+        var langDeliverablePrefix = '<?php echo $this->__('deliverable'); ?>';
+        var langOnOrderIn = '<span class="validToTxt"><?php echo $this->__('Valid On Order In'); ?></span>';
+        var langHours   = '<?php echo $this->__('hours'); ?>';
+        var langMinutes = '<?php echo $this->__('minutes'); ?>';
+        var isViewStopperActive   = false;
+
+        var originalDistanceTimeStopTime   = (remainTimeStopTime - 1);
+        var calculatedDistanceTimeStopTime = (remainTimeStopTime - 1);
+        var hoursTimeStopTime              = 0;
+        var minutesTimeStopTime            = 0;
+        var secondsTimeStopTime            = 0;
+
+        if (remainTimeStopTime > 0) {
+            isViewStopperActive = true;
+        }
+        //------------------------------------------ counter update every second
+        var x = setInterval(function() {
+            // Find the distance between now an the count down date
+            // Time calculations for days, hours, minutes and seconds
+            if (calculatedDistance >= 3600) {
+                hours = Math.floor(calculatedDistance / (60 * 60));
+                calculatedDistance = calculatedDistance - (hours * 60 * 60);
+            } else {
+                hours = 0;
+            }
+            if (calculatedDistance >= 60) {
+                minutes = Math.floor(calculatedDistance / 60);
+                calculatedDistance = calculatedDistance - (minutes * 60);
+            } else {
+                minutes = 0;
+            }
+            seconds = calculatedDistance;
+
+            var displayHours   = hours + " " + langHours;
+            var displayMinutes = minutes + " " + langMinutes;
+
+            // Output the result in an element with id="demo"
+            if (hours == 0) displayHours = "";
+            if (displayMinutes == 0) displayMinutes = "00 " + langMinutes;
+            jQuery('#cut_off_times_ajax_loader_gif').remove();
+            if (isViewStopperActive == false) {
+                // if(jQuery('.nds-delivery').length == 0){
+                //     jQuery('.logstics-icon-text').append('<span class="nds-delivery">' + langDeliverablePrefix + '</span>');
+                // }
+                jQuery('.cut_off_time_text').html(langOnOrderIn + ' <span class="cut_off_time_text_counter">' + displayHours + " " + displayMinutes + '</span>');
+            }
+
+            calculatedDistance = originalDistance - 1;
+            originalDistance   = originalDistance - 1;
+
+            // If the count down is over, write some text
+            if (originalDistance < 0) {
+                clearInterval(x);
+                processCutOffTime();
+            }
+
+            if (isViewStopperActive == true) {
+                if (calculatedDistanceTimeStopTime >= 3600) {
+                    hoursTimeStopTime = Math.floor(calculatedDistanceTimeStopTime / (60 * 60));
+                    calculatedDistanceTimeStopTime = calculatedDistanceTimeStopTime - (hoursTimeStopTime * 60 * 60);
+                } else {
+                    hoursTimeStopTime = 0;
+                }
+                if (calculatedDistanceTimeStopTime >= 60) {
+                    minutesTimeStopTime = Math.floor(calculatedDistanceTimeStopTime / 60);
+                    calculatedDistanceTimeStopTime = calculatedDistanceTimeStopTime - (minutesTimeStopTime * 60);
+                } else {
+                    minutesTimeStopTime = 0;
+                }
+                secondsTimeStopTime = calculatedDistanceTimeStopTime;
+
+                var displayHoursTimeStopTime = hoursTimeStopTime;
+                var displayMinutesTimeStopTime = minutesTimeStopTime;
+
+                if (hoursTimeStopTime == 0) displayHoursTimeStopTime = "00";
+                if (displayMinutesTimeStopTime == 0) displayMinutesTimeStopTime = "00";
+                if (secondsTimeStopTime == 0) secondsTimeStopTime = "00";
+                if (hoursTimeStopTime < 10 && hoursTimeStopTime > 0) displayHoursTimeStopTime = "0" + displayHoursTimeStopTime;
+                if (displayMinutesTimeStopTime < 10 && displayMinutesTimeStopTime > 0) displayMinutesTimeStopTime = "0" + displayMinutesTimeStopTime;
+                if (secondsTimeStopTime < 10 && secondsTimeStopTime > 0) secondsTimeStopTime = "0" + secondsTimeStopTime;
+
+                var resultTimeStopTime = displayHoursTimeStopTime + ':' + displayMinutesTimeStopTime + ':' + secondsTimeStopTime;
+                jQuery('#cut_off_time_stopper').val(resultTimeStopTime);
+                jQuery('.cut_off_time_text').html('<span class="cut_off_time_text_alternate" >' + alternateStopTimeMessage + '</span>');
+
+                if (resultTimeStopTime == "00:00:00") {
+                    clearInterval(x);
+                    processCutOffTime();
+                }
+
+                calculatedDistanceTimeStopTime = originalDistanceTimeStopTime - 1;
+                originalDistanceTimeStopTime   = originalDistanceTimeStopTime - 1;
+            }
+        }, 1000);
+    } //=============================================== countdownTimer ***END***
+
+
+    //======================================================== processCutOffTime
+    function processCutOffTime() {
+    //==========================================================================
+        var module_active = <?php echo intval(Mage::getStoreConfig('schrack/cutofftimes/cutofftimes_module_activated')); ?>;
+        //-------------------------------------- return if module is deactivated
+        if (module_active != 1) { return; }
+        //--------------------------------------------------------- load spinner
+        var ajaxLoader = '<img id="cut_off_times_ajax_loader_gif" class="ajaxSpinnerOverlay" src="<?php echo $this->getSkinUrl('schrackdesign/Public/Images/download_ajax_loader.gif'); ?>" title="<?php echo $this->__('Processing...'); ?>" />';
+        jQuery('.cut_off_time_text').html(ajaxLoader);
+        //-------------------------------------------------------- AJAX var init
+        var ajaxUrl = '<?php echo Mage::getUrl("catalog/product/getCutOffTime"); ?>';
+        var current_date = new Date();
+        var gmt_offset = current_date.getTimezoneOffset() / 60;
+        //------------------------------------------------------------ AJAX Call
+        jQuery.ajax(ajaxUrl, {
+            'dataType' : 'json',
+            'type': 'POST',
+            'data': {
+                'form_key' : '<?php echo Mage::getSingleton('core/session')->getFormKey(); ?>',
+                'timezone_offset' : gmt_offset
+            },
+            'success': function (data) {
+                if(data.result == 'cut_off_times_not_active') {
+                    jQuery('.cut_off_time_text').remove();
+                } else {
+                    var remainingHoursMinutes = data.result;
+                    var remainTimeStopTime = data.timestopper_time_active;
+                    var alternateStopTimeMessage = data.timestopper_alternate_message;
+                    countdownTimer(remainingHoursMinutes, remainTimeStopTime, alternateStopTimeMessage);
+                }
+            },
+            'error': function (data) {
+                var parsedData = data;
+                //debugger;
+            }
+        });
+    } //============================================ processCutOffTime ***END***
+
+
+
+
+
+    jQuery(document).ready(function () {
+          //------------------------ toggle Button to show/hide detail description
+        jQuery(document).on("click", '.detail-expand', function(evt) {
+            evt.preventDefault();
+            jQuery(this).toggleClass('glyphicon-chevron-down glyphicon-chevron-up');
+            if(jQuery(this).hasClass('glyphicon-chevron-up')){
+                jQuery(this).prevAll('.descriptionBox').children('.normalTxt').show();
+            } else {
+                jQuery(this).prevAll('.descriptionBox').children('.normalTxt').hide();
+            }
+        });
+        //----------------------------------------------------------------------
+        switch(list_view_user_setting){
+            case 'compact': jQuery('.compactlistViewBttn').trigger('click'); break;
+            case 'list': jQuery('.listViewBttn').trigger('click'); break;
+            case 'grid': jQuery('.gridViewBttn').trigger('click'); break;
+        }
+        localStorage.setItem('searchCategoryFilterMode', 'initial');
+        //----------------------------------------------------------------------
+        console.log("Checkbox count = " + <?php echo $chBxCount; ?>);
+        //----------------------------------------------------------------------
+        jQuery('.search-page-container').off('click', '.checkbox-filter-selection').on( 'click', '.checkbox-filter-selection', function(){
+            console.log("!!! search filter click !!!");
+            <?php if (Mage::getStoreConfig('ec/config/active')){ ?>
+                if (dataLayer) {
+                    dataLayer.push({
+                        'eventAction': jQuery.trim(jQuery(this).closest('.facet').find('.panel-title .facetlabel').text()).replace(':',''),
+                        'eventLabel': jQuery(this).val(),
+                        'event': 'filterPLP'
+                    });
+                }
+            <?php } ?>
+            performFilterSearchAjax(this,jQuery(this).data('showwhat'));
+        });
+
+        jQuery('.search-page-container').off('click','.checkbox-filter-selection-label-link').on( 'click', '.checkbox-filter-selection-label-link', function(){
+            var index      = jQuery(this).data('index');
+            var pos        = jQuery(this).data('pos');
+            var checkboxId = '#checkbox-' + index + '-' + pos;
+            if ( ! jQuery(checkboxId).is(':checked') ) {
+                jQuery(checkboxId).trigger("change");
+            }
+        });
+
+        jQuery('.product-stock-icon').on('click', function() {
+            handleClickShowStockIcon(jQuery(this).data('sku'),'<?php echo Mage::getSingleton('core/session')->getFormKey(); ?>');
+        });
+
+        jQuery('.product-stock-icon-close').on('click', function() {
+            handleClickShowStockIconClose(jQuery(this).data('sku'));
+        });
+
+        jQuery('.stock_clearance_tracking').on('click', function() {
+            var trackingSku = jQuery(this).attr('data-sku');
+            if (dataLayer) {
+                dataLayer.push({
+                    'event' : 'stockClearance',
+                    'eventLabel' : trackingSku
+                });
+            }
+        });
+
+        jQuery('#moreDataDesktop .moreBttnToggle').click(function(){
+                    jQuery('#moreDataDesktop ul li.level11:nth-child(5)').nextAll().css( "display", "block" );
+            jQuery(this).text('- '+Translator.translate('See Less'));
+            jQuery(this).toggleClass('moreBttn lessBttn');
+            if (jQuery('#moreDataDesktop .moreBttnToggle').hasClass('moreBttn'))
+                    {
+                        jQuery(this).text('+ '+Translator.translate('See More'));
+                        jQuery('#moreDataDesktop ul li.level11:nth-child(5)').nextAll().css( "display", "none" );
+                    }
+        });
+        jQuery('#moreDataMob .moreBttnToggle').click(function(){
+            jQuery('#moreDataMob ul li.level11:nth-child(5)').nextAll().css( "display", "block" );
+            jQuery(this).text('- '+Translator.translate('See Less'));
+            jQuery(this).toggleClass('moreBttn lessBttn');
+            if (jQuery('#moreDataMob .moreBttnToggle').hasClass('moreBttn'))
+            {
+                jQuery(this).text('+ '+Translator.translate('See More'));
+                jQuery('#moreDataMob ul li.level11:nth-child(5)').nextAll().css( "display", "none" );
+            }
+        });
+
+        if(getParameterByName('q') == null) {
+            var replaceString = "";
+            //------------------------------------------------------------------
+            if (window.location.href.indexOf("last_viewed") > -1) {
+                replaceString = ": 'last viewed'";
+            }
+            //------------------------------------------------------------------
+            if (window.location.href.indexOf("last_purchased") > -1) {
+                replaceString = ": 'last purchased'";
+            }
+            //------------------------------------------------------------------
+            if (window.location.href.indexOf("promotions") > -1) {
+                replaceString = ": 'promotions'";
+            }
+            //------------------------------------------------------------------
+            if(replaceString + "." != ".") {
+                jQuery('.tabSection .articleCont').addClass('hide');
+                jQuery('.prodListHd .search').html(jQuery('.prodListHd .search').html().replace(": ''", replaceString));
+            }
+        }
+        //----------------------------------------------------------------------
+        jQueryLazyLoader.update();
+        //----------------------------------------------------------------------
+        if (jQuery(window).width() > 992) {
+            imagePreviewHover();
+        }
+        //----------------------------------------------------------------------
+        jQuery('.previewImageHover').on('click', function () {
+            var targetSKU = jQuery(this).attr('id').replace('imageLink', 'textLink');
+            window.location.href = jQuery('#' + targetSKU).attr('href');
+        });
+
+        jQuery(".track_product_click").on("click", function() {
+            var sku = jQuery(this).attr("data-sku");
+
+            var trackingData                 = new Object();
+            trackingData.trackingEnabled     = globalTRACKING_ENABLED;
+            trackingData.pageType            = 'search results';
+            trackingData.affectedSku         = sku;
+            //trackingData.price             = dataProductPrice;
+            trackingData.currencyCode        = globalCURRENCY_CODE;
+            trackingData.trackingSource      = 'search results';
+            trackingData.typoUrl             = globalTYPO_URL;
+            trackingData.shopCategoryAjaxUrl = globalSHOP_CATEGORY_AJAX_URL;
+            trackingData.formKey             = globalFORM_KEY;
+            trackingData.crmUserId           = globalCRM_USER_ID;
+            trackingData.customerType        = globalCUSTOMER_TYPE;
+            trackingData.accountCrmId        = globalACCOUNT_CRM_ID;
+            trackingData.position            = 1;
+
+            trackProductClick(trackingData);
+        });
+
+        jQuery("#product_addtocart_form").on("click",".track_product_click", function() {
+            var sku = jQuery(this).attr("data-sku");
+
+            var trackingData                 = new Object();
+            trackingData.trackingEnabled     = globalTRACKING_ENABLED;
+            trackingData.pageType            = 'quickadd search results';
+            trackingData.affectedSku         = sku;
+            //trackingData.price             = dataProductPrice;
+            trackingData.currencyCode        = globalCURRENCY_CODE;
+            trackingData.trackingSource      = 'single product popup view';
+            trackingData.typoUrl             = globalTYPO_URL;
+            trackingData.shopCategoryAjaxUrl = globalSHOP_CATEGORY_AJAX_URL;
+            trackingData.formKey             = globalFORM_KEY;
+            trackingData.crmUserId           = globalCRM_USER_ID;
+            trackingData.customerType        = globalCUSTOMER_TYPE;
+            trackingData.accountCrmId        = globalACCOUNT_CRM_ID;
+            trackingData.position            = 1;
+
+            trackProductClick(trackingData);
+        });
+
+        jQuery('#tab_show_products_panel').on('click', function() {
+            jQuery('#activeproductcontainer').val('gridListView');
+            if (jQuery(window).width() > 1199) {
+                jQuery('#newCategorySearchNavigationPanel').show();
+            }
+        });
+
+        jQuery('#tab_show_worth_knowing_panel').on('click', function() {
+            jQuery('#newCategorySearchNavigationPanel').fadeOut(200);
+            jQuery('#activeproductcontainer').val('articleCont');
+        });
+
+        //------------------------------------------------- search category link
+        jQuery(".level11 a, .level10 a").on('click', function(e){
+            e.preventDefault();
+            getSearchCategory(jQuery(this).attr('id'));
+            refreshBreadcrumbOnSale(true);
+            needToUpdateBreadcrumbs = false;
+        }); //----------------------------------- search category link ***END***
+
+        //---------------------------------------------- backtoAllCategoriesLink
+        jQuery("#backtoAllCategoriesLinkDesktop, #backtoAllCategoriesLink").on('click', function(e){
+            e.preventDefault();
+            backtoAllCategories();
+            refreshBreadcrumbOnSale(true);
+            needToUpdateBreadcrumbs = false;
+        }); //----------------------------------- search category link ***END***
+
+        //---------------------------------------------- backtoPrevCategorieLink
+        jQuery("#backtoPrevCategorieLinkDesktop, #backtoPrevCategorieLink").on('click', function(e){
+            e.preventDefault();
+            window.history.back();
+            refreshBreadcrumbOnSale(true);
+            needToUpdateBreadcrumbs = false;
+        }); //----------------------------------- search category link ***END***
+
+        //----------------------------------------------------- more_results_btn
+        jQuery(".more_results_btn").on('click', function(e){
+            e.preventDefault();
+            jQuery(".category_filter_wrapper, .category_filter_navigation_panel").removeClass("minimized");
+            jQuery(this).hide();
+            jQuery(".less_results_btn").removeClass("hide").show();
+        }); //----------------------------------- search category link ***END***
+
+        //----------------------------------------------------- less_results_btn
+        jQuery(".less_results_btn").on('click', function(e){
+            e.preventDefault();
+            jQuery(".category_filter_wrapper, .category_filter_navigation_panel").addClass("minimized");
+            jQuery(this).hide();
+            jQuery(".more_results_btn").show();
+        }); //----------------------------------- search category link ***END***
+
+        /*************************************** !!!BUGFIX #7242:!!! WJ 10.05.22
+         * if filter/facet = general_filters the filer box
+         * unintended collapse/close automaticly.
+         * If so, trigger click to reopen box.
+         **********************************************************************/
+        var generalFilterIsSet = '<?php echo $generalFiltersActive; ?>';
+        if(generalFilterIsSet == 'Y'){
+            // console.log("GENERAL FILTERS HAS CLASS COLLAPSED!!!");
+            jQuery('#general_filters .panel-heading a').trigger('click');
+        }
+
+
+    });
+
+</script>
+<!-- app\design\frontend\schrack\schrackresponsive\template\catalogsearch\search.phtml (end) -->

@@ -1,0 +1,27 @@
+<!-- app/design/frontend/schrack/schrackresponsive/template/mocalc/step01.phtml (start) -->
+<?php
+    $data = $this->getMoData();
+    $step = Mage::registry(Schracklive_MoCalc_Helper_Data::REGISTRY_STEP_KEY);
+
+    $props = $this->getPossibleProperties('icu');
+    $pl1 = count($props) == 1;
+    $current = isset($data['properties']['icu']['sel_value']) ? $data['properties']['icu']['sel_value'] : -1;
+?>
+
+    <input type="hidden" name="current_step" value="<?php echo $step; ?>"/>
+    <?php foreach ( $props as $prop ) : ?>
+        <input type="radio" id="<?php echo $prop['sel_value'] ?>" name="input" value="<?php echo $prop['sel_value'] ?>" <?php echo $pl1 || $current == $prop['sel_value'] ? 'checked' : '' ?>/>
+        <label for="<?php echo $prop['sel_value'] ?>"><?php echo $prop['caption'] ?></label>
+        <br>
+    <?php endforeach; ?>
+
+<script type="text/javascript">
+    //<![CDATA[
+    jQuery(document).ready(function() {
+        jQuery('#step-header-chapter').text("<?php echo $this->__('Base unit') ?>: ");
+        jQuery('#step-header-page').text("<?php echo $this->__('Icu') ?>");
+        jQuery('#prev_button').css('visibility','hidden');
+    });
+    //]]>
+</script>
+<!-- app/design/frontend/schrack/schrackresponsive/template/mocalc/step01.phtml (end) -->

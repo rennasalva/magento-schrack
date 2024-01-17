@@ -1,0 +1,15 @@
+<?php if (Mage::getStoreConfig('ec/config/active')): ?>
+<script type="text/javascript">
+
+	/**
+	 * Custom dimensions
+	 */
+	var dimensions = <?php echo $this->helper('ec')->getCustomDimensions() ?>;
+	
+	if (dimensions && dimensions.hasOwnProperty('pageType'))
+	{
+		dataLayer.push(dimensions);
+	}
+
+</script>
+<?php endif ?>

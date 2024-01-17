@@ -1,0 +1,64 @@
+<!-- app/design/frontend/schrack/schrackresponsive/template/customer/account/dashboard/address.phtml (start) -->
+<?php
+/* @var $this Mage_Customer_Block_Account_Dashboard_Address */
+$customerType = $this->getCustomer()->getSchrackCustomerType(); // ProspectTypes: 'light-prospect' / 'full-prospect'
+
+$primaryShippingAddressId      = null;
+$editPrimaryShippingAddressUrl = null;
+
+$primaryShippingAddress = $this->getCustomer()->getPrimaryShippingAddress();
+if ($primaryShippingAddress){
+    $primaryShippingAddressId = $primaryShippingAddress->getId();
+}
+
+if ($primaryShippingAddressId) {
+    $editPrimaryShippingAddressUrl = $this->getUrl('customer/address/edit', array('id' => $primaryShippingAddressId)) . 'addressaction/editdefaultshippingaddress';
+}
+
+?>
+<?php if (!in_array($customerType, array('light-prospect'))) : ?>
+    <div class="userAccountCont">
+        <div class="row">
+            <div class="col-xs-12 col-sm-6">
+                <h2>
+                    <?php echo $this->__('Address List') ?> (<?php echo count($this->getCustomer()->getAddresses()) ?>)
+                    <div class="pull-right">
+                        <a class="blue" href="<?php echo $this->getAddressBookUrl() ?>"><?php echo $this->__('Manage Addresses') ?></a>
+                    </div>
+                </h2>
+            </div>
+            <div class="col-xs-12 col-sm-6 hidden-xs">
+                <h2>
+                    <?php echo $this->__('Company Data') ?>
+                </h2>
+            </div>
+        </div>
+        <div class="contentArea">
+            <div class="row">
+                <div class="col-xs-12 col-sm-6">
+                    <div class="box">
+
+                        <div class="row">
+                            <div class="col-md-4 text-left"><?php echo $this->__('Billing Address'); ?></div>
+                            <div class="col-xs-5 padR0"><strong><?php echo $this->getPrimaryBillingAddressHtml() ?></strong></div>
+                            <div class="col-md-3"><a href="<?php echo Mage::getUrl('account/account/edit/'); ?>"><?php echo $this->__('Edit'); ?></a></div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4 text-left"><?php echo $this->__('Shipping Address'); ?></div>
+                            <div class="col-xs-5 padR0"><strong><?php echo $this->getPrimaryShippingAddressHtml() ?></strong></div>
+                            <?php if ($editPrimaryShippingAddressUrl) :  ?>
+                                <div class="col-md-3"><a href="<?php echo $editPrimaryShippingAddressUrl; ?>"><?php echo $this->__('Edit'); ?></a></div>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xs-12 col-sm-6">
+                    <div class="box">
+                        <?php echo $this->getChildHtml('mycompany') ?>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+<?php endif; ?>
+<!-- app/design/frontend/schrack/schrackresponsive/template/customer/account/dashboard/address.phtml (end) -->

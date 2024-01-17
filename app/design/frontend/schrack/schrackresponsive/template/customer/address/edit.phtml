@@ -1,0 +1,377 @@
+<!-- app\design\frontend\schrack\schrackresponsive\template\customer\address\edit.phtml (start) -->
+<?php
+/**
+ * Edit customer address template
+ */
+/* @var $this Schracklive_SchrackCustomer_Block_Address_Edit */
+?>
+<?php
+    $customerHasDefaultBillingAddress = false;
+    $customerHasDefaultShippingAddress = false;
+    $addressMode = "";
+//var_dump($this->getAddress());
+    $addresaction = $this->getRequest()->getParam('addressaction');
+    if ($addresaction == 'editdefaultbillingaddress') $addressMode = 'editdefaultbillingaddress';
+    if ($addresaction == 'editdefaultshippingaddress') $addressMode = 'editdefaultshippingaddress';
+
+    $session = Mage::getSingleton('customer/session');
+    if ($session->getCustomer()->getPrimaryBillingAddress() && $session->getCustomer()->getPrimaryBillingAddress()->getId()) {
+        $customerHasDefaultBillingAddress = true;
+    }
+    if ($session->getCustomer()->getPrimaryShippingAddress() && $session->getCustomer()->getPrimaryShippingAddress()->getId()) {
+        $customerHasDefaultShippingAddress = true;
+    }
+
+	if ($this->getRequest()->getBeforeForwardInfo('action_name') == 'new') {
+        $actionName = 'new';
+		$valName1 = '';
+		$valName2 = '';
+		$valName3 = '';
+	} else {
+        $actionName = 'edit';
+		$valName1 = $this->htmlEscape($this->getAddress()->getName1());
+		$valName2 = $this->htmlEscape($this->getAddress()->getName2());
+		$valName3 = $this->htmlEscape($this->getAddress()->getName3());
+	}
+
+
+    $addressId = $this->getAddress()->getId();
+    $addressExistingPhoneData = "";
+    if ($addressId) {
+        $addressExistingPhoneData = $this->helper('customer')->getAddressPhone($addressId);
+    }
+?>
+
+<style>
+    .initialHideToTopSymbol {
+        display: none !important;
+    }
+    #name1 {
+        font-size: 16px !important;
+    }
+    #name2 {
+        font-size: 16px !important;
+    }
+    #name1 {
+        font-size: 16px !important;
+    }
+    #name3 {
+        font-size: 16px !important;
+    }
+    #street_1 {
+         font-size: 16px !important;
+    }
+    #zip {
+        font-size: 16px !important;
+    }
+    #city {
+        font-size: 16px !important;
+    }
+    #country {
+        font-size: 16px !important;
+    }
+    #schrack-type {
+        font-size: 16px !important;
+    }
+    #phone_address_contact {
+        width: 96%;
+        border: 1px solid #ebebeb;
+        padding-left: 5px;
+        height: 45px;
+    }
+    @media (min-width: 60px) and (max-width: 320px) {
+        #save_new_address_data_button {
+            height: 30px !important;
+        }
+    }
+    @media (min-width: 321px) and (max-width: 480px) {
+        #save_new_address_data_button {
+            height: 30px !important;
+        }
+    }
+    @media (min-width: 481px) and (max-width: 767px) {
+        #save_new_address_data_button {
+            height: 30px !important;
+        }
+    }
+</style>
+
+<?php echo $this->getMessagesBlock()->getGroupedHtml() ?>
+<div class="row data">
+    <div class="col-xs-12">
+       <h1>
+            <?php if($this->isDefaultBilling()): ?>
+                <?php echo $this->__('Default Billing Address'); ?>
+            <?php elseif($this->isDefaultShipping()): ?>
+                <?php echo $this->__('Default Shipping Address'); ?>
+            <?php else: ?>
+                <?php echo $this->getTitle($actionName); ?>
+                <?php if ($actionName == 'edit') : ?>
+                        <a id="deleteAddressRecord_<?php echo $this->getAddress()->getId(); ?>" name="deleteAddressRecord" href="" title="<?php echo $this->__('Delete Address') ?>"><i class="fa fa-trash-o" aria-hidden="true"></i></a>
+                <?php endif; ?>
+            <?php endif; ?>
+        </h1>
+	<p><?php echo $this->__('Required Fields'); ?>*</p>							
+        <form action="<?php echo $this->getSaveUrl() ?>" method="post" id="address-form-validate">
+            <?php echo $this->getBlockHtml('formkey')?>
+            <div class="formContianer loginCont padding0">				
+                <input type="hidden" name="success_url" value="<?php echo $this->getSuccessUrl() ?>" />
+                <input type="hidden" name="error_url" value="<?php echo $this->getErrorUrl() ?>" />
+                <input type="hidden" name="schrack_wws_address_number" value="<?php echo $this->getAddress()->getSchrackWwsAddressNumber() ?>" />
+                <ul>
+                    <li>
+                        <div class="row">
+                            <div class="col-xs-12 col-sm-6">
+                                <h3><?php echo $this->__('Company') ?> <span class="red">*</span></h3>
+                                <input type="text" name="name1" id="name1" value="<?php echo $valName1 ?>" placeholder="<?php echo $this->__('Company') ?>*" title="<?php echo $this->__('Company') ?>" class="input-text required-entry form-control" maxlength="30" />
+                            </div>
+                            <div class="col-xs-12 col-sm-6">
+                                <h3><?php echo $this->__('Company') ?></h3>
+                                <input type="text" name="name2" id="name2" value="<?php echo $valName2 ?>" placeholder="<?php echo $this->__('Company') ?>" title="<?php echo $this->__('Company') ?>" class="input-text form-control" maxlength="30" />
+                            </div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="row">
+                            <div class="col-xs-12 col-sm-6">
+                                <h3><?php echo $this->__('Contact or phone number') ?></h3>
+                                <input type="text" name="name3" id="name3" value="<?php echo $valName3 ?>" placeholder="<?php echo $this->__('Contact or phone number') ?>" title="<?php echo $this->__('Contact') ?>" class="input-text form-control" maxlength="30" />
+                            </div>
+                            <div class="col-xs-12 col-sm-6">
+                                <h3><?php echo $this->__('Street Address') ?> <span class="red">*</span></h3>
+                                <input type="text" name="street[]" id="street_1" value="<?php echo $this->htmlEscape($this->getAddress()->getStreet(1)) ?>" title="<?php echo $this->__('Street Address') ?>" class="input-text required-entry form-control" maxlength="30" />
+                            </div>
+                        </div>
+                    </li>
+                    <?php for ($_i=2, $_n=$this->helper('customer/address')->getStreetLines(); $_i<=$_n; $_i++): ?>
+                    <li>
+                        <div class="row">
+                            <div class="col-xs-12 col-sm-6"><input type="text" name="street[]" id="street_<?php echo $_i?>" value="<?php echo $this->htmlEscape($this->getAddress()->getStreet($_i)) ?>" placeholder="<?php echo $this->__('Street Address '.$_i) ?>" title="<?php echo $this->__('Street Address '.$_i) ?>" class="input-text required-entry form-control" maxlength="30" /></div>
+                        </div>
+                    </li>          
+                    <?php endfor ?>
+                    <li>
+                        <div class="row">
+                            <div class="col-xs-12 col-sm-6">
+                                <h3><?php echo $this->__('Zip/Postal Code') ?> <span class="red">*</span></h3>
+                                <input type="text" name="postcode" id="zip" value="<?php echo $this->htmlEscape($this->getAddress()->getPostcode()) ?>" placeholder="<?php echo $this->__('Zip/Postal Code') ?>*" title="<?php echo $this->__('Zip/Postal Code') ?>" class="input-text validate-must-be-zip required-entry form-control" maxlength="10" />
+                            </div>
+                            <div class="col-xs-12 col-sm-6">
+                                <h3><?php echo $this->__('City') ?> <span class="red">*</span></h3>
+                                <input type="text" name="city" id="city" value="<?php echo $this->htmlEscape($this->getAddress()->getCity()) ?>" placeholder="<?php echo $this->__('City') ?>*" title="<?php echo $this->__('City') ?>" class="input-text required-entry form-control" maxlength="30" />
+                            </div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="row">
+                            <div class="col-xs-12 col-sm-6">
+                                <h3><?php echo $this->__('Country') ?> <span class="red">*</span></h3>
+                                <?php echo str_replace("validate-select","validate-select form-control",$this->getCountryHtmlSelect()) ?>
+                            </div>
+                            <div class="col-xs-12 col-sm-6">
+                                <h3><?php echo $this->__('PhoneAddressContact') ?></h3>
+                                <div>
+                                    <div class="plusIcon" style="width: 4%;">+</div>
+                                    <input type="tel" name="phone_address_contact" id="phone_address_contact" value="<?php echo $addressExistingPhoneData; ?>" class="" maxlength="30" />
+                                </div>
+                                <div id="required_field_missing" style="color: #d1222b;"></div>
+                            </div>
+                            <div class="col-xs-12 col-sm-6">
+                                <?php //Case: edit default billing address ?>
+                                <?php if ($addressMode == 'editdefaultbillingaddress') : ?>                        
+                                    <input type="hidden" name="address_mode" value="editdefaultbillingaddress" />
+                                        <?php if (!$customerHasDefaultShippingAddress) :?>
+                                            <input type="checkbox" id="primary_shipping" name="default_shipping" value="1" title="<?php echo $this->__('Use as my default shipping address') ?>" class="checkbox floatL" /> <label for="primary_shipping"><?php echo $this->__('Use as my default shipping address') ?></label>
+                                        <?php else:?>
+                                            <input type="hidden" name="default_shipping" value="0" />
+                                        <?php endif; ?>
+                                <?php endif; ?>
+                            </div>
+                        </div>
+                    </li>
+                    <?php //Case: edit or create new (normal) address ?>
+                    <?php if ($addressMode != 'editdefaultbillingaddress' && $addressMode != 'editdefaultshippingaddress') : ?>
+                    <li>
+                        <div class="row">
+                            <div class="col-xs-12 col-sm-6">
+                                <h3><?php echo $this->__('Address Type') ?></h3>
+                                <?php echo $this->getTypeHtmlSelect() ?>
+                            </div>
+                            <div class="col-xs-12 col-sm-6 marginT30"> 
+                                <input type="checkbox" id="primary_shipping" name="default_shipping" value="1" title="<?php echo $this->__('Use as my default shipping address') ?>" class="checkbox floatL" /> <label for="primary_shipping" class="marginL5 padT0"><?php echo $this->__('Use as my default shipping address') ?></label>                                                                
+                            </div>
+                        </div>
+                    </li>
+                    <?php else: ?>
+                        <?php if ($addressMode == 'editdefaultshippingaddress') : ?>
+                            <input type="hidden" name="default_shipping" value="1" />
+                        <?php endif; ?>
+                    <?php endif; ?>
+                </ul>                
+            </div>             
+            <div class="row content">
+                <div class="col-xs-6">
+                    <button id="save_new_address_data_button" data-id="<?php echo $this->getAddress()->getId();?>" class="bttn-md" title="<?php echo $this->__('Save Address') ?>"><?php echo $this->__('Save Address') ?></button>
+                </div>
+                <div class="col-xs-6 text-right">
+                    <a href="<?php echo $this->getBackUrl() ?>" class="button-blue" style="border: none;"><small>&laquo; </small><?php echo $this->__('Back') ?></a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+<script type="text/javascript">
+//<![CDATA[
+    var dataForm = new VarienForm('address-form-validate', true);
+    Validation.add('validate-must-be-zip', '<?php echo $this->__('Please enter the zip/postal code.')?>', function(text) {
+        return validateZipCode(jQuery('select[name="country_id"]').val(), text);
+    });
+
+    function deleteAddress(addressId) {
+        if(confirm('<?php echo $this->__('Are you sure you want to delete this address?') ?>')) {
+            window.location='<?php echo $this->getUrl('customer/address/delete', array(Mage_Core_Model_Url::FORM_KEY => Mage::getSingleton('core/session')->getFormKey())) ?>id/'+addressId;
+        }
+        return false;
+    }
+
+    jQuery('[name="deleteAddressRecord"]').on('click', function(event) {
+        event.preventDefault();
+        var deleteAddressId = jQuery(this).attr('id');
+        deleteAddressId = deleteAddressId.replace('deleteAddressRecord_', '');
+        if (dataLayer) {
+            dataLayer.push({
+                'event' : 'userSettingChange',
+                'eventLabel' : 'Address Delete'
+            });
+        }
+        deleteAddress(deleteAddressId);
+    });
+
+	jQuery(document).ready(function() {	// Set tabindex to all element of forms
+
+		jQuery('#name1').focus();
+		jQuery('#address-form-validate :input,select,button,a').each(function (fv) { if (this.type != "hidden") { jQuery(this).attr('tabindex', fv + 1); } });
+
+        // Prevent enter illegal character(s) by CHANGE or PASTE :
+        jQuery('#name1').bind('keydown change paste',function(evt) {
+            setTimeout(function(){
+                    jQuery('#name1').val(jQuery('#name1').val().replace(/["';\[\]<>\x00-\x09\x0B\x0C\x0E-\x1F\xE2\x7F\n\r]/g, ""));
+                }, 50
+            );
+        });
+
+        // Prevent enter illegal character(s) by CHANGE or PASTE :
+        jQuery('#name2').bind('keydown change paste',function(evt) {
+            setTimeout(function(){
+                    jQuery('#name2').val(jQuery('#name2').val().replace(/["';\[\]<>\x00-\x09\x0B\x0C\x0E-\x1F\xE2\x7F\n\r]/g, ""));
+                }, 50
+            );
+        });
+
+        // Prevent enter illegal character(s) by CHANGE or PASTE :
+        jQuery('#name3').bind('keydown change paste',function(evt) {
+            setTimeout(function(){
+                    jQuery('#name3').val(jQuery('#name3').val().replace(/["';\[\]<>\x00-\x09\x0B\x0C\x0E-\x1F\xE2\x7F\n\r]/g, ""));
+                }, 50
+            );
+        });
+
+        // Prevent enter illegal character(s) by CHANGE or PASTE :
+        jQuery('#street_1').bind('keydown change paste',function(evt) {
+            setTimeout(function(){
+                    jQuery('#street_1').val(jQuery('#street_1').val().replace(/["';\[\]<>\x00-\x09\x0B\x0C\x0E-\x1F\xE2\x7F\n\r]/g, ""));
+                }, 50
+            );
+        });
+
+        // Prevent enter illegal character(s) by CHANGE or PASTE :
+        jQuery('#city').bind('keydown change paste',function(evt) {
+            setTimeout(function(){
+                    jQuery('#city').val(jQuery('#city').val().replace(/["';\[\]<>\x00-\x09\x0B\x0C\x0E-\x1F\xE2\x7F\n\r]/g, ""));
+                }, 50
+            );
+        });
+
+        // Prevent enter illegal character(s) by CHANGE or PASTE :
+        jQuery('#zip').bind('keydown change paste',function(evt) {
+            setTimeout(function(){
+                    jQuery('#zip').val(jQuery('#zip').val().replace(/["';\[\]<>\x00-\x09\x0B\x0C\x0E-\x1F\xE2\x7F\n\r]/g, ""));
+                }, 50
+            );
+        });
+
+        jQuery('#phone_address_contact').bind('keydown change paste',function(evt) {
+            setTimeout(function(){
+                    jQuery('#phone_address_contact').val(jQuery('#phone_address_contact').val().replace(/["';\[\]<>\x00-\x09\x0B\x0C\x0E-\x1F\xE2\x7F\n\r]/g, ""));
+                }, 50
+            );
+        });
+
+        /* Back to Top */
+        jQuery('body').append('<div id="toTop" class="btn btn-info print-hide-imp initialHideToTopSymbol"><span class="glyphicon glyphicon-chevron-up"></span> <?php echo $this->__('Back to Top'); ?></div>');
+        jQuery(window).scroll(function () {
+            if (jQuery(this).scrollTop() != 0) {
+                jQuery('#toTop').fadeIn();
+            } else {
+                jQuery('#toTop').fadeOut();
+            }
+        });
+        jQuery('#toTop').click(function(){
+            jQuery("html, body").animate({ scrollTop: 0 }, 600);
+            console.log('ScrollTop #84');
+            return false;
+        });
+        jQuery('#toTop').removeClass('initialHideToTopSymbol');
+        /* Back to Top */
+
+        jQuery('#save_new_address_data_button').on('click', function (event){
+            event.preventDefault();
+            if ( dataForm.validator.validate() ) {
+                var selectedAction = '<?php echo $actionName; ?>';
+
+                if ( dataLayer ) {
+                    if ( selectedAction == 'new' ) {
+                        dataLayer.push({
+                            'event': 'userSettingChange',
+                            'eventLabel': 'Address New'
+                        });
+                    } else {
+                        dataLayer.push({
+                            'event': 'userSettingChange',
+                            'eventLabel': 'Address Change'
+                        });
+                    }
+                }
+
+                var streetInput      = jQuery('#street_1').val();
+                var cityInput        = jQuery('#city').val();
+                var postcodeInput    = jQuery('#zip').val();
+                var countryCodeInput = jQuery('#country').val();
+
+                var resultAddressValidation = deferredAddressValidation(
+                    'addressmodification',
+                    streetInput,
+                    postcodeInput,
+                    cityInput,
+                    countryCodeInput,
+                    'edit or new address in my account'
+                );
+            }
+        });
+
+        jQuery('#phone_address_contact').on('click focus', function() {
+            jQuery('#phone_address_contact').css('border', '1px solid #ebebeb');
+            jQuery('#required_field_missing').text('');
+        });
+
+        jQuery('#phone_address_contact').on('keyup', function() {
+            removeForbiddenPhoneFieldCharacters('phone_address_contact');
+        });
+
+	});
+
+//]]>
+</script>
+<!-- app\design\frontend\schrack\schrackresponsive\template\customer\address\edit.phtml (end) -->

@@ -1,0 +1,202 @@
+<!-- app/design/frontend/schrack/schrackresponsive/template/customer/widget/phonenumber.phtml (start) -->
+<?php
+// @var $this Schracklive_SchrackCustomer_Block_Widget_Phonenumber
+?>
+
+<style>
+    .plusIcon {
+        float: left !important;
+        width: 3% !important;
+        margin-left: 18px !important;
+    }
+    .telephonenumber {
+        float: left !important;
+        width: 94% !important;
+    }
+    .faxnumber {
+        float: left !important;
+        width: 94% !important;
+    }
+    .mobilenumber {
+        float: left !important;
+        width: 94% !important;
+    }
+    .required_warning {
+        color: red;
+        margin-left: 7px;
+        font-size: 0.9em;
+        float: right;
+    }
+
+    @media (min-width: 60px) and (max-width: 320px) {
+        .telephonenumber {
+            width: 88% !important;
+        }
+        .faxnumber {
+            width: 88% !important;
+        }
+        .mobilenumber {
+            width: 88% !important;
+        }
+        .required_warning {
+            font-size: 0.7em;
+        }
+    }
+
+    @media (min-width: 321px) and (max-width: 480px) {
+        .telephonenumber {
+            width: 89% !important;
+        }
+        .faxnumber {
+            width: 89% !important;
+        }
+        .mobilenumber {
+            width: 89% !important;
+        }
+        .required_warning {
+            font-size: 0.7em;
+        }
+    }
+
+    @media (min-width: 481px) and (max-width: 618px) {
+        .telephonenumber {
+            width: 91% !important;
+        }
+        .faxnumber {
+            width: 91% !important;
+        }
+        .mobilenumber {
+            width: 91% !important;
+        }
+        .required_warning {
+            font-size: 0.7em;
+        }
+    }
+
+
+
+</style>
+
+<li>
+    <div>
+        <h3 style="float: left;"><?php echo $this->__('Telephone') ?> <span class="red">*</span></h3>
+        <span id="requiredWarningPhone" class="required_warning"></span>
+        <div style="clear: both"></div>
+    </div>
+</li>
+<li>
+    <div class="row">
+        <div class="phonenumberline">
+            <div class="plusIcon">+</div>
+            <input type="tel"
+                     id="schrack_telephone"
+                   name="schrack_telephone"
+                  value="<?php echo ltrim($this->escapeHtml($this->getPhoneFaxMobileNumber('schrack_telephone'))); ?>"
+            placeholder="<?php echo $this->__('Telephone') ?>*"
+            data-toggle="tooltip"
+              data-html="true"
+         data-placement="top"
+                  title=""
+                  class="telephonenumber input-text form-control" />
+        </div>
+    </div>
+</li>
+<li>
+    <div><div>
+        <h3 style="float: left;"><?php echo $this->__('Fax') ?></h3>
+            <span id="requiredWarningFax" class="required_warning"></span>
+            <div style="clear: both"></div>
+    </div>
+</li>
+<li>
+    <div class="row">
+        <div class="phonenumberline">
+            <div class="plusIcon">+</div>
+            <input type="tel"
+                    id="schrack_fax"
+                  name="schrack_fax"
+                 value="<?php echo ltrim($this->escapeHtml($this->getPhoneFaxMobileNumber('schrack_fax'))); ?>"
+           placeholder="<?php echo $this->__('Fax') ?>*"
+           data-toggle="tooltip"
+             data-html="true"
+        data-placement="top"
+                 title=""
+                 class="faxnumber input-text form-control" />
+        </div>
+    </div>
+</li>
+<li>
+    <div>
+        <h3 style="float: left;"><?php echo $this->__('Mobile Phone') ?></h3>
+        <span id="requiredWarningMobilePhone" class="required_warning"></span>
+        <div style="clear: both"></div>
+    </div>
+</li>
+<li>
+    <div class="row">
+        <div class="phonenumberline">
+            <div class="plusIcon">+</div>
+            <input type="tel"
+                     id="schrack_mobile_phone"
+                   name="schrack_mobile_phone"
+                  value="<?php echo ltrim($this->escapeHtml($this->getPhoneFaxMobileNumber('schrack_mobile_phone'))); ?>"
+            placeholder="<?php echo $this->__('Mobile'); ?>*"
+            data-toggle="tooltip"
+              data-html="true"
+         data-placement="top"
+                  title=""
+                  class="mobilenumber input-text form-control" />
+        </div>
+    </div>
+</li>
+
+
+<script type="text/javascript">
+    //<![CDATA[
+
+    jQuery(document).ready(function() {
+
+        // Prevent enter illegal character(s) by CHANGE or PASTE :
+        jQuery('#schrack_telephone').bind('change paste keyup',function(e) {
+            setTimeout(function(){
+                    jQuery('#schrack_telephone').val(jQuery('#schrack_telephone').val().replace(/["';\[\]<>\x00-\x09\x0B\x0C\x0E-\x1F\xE2\x7F\n\r]/g, ""));
+                }, 50
+            );
+        });
+
+        // Prevent enter illegal character(s) by CHANGE or PASTE :
+        jQuery('#schrack_fax').bind('change paste keyup',function(e) {
+            setTimeout(function(){
+                    jQuery('#schrack_fax').val(jQuery('#schrack_fax').val().replace(/["';\[\]<>\x00-\x09\x0B\x0C\x0E-\x1F\xE2\x7F\n\r]/g, ""));
+                }, 50
+            );
+        });
+
+        // Prevent enter illegal character(s) by CHANGE or PASTE :
+        jQuery('#schrack_mobile_phone').bind('change paste keyup',function(e) {
+            setTimeout(function(){
+                    jQuery('#schrack_mobile_phone').val(jQuery('#schrack_mobile_phone').val().replace(/["';\[\]<>\x00-\x09\x0B\x0C\x0E-\x1F\xE2\x7F\n\r]/g, ""));
+                }, 50
+            );
+        });
+
+        if (jQuery(window).width() > 992) {
+            jQuery('[data-toggle="tooltip"]').tooltip();
+        }
+
+        jQuery('#schrack_telephone').on('keyup', function() {
+            removeForbiddenPhoneFieldCharacters('schrack_telephone');
+        });
+
+        jQuery('#schrack_fax').on('keyup', function() {
+            removeForbiddenPhoneFieldCharacters('schrack_fax');
+        });
+
+        jQuery('#schrack_mobile_phone').on('keyup', function() {
+            removeForbiddenPhoneFieldCharacters('schrack_mobile_phone');
+        });
+
+    });
+    //]]>
+</script>
+<!-- app/design/frontend/schrack/schrackresponsive/template/customer/widget/phonenumber.phtml (end) -->

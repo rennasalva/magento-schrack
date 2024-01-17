@@ -1,0 +1,839 @@
+<!-- app/design/frontend/schrack/schrackresponsive/template/checkout/onepage/shipping_method/available.phtml (start) -->
+
+<?php // @var $this Mage_Checkout_Block_Onepage_Shipping_Method_Available
+    $customer = $this->getCustomer();
+    $customerLoggedIn = Mage::getSingleton('customer/session')->isLoggedIn();
+    $customerPickupWarehouseIdOptionValue = '';
+
+    #   container condition
+    $wwsCheck = Mage::getSingleton('customer/session')->getCustomer()->getSchrackWwsCustomerId();
+    $isactive = Mage::getStoreConfig('carriers/schrackcontainer/active');
+
+    if ($customer) {
+        $pickupWarehouseId = $customer->getSchrackPickup();
+        if ($pickupWarehouseId) {
+            $customerPickupWarehouseIdOptionValue = Mage::helper('schrackshipping/pickup')->getShippingMethodFromWarehouseId($pickupWarehouseId);
+        }
+    }
+
+    if (!$this->getShippingRates()) {
+        // Building temporary fake address because of mis-ordered checkout process (chosing shipping method, before giving shipping address):
+        //$this->getQuote()->setShippingAddress();
+        $quote = $this->getQuote();
+
+        // The shipping address, all good here
+        $shipping_address = array(
+            'prefix' => '',
+            'firstname' => '',
+            'middlename' => '',
+            'lastname' => '',
+            'suffix' => '',
+            'company' => '',
+            'street' => array(
+                '0' => ''
+            ),
+            'city' => '',
+            'country_id' => strtoupper(Mage::getStoreConfig('schrack/general/country')),
+            'region' => '',
+            'postcode' => 0,
+            'telephone' => '0',
+            'fax' => '',
+            'vat_id' => '',
+            'save_in_address_book' => 0
+        );
+
+
+        // Setting the shipping/billing address
+        $quote->getShippingAddress()->addData($shipping_address);
+        $quote->getBillingAddress()->addData($shipping_address);
+        $quote->save();
+
+        $quote->getShippingAddress()->collectShippingRates()->save();
+        $quote->getShippingAddress()->setCollectShippingRates(true);
+    }
+
+    $boolFoundLockedPickupStock   = false;
+    $boolFoundLockedDeliveryStock = false;
+?>
+
+
+<style>
+    .checkoutHeadlinePickupStore {
+        margin-left: 10px;
+        margin-top: 10px;
+        font-size: 1.3em;
+        color: #005B9F;
+    }
+
+    #grid-method-field-main {
+        float: left;
+        width: 100%;
+    }
+
+    .grid-method-field {
+        float: left;
+    }
+
+    .checkoutDeliveryButton {
+        border: 1px solid #005B9F;
+        width: 180px;
+        height: 50px;
+        padding-top: 12px;
+        padding-left: 17px;
+        margin-top: 14px;
+        margin-left: 20px;
+        color: #005B9F;
+        cursor: pointer;
+    }
+
+    .checkoutDeliveryButtonActive {
+        border: 1px solid #005B9F;
+        width: 180px;
+        height: 50px;
+        padding-top: 12px;
+        padding-left: 17px;
+        margin-top: 14px;
+        margin-left: 20px;
+        color: #FFFFFF;
+        cursor: pointer;
+        background: #005B9F;
+    }
+
+    .checkoutPickupButton {
+        border: 1px solid #005B9F;
+        width: 180px;
+        height: 50px;
+        padding-top: 12px;
+        padding-left: 17px;
+        margin-top: 14px;
+        margin-left: 20px;
+        color: #005B9F;
+        cursor: pointer;
+    }
+
+    .checkoutPickupButtonActive {
+        border: 1px solid #005B9F;
+        width: 180px;
+        height: 50px;
+        padding-top: 12px;
+        padding-left: 17px;
+        margin-top: 14px;
+        margin-left: 20px;
+        color: #FFFFFF;
+        cursor: pointer;
+        background: #005B9F;
+    }
+
+    .checkoutContainerButton {
+        border: 1px solid #005B9F;
+        width: 180px;
+        height: 50px;
+        padding-top: 12px;
+        padding-left: 17px;
+        margin-top: 14px;
+        margin-left: 20px;
+        color: #005B9F;
+        cursor: pointer;
+    }
+
+    .checkoutContainerButtonActive {
+        border: 1px solid #005B9F;
+        width: 180px;
+        height: 50px;
+        padding-top: 12px;
+        padding-left: 17px;
+        margin-top: 14px;
+        margin-left: 20px;
+        color: #FFFFFF;
+        cursor: pointer;
+        background: #005B9F;
+    }
+
+    .checkoutInpostButton {
+        border: 1px solid #005B9F;
+        width: 180px;
+        height: 50px;
+        padding-top: 12px;
+        padding-left: 17px;
+        margin-top: 14px;
+        margin-left: 20px;
+        color: #005B9F;
+        cursor: pointer;
+    }
+
+    .checkoutInpostButtonActive {
+        border: 1px solid #005B9F;
+        width: 180px;
+        height: 50px;
+        padding-top: 12px;
+        padding-left: 17px;
+        margin-top: 14px;
+        margin-left: 20px;
+        color: #FFFFFF;
+        cursor: pointer;
+        background: #005B9F;
+    }
+
+    #checkout_saveShippingMethodButtonAlternate {
+        width: 139px;
+        margin-bottom: 14px;
+        margin-left: 62%;
+        margin-left: auto;
+        margin-top: 10px;
+        margin-right: 37px;
+    }
+
+    #containerText, #containerSelection {
+        margin-left: 405px;
+        font-size: 1.3em;
+        color: #005B9F;
+        margin-top: 14px;
+    }
+
+    #checkout_nodal_edit_cart {
+        width: 200px;
+    }
+
+    #checkout_modal_ignore_pickup_warning_and_continue {
+        width: 200px;
+    }
+
+    .checkout_modal_result_not_available_product_list_table {
+        width: 98% !important;
+        margin-left: 2% !important;
+    }
+
+    .checkoutSkuNotAvailableHeader {
+        width: 33% !important;
+        font-weight: bold !important;
+        color: black !important;
+        padding-left: 10% !important;
+    }
+
+    .checkoutCartQtySelectedHeader {
+        width: 33% !important;
+        font-weight: bold !important;
+        color: black !important;
+        padding-left: 5% !important;
+    }
+
+    .checkoutStoreQtyAvailableHeader {
+        width: 33% !important;
+        font-weight: bold !important;
+        color: black !important;
+        padding-left: 5% !important;
+    }
+
+    .checkoutSkuNotAvailable {
+        width: 38% !important;
+        color: #005B9F !important;
+        font-weight: bold !important;
+        padding-left: 8% !important;
+    }
+
+    .checkoutCartQtySelected {
+        width: 31% !important;
+        font-weight: bold !important;
+        padding-left: 9% !important;
+    }
+
+    .checkoutStoreQtyAvailable {
+        width: 31% !important;
+        font-weight: bold !important;
+        padding-left: 9% !important;
+    }
+
+    .checkout_modal_left_button {
+        width: 50% !important;
+        float: left !important;
+        padding-left: 4% !important;
+    }
+
+    .checkout_modal_right_button {
+        width: 50% !important;
+        float: left !important;
+        padding-left: 4% !important;
+    }
+
+    .checkout_modal_clear_both {
+        clear: both !important;
+    }
+
+    @media (min-width: 100px) and (max-width: 620px) {
+        #checkout_modal_edit_cart {
+            width: 111px !important;
+            font-size: 0.8em !important;
+        }
+        #checkout_modal_ignore_pickup_warning_and_continue {
+            width: 111px !important;
+            font-size: 0.8em !important;
+        }
+    }
+
+    @media (min-width: 621px) and (max-width: 3000px) {
+        #checkout_modal_edit_cart {
+            font-size: 1em !important;
+        }
+        #checkout_modal_ignore_pickup_warning_and_continue {
+            font-size: 1em !important;
+        }
+    }
+
+    /*Shipping Method Buttons*/
+    @media (min-width: 1px) and (max-width: 637px) {
+        #grid-method-field-main {
+            float: left;
+            width: 50%
+        }
+        .grid-method-field {
+            float: left;
+        }
+        #checkoutDeliveryButton {
+            width: 180px;
+            padding-left: 10px;
+        }
+        #checkoutPickupButton {
+            width: 180px;
+            padding-left: 10px;
+        }
+        #checkoutContainerButton {
+            width: 180px;
+            padding-left: 10px;
+        }
+        #checkoutInpostButton {
+            width: 180px;
+            pedding-left: 10px;
+        }
+        #shipping-method-buttons-container {
+            width: 100% !important;
+            margin-top: 15px;
+        }
+    }
+
+    @media (min-width: 638px) and (max-width:991px) {
+        #shipping-method-buttons-container {
+            width: 100% !important;
+            margin-top: 15px;
+        }
+    }
+
+</style>
+
+<?php if (!($_shippingRateGroups = array_reverse($this->getShippingRates()))): ?>
+    <p><?php echo $this->__('Sorry, no quotes are available for this order at this time.') ?></p>
+<?php else: ?>
+    <?php
+        $arrLockedStock            = array();
+        $strTimestampFromLocaltime = '';
+        $boolFoundLockedStock      = false;
+
+        $helper = Mage::helper('schrackcataloginventory/stock');
+
+        $deliveryStock = $helper->getLocalDeliveryStock();
+        if ($deliveryStock->getLockedUntil()) {
+            // Expiration time calculation:
+            $lockedDeliveryStockDateTime = strtotime($deliveryStock->getLockedUntil());
+            $lockedDeliveryStockDateWithoutTime = date('Y-m-d', $lockedDeliveryStockDateTime);
+            $lockedDeliveryStockDateTimestamp = strtotime($lockedDeliveryStockDateWithoutTime . ' 23:59:59');
+            $currentDateTimestamp = strtotime(date('Y-m-d') . ' 23:59:59');
+
+            // Current time is lower than locked time (--> show disabled):
+            if ($currentDateTimestamp < $lockedDeliveryStockDateTimestamp) {
+                $arrLockedStock['schrackdelivery_warehouse' . $deliveryStock->getStockNumber()] = $deliveryStock->getLockedUntil();
+                $boolFoundLockedStock = true;
+                $boolFoundLockedDeliveryStock = true;
+            }
+        }
+        $pickupStocks = $helper->getPickupStocks();
+        foreach ($pickupStocks as $stockNumber => $pickupStock) {
+            if ($pickupStock->getLockedUntil()) {
+                // Expiration time calculation:
+                $lockedPickupStockDateTime = strtotime($pickupStock->getLockedUntil());
+                $lockedPickupStockDateWithoutTime = date('Y-m-d', $lockedPickupStockDateTime);
+                $lockedPickupStockDateTimestamp = strtotime($lockedPickupStockDateWithoutTime . ' 23:59:59');
+                $currentDateTimestamp = strtotime(date('Y-m-d') . ' 23:59:59');
+
+                // Current time is lower than locked time (--> show disabled):
+                if ($currentDateTimestamp < $lockedPickupStockDateTimestamp) {
+                    $arrLockedStock['schrackpickup_warehouse' . $pickupStock->getStockNumber()] = $pickupStock->getLockedUntil();
+                    $boolFoundLockedStock = true;
+                    $boolFoundLockedPickupStock = true;
+                }
+            }
+        }
+
+    ?>
+
+	<div style="overflow: hidden">
+    <?php
+        $_sole = count($_shippingRateGroups) == 1;
+
+        foreach ($_shippingRateGroups as $code => $_rates) :
+            $deliverySymbol = '';
+            switch($code) {
+                case 'schrackpickup':
+                    //  choose preferred store -> pickup
+                    $display        = 'display: none; ';
+                    $width          = 'width: 100%; ';
+                    $titleStyle     = 'margin-top: 1.1%; margin-left: 20px; color: #005B9F;';
+                    $class          = 'checkout_schrackpickup_trigger';
+                    $containerClass = 'schrackpickup_checkbox_container hidden';
+                    $titleText      = $this->__('Choose Your Preferred Store');
+                    break;
+                case 'schrackcontainer':
+                    //  zustellung test + container button
+                    $display        = 'display: none; ';
+                    $width          = 'width: 100%; ';
+                    $titleStyle     = 'margin-left: 10%; margin-top: 1.1%; margin-left: 20px; color: #005B9F;';
+                    $class          = 'checkout_schrackcontainer_trigger';
+                    $containerClass = '';
+                    $titleText      = $this->__('Choose Your Preferred Container');
+                    break;
+                case 'schrackinpost':
+                    //  zustellung test + inpost button
+                    $display        = 'display: none; ';
+                    $width          = 'width: 100%; ';
+                    $titleStyle     = 'margin-left: 10%; margin-top: 1.1%; margin-left: 20px; color: #005B9F;';
+                    $class          = 'checkout_schrackinpost_trigger';
+                    $containerClass = '';
+                    $titleText      = $this->__('Choose Your Preferred Inpost');
+                    break;
+                case 'schrackdelivery':
+                    //  whole block
+                    $display        = 'display: block; ';
+                    $class          = 'checkout_schrackdelivery_trigger hidden';
+                    $width          = 'width: 100%; ';
+                    $titleStyle     = 'margin-top: 1.1%; margin-left: 20px; color: #005B9F;';
+                    $containerClass = '';
+                    $deliverySymbol = '<div class="fa fa-truck" style="margin-left: 5px"></div>';
+                    $titleText      = $this->__('Choose Your Preferred Method');
+                    break;
+            }
+    ?>
+		<div id="checkout_stock_inventory_location_<?php echo $code; ?>"
+             style="<?= $display, $width; ?> float: left; overflow: hidden">
+            <div style="<?= $titleStyle; ?>"><?= $titleText; ?></div>
+            <div id="grid-method-field-main" class="<?php echo $containerClass; ?>">
+                <?php
+                    $_sole = $_sole && count($_rates) == 1;
+                    foreach ($_rates as $_rate) :
+                ?>
+                <?php
+                    $deactivateShippingMethodOption = false;
+                    $disabled = '';
+                    $labelStyle = '';
+                    $lockedSign = '';
+
+                    if ($boolFoundLockedStock && (array_key_exists($_rate->getCode(), $arrLockedStock)) ) {
+                        $deactivateShippingMethodOption = true;
+                    }
+                ?>
+                <!-- Delivery button -->
+                <div class="grid-method-field">
+                   <?php if ($_rate->getErrorMessage()): ?>
+                        <ul class="messages">
+                            <li class="error-msg">
+                                <ul>
+                                    <li><?php echo $_rate->getErrorMessage() ?></li>
+                                </ul>
+                            </li>
+                        </ul>
+                   <?php else: ?>
+                        <?php if ($_sole) : ?>
+                            <span class="no-display">
+                                <input class="<?php echo $class; ?>"
+                                       name="shipping_method[type]"
+                                       type="radio"
+                                       value="<?php echo $_rate->getCode() ?>"
+                                       id="s_method_<?php echo $_rate->getCode() ?>"
+                                       checked="checked" />
+                            </span>
+                            <?php if ($deliverySymbol) : ?>
+                                <div id="checkoutDeliveryButton" class="checkoutDeliveryButton">
+                                <?php echo $deliverySymbol; ?>
+                            <?php endif ?>
+                        <?php else: ?>
+                            <input name="shipping_method[type]"
+                                   type="radio"
+                                   value="<?php echo $_rate->getCode() ?>"
+                                   id="s_method_<?php echo $_rate->getCode() ?>"
+                            <?php if ($_rate->getCode()=== $this->getAddressShippingMethod() && $deactivateShippingMethodOption == false) : ?>
+                                checked="checked"
+                            <?php endif; ?>
+                            <?php if ($deactivateShippingMethodOption == true) {$disabled = 'disabled="disabled"'; $labelStyle = 'style="color: grey; "'; $lockedSign = '*';} ?>
+                                <?php echo $disabled; ?>
+                                class="radio <?php echo $class; ?>" />
+                                <?php if ($deliverySymbol) : ?>
+                                    <div id="checkoutDeliveryButton" class="checkoutDeliveryButton"><?= $deliverySymbol; ?>
+                                <?php endif ?>
+                            <?php endif; ?>
+                            <label id="checkoutDeliveryButtonLabel" for="s_method_<?php echo $_rate->getCode() ?>" style="cursor: pointer; margin-left: 10px">
+                                <?php echo $_rate->getMethodTitle() . ' ' . $lockedSign; ?>
+                            </label>
+                            <?php if ($deliverySymbol) : ?>
+                                </div>
+                            <?php endif ?>
+
+                        <?php endif ?>
+                </div>
+                <!-- Pickup button -->
+                    <?php if ($deliverySymbol && $customerLoggedIn) : ?>
+                        <div class="grid-method-field">
+                            <div id="checkoutPickupButton" class="checkoutPickupButton">
+                                <div style="float: left; margin-top: 3px; margin-left: 5px;" class="fa fa-shopping-cart"></div>
+                                <div style="float: left; font-family: 'robotoregular'; font-weight: bold; margin-left: 10px;"><?php echo $this->__('Pickup'); ?></div>
+                            </div>
+                        </div>
+                    <?php endif ?>
+                <?php if ($class == 'checkout_schrackpickup_trigger') {
+                    $disabledWarehouseLockedOptionAttributeText = '';
+                    if ($lockedSign == '*') $disabledWarehouseLockedOptionAttributeText = 'disabled = "disabled"'; else  $disabledWarehouseLockedOptionAttributeText = '';
+                        $selectOptions[] = '<option value="' . $_rate->getCode() . '" ' . $disabledWarehouseLockedOptionAttributeText . ' >' . $_rate->getMethodTitle() . ' ' . $lockedSign . '</option>';
+                    }
+                ?>
+                <!-- Container button -->
+                <?php if ($wwsCheck && $isactive == 1) : ?>
+                        <div class="grid-method-field">
+                            <div id="checkoutContainerButton" class="checkoutContainerButton">
+                                <div style="float: left; margin-top: 3px; margin-left: 5px;" class="fa fa-archive"></div>
+                                <div style="float: left; font-family: 'robotoregular'; font-weight: bold; margin-left: 10px;"><?php echo $this->__('PickUp Station'); ?></div>
+                            </div>
+                        </div>
+                <?php endif ?>
+
+                <!-- Inpost button -->
+                <?php
+                    $inpostActive = Mage::getStoreConfig('carriers/schrackinpost/active');
+                    #$customer = $this->getCustomer();
+                    #$customerPhoneNumber =  $customer->getSchrackMobilePhone();
+                    $country = Mage::getStoreConfig('schrack/general/country');
+                    #$country = 'pl';   #    for testing
+
+                    $wsdl = Mage::getStoreConfig('schrack/wws/wsdl');
+                    $wwsID = Mage::getSingleton('customer/session')->getCustomer()->_data['schrack_wws_customer_id'];
+
+                    $ctry_code = Mage::getStoreConfig('shipping/origin/country_id');
+                    $sender_id = Mage::getStoreConfig('schrack/wws/sender_id');
+
+                    //  check if test or live environment
+                    $test_or_live = '';
+                    if(stristr($wsdl, 'test')) {
+                        $test_or_live = 'Test_';
+                    }
+
+                    $checkoutSession = Mage::getSingleton('checkout/session');
+                    $skuNumber = array();
+
+                    $request = array(
+                        'ctry_code' => $test_or_live . $ctry_code,
+                        'sender_id' => $test_or_live . $sender_id,
+                        'tt_item' => [
+                        ],
+                        'CustomerNumber' => $wwsID,
+                    );
+
+                    // pushing skus into array
+                    foreach ( $checkoutSession->getQuote()->getAllVisibleItems() as $item ) {
+                        $product = $item->getProduct()->getData();
+                        $sku = $product['sku'];
+
+                        $request['tt_item'][] = ['ItemId' => $sku];
+                    }
+
+                    $options = array(
+                        'schrack_system' => 'wws',
+                    );
+                    $options['schrack_log_transfer'] = true;
+
+                    $soap = Mage::helper('schrack/soap')->createClient($wsdl, $options);
+                    $response = $soap->__call('get_valid_inpost', $request);
+
+                    $inpostPossible = $response['id_is_valid'];
+
+                    //var_dump($_COOKIE);
+                ?>
+
+                    <?php if ($inpostActive && $country == 'pl' && $inpostPossible) : ?>
+                        <div class="grid-method-field">
+                            <div id="checkoutInpostButton" class="checkoutInpostButton">
+                                <div style="float: left; margin-top: 3px; margin-left: 5px;" class="fa fa-archive"></div>
+                                <div style="float: left; font-family: 'robotoregular'; font-weight: bold; margin-left: 10px;"><?php echo $this->__('InPost'); ?></div>
+                            </div>
+                        </div>
+                    <?php if ($class == 'checkout_schrackcontainer_trigger') {
+                        $disabledWarehouseLockedOptionAttributeText = '';
+                        if ($lockedSign == '*') {
+                            $disabledWarehouseLockedOptionAttributeText = 'disabled = "disabled"';
+                        } else {
+                            $disabledWarehouseLockedOptionAttributeText = '';
+                        }
+                        $selectOptions[] =
+                            '<option value="' . $_rate->getCode() . '" ' . $disabledWarehouseLockedOptionAttributeText . ' >' .
+                            $_rate->getMethodTitle() . ' ' . $lockedSign .
+                            '</option>';
+                    }
+                    ?>
+                    <?php endif ?>
+
+                <?php endforeach; ?>
+            </div>
+
+            <?php if ($class == 'checkout_schrackpickup_trigger') : ?>
+                <!-- Pickup Address-->
+                <div id="checkout_select_store_pickup_container">
+                    <div class="checkoutHeadlinePickupStore"><?php echo $this->__('Select Store For Pickup'); ?></div>
+                    <select id="checkout_select_store_pickup" style="color: #005B9F; margin-left: 0%; margin-top: 20px; width: 100%; height: 46px; padding-left: 28px; margin-bottom: 24px;" class="hidden">
+                        <?php foreach ($selectOptions as $optionLine) :  ?>
+                            <?php
+                                if ($customerPickupWarehouseIdOptionValue && stristr($optionLine, $customerPickupWarehouseIdOptionValue)) {
+                                    $optionLine = str_replace('<option', '<option selected="selected"', $optionLine);
+                                }
+                                echo $optionLine;
+                            ?>
+                        <?php endforeach; ?>
+                    </select>
+                    <div class="buttons-set" id="shipping-method-buttons-container-alternate">
+                        <button id="checkout_saveShippingMethodButtonAlternate" type="button"
+                                class="bttn-lg checkout_saveShippingMethodButtonAlternate">
+                            <span id="shipping-method-please-wait-alternate" style="display: none;
+                                    float: left;
+                                    padding-left: 40px;
+                                    text-align: left;
+                                    background:url('<?php echo $this->getSkinUrl('images/opc-ajax-loader.gif') ?>') left center no-repeat;">&nbsp;
+                            </span>
+                            <span id="checkout_saveShippingMethodButtonContinueAlternate"><?php echo $this->__('Continue') ?></span>
+                        </button>
+                    </div>
+                    <?php if ($boolFoundLockedPickupStock) : ?>
+                        <div style="margin-left: 20px;">* <?php echo $this->__('This Stock Is Temporarily Locked'); ?></div>
+                    <?php endif; ?>
+                </div>
+            <?php endif ?>
+		</div>
+    <?php endforeach; ?>
+	</div>
+    <?php if ($boolFoundLockedDeliveryStock) : ?>
+        <div style="margin-left: 20px;">* <?php echo $this->__('This Stock Is Temporarily Locked'); ?></div>
+    <?php endif; ?>
+
+    <!-- Customer survey -->
+    <?php if (Mage::getStoreConfig('general/locale/code') == 'cs_CZ') : ?>
+        <div id="research_block" style="background: lightgrey; padding: 9px; display: none;">
+            <div id="research_field">
+                <span><?php echo $this->__('Geis Point Research Question Descritption'); ?></span>
+                <button style="margin-left: 5px; width: 40px;" id="research_agree"><?php echo $this->__('Yes'); ?></button>
+                <button style="margin-left: 5px; width: 40px;" id="research_deny"><?php echo $this->__('No'); ?></button><br>
+            </div>
+            <div>
+                <span><?php echo $this->__('More About Geis Project'); ?></span>
+                <a href="<?php echo Mage::getStoreConfig('schrack/research/geis/externallink'); ?>" target="_blank"><?php echo $this->__('Here'); ?></a> !
+            </div>
+        </div>
+    <?php endif; ?>
+<?php endif; ?>
+
+
+<script type="text/javascript">
+    //<![CDATA[
+
+    jQuery(document).ready(function() {
+        console.log('checkout.onpage.shipping_method_available.phtml SUCCESFULLY LOADED');
+
+        // Default selection -> delivery:
+        console.log('Delivery Button seleceted by default');
+
+        //jQuery('#containerSelection, .containerText').hide();
+
+        localStorage.shippingMethodCheck = 'delivery';
+
+        if (jQuery('#checkoutDeliveryButtonLabel').text().match(/\*/)) {
+            console.log('Found locked delivery warehouse');
+            jQuery('#checkoutDeliveryButton').removeClass('checkoutDeliveryButtonActive');
+            jQuery('#checkoutDeliveryButton').addClass('checkoutDeliveryButton');
+            jQuery('#checkoutPickupButton').addClass('checkoutPickupButtonActive');
+            jQuery('#checkoutPickupButton').removeClass('checkoutPickupButton');
+            jQuery('#checkoutContainerButton').removeClass('checkoutContainerButtonActive');
+            jQuery('#checkoutContainerButton').addClass('checkoutContainerButton');
+            jQuery('#checkoutInpostButton').removeClass('checkoutInpostButtonActive');
+            jQuery('#checkoutInpostButton').addClass('checkoutInpostButton');
+        } else {
+            jQuery('#checkoutPickupButton').removeClass('checkoutPickupButtonActive');
+            jQuery('#checkoutPickupButton').addClass('checkoutPickupButton');
+            jQuery('#checkoutDeliveryButton').addClass('checkoutDeliveryButtonActive');
+            jQuery('#checkoutDeliveryButton').removeClass('checkoutDeliveryButton');
+            jQuery('#checkoutContainerButton').removeClass('checkoutContainerButtonActive');
+            jQuery('#checkoutContainerButton').addClass('checkoutContainerButton');
+            jQuery('#checkoutInpostButton').removeClass('checkoutInpostButtonActive');
+            jQuery('#checkoutInpostButton').addClass('checkoutInpostButton');
+        }
+
+        jQuery('#checkoutDeliveryButton').on('click', function() {
+            console.log('Delivery Button Clicked');
+            localStorage.shippingMethodCheck = 'delivery';
+
+            if (jQuery('#checkoutDeliveryButtonLabel').text().match(/\*/)) {
+                console.log('Delivery Button Clicked, but found locked warehouse');
+                console.log('Pickup Button Clicked, in case of locked delivery warehouse');
+
+                jQuery('#checkoutDeliveryButton').removeClass('checkoutDeliveryButtonActive');
+                jQuery('#checkoutDeliveryButton').addClass('checkoutDeliveryButton');
+                jQuery('#checkoutPickupButton').addClass('checkoutPickupButtonActive');
+                jQuery('#checkoutPickupButton').removeClass('checkoutPickupButton');
+
+                jQuery('#containerSelection, .containerText').hide();
+            } else {
+                jQuery('#checkoutPickupButton').removeClass('checkoutPickupButtonActive');
+                jQuery('#checkoutPickupButton').addClass('checkoutPickupButton');
+                jQuery('#checkoutDeliveryButton').addClass('checkoutDeliveryButtonActive');
+                jQuery('#checkoutDeliveryButton').removeClass('checkoutDeliveryButton');
+                jQuery('#checkoutContainerButton').removeClass('checkoutContainerButtonActive');
+                jQuery('#checkoutContainerButton').addClass('checkoutContainerButton');
+                jQuery('#checkoutInpostButton').removeClass('checkoutInpostButtonActive');
+                jQuery('#checkoutInpostButton').addClass('checkoutInpostButton');
+
+                jQuery('#containerSelection, .containerText').hide();
+
+            }
+        });
+
+        jQuery('#checkoutPickupButton').on('click', function() {
+            console.log('Pickup Button Clicked');
+            localStorage.shippingMethodCheck = 'pickup';
+
+            jQuery('#checkoutDeliveryButton').removeClass('checkoutDeliveryButtonActive');
+            jQuery('#checkoutDeliveryButton').addClass('checkoutDeliveryButton');
+            jQuery('#checkoutPickupButton').addClass('checkoutPickupButtonActive');
+            jQuery('#checkoutPickupButton').removeClass('checkoutPickupButton');
+            jQuery('#checkoutContainerButton').removeClass('checkoutContainerButtonActive');
+            jQuery('#checkoutContainerButton').addClass('checkoutContainerButton');
+            jQuery('#checkoutInpostButton').removeClass('checkoutInpostButtonActive');
+            jQuery('#checkoutInpostButton').addClass('checkoutInpostButton');
+
+            jQuery('#containerSelection, .containerText').hide();
+        });
+
+        jQuery('#checkoutContainerButton').on('click', function() {
+            console.log('Container Button Clicked');
+            localStorage.shippingMethodCheck = 'container';
+
+            jQuery('#checkoutDeliveryButton').removeClass('checkoutDeliveryButtonActive');
+            jQuery('#checkoutDeliveryButton').addClass('checkoutDeliveryButton');
+            jQuery('#checkoutPickupButton').removeClass('checkoutPickupButtonActive');
+            jQuery('#checkoutPickupButton').addClass('checkoutPickupButton');
+            jQuery('#checkoutContainerButton').addClass('checkoutContainerButtonActive');
+            jQuery('#checkoutContainerButton').removeClass('checkoutContainerButton');
+            jQuery('#checkoutInpostButton').removeClass('checkoutInpostButtonActive');
+            jQuery('#checkoutInpostButton').addClass('checkoutInpostButton');
+        });
+
+        jQuery('#checkoutInpostButton').on('click', function() {
+            console.log('Inpost Button Clicked');
+            localStorage.shippingMethodCheck = 'inpost';
+            localStorage.newCheckoutWwsIdInpost = "";
+
+            jQuery('#checkoutDeliveryButton').removeClass('checkoutDeliveryButtonActive');
+            jQuery('#checkoutDeliveryButton').addClass('checkoutDeliveryButton');
+            jQuery('#checkoutPickupButton').removeClass('checkoutPickupButtonActive');
+            jQuery('#checkoutPickupButton').addClass('checkoutPickupButton');
+            jQuery('#checkoutContainerButton').removeClass('checkoutContainerButtonActive');
+            jQuery('#checkoutContainerButton').addClass('checkoutContainerButton');
+            jQuery('#checkoutInpostButton').addClass('checkoutInpostButtonActive');
+            jQuery('#checkoutInpostButton').removeClass('checkoutInpostButton');
+        });
+
+        // Customer survey
+        <?php if (Mage::getStoreConfig('general/locale/code') == 'cs_CZ') : ?>
+            checkCustomerAlreadyAnsweredResearchQuestion();
+
+            jQuery('#research_agree').on('click', function(evt) {
+                evt.preventDefault();
+                sendResearchAnswer('research_agree');
+
+                console.log('research_agree');
+            });
+
+            jQuery('#research_deny').on('click', function(evt) {
+                evt.preventDefault();
+                sendResearchAnswer('research_deny');
+
+                console.log('research_deny');
+            });
+
+            function sendResearchAnswer (researchAnswer){
+                jQuery.ajax({
+                    url: '<?php echo $this->getUrl('checkout/onepage/saveResearchResult'); ?>',
+                    type: 'post',
+                    dataType: 'json',
+                    data: {
+                        'customer_type' : localStorage.newCheckoutProcessCurrentRole,
+                        'reseachAnswer' : researchAnswer},
+                    success: function(data) {
+                        if (data.errormsg) {
+                            console.log('response received');
+                        } else {
+                            console.log('success');
+                            jQuery('#research_field').hide();
+                        }
+                    },
+                    error: function (data) {
+                        console.log('error');
+                    },
+                    complete: function () {
+                        console.log('complete');
+                    }
+                });
+            }
+
+            function checkCustomerAlreadyAnsweredResearchQuestion () {
+                jQuery.ajax({
+                    url: '<?php echo $this->getUrl('checkout/onepage/checkCustomerAlreadyAnsweredResearch'); ?>',
+                    type: 'post',
+                    dataType: 'json',
+                    success: function(data) {
+                        if (data.errormsg) {
+                            console.log('response received but errors occurred');
+                        } else {
+                            console.log('success');
+                            if (data.msg == 'done') {
+                                jQuery('#research_block').show();
+                            }
+                        }
+                    },
+                    error: function (data) {
+                        console.log('error');
+                    },
+                    complete: function () {
+                        console.log('complete');
+                    }
+                });
+            }
+        <?php endif; ?>
+
+
+        jQuery('#step_one_progress_circle').addClass('checkout_progress_color_active');
+
+        jQuery('.checkout_saveShippingMethodButtonAlternatePickup').on('click', function () {
+            console.log('CHECKPOINT available.phtml #001');
+
+            var ajaxURL     = '<?php echo Mage::helper('schrackcore/url')->getUrlWithCurrentProtocol('catalog/product/getProductAvailabilityInStore'); ?>';
+            var formKey     = '<?php echo Mage::getSingleton('core/session')->getFormKey(); ?>';
+            var pickupStore = localStorage.newCheckoutSelectedPickupLocation;
+
+            var pickupContainer = "";
+
+            getProductAvailabilityInStore(ajaxURL, pickupStore, formKey, 'action_four');
+        });
+
+        if (localStorage.newCheckoutSelectedPickupLocation == '') {
+            console.log('newCheckoutSelectedPickupLocation (#2) filled here from this location = ' + jQuery('#checkout_select_store_pickup').val());
+            localStorage.newCheckoutSelectedPickupLocation = jQuery('#checkout_select_store_pickup').val();
+        }
+
+<?php if (Mage::getStoreConfig('carriers/schrackpickup/active') == 0) : ?>
+        jQuery('#checkoutPickupButton').hide();
+<?php endif; ?>
+    });
+    //]]>
+</script>
+
+<!-- app/design/frontend/schrack/schrackresponsive/template/checkout/onepage/shipping_method/available.phtml (end) -->

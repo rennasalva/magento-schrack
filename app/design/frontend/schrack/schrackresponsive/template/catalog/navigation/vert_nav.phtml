@@ -1,0 +1,50 @@
+<!-- vert_nav.phtml (start) -->
+<div id="product-categories" class="category-menu hide-on-print">
+    <ul id="navigationLeftSidebar">
+        <?php $categories = $this->getStoreCategories(); $i = 0; ?>
+        <?php foreach ($categories as $_category): ?>
+        <?php if ($_category->getName() === 'PROMOTIONS_TOP') { continue; } ?>
+        <?php $i++; ?>
+        <?php $open = $this->isCategoryActive($_category); ?>
+        <?php if ($open) {
+            $_pillar = $_category->getRealPillar();
+        }?>
+        <?php $potential = $_category->hasChildren(); ?>
+        <li<?php if($open):?> class="current toplevel" id="toplevel"<?php endif;?>>
+            <a href="<?php echo $this->getCategoryUrl($_category); ?>"<?php if($open) { echo ' class="act current"'; } ?><?php if($potential) { echo ' class="potential"'; } ?> ><?php echo $_category->getName();?></a>
+            <?php if ($open && $potential): ?>
+            <ul>
+                <?php $children1 = $_category->getChildren(); $i2 = 0; ?>
+                <?php foreach ($children1 as $subcategory): ?>
+                <?php $subCat = Mage::getModel('catalog/category')->load($subcategory->getId()); ?>
+                <?php if ($subCat->getName() === 'PROMOTIONS_TOP') { continue; } ?>
+                <?php $i2++; ?>
+                <?php $open = $this->isCategoryActive($subCat); ?>
+                <?php $potential = $subCat->hasChildren(); ?>
+                <?php $isDiscontinuedProductsCategory = $subCat->isDiscontinuedProductsCategory(); ?>
+                <?php if($isDiscontinuedProductsCategory && $subCat->getProductCount() == 0) continue; ?>
+                <?php $linkClass = ''; if($open) { $linkClass = 'level-1 act current'; } if($potential) { $linkClass = 'level-2 potential'; } if(!$potential&&$open) { $linkClass = 'level-1 final current'; } ?>
+                <?php if($isDiscontinuedProductsCategory) { if ($linkClass) { $linkClass.= ' '; } $linkClass .= 'discontinued'; } ?>
+                <li <?php if($open):?> class="level-1 current"<?php endif;?>><a href="<?php echo $this->getCategoryUrl($subCat); ?>"<?php if($linkClass) { echo ' class="'.$linkClass.'"'; } ?>>
+                    <?php echo $subCat->getName();?></a>
+                    <?php if ($open && $potential && false): ?>
+                    <ul>
+                        <?php $children2 = $subcategory->getChildren(); $i3 = 0; ?>
+                        <?php foreach ($children2 as $subsubcategory): ?>
+                        <?php $subsubCat = Mage::getModel('catalog/category')->load($subsubcategory->getId()); ?>
+                        <?php if ($subsubCat->getName() === 'PROMOTIONS_TOP') { continue; } ?>
+                        <?php $i3++; ?>
+                        <?php $open = $this->isCategoryActive($subsubCat) ?>
+                        <li <?php if($open):?> class="level-2 current"<?php endif;?>><a href="<?php echo $this->getCategoryUrl($subsubCat); ?>" <?php if($open) { echo ' class="level-2 final current"'; } ?>><?php echo $subsubCat->getName(); ?></a></li>
+                        <?php endforeach; ?>
+                    </ul>
+                    <?php endif; ?>
+                </li>
+                <?php endforeach; ?>
+            </ul>
+            <?php endif; ?>
+        </li>
+        <?php endforeach ?>
+    </ul>
+</div>
+<!-- vert_nav.phtml (end) -->

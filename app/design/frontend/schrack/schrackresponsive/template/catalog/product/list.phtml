@@ -1,0 +1,72 @@
+<!-- app/design/frontend/schrack/schrackresponsive/template/catalog/product/list.phtml (start) -->
+<?php
+/**
+ * Product list template
+ */
+?>
+<?php /* @var $this Schracklive_SolrSearch_Block_Catalog_Product_List */ ?>
+<?php
+$_partslistHelper = Mage::helper('schrackwishlist/partslist');
+?>
+<?php //$_productCollection = $this->getLoadedProductCollection() ?>
+<script type="text/javascript">//<![CDATA[
+
+    var partslist = null;
+    var partslistFE = null;
+    var cart = null;
+    var cartFE = null;
+    var compare = null;
+    var compareFE = null;
+    
+    function initLRMs() {
+        partslist = new ListRequestManager.List('<?php echo $_partslistHelper->getBaseUrl() ?>');
+        partslist.setProductAddUrl('<?php echo Mage::helper('schrackcore/url')->getUrlWithCurrentProtocol('checkout/cart/addProductToPartslist') ?>');
+        partslistFE = new ListRequestManager.Frontend(partslist, ListRequestManager.Product);
+
+        cart = new ListRequestManager.List('<?php echo $this->getUrl('checkout/cart/') ?>', true);
+        cartFE = new ListRequestManager.Frontend(cart, ListRequestManager.Product);
+
+        compare = new ListRequestManager.List('<?php echo $this->getUrl('catalog/product_compare') ?>', true);
+        compareFE = new ListRequestManager.Frontend(compare, ListRequestManager.Product);        
+    }
+    function initProductList() {
+        decorateTable('products-list', 'none-recursive');
+        initLRMs();
+        jQuery('select.dropdown-menu').dropdown({activateOnClick: false});
+        imagePreview();
+    }
+
+    jQuery(document).ready(function() {
+        initProductList();
+    });
+    //]]></script>
+
+<div class="product-list-frame">
+    
+    <div id="solrlist-container">
+        <input type="hidden" id="activeproductcontainer" name="activeproductcontainer" value="products" />
+        <input type="hidden" id="products_next" name="products_next" value="<?php echo (int)Mage::registry('productLimit')+(int)Mage::registry('productStart'); ?>" />
+        <input type="hidden" id="accessories_next" name="accessories_next" value="0" />
+        <input type="hidden" id="products_count" name="products_count" value="<?php echo Mage::registry('productCount'); ?>" />
+        <input type="hidden" id="accessories_count" name="accessories_count" value="0" />
+        <div class="product-list product-list-expand pull-left" data-name="category_list">
+            <input type="hidden" id="change-qty-list-index" value="<?php echo $_changeQtyListIndex ?>" />            
+            <ul class="nav nav-tabs" role="tablist">
+                <li role="presentation" class="active"><a id="productsBtn" href="#products" aria-controls="products" role="tab" data-toggle="tab" onclick="jQuery('#activeproductcontainer').val('products'); jQuery('#solrsearch-container').show();"><?php echo $this->__('Products'); ?> <span class="badge"><?php echo Mage::registry('productCount'); ?></span></a></li>
+                <li role="presentation"><a id="accessoriesBtn" href="#accessories" aria-controls="accessories" role="tab" data-toggle="tab" onclick="jQuery('#activeproductcontainer').val('accessories'); jQuery('#solrsearch-container').hide(); getAccessory();"><?php echo $this->__('Accessories'); ?> <span class="badge"></span></a></li>
+            </ul>
+            <div class="tab-content pull-left products-tab">
+                <div role="tabpanel" class="tab-pane active" id="products">
+                    <?php echo $this->getChildHtml('product_list_table')?>
+                </div>
+                <div role="tabpanel" class="tab-pane" id="accessories">
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="ajax-loader" style="display: none;">
+        <img src="<?php echo $this->getSkinUrl('schrackdesign/Public/Images/download_ajax_loader.gif'); ?>" class="zip-download-animation"/>
+    </div>
+</div>
+<!-- app/design/frontend/schrack/schrackresponsive/template/catalog/product/list.phtml (end) -->

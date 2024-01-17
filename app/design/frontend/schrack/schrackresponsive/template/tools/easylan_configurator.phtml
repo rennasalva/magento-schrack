@@ -1,0 +1,13 @@
+<!-- app/design/frontend/schrack/schrackresponsive/template/tools/easylan_configurator.phtml (start) -->
+<?php
+
+$iframeUrl = Mage::registry('easylan_iframe_url');
+
+?>
+
+<?php if ( $iframeUrl > '' ) : ?>
+    <iframe src="<?php echo $iframeUrl; ?>" height="1100px" width="100%" frameborder="0" name="Easylan">
+        <p>Sorry, your browser does not support iFrames.</p>
+    </iframe>
+<?php endif; ?>
+<!-- app/design/frontend/schrack/schrackresponsive/template/tools/easylan_configurator.phtml (end) -->

@@ -1,0 +1,143 @@
+<!-- app/design/frontend/schrack/schrackresponsive/template/page/html/footer.phtml (start) -->
+
+<style>
+    @media (min-width: 60px) and (max-width: 320px) {
+        .save_new_partslist {
+            height: 30px !important;
+        }
+        .save_new_partslist_deactivated {
+            height: 30px !important;
+        }
+    }
+    @media (min-width: 321px) and (max-width: 480px) {
+        .save_new_partslist {
+            height: 30px !important;
+        }
+        .save_new_partslist_deactivated {
+            height: 30px !important;
+        }
+    }
+    @media (min-width: 481px) and (max-width: 767px) {
+        .save_new_partslist {
+            height: 30px !important;
+        }
+        .save_new_partslist_deactivated {
+            height: 30px !important;
+        }
+    }
+    .save_new_partslist_deactivated {
+        background: #d1d1d1 !important;
+    }
+    .save_new_partslist_deactivated:after {
+        background: #d1d1d1 !important;
+    }
+</style>
+
+<div id="footer-container" class="hide-on-print"></div>
+
+<div tabindex="-1" role="dialog" aria-labelledby="listname-formLabel" id="listname_form" class="listname-form hide-on-print modal fade" title="<?php echo $this->__('List Name'); ?>">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <!-- Hidden Text -->
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title"><?php echo $this->__('List Name'); ?></h4>
+            </div>
+            <div class="modal-body">
+                <div class="loginCont row">
+                    <div class="formContianer">
+                        <ul class="form-list">
+                            <li>
+                                <h3 for="name"><?php echo $this->__('Name of list')?>:</h3>
+                                <input type="text" name="name" id="name" class="form-control name wishlist_name" /></li>
+                            <li><h3 for="comment"><?php echo $this->__('Comment')?>:</h3></li>
+                            <li><textarea name="comment" id="comment" row=3 class="form-control"></textarea></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div class="row">
+                    <div class="col-xs-4 col-sm-2"><button type="button" id="listname_formSubmit_deactivated_modified" class="bttn-md save_new_partslist_deactivated"><?php echo $this->__('Ok') ?></button></div>
+                    <div class="col-xs-4 col-sm-2"><button type="button" id="listname_formSubmit_modified" class="bttn-md save_new_partslist"><?php echo $this->__('Ok') ?></button></div>
+                    <?php /* ?> <div class="col-xs-4 col-sm-2"><button type="button" class="bttn-md" data-dismiss="modal"><?php echo $this->__('Cancel') ?></button></div><?php */ ?>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<button type="button" id="listname-formButton" class="hide" data-toggle="modal" data-target="#listname_form"></button>
+<!--div id="communicating-with-server hide"></div-->
+
+<script type="text/javascript">
+    //<![CDATA[
+
+    jQuery(document).ready(function() {
+
+        if ( getParameterByName('excludeAjaxCall') == null && ! __suppressAjaxDispatcherCalls ) {	// Added by Nagarro for exclude AJAX call for performance testing
+            var ajaxUrl  = '<?php echo Mage::helper('schrackcore/url')->getUrlWithCurrentProtocol('sd/AjaxDispatcher/setGetData'); ?>';
+            var form_key = '<?php echo Mage::getSingleton('core/session')->getFormKey(); ?>';
+
+            jQuery.ajax(ajaxUrl, {
+                'dataType' : 'json',
+                'type': 'POST',
+                'data': {
+                    'form_key'  : form_key,
+                    'getFooter' : ''
+                 },
+                'success': function (data) {
+                    var parsedData = data;
+                    var result = parsedData.getFooter.result;
+                    jQuery('#footer-container').html(result);
+                },
+                'error': function (data) {
+                    var parsedData = data;
+                }
+            });
+        }
+
+        <?php if (Mage::getStoreConfig('schrack/typo3/maintenance')): ?>
+            var ajaxDispatcher = new AjaxDispatcher();
+            ajaxDispatcher['getMaintenancePageUrl']('<?php echo Mage::getStoreConfig('schrack/typo3/typo3url').Mage::getStoreConfig('schrack/typo3/maintenance') ?>');
+        <?php endif; ?>
+
+        // Prevent enter illegal character(s) by CHANGE or PASTE :
+        jQuery('.wishlist_name').bind('keydown change paste',function(e) {
+            console.log('wishlist name changed in footer');
+            setTimeout(function(){
+                    jQuery('.wishlist_name').val(jQuery('.wishlist_name').val().replace(/["';\[\]<>\x00-\x09\x0B\x0C\x0E-\x1F\xE2\x7F\n\r]/g, ""));
+                    listname_validate_footer();
+                }, 50
+            );
+        });
+
+        // Prevent enter illegal character(s) by CHANGE or PASTE :
+        jQuery('#listname_form #comment').bind('keydown change paste',function(e) {
+            setTimeout(function(){
+                    jQuery('#listname_form #comment').val(jQuery('#listname_form #comment').val().replace(/["';\[\]<>\x00-\x09\x0B\x0C\x0E-\x1F\xE2\x7F\n\r]/g, ""));
+                }, 50
+            );
+        });
+
+        jQuery('#listname_form #listname_formSubmit_deactivated').on('click', function() {
+            return false;
+        });
+
+    });
+
+    function listname_validate_footer() {
+        var listname = jQuery('.wishlist_name').val();
+
+        if (listname.length > 0) {
+            jQuery('#listname_form #listname_formSubmit_deactivated_modified').hide();
+            jQuery('#listname_form #listname_formSubmit_modified').show();
+        } else {
+            jQuery('#listname_form #listname_formSubmit_deactivated_modified').show();
+            jQuery('#listname_form #listname_formSubmit_modified').hide();
+        }
+    }
+
+
+    //]]>
+</script>
+<!-- app/design/frontend/schrack/schrackresponsive/template/page/html/footer.phtml (end) -->

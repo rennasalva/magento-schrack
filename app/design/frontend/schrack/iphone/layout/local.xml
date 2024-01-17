@@ -1,0 +1,53 @@
+<?xml version="1.0"?>
+<layout>
+	<reference name="root">
+		<remove name="footer" />
+	</reference>
+	<default>
+		<reference name="head">
+			<action method="removeItem"><type>js</type><name>prototype/prototype.js</name></action>
+			<action method="removeItem"><type>js</type><name>prototype/validation.js</name></action>
+			<action method="removeItem"><type>js</type><name>lib/ccard.js</name></action>
+			<action method="removeItem"><type>js</type><name>scriptaculous/builder.js</name></action>
+			<action method="removeItem"><type>js</type><name>scriptaculous/effects.js</name></action>
+			<action method="removeItem"><type>js</type><name>scriptaculous/dragdrop.js</name></action>
+			<action method="removeItem"><type>js</type><name>scriptaculous/controls.js</name></action>
+			<action method="removeItem"><type>js</type><name>scriptaculous/slider.js</name></action>
+			<action method="removeItem"><type>js</type><name>varien/js.js</name></action>
+			<action method="removeItem"><type>js</type><name>varien/form.js</name></action>
+			<action method="removeItem"><type>js</type><name>varien/menu.js</name></action>
+			<action method="removeItem"><type>js</type><name>varien/product.js</name></action>
+			<action method="removeItem"><type>js</type><name>varien/configurable.js</name></action>
+			<action method="removeItem"><type>js</type><name>calendar/calendar.js</name></action>
+			<action method="removeItem"><type>js</type><name>calendar/calendar-setup.js</name></action>
+			<action method="removeItem"><type>js</type><name>mage/translate.js</name></action>
+			<action method="removeItem"><type>js</type><name>mage/cookies.js</name></action>
+			<action method="removeItem"><type>js_css</type><name>calendar/calendar-win2k-1.css</name></action> <!-- removal still does not work -->
+			<action method="removeItem"><type>skin_css</type><name>css/widgets.css</name></action>
+
+			<!-- production -->
+			<action method="addCss"><stylesheet>schrackdesign/Public/Javascript/shadowbox/shadowbox.css</stylesheet></action>
+			<action method="addItem"><type>skin_js</type><name>schrackdesign/Public/Javascript/prototype.compacted.js</name></action>
+			<action method="addItem"><type>skin_js</type><name>schrackdesign/Public/Javascript/allPacked.js</name></action>
+			<action method="addItem"><type>skin_js</type><name>schrackdesign/Public/Javascript/commonPacked.js</name></action>
+			<action method="addItem"><type>skin_js</type><name>schrackdesign/Public/Javascript/opcheckout.js</name></action>
+
+			<block type="core/template" name="applicationjs" as="applicationjs" template="page/html/applicationjs.phtml"/>
+		</reference>
+		<reference name="before_body_end">
+			<block type="page/html_head" name="footer_js" as="footerJs" after="-" template="page/html/footerJs.phtml">
+				<action method="addItem">
+					<type>skin_js</type>
+					<name>schrackdesign/Public/Javascript/packedFooter.js</name>
+				</action>
+			</block>
+		</reference>
+	</default>
+	<checkout_onepage_index>
+		<reference name="head">
+			<action method="removeItem"><type>js</type><name>customweb/payunitycw/checkout.js</name></action>
+			<action method="removeItem"><type>skin_css</type><name>customweb/payunitycw/updates.css</name></action>
+		</reference>
+	</checkout_onepage_index>
+</layout>
+

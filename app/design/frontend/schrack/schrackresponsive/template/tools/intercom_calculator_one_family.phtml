@@ -1,0 +1,449 @@
+<!-- app/design/frontend/schrack/schrackresponsive/template/tools/intercom_calculator_one_family.phtml (start) -->
+
+<h2 id="group-typeselection-one-family-head" data-selected="0"
+    class="onlinetools-inactive"><?php echo $this->__('Intercom Type Selection/Suggestion'); ?></h2>
+<div id="group-typeselection-one-family" style="display: none;>
+    <div class="onlinetools-3icon-container">
+
+        <div class="onlinetools-3icon-selection-no-hoover">
+            <div class="onlinetools-3icon-selection-icon-div">
+                <img src="<?php echo $this->getSkinUrl('schrackdesign/Public/Images/tools/Icon_Einfamilienhaus.png'); ?>"
+                    class="onlinetools-3icon-selection-icon"/>
+            </div>
+            <div class="onlinetools-3icon-selection-label"><?php echo $this->__('One-Family House'); ?></div>
+            <!-- a href="javascript:void(0);" class="onlinetools-3icon-selection-label-tiny"
+                 id="change_selection"><?php echo $this->__('Change selection'); ?></a -->
+        </div>
+
+        <div class="onlinetools-3icon-selection-buttoncontainer">
+            <div id="button_audio_set" class="onlinetools-3icon-button" data-type="audio_set">
+                <?php echo $this->__('Audio-Set'); ?>
+            </div>
+        </div>
+        <div class="onlinetools-3icon-selection-buttoncontainer">
+            <div id="button_video_set" class="onlinetools-3icon-button" data-type="audio_video_set">
+                <?php echo $this->__('Audio/Video-Set'); ?>
+            </div>
+        </div>
+    </div>
+    <div id="group-suggested-article" style="display: none"> <!--  product-detail -->
+    </div>
+</div>
+
+<h2 id="group-configure-yourself-head" data-selected="0" style="display: none;"
+    class="onlinetools-inactive"><?php echo $this->__('Configure Intercom Yourself'); ?></h2>
+<div id="group-configure-yourself" style="display: none;">
+</div>
+
+<h2 id="group-your-selected-intercom-head" data-selected="0" style="display: none;"
+    class="onlinetools-inactive"><?php echo $this->__('Your selected Intercom'); ?></h2>
+<div id="group-your-selected-intercom" style="display: none;">
+</div>
+
+
+<div class="modal fade" id="add_transformer_popup" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel2"><?php echo $this->__('Additional product necessary') ?></h4>
+            </div>
+            <div id="add_transformer_popup_body" class="modal-body">
+            </div>
+            <div class="modal-footer" style="height: 60px !important;">
+                <button type="button" class="onlinetools-bluebox-add2cart-button add-accessory-button-group-suggested-article" data-sku="SP120000--"
+                        id="add_transformer_and_close_popup" data-dismiss="modal" name="choose_to_right_button" style="position: absolute; left: 20px;"><?php echo $this->__('Choose'); ?></button>
+                <button type="button" class="onlinetools-bluebox-add2cart-button"
+                        data-dismiss="modal" style="position: absolute; right: 20px;"><?php echo $this->__('Cancel'); ?></button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script type="text/javascript">//<![CDATA[
+
+    var schrackToolModel = <?php $this->printFrontendModel('IntercomCalculatorOneFamily.json'); ?>;
+    var typeSelected = false;
+    var idCounter = 0;
+
+    jQuery(document).ready(function () {
+        clearRightList();
+        enableDeleteArticles();
+        setArticleDeleteCallbackFunction(rightDeleteCallback);
+        setAfterAddAccessoryCallbackFunction(addAccessoryCallback);
+        createQueryGroups();
+
+        jQuery('#group-typeselection-one-family-head').on('click', function () {
+            toggleGroup(jQuery(this),'#group-typeselection-one-family');
+        });
+        jQuery('#group-configure-yourself-head').on('click', function () {
+            toggleGroup(jQuery(this),'#group-configure-yourself');
+        });
+        jQuery('#group-your-selected-intercom-head').on('click', function () {
+            toggleGroup(jQuery(this),'#group-your-selected-intercom');
+        });
+        jQuery('#change_selection').off('click').on('click', function () {
+            loadIntercomCalculatorPart('selection');
+        });
+        jQuery('#search_products_button').on('click', function () {
+            searchAndListProducts();
+        });
+
+        jQuery('#add_transformer_and_close_popup').on('click', function () {
+            addRightListSku("trafo", "SP120000--", 1);
+        });
+
+        jQuery('.onlinetools-3icon-button').on('click', function () {
+            if ( jQuery(this).hasClass('onlinetools-3icon-button-selected') ) {
+                return;
+            }
+            var type = jQuery(this).data('type');
+            var thisID  = type == 'audio_set' ? '#button_audio_set' : '#button_video_set';
+            var otherID = type == 'audio_set' ? '#button_video_set' : '#button_audio_set';
+            if ( typeSelected ) {
+                jQuery('#group-suggested-article').slideUp('fast');
+            }
+            showSuggestion(type);
+            jQuery(thisID).toggleClass('onlinetools-3icon-button onlinetools-3icon-button-selected');
+            if ( typeSelected ) {
+                jQuery(otherID).toggleClass('onlinetools-3icon-button onlinetools-3icon-button-selected');
+            } else {
+                typeSelected = true;
+            }
+            jQuery('#group-suggested-article').slideDown('fast');
+            jQuery('#group-configure-yourself-head').slideDown('fast');
+            if ( type == 'audio_set' ) {
+                jQuery('#radio_schrack_kommunikationsart_1').prop('checked', false);
+                jQuery('#radio_schrack_kommunikationsart_0').prop('checked', true);
+            } else {
+                jQuery('#radio_schrack_kommunikationsart_1').prop('checked', true);
+                jQuery('#radio_schrack_kommunikationsart_0').prop('checked', false);
+            }
+        });
+    });
+
+    function showSuggestion ( type ) {
+        var groupID = 'group-suggested-article';
+        var groupID_JQ = '#' + groupID;
+        var example = {
+            default_set_for : type
+        };
+        var article = filterOneByExample(schrackToolModel.articles,example);
+        if ( article == null ) {
+            alert("<?php echo $this->__('No matching article found!'); ?>");
+            jQuery(groupID_JQ).replaceWith('<div id="' + groupID + '" style="display: none"/>');
+        } else {
+            var articleHtml = buildLeftArticleHtml(groupID,
+                                                   '<?php echo $this->__('Our Suggestion for You'); ?>',
+                                                   article);
+            jQuery(groupID_JQ).replaceWith(articleHtml);
+            enrichArticleDisplay(groupID_JQ,article,selectSuggestion,'suggested-set');
+            jQuery('.choose_button_suggested-set_' + article.SKU).addClass('suggestion_addright_button');
+        }
+    }
+
+    function enrichArticleDisplay ( groupID, article, additionalActionFunction, key ) {
+        var labelMoreInfo = "<?php echo $this->__('Further information'); ?>";
+        var idBase = ++idCounter;
+        var divID = 'more_info_' + idBase;
+        var linkID = divID + '_link';
+        var chooseID = 'choose_button_' + idBase;
+        var alreadySelected = hasRightListSku(article.SKU);
+        var labelChoose = "<?php echo $this->__('Choose'); ?>";
+        var classesChoose = 'onlinetools-bluebox-add2cart-button choose_button_' + key + '_' + article.SKU;
+        var buttonChoose = '    <button id="' + chooseID + '" type="button"'
+                         + '        name="choose_to_right_button"';
+        if ( alreadySelected ) {
+            labelChoose = "<?php echo $this->__('Already selected'); ?>";
+            classesChoose += " onlinetools-selected-button";
+            buttonChoose += ' style="background: #d6d6d6; cursor: default;"';
+        }
+        buttonChoose += ('class="' + classesChoose + '">' + labelChoose + '</button>');
+        var htmlText = '<div style="margin-right: 12px">'
+            + '    <a id="' + linkID + '" href="javascript:void(0);">' + labelMoreInfo + '</a>'
+            + buttonChoose
+            + '</div>';
+        jQuery(groupID + '-textcontainer').append(htmlText);
+        htmlText = '<div id="' + divID + '" style="display: none">';
+
+        for ( var fieldCode in schrackToolModel.articleAttributeMetadata ) {
+            var metadata = schrackToolModel.articleAttributeMetadata[fieldCode];
+            if ( typeof metadata.display == 'undefined' || metadata.display == false ) {
+                continue;
+            }
+            var value = article[fieldCode];
+            if ( typeof value == 'undefined' || value.length == 0 )  // if we have no value
+                continue;
+            var text = '';
+            if ( typeof metadata.displayEachValueAsRow == 'boolean' && metadata.displayEachValueAsRow ) {
+                for ( var i = 0; i < value.length; ++i ) {
+                    htmlText += ('<div>' + value[i] + '</div>');
+                }
+            } else {
+                text = fieldCode;
+                if ( typeof metadata.label != 'undefined' ) {
+                    text = metadata.label;
+                }
+                for ( var i = 0; i < value.length; ++i ) {
+                    if ( i == 0 )
+                        text += (': ');
+                    else
+                        text += (', ');
+                    text += value[i];
+                }
+                htmlText += ('<div>' + text + '</div>');
+            }
+        }
+        htmlText += '</div>';
+        jQuery(groupID + '-textcontainer').append(htmlText);
+        jQuery('#' + linkID).on('click', function () {
+            jQuery('#' + divID).slideToggle('fast');
+        });
+        if ( typeof additionalActionFunction == "function" ) {
+            jQuery('#' + chooseID).on('click', function () {
+                if ( ! jQuery(this).hasClass('onlinetools-selected-button') ) {
+                    additionalActionFunction(key, article);
+                }
+            });
+        }
+    }
+
+    function searchAndListProducts () {
+        var example = {};
+
+        for ( var fieldCode in schrackToolModel.articleAttributeMetadata ) {
+            var metadata = schrackToolModel.articleAttributeMetadata[fieldCode];
+            if (  typeof metadata.search != 'boolean' || metadata.search == false ) {
+                continue;
+            }
+            if ( typeof metadata.buildCheckboxes == 'boolean' && metadata.buildCheckboxes == true ) {
+                var searchVals = [];
+                for ( var i = 0; i < metadata.properties.length; ++i ) {
+                    var value = metadata.properties[i];
+                    var inputID = '#chkbx_' + fieldCode + '_' + i;
+                    if ( jQuery(inputID).prop('checked') ) {
+                        searchVals.push(value);
+                    }
+                }
+                if ( searchVals.length > 0 ) {
+                    example[fieldCode] = searchVals;
+                }
+            } else {
+                var x = jQuery("input[name='" + fieldCode + "']:checked").val();
+                if ( x != 'N/A' ) {
+                    example[fieldCode] = x;
+                }
+            }
+        }
+        var articles = filterMultipleByExample(schrackToolModel.articles,example);
+        if ( articles.length == 0 ) {
+            var msg = "<?php echo $this->__('No suitable articles could be found for the selected combination of parameters.'); ?>";
+            jQuery('#search_result').text(msg);
+        } else {
+            jQuery('#search_result').text('');
+            var lineCounter = 0;
+            articles.forEach(function ( article, index ) {
+                var id = 'search_result_line_' + (++lineCounter);
+                var articleHtml = buildLeftArticleHtml(id, null, article);
+                jQuery('#search_result').append(articleHtml);
+                enrichArticleDisplay('#' + id, article, selectSearchResult, 'choosen-set');
+                jQuery('#' + id).slideDown('fast');
+            });
+        }
+        jQuery('#search_result_group').slideDown('fast');
+    }
+
+    function selectSearchResult ( key, article ) {
+        var articleGroupID = 'group-your-selected-article';
+        var groupHeadID = 'group-your-selected-intercom-head';
+        var groupGroupID = 'group-your-selected-intercom';
+        if ( ! askUserForDeleteIfNeeded() ) {
+            return;
+        }
+        var articleHtml = buildLeftArticleHtml(groupGroupID,null,article);
+        jQuery('#' + groupGroupID).replaceWith(articleHtml);
+        jQuery('[class^="choose_button_choosen-set_"],[class*=" choose_button_choosen-set_"]').each( function () {
+            switchButtonUnselected('#' + this.id);
+        });
+        enrichArticleDisplay('#' + groupGroupID,article,addToRightList,'choosen-set');
+        switchButtonSelected('.choose_button_choosen-set_' + article.SKU);
+        jQuery('#' + articleGroupID).show();
+        var groupHead = jQuery('#' + groupHeadID);
+        groupHead.show();
+        toggleGroup(groupHead,'#' + groupGroupID);
+        switchButtonUnselected('.suggestion_addright_button');
+        addToRightList('choosen-set',article);
+        document.getElementById(groupHeadID).scrollIntoView();
+    }
+
+    function selectSuggestion ( key, article ) {
+        if ( askUserForDeleteIfNeeded() ) {
+            addToRightList(key, article);
+        }
+    }
+
+    function askUserForDeleteIfNeeded () {
+        if ( hasRightListKey('suggested-set') || hasRightListKey('choosen-set') ) {
+            var msg = '<?php echo $this->__("The already selected set will be overwritten. Do you want to continue?"); ?>';
+            if ( hasRightListKey('accessory') ) {
+                msg += '\n<?php echo $this->__("Selected accessories for the previous selected set will be removed as well."); ?>';
+            }
+            return confirm(msg);
+        }
+        return true;
+    }
+
+    function addToRightList ( key, article ) {
+        var accessoryHeadline = '<?php echo $this->__("Matching Accessories and Additional Indoor Stations"); ?>';
+        removeAllRightListSkusForKey('suggested-set');
+        removeAllRightListSkusForKey('choosen-set');
+        addRightListSku(key,article.SKU,1);
+        var mainSet = false;
+        if ( key == 'suggested-set' ) {
+            mainSet = true;
+            switchButtonSelected('.choose_button_suggested-set_' + article.SKU);
+            if ( jQuery('#group-your-selected-intercom').length ) {
+                jQuery('[class^="choose_button_choosen-set_"],[class*=" choose_button_choosen-set_"]').each( function () {
+                    switchButtonUnselected('#' + this.id);
+                });
+                if ( jQuery('#group-your-selected-intercom-head').data('selected') == '1' ) {
+                    toggleGroup(jQuery('#group-configure-yourself-head'), '#group-configure-yourself');
+                }
+                jQuery('#group-your-selected-intercom').text('');
+                jQuery('#group-your-selected-intercom-head').hide();
+            }
+            requestAccessories('group-suggested-article',article.SKU,accessoryHeadline);
+        } else if ( key == 'choosen-set' ) {
+            mainSet = true;
+            requestAccessories('group-your-selected-intercom',article.SKU,accessoryHeadline);
+        }
+
+        if ( mainSet && hasRightListKey('accessory') ) {
+            removeAllRightListSkusForKey('accessory');
+        }
+    }
+
+    function rightDeleteCallback ( keys, sku ) {
+        var mainSet = keys[0] == 'suggested-set' || keys[0] == 'choosen-set';
+        var hasRightAccessories = hasRightListKey('accessory');
+        if ( mainSet && hasRightAccessories ) {
+            var ok = confirm('<?php echo $this->__("Selected accessories for the deleted set will be removed as well.") ?>');
+            if ( ! ok ) {
+                return false;
+            }
+            removeAllRightListSkusForKey('accessory');
+        }
+        if ( mainSet && keys[0] == 'suggested-set' ) {
+            switchButtonUnselected('.choose_button_suggested-set_' + sku);
+        } else if ( mainSet && keys[0] == 'choosen-set' ) {
+            switchButtonUnselected('.choose_button_choosen-set_' + sku);
+            if ( jQuery('#group-your-selected-intercom-head').data('selected') == '1' ) {
+                toggleGroup(jQuery('#group-configure-yourself-head'),'#group-configure-yourself');
+            }
+            jQuery('#group-your-selected-intercom').text('');
+            jQuery('#group-your-selected-intercom-head').hide();
+        }
+        if ( mainSet ) {
+            if ( hasRightAccessories ) {
+                removeAllRightListSkusForKey('accessory');
+            }
+            jQuery('#accessories_for_' + sku).remove();
+        }
+        return true;
+    }
+
+    function switchButtonSelected ( buttonSelector ) {
+        jQuery(buttonSelector).addClass('onlinetools-selected-button');
+        jQuery(buttonSelector).css('background','#d6d6d6');
+        jQuery(buttonSelector).css('cursor','default');
+        jQuery(buttonSelector).text("<?php echo $this->__('Already selected'); ?>");
+    }
+
+    function switchButtonUnselected ( buttonSelector ) {
+        jQuery(buttonSelector).removeClass('onlinetools-selected-button');
+        jQuery(buttonSelector).css('background','#d1222b');
+        jQuery(buttonSelector).css('cursor','pointer');
+        jQuery(buttonSelector).text("<?php echo $this->__('Choose'); ?>");
+    }
+
+    function createQueryGroups () {
+        for ( var attributeCode in schrackToolModel.articleAttributeMetadata ) {
+            var metadata = schrackToolModel.articleAttributeMetadata[attributeCode];
+            if (  typeof metadata.search == 'boolean' && metadata.search == true ) {
+                createQueryGroup(attributeCode);
+            }
+        }
+        htmlText = '<button id="search_products_button" type="button" class="onlinetools-bluebox-add2cart-button">'
+                 + '    <?php echo $this->__('Konfigurieren'); ?>'
+                 + '</button>'
+                 + '<div id="search_result_group" style="display: none;">'
+                 + '    <h3><?php echo $this->__('Your fitting Intercoms'); ?></h3>'
+                 + '<div id="search_result"/>';
+        jQuery('#group-configure-yourself').append(htmlText);
+        jQuery(".search-input-control").on('change', function () {
+           resetSearchResult();
+        });
+    }
+
+    function createQueryGroup ( attributeCode ) {
+        var metadata = schrackToolModel.articleAttributeMetadata[attributeCode];
+        if ( typeof metadata.properties == 'undefined' ) {
+            return;
+        }
+        var buildCheckboxes = typeof metadata.buildCheckboxes == 'boolean' && metadata.buildCheckboxes == true;
+        var suppressNA = typeof metadata.suppressNA == 'boolean' && metadata.suppressNA == true;
+        var htmlText = '<h4 class="onlinetools">' + metadata.label + '</h4>';
+        if ( buildCheckboxes ) {
+            htmlText += '<div>';
+        } else {
+            htmlText += '<div><div class="onlinetools-input-cell-div-fullwidth"><fieldset>';
+        }
+        for ( var i = 0; i < metadata.properties.length; ++i ) {
+            var value = metadata.properties[i];
+            if ( buildCheckboxes ) {
+                var inputID = 'chkbx_' + attributeCode + '_' + i;
+                htmlText += '<div class="onlinetools-input-cell-div"><fieldset>';
+                htmlText += '<input type="checkbox" id="' + inputID + '" value="no" class="search-input-control">';
+                htmlText += '<label for="' + inputID +' " class="onlinetools-radioorcheck-label-right">' + value + '</label>';
+                htmlText += '</fieldset></div>';
+            } else {
+                var inputID = 'radio_' + attributeCode + '_' + i;
+                htmlText += '<input type="radio" id="' + inputID + '" class="search-input-control" name="' + attributeCode + '" value="' + value + '"';
+                if ( i == 0 && suppressNA ) {
+                    htmlText += ' checked';
+                }
+                htmlText += '/>';
+                htmlText += '<label for="' + inputID + '" class="onlinetools-radioorcheck-label-right">' + value + '</label>';
+            }
+        }
+        if ( buildCheckboxes ) {
+            htmlText += '</div>';
+        } else if ( ! suppressNA ) {
+            htmlText += '<input type="radio" checked id="radio_' + attributeCode + '_NA" name="' + attributeCode + '" class="search-input-control"  value="N/A" checked/>';
+            htmlText += '<label for="radio_' + attributeCode + '_NA" class="onlinetools-radioorcheck-label-right"><?php echo $this->__('N/A'); ?></label>';
+            htmlText += '</fieldset></div></div>';
+        }
+        jQuery('#group-configure-yourself').append(htmlText);
+    }
+
+    function resetSearchResult () {
+        jQuery('#search_result').text('');
+    }
+
+    function addAccessoryCallback ( sku ) {
+        if ( (sku == 'SP125600--' || sku == 'SP1409----') ) {
+            var article = schrackToolModel.articlesQuickAcces['SP120000--'];
+            article['SKU'] = 'SP120000--';
+            var headline = "<?php echo $this->__('The selected article needs an additional component:'); ?>";
+            var html = buildLeftArticleHtml('add_transformer_popup_body',headline,article);
+            jQuery('#add_transformer_popup_body').replaceWith(html);
+            jQuery('#add_transformer_popup_body').addClass('modal-body');
+            jQuery('#add_transformer_popup_body').show();
+            jQuery('#add_transformer_popup').modal();
+        }
+    }
+
+//]]></script>
+
+<!-- app/design/frontend/schrack/schrackresponsive/template/tools/intercom_calculator_one_family.phtml (end) -->

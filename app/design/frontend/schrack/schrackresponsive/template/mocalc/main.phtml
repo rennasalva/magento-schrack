@@ -1,0 +1,246 @@
+<!-- app/design/frontend/schrack/schrackresponsive/template/mocalc/main.phtml (start) -->
+<script>
+    //<![CDATA[
+    suppressAjaxDispatcherCalls();
+    //]]>
+</script>
+<?php
+    $data = $this->getMoData();
+    $step = Mage::registry(Schracklive_MoCalc_Helper_Data::REGISTRY_STEP_KEY);
+    $htmlChild = sprintf("step%02d",$step);
+    $anyConfigDone = $data['schrack_part_number'] != 'MO______';
+    $baseConfigDone = strpos($data['schrack_part_number'],'_') === false;
+?>
+
+<style>
+    .partnumber {
+        font-family: monospace;
+        font-weight: bold;
+        font-size: 15px;
+    }
+
+    .price {
+        text-align: right;
+        font-family: monospace;
+        font-weight: bold;
+        font-size: 15px;
+    }
+
+    input[type="radio"] {
+        vertical-align: top;
+    }
+
+    .button_block {
+        width: 900px;
+        margin-top: 20px;
+        color: #505050;
+    }
+
+    .right_buttons {
+        float: right;
+        margin-left: 4px;
+    }
+
+    .scroll_content {
+        height: 292px;
+        overflow: auto;
+        width: 900px;
+        border: 1px solid #9b9b9b;
+        padding: 10px;
+    }
+
+    table tr td {
+        vertical-align: top;
+    }
+
+    @media screen {
+        .main_table {
+            width: 900px;
+        }
+        .main_table_row {
+        }
+        .main_table_row_ul {
+            border-bottom: 1px solid #f33;
+        }
+        .main_table_row_ul_bolt {
+            border-bottom: 2px solid #f33;
+        }
+        .main_table_col_1 {
+            height: 10px;
+            width: 20%;
+        }
+        .main_table_col_2 {
+            height: 10px;
+            width: 10%;
+        }
+        .main_table_col_3 {
+            height: 10px;
+            width: 60%;
+        }
+        .main_table_col_4 {
+            height: 10px;
+            width: 10%;
+        }
+        .edit_area {
+            margin-top: 24px;
+        }
+    }
+    @media print {
+        body {
+            color: #000;
+            background-color: #fff;
+        }
+        h1 {
+            display: none;
+        }
+        .main_table {
+            width: 100%;
+        }
+        .main_table_row {
+            border-bottom: 1px solid #000;
+        }
+        .main_table_row_ul {
+            border-bottom: 2px solid #000;
+        }
+        .main_table_row_ul_bolt {
+            border-bottom: 4px solid #000;
+        }
+        .main_table_col_1 {
+            height: 10px;
+            width: 20%;
+        }
+        .main_table_col_2 {
+            height: 10px;
+            width: 15%;
+        }
+        .main_table_col_3 {
+            height: 10px;
+            width: 55%;
+        }
+        .main_table_col_4 {
+            height: 10px;
+            width: 10%;
+        }
+        .edit_area {
+            display: none;
+        }
+    }
+</style>
+
+<h1><?php echo $this->__('Circuitbreaker configurator tool') ?></h1>
+
+<table class="main_table" cellspacing="0" cellpadding="0" border="0">
+    <tr>
+		<td class="main_table_col_1"></td>
+		<td class="main_table_col_2"></td>
+		<td class="main_table_col_3"></td>
+		<td class="main_table_col_4"></td>
+	</tr>
+    <tr class="main_table_row_ul">
+        <td><?php echo $this->__('Partnumber') ?>:</td>
+        <td class="partnumber"><?php echo $data['schrack_part_number'] ?></td>
+        <td class="partnumber"><?php echo '[' .  $data['foreign_part_number'] . ']' ?></td>
+        <td class="price"><?php echo $data['main_price'] ?></td>
+    </tr>
+    <?php $i = 0; $len = count($data['properties']); foreach ( $data['properties'] as $property ) : ?>
+        <?php if ( ++$i == $len ) : ?>
+            <tr class="main_table_row_ul">
+        <?php else : ?>
+            <tr class="main_table_row">
+        <?php endif; ?>
+                <?php echo '' ?>
+                <td><?php echo $this->__($property['label']); ?>:</td>
+                <td/>
+                <td><?php echo $property['name']; ?></td>
+                <td/>
+            </tr>
+    <?php endforeach; ?>
+
+
+    <?php $i = 0; $len = count($data['base_accessories']); foreach ( $data['base_accessories'] as $baseAccessory ) : ?>
+        <?php if ( ++$i == $len ) : ?>
+            <tr class="main_table_row_ul">
+        <?php else : ?>
+            <tr class="main_table_row">
+        <?php endif; ?>
+                <td><?php echo $this->__($baseAccessory['label']) ?>:</td>
+                <td class="partnumber"><?php echo $baseAccessory['part_no']?></td>
+                <td><?php echo $baseAccessory['name'] ?></td>
+                <td class="price"><?php echo $baseAccessory['price'] ?></td>
+            </tr>
+    <?php endforeach; ?>
+    <?php $i = 0; $len = count($data['optional_accessories']); if ( $len > 0 ) : ?>
+        <?php foreach ( $data['optional_accessories'] as $optionalAccessory ) : ?>
+            <?php if ( ++$i == $len ) : ?>
+                <tr class="main_table_row_ul">
+            <?php else : ?>
+                <tr class="main_table_row">
+            <?php endif; ?>
+                    <td><?php if ( $i == 1 ) { echo $this->__('Additional accessories') . ':'; } ?></td>
+                    <td class="partnumber"><?php echo $optionalAccessory['part_no']?></td>
+                    <td><?php echo $optionalAccessory['name'] ?></td>
+                    <td class="price"><?php echo $optionalAccessory['price'] ?></td>
+                </tr>
+        <?php endforeach; ?>
+    <?php endif; ?>
+    <tr class="main_table_row_ul_bolt">
+        <td><?php echo $this->__('Total price') ?>:</td>
+        <td/><td/>
+        <td class="price"><?php echo $data['total_price'] ?></td>
+    </tr>
+    <?php if ( $data['discount'] > 0 ) : ?>
+        <tr class="main_table_row">
+            <td><?php echo $this->__('Discount') ?>:</td>
+            <td/><td/>
+            <td class="price"><?php echo $data['discount'] ?>&nbsp;%&nbsp;</td>
+        </tr>
+        <tr class="main_table_row_ul_bolt">
+            <td><?php echo $this->__('Net Price') ?>:</td>
+            <td/><td/>
+            <td class="price"><?php echo $data['final_price'] ?></td>
+        </tr>
+    <?php endif; ?>
+</table>
+
+<div class="edit_area">
+
+    <h2><span id="step-header-chapter"></span><span id="step-header-page"></span></h2>
+    <form action="<?php echo $this->getUrl('mocalc/index/mocalc') ?>" method="post" autocomplete="off">
+        <input type="hidden" name="current_step" value="<?php echo $step; ?>"/>
+
+        <div class="scroll_content">
+            <?php echo $this->getChildHtml($htmlChild) ?>
+        </div>
+
+        <div class="button_block">
+            <button id="prev_button" type="submit" name="next_step" value="<?php echo $step - 1; ?>">&lt; <?php echo $this->__('previous') ?></button>
+            <button id="update_button" type="submit" name="next_step" value="<?php echo $step; ?>"><?php echo $this->__('update') ?></button>
+            <button id="next_button" type="submit" name="next_step" value="<?php echo $step + 1; ?>"><?php echo $this->__('next') ?> &gt;</button>
+            <?php if ( $baseConfigDone ) : ?>
+                <button id="discount_button" type="submit" name="next_step" value="12"><?php echo $this->__('Discount') ?> &gt;&gt;</button>
+            <?php endif; ?>
+            <?php if ( $anyConfigDone ) : ?>
+                <button class="right_buttons" id="reset_button" type="submit" name="reset" value="1"><?php echo $this->__('Start new configuration') ?></button>
+            <?php endif; ?>
+            <?php if ( $baseConfigDone ) : ?>
+                <button class="right_buttons" id="csv_button" type="submit" name="download_csv" value="1"><?php echo $this->__('Download CSV') ?></button>
+                <button class="right_buttons" id="print_button" type="button" name="print" onclick="javascript:false;"><?php echo $this->__('Print') ?></button>
+            <?php endif; ?>
+        </div>
+    </form>
+
+</div>
+
+<script type="text/javascript">
+    //<![CDATA[
+    jQuery(document).ready(function() {
+        jQuery('.searchContiner').hide();
+        jQuery('#breadcrumb_block').hide();
+        jQuery('.navbar-megamenu').hide();
+        jQuery('#print_button').on('click', function () {
+            window.print();
+        });
+    });
+    //]]>
+</script>
+<!-- app/design/frontend/schrack/schrackresponsive/template/mocalc/main.phtml (end) -->

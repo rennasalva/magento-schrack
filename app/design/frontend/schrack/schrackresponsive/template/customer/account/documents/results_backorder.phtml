@@ -1,0 +1,383 @@
+<!-- app/design/frontend/schrack/schrackresponsive/template/customer/account/documents/results_backorder.phtml(start) -->
+<?php
+// DLA20190701: talk with Dani about that:
+// intval(Mage::getStoreConfigFlag('schrack/shop/enable_custom_project_info_in_checkout')) == 1:
+$showProjectInfo = false;
+
+$orderHelper = Mage::helper('schracksales/order');
+$from = Mage::app()->getRequest()->getParam('from','');
+$to = Mage::app()->getRequest()->getParam('to','');
+$fromExpected = Mage::app()->getRequest()->getParam('fromExpected','');
+$toExpected = Mage::app()->getRequest()->getParam('toExpected','');
+$searchText = urldecode(Mage::app()->getRequest()->getParam('text'));
+$sortField = Mage::app()->getRequest()->getParam('sort');
+if ( $sortField ) {
+    $isAsc = intval(Mage::app()->getRequest()->getParam('asc')) == 1;
+} else {
+    $sortField = 'schrack_wws_creation_date';
+    $isAsc = false;
+}
+if ( intval(Mage::getStoreConfigFlag('schrack/shop/enable_custom_project_info_in_checkout')) == 1 ) {
+    $titleReference = $this->__('Order-/Project Reference');
+} else {
+    $titleReference = $this->__('Meine Bestellangabe');
+}
+$rows = $orderHelper->getBackorderPositions($sortField,$isAsc,$searchText,$from,$to,$fromExpected,$toExpected);
+$counter = 0;
+?>
+<div class="tableCont hidden-xs hidden-sm show-for-print">
+    <table id="orders-datatable" class="table table-bordered" cellspacing="0" width="100%">
+        <thead>
+            <tr>
+                <th class="sorting"
+                id="display_reference"
+                aria-data-sort="0"><?php echo $titleReference; ?>
+                    <span class="glyphicon glyphicon-sort pull-right gray"></span>
+                </th>
+                <th class="sorting"
+                id="schrack_wws_order_number"
+                aria-data-sort="0"><?php echo $this->__('Order Number'); ?>
+                    <span class="glyphicon glyphicon-sort pull-right gray"></span>
+                </th>
+                <th class="sorting"
+                    id="sku"
+                    aria-data-sort="0"><?php echo $this->__('Sku'); ?>
+                    <span class="glyphicon glyphicon-sort pull-right gray"></span>
+                </th>
+                <th class="sorting"
+                    id="qty_ordered"
+                    aria-data-sort="0"><?php echo $this->__('Quantity'); ?>
+                    <span class="glyphicon glyphicon-sort pull-right gray"></span>
+                </th>
+                <th class="sorting"
+                    id="schrack_backorder_qty"
+                    aria-data-sort="0"><?php echo $this->__('Backorder'); ?>
+                    <span class="glyphicon glyphicon-sort pull-right gray"></span>
+                </th>
+                <th class="sorting"
+                    id="schrack_wws_creation_date"
+                    aria-data-sort="0"><?php echo $this->__('Order Date'); ?>
+                    <span class="glyphicon glyphicon-sort pull-right gray"></span>
+                </th>
+                <th class="sorting"
+                    id="expected"
+                    aria-data-sort="0"><?php echo $this->__('Expected week'); ?>
+                    <span class="glyphicon glyphicon-sort pull-right gray"></span></th>
+            </tr>
+        </thead>
+        <?php foreach ( $rows as $row ) : ?>
+            <tr class="<?php echo (++$counter%2==0) ? "even": "odd" ?>">
+                <td><?php echo $row->getData('display_reference'); ?></td>
+                <td>
+                    <a class="track_click_on_wws_order_number_link"
+                       href="<?php echo $row->getOrderUrl(); ?>"><?php echo $row->getData('schrack_wws_order_number'); ?>
+                    </a>
+                </td>
+                <?php $productUrl = $row->getProductUrl(); ?>
+                <?php if ( $productUrl ) : ?>
+                    <td>
+                        <a title="<?php echo substr($row->getData('description'),0,60); ?>"
+                           class="track_click_on_product_link"
+                           data-sku="<?php echo $row->getData('sku'); ?>"
+                           href="<?php echo $productUrl; ?>"><?php echo $row->getData('sku'); ?>
+                        </a>
+                    </td>
+                <?php else : ?>
+                    <td title="<?php echo substr($row->getData('description'),0,60); ?>" >
+                        <?php echo $row->getData('sku'); ?>
+                    </td>
+                <?php endif; ?>
+                <td><?php echo $row->getData('qty_ordered'); ?></td>
+                <td><?php echo $row->getData('schrack_backorder_qty'); ?></td>
+                <?php
+                    $wwsReference = $row->getData('schrack_wws_reference');
+                    $profectInfo = $row->getData('schrack_customer_project_info');
+                    $reference = $showProjectInfo ? $wwsReference . '/' . $profectInfo : $wwsReference;
+                ?>
+                <!-- td><?php echo $reference; ?></td -->
+                <td><?php echo $row->getData('schrack_wws_creation_date'); ?></td>
+                <td><?php echo $row->getExpectedAt(); ?></td>
+            </tr>
+        <?php endforeach; ?>
+        <tfoot class="hide-for-print">
+            <tr>
+                <td colspan="7"><div class="totalRecordCount"></div></td>
+            </tr>
+        </tfoot>
+        <tbody id="loadMoreOrderBodyDesktop"> </tbody>
+    </table>
+</div>
+
+<!--For Mobile -->
+<div class="tabularCont hidden-md hidden-lg">
+    <table id="orders-datatable-xs" class="table table-bordered dataTableMobil" cellspacing="0" width="100%">
+        <thead>
+            <tr>
+                <th></th>
+                <th></th>
+            </tr>
+        </thead>
+        <?php $counter = 0; foreach ( $rows as $row ) : ?>
+            <tr class="<?php echo (++$counter%2==0) ? "even": "odd" ?>">
+                <td>
+                <div class="tabularCont hidden-md hidden-lg">
+                    <div class="row-tbl">
+                        <div class="body">
+                            <div class="mobilSecLft">
+                                <?php
+                                    $cssClasses1  = 'flexbox col-xs-12 col-sm-12 col-md-3';
+                                    $cssClasses1 .= ' colmn documentNumber3 large-fine-6 columns-fine';
+                                ?>
+                                <div class="<?php echo $cssClasses1; ?>">
+                                    <div class="flexcol responsiveHd"><?php echo $titleReference; ?>:</div>
+                                    <div class="flexcol"><?php echo $row->getData('display_reference'); ?></div>
+                                </div>
+                                <div class="<?php echo $cssClasses1; ?>">
+                                    <div class="flexcol responsiveHd"><?php echo $this->__('Order #'); ?>:</div>
+                                    <div class="flexcol">
+                                        <a href="<?php echo $row->getOrderUrl(); ?>">
+                                            <?php echo $row->getData('schrack_wws_order_number'); ?>
+                                        </a>
+                                    </div>
+                                </div>
+                                <?php
+                                    $cssClasses2  = 'flexbox col-xs-12 col-sm-12 col-md-2';
+                                    $cssClasses2 .= ' colmn docuemntDatetime3 large-fine-5 columns-fine';
+                                ?>
+                                <div class="<?php echo $cssClasses2; ?>">
+                                    <div class="flexcol responsiveHd"><?php echo $this->__('Sku'); ?>:</div>
+                                    <?php $productUrl = $row->getProductUrl(); ?>
+                                    <?php if ( $productUrl ) : ?>
+                                        <div class="flexcol"><a href="<?php echo $productUrl; ?>">
+                                        <?php echo $row->getData('sku'); ?></a></div>
+                                    <?php else : ?>
+                                        <div class="flexcol"><?php echo $row->getData('sku'); ?></div>
+                                    <?php endif; ?>
+                                </div>
+                                <div class="<?php echo $cssClasses1; ?>">
+                                    <div class="flexcol responsiveHd"><?php echo $this->__('Quantity'); ?>:</div>
+                                    <div class="flexcol"><?php echo $row->getData('qty_ordered'); ?></div>
+                                </div>
+                                <div class="<?php echo $cssClasses1; ?>">
+                                    <div class="flexcol responsiveHd"><?php echo $this->__('Backorder'); ?>:</div>
+                                    <div class="flexcol"><?php echo $row->getData('schrack_backorder_qty'); ?></div>
+                                </div>
+                                <?php
+                                    $cssClasses3  = 'flexbox col-xs-12 col-sm-12 col-md-3';
+                                    $cssClasses3 .= ' colmn documentReference large-fine-7 columns-fine';
+                                ?>
+                                <div class="<?php echo $cssClasses3; ?>">
+                                    <div class="flexcol responsiveHd"><?php echo $this->__('Date'); ?>:</div>
+                                    <div class="flexcol"><?php echo $row->getData('schrack_wws_creation_date'); ?></div>
+                                </div>
+                                <div class="<?php echo $cssClasses3; ?>">
+                                    <div class="flexcol responsiveHd"><?php echo $this->__('Expected week'); ?>:</div>
+                                    <div class="flexcol"><?php echo $row->getExpectedAt(); ?></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                </td>
+            </tr>
+        <?php endforeach; ?>
+        <tfoot>
+            <tr>
+                <td><div class="totalRecordCount"></div></td>
+            </tr>
+        </tfoot>
+        <tbody id="loadMoreOrderBodyTabMob"> </tbody>
+    </table>
+</div>
+<!--For Mobile  End-->
+
+<script type="text/javascript">
+
+    jQuery(document).ready(function () {
+        restoreOrderSearchQueryOnBrowserBack();
+        var dateFrom = '<?php echo $from; ?>';
+        if ( dateFrom > '' ) {
+            jQuery('#from-date').val(dateFrom);
+        }
+        var dateTo = '<?php echo $to; ?>';
+        if ( dateTo > '' ) {
+            jQuery('#to-date').val(dateTo);
+        }
+        if ( dateFrom > '' && dateTo > '' ) {
+            jQuery('#radio-range').prop('checked', true);
+        }
+        var dateFromExpected = '<?php echo $fromExpected; ?>';
+        if ( dateFromExpected > '' ) {
+            jQuery('#from-date-2').val(dateFromExpected);
+        }
+        var dateToExpected = '<?php echo $toExpected; ?>';
+        if ( dateToExpected > '' ) {
+            jQuery('#to-date-2').val(dateToExpected);
+        }
+        if ( dateFromExpected > '' && dateToExpected > '' ) {
+            jQuery('#radio-range-2').prop('checked', true);
+        }
+        var isAsc = <?php echo $isAsc ? 1 : 0; ?>;
+        var column = '<?php echo $sortField; ?>';
+        var text = '<?php echo $searchText; ?>';
+        if ( text && text > '' ) {
+            jQuery('#textsearch').val(text);
+        }
+        if ( isAsc == 1 ) {
+            var sortingClassName = 'glyphicon-sort-by-attributes';
+            jQuery('#' + column).attr('aria-data-sort','1');
+        } else {
+            var sortingClassName = 'glyphicon-sort-by-attributes-alt';
+        }
+        jQuery('#' + column).find("span").addClass(sortingClassName);
+
+        jQuery(document).on('click touchstart', '.sorting', function() {
+            column = jQuery(this).attr('id');
+            isAsc = jQuery(this).attr('aria-data-sort');
+            reload();
+        });
+
+        jQuery('#listingSearchIcon').on('click',function() {
+            var searchtextContent = jQuery('#textsearch').val();
+            var defaultSearchText = '<?php echo $this->__('Order/Offer Data, Names, Addresses, Article IDs'); ?>';
+            if (searchtextContent == '' || searchtextContent == defaultSearchText) {
+                // Do not track !
+            } else {
+                console.log('Tracked From Results-Backorder #1');
+                trackUserDetailDocumentSearch(searchtextContent);
+            }
+            doTextSearch();
+        });
+
+        jQuery('#textsearch').on('keyup',function(e) {
+            var searchtextContent = jQuery('#textsearch').val();
+            var defaultSearchText = '<?php echo $this->__('Order/Offer Data, Names, Addresses, Article IDs'); ?>';
+            if (searchtextContent == '' || searchtextContent == defaultSearchText) {
+                // Do not track !
+            } else {
+                console.log('Tracked From Results-Backorder #2');
+                trackUserDetailDocumentSearch(searchtextContent);
+            }
+        });
+
+        function doTextSearch () {
+            text = jQuery('#textsearch').val();
+            reload();
+        }
+
+        jQuery(document).on('click', 'input.time-span, #radio-range, #radio-range-2', function() {
+            var today = new Date();
+            var $this = jQuery(this);
+            var isExpected = $this.attr('aria-filtertype') == 'expected';
+            if ( $this.val() == 'range' ) {
+                if ( isExpected ) {
+                    var dateFromTmp = jQuery('#from-date-2').val();
+                    var dateToTmp = jQuery('#to-date-2').val();
+                    if ( dateFromTmp > '' && dateToTmp > ''
+                         && (dateFromTmp != dateFromExpected || dateToTmp != dateToExpected) ) {
+                         dateFromExpected = dateFromTmp;
+                         dateToExpected = dateToTmp;
+                         reload();
+                    }
+                } else {
+                    var dateFromTmp = jQuery('#from-date').val();
+                    var dateToTmp = jQuery('#to-date').val();
+                    if ( dateFromTmp > '' && dateToTmp > '' && (dateFromTmp != dateFrom || dateToTmp != dateTo) ) {
+                         dateFrom = dateFromTmp;
+                         dateTo = dateToTmp;
+                         reload();
+                    }
+                }
+            } else {
+                var months = $this.val();
+                if ( isExpected ) {
+                    alert('expected');
+                    if ( months == 120 ) {
+                        dateFromExpected = dateToExpected = '';
+                    } else {
+                        dateFromExpected = new Date(today).toISOString().slice(0, 10);
+                        today.setMonth(parseInt(today.getMonth()) + parseInt(months));
+                        dateToExpected = new Date(today).toISOString().slice(0, 10);
+                    }
+                } else {
+                    alert('NÖ');
+                    if ( months == 120 ) {
+                        dateFrom = dateTo = '';
+                    } else {
+                        dateTo = new Date(today).toISOString().slice(0, 10);
+                        today.setMonth(today.getMonth() - months);
+                        dateFrom = new Date(today).toISOString().slice(0, 10);
+                    }
+                }
+                reload();
+            }
+        });
+
+        jQuery('#from-date').on("change paste keyup select", function() {
+            console.log("change()");
+            dateFrom = jQuery('#from-date').val();
+            dateTo = jQuery('#to-date').val();
+            if ( dateFrom > '' && dateTo > '' ) {
+                console.log("reloading...");
+                reload();
+            }
+        });
+
+        function reload () {
+            var url = '<?php echo $this->getUrl('*/*/*', array('_use_rewrite' => true, '_forced_secure' => true)); ?>';
+            // setOverlayLoader();
+            url += ('sort/' + column + '/asc/' + (isAsc == 1 ? 0 : 1) + '/');
+            if ( text && text > '' ) url += ('text/' + encodeURIComponent(text) + '/');
+            if ( dateFrom > '' && dateTo > '' ) url += ('from/' + dateFrom + '/to/' + dateTo + '/');
+            if ( dateFromExpected > '' && dateToExpected > '' ) {
+                url += ('fromExpected/' + dateFromExpected + '/toExpected/' + dateToExpected + '/');
+            }
+            window.location.href = url;
+        }
+
+        // Toggle Filter Pop Up
+        jQuery('#filterMenu').click(function(){
+            console.log('filter click #3');
+            jQuery('.filterPopup').toggle();
+        });
+
+        // Reset filters
+        jQuery('.clear-filter').click(function(){
+            dateFrom = dateTo = dateFromExpected = dateToExpected = '';
+            reload();
+        });
+
+        jQuery('.track_click_on_wws_order_number_link').on('click', function() {
+            if (dataLayer) {
+                dataLayer.push({
+                    'event' : 'clickedBackorderLink',
+                    'eventLabel' : 'Ordernumber'
+                });
+            }
+        });
+
+        jQuery('.track_click_on_product_link').on('click', function() {
+            var sku = jQuery(this).attr('data-sku');
+
+            var trackingData                 = new Object();
+            trackingData.trackingEnabled     = globalTRACKING_ENABLED;
+            trackingData.pageType            = 'my account backorders';
+            trackingData.affectedSku         = sku;
+            //trackingData.price             = dataProductPrice;
+            trackingData.currencyCode        = globalCURRENCY_CODE;
+            trackingData.trackingSource      = 'backorders list view';
+            trackingData.typoUrl             = globalTYPO_URL;
+            trackingData.shopCategoryAjaxUrl = globalSHOP_CATEGORY_AJAX_URL;
+            trackingData.formKey             = globalFORM_KEY;
+            trackingData.crmUserId           = globalCRM_USER_ID;
+            trackingData.customerType        = globalCUSTOMER_TYPE;
+            trackingData.accountCrmId        = globalACCOUNT_CRM_ID;
+            trackingData.position            = 1;
+
+            trackProductClick(trackingData);
+        });
+
+	});
+</script>
+
+<!-- app/design/frontend/schrack/schrackresponsive/template/customer/account/documents/results_backorder.phtml(end) -->

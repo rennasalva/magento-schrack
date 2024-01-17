@@ -1,0 +1,1515 @@
+<!-- app/design/frontend/schrack/schrackresponsive/template/wishlist/partslist/list.phtml (start) -->
+<?php echo $this->getMessagesBlock()->getGroupedHtml() ?>
+
+<div id="my_account_partslists_wrapper" class="my_account_partslists_content_wrapper">
+    <input type="hidden" id="myAccountDocuments" />
+    <div class="tabSection partListCont">
+        <ul class="clearfix partslistnav" role="tablist">
+            <li role="presentation"
+                class="active shop_specific shop_specific_height">
+                <a class="active-tab-link shop_specific shop_specific_height"
+                   href="#active-tab"
+                   role="tab"
+                   data-toggle="tab">
+                   <?php echo $this->__('Active PartsList')?>
+                </a>
+            </li>
+            <li role="presentation"
+                class="shop_specific shop_specific_height">
+                <a class="my-partslist-tab-link shop_specific shop_specific_height"
+                   href="#my-partslist-tab"
+                   role="tab"
+                   data-toggle="tab">
+                   <?php echo $this->__('My PartsList')?>
+                 </a>
+            </li>
+            <li role="presentation"
+                class="shop_specific shop_specific_height">
+                <a class="read-flag shared-partslist-tab shop_specific shop_specific_height"
+                   style="width: 103% !important;"
+                   href="#shared-partslist-tab"
+                   role="tab"
+                   data-toggle="tab"><?php echo $this->__('Shared PartsList')?>
+                </a>
+             </li>
+        </ul>
+
+         <div class="tab-content">
+            <div class="tab-pane fade in active products-tab" id="active-tab">
+                <?php
+                /* active partslist content */
+                echo $this->getChildHtml('active-partlist');
+                ?>
+            </div>
+            <div class="tab-pane fade products-tab" id="my-partslist-tab">
+                <?php
+                /* my partslist content */
+                echo $this->getChildHtml('my-partlist');
+                ?>
+            </div>
+            <div class="tab-pane fade products-tab" id="shared-partslist-tab">
+                <?php
+                /* shared partslist content */
+                echo $this->getChildHtml('shared-partlist');
+                ?>
+            </div>
+        </div>
+    </div>
+
+    <input type="hidden" id="standardTextEnterDescriptionForPartslistPosition" value="<?php echo $this->__('Add Comment To Partslist Position'); ?>">
+</div>
+
+
+<?php 
+/* all the modals used for partslist */
+echo $this->getChildHtml('partlist-modals');
+?>
+
+<style>
+    .product-details .product-description .product-store #newStockInfoWrapper span.glyphicon {
+        font-family: 'Glyphicons Halflings' !important;
+    }
+    .logstics-icon-text-row {
+        float: left;
+    }
+    #newStockInfoWrapper {
+        margin-left: 6px;
+    }
+    .trigger-item-position-description {
+        float: left;
+        margin-top: 2px;
+        cursor: pointer;
+    }
+
+    .triggerDescriptionPartslistItemPositionRow {
+        margin-bottom: 10px;
+        color: #333;
+        height: 25px;
+        padding-left: 2px;
+        padding-top: 2px;
+    }
+
+    .descriptionContainerPartslistItemPosition {
+        background: #F5F5F5;
+        margin-bottom: 2px;
+    }
+
+    .headlineAddPartslistPositionDescription {
+        margin-left: 5px;
+        float: left;
+        font-size: 0.8em;
+    }
+
+    .triggerDescriptionPartslistItemPositionRowText {
+        display: none;
+        height: 35px;
+    }
+
+    .triggerDescriptionPartslistItemPositionRowTextInput {
+        width: 99%;
+        color: #000000;
+        padding-left: 6px;
+        height: 31px;
+    }
+
+    .triggerDescriptionPartslistItemPositionRowSaveMessage {
+        color: white;
+        text-align: center;
+        background: #D1222B;
+        display: none;
+        float: right;
+        padding: 3px 22px;
+        font-size: 0.9em;
+        letter-spacing: 1px;
+        margin-top: -2px;
+        border-radius: 7px;
+        opacity: 0.8;
+    }
+
+    .clearBoth {
+        clear: both;
+    }
+
+    .autocomplete {
+        /*the container must be positioned relative:*/
+        position: relative;
+        display: inline-block;
+    }
+
+    .autocomplete-items {
+        position: absolute;
+        border: 1px solid #d4d4d4;
+        border-bottom: none;
+        border-top: none;
+        z-index: 99;
+        /*position the autocomplete items to be the same width as the container:*/
+        top: 100%;
+        left: 0;
+        right: 0;
+    }
+    .autocomplete-items div {
+        padding: 10px;
+        background-color: #fff;
+        border-bottom: 1px solid #d4d4d4;
+        height: 40px;
+    }
+    .autocomplete-items div:hover {
+        /*when hovering an item:*/
+        background-color: #005B9F !important;
+        color: #ffffff;
+    }
+    .autocomplete-active {
+        /*when navigating through the items using the arrow keys:*/
+        background-color: #005B9F !important;
+        color: #ffffff;
+    }
+    .triggerDescriptionPartslistItemPositionRow {
+        cursor: pointer;
+    }
+
+    @media (min-width: 60px) and (max-width: 320px) {
+        .logstics-icon {
+            margin-top: 0 !important;
+            width: 32px !important;
+            height: 19px !important;
+        }
+        .store-icon{
+            width: 23px !important;
+            height: 29px !important;
+            margin-top: 4px !important;
+            margin-left: 0 !important;
+        }
+    }
+
+    @media (min-width: 1px) and (max-width: 992px) {
+        .my_account_partslists_content_wrapper {
+            margin-right: 16px !important;
+        }
+    }
+
+    @media (min-width: 321px) and (max-width: 480px) {
+        .logstics-icon {
+            margin-top: 0 !important;
+            width: 32px !important;
+            height: 19px !important;
+        }
+        .store-icon{
+            width: 23px !important;
+            height: 29px !important;
+            margin-top: 4px !important;
+            margin-left: 0 !important;
+        }
+        .shop_specific {
+            font-size: 11px !important;
+        }
+    }
+
+    @media (min-width: 481px) and (max-width: 767px) {
+        .logstics-icon {
+            margin-top: 0 !important;
+            width: 32px !important;
+            height: 19px !important;
+        }
+        .store-icon{
+            width: 23px !important;
+            height: 29px !important;
+            margin-top: 4px !important;
+            margin-left: 0 !important;
+        }
+        .shop_specific {
+            font-size: 14px !important;
+        }
+    }
+
+    @media (min-width: 768px) and (max-width: 1024px) {
+        .addtocart_button_container {
+            position: absolute !important;
+            bottom: 79px !important;
+            right: -5px !important;
+            z-index: 100 !important;
+        }
+        .logstics-icon {
+            margin-top: 0 !important;
+            width: 32px !important;
+            height: 19px !important;
+        }
+        .store-icon{
+            width: 23px !important;
+            height: 29px !important;
+            margin-top: 4px !important;
+            margin-left: 0 !important;
+        }
+    }
+
+    @media (min-width: 1025px) and (max-width: 1370px) {
+        .addtocart_button_container {
+            position: absolute !important;
+            bottom: 79px !important;
+            right: -5px !important;
+            z-index: 100 !important;
+        }
+        .logstics-icon {
+            margin-top: 0 !important;
+            width: 32px !important;
+            height: 19px !important;
+        }
+        .store-icon{
+            width: 23px !important;
+            height: 29px !important;
+            margin-top: 4px !important;
+            margin-left: 0 !important;
+        }
+    }
+
+    @media (min-width: 1371px) and (max-width: 1919px) {
+        .addtocart_button_container {
+            position: absolute !important;
+            bottom: 79px !important;
+            right: -5px !important;
+            z-index: 100 !important;
+        }
+        .logstics-icon {
+            margin-top: 0 !important;
+            width: 32px !important;
+            height: 19px !important;
+        }
+        .store-icon{
+            width: 23px !important;
+            height: 29px !important;
+            margin-top: 4px !important;
+            margin-left: 0 !important;
+        }
+    }
+
+    @media (min-width: 1920px) and (max-width: 4000px) {
+        .addtocart_button_container {
+            position: absolute !important;
+            bottom: 79px !important;
+            right: -5px !important;
+            z-index: 100 !important;
+        }
+        .logstics-icon {
+            margin-top: 0 !important;
+            width: 32px !important;
+            height: 19px !important;
+        }
+        .store-icon{
+            width: 23px !important;
+            height: 29px !important;
+            margin-top: 4px !important;
+            margin-left: 0 !important;
+        }
+    }
+
+    .initialHideToTopSymbol {
+        display: none !important;
+    }
+</style>
+
+<script type="text/javascript">
+var z={};
+var productSKUForPrice = {};
+var productSKUForStock = {};
+var recipients = [];
+    function loadtab()
+    {
+        var hash = window.location.hash;
+        if (hash) {
+            var selectedTab = jQuery('.partslistnav li a[href="' + hash + '"]');
+            selectedTab.trigger('click', true);
+            var leftlink = jQuery('ul li a[data-hash="' + hash + '"]');
+            leftlink.closest('ul').children('li').removeClass('active');
+            leftlink.closest('li').addClass('active');
+            leftlink.closest('ul').find('li a.partlistlink span').removeClass('active');
+            leftlink.children('span').addClass('active');
+        }
+
+    }
+
+    jQuery(document).ready(function() {
+
+        // We have 2 forms, with 2 ok-buttons to submit new-partslist-form, with same id in footer (remove number one in cart):
+        // Wait one second, and remove the first element, after it is loaded by AJAX:
+        setTimeout( function() {
+            if (jQuery('.save_new_partslist').length > 1) {
+                jQuery('.save_new_partslist')[0].remove();
+            }
+        }, 2000);
+
+        localStorage.mediaDownloadSourceDetail = "Partslist";
+
+        loadtab();
+		var noactiverecords = jQuery('#noactiverecords').val();
+        jQuery("html, body").animate({ scrollTop: 0 }, "slow");
+        console.log('ScrollTop #62');
+        jQuery('.partlistlink,.partlistlink-main').click(function(){
+            var reqtab = jQuery(this).attr('data-id');
+            jQuery('.'+reqtab).trigger('click',true);
+            jQuery(this).closest('ul').children('li').removeClass('active');
+            jQuery(this).closest('li').addClass('active');
+            jQuery(this).closest('ul').find('li a.partlistlink span').removeClass('active');
+            jQuery(this).children('span').addClass('active');
+            event.preventDefault();
+        });
+		if(getParameterByName('excludeAjaxCall') == null) {	// Added by Nagarro for exclude AJAX call for performance testing
+        jQuery('#placeholderAjaxSpinner').show();
+        jQuery.ajax(ajaxUrl,{
+                    'dataType' : 'json',
+                    'type': 'POST',
+                    'data': {
+                    'form_key' : formKey,
+                    'getAllPartslistsData' : {'data' : ''},
+                    }
+                }
+            ).done(function(data) {
+            /* ajax function to fill data starts */
+            var ajaxdata = data;
+            /* update message count on shared partslist */
+			if(ajaxdata.count != 0 && typeof ajaxdata.count !== "undefined" && ajaxdata.count !== undefined) {
+                jQuery('.read-flag').append('<span class="badge partlist partlist_badge_counter">'+ ajaxdata.count +'</span>');
+			}
+
+            /* render first tab active partslist */
+            if(Array.isArray(ajaxdata.active))
+            {
+                var partslistItems = renderActive(ajaxdata.active);
+                jQuery('#active_wishlist_empty_status').val('');
+                if (partslistItems == false) {
+                    jQuery('#noItemInActivePartlistDesktop').show();
+                    jQuery('#active_wishlist_empty_status').val('wishlist_is_empty');
+                    deactivateButton('bulkAddCartActivePartlist');
+                }
+                jQuery('#placeholderAjaxSpinner').hide();
+            } else {
+                jQuery('#placeholderAjaxSpinner').hide();
+				jQuery('#noItemInActivePartlistDesktop').show();
+                jQuery('#active_wishlist_empty_status').val('wishlist_is_empty');
+                deactivateButton('bulkAddCartActivePartlist');
+			}
+
+            /* render second tab my partslists */
+            jQuery('#my-partslist').DataTable({
+                "data": ajaxdata.all,
+                "pageLength": 10,
+                "lengthChange": false,
+				"language": {
+					"url": dataTableTranslationFileUrl
+				},
+                "searching" : false,
+                "columns": [{
+                    "data": "updated_at"
+                }, {
+                    "data": "description"
+                }, {
+                    "data": "comment"
+                }, {
+                    "data": "sharedwith"
+                }, {
+                    "data": "articles"
+                }, {
+                    "data": "actions",
+					"width": "240",
+                    "orderable": false
+                }]
+            });
+
+            /* create template for mobile devices for my partslist */
+            var myMobile = [];
+            for ( var i = 0; i < ajaxdata.all.length; ++i ) {
+                var comment = '';
+                if (ajaxdata.all[i].comment == null) {
+                    comment = '';
+                } else {
+                    comment = ajaxdata.all[i].comment;
+                }
+
+                var deactivatedButtonStyle = '';
+                if (parseInt(ajaxdata.all[i].articles) == 0) {
+                    deactivatedButtonStyle = 'button_deactivated';
+                }
+
+                var mypartslistmobile = '<div class="inrBx">'
+                mypartslistmobile += '        <h2>';
+                mypartslistmobile += '            '+ajaxdata.all[i].description+'<br><span class=smlTxt>Created At: '+ajaxdata.all[i].updated_at+'</span>';
+                mypartslistmobile += '            <div class="artcleNo">'+ajaxdata.all[i].articles+'</div>';
+                mypartslistmobile += '        </h2>';
+                mypartslistmobile += '        <ul class="clearfix">';
+                mypartslistmobile += '            <li><img class="share-partlist" data-id="'+ajaxdata.all[i].partslist_id+'" src="<?php echo $this->getSkinUrl('schrackdesign/Public/Images/rwd/shareIcon.png');?>" data-toggle="modal" data-target="#share-modal"></li>';
+                mypartslistmobile += '            <li><a href="'+ajaxdata.all[i].openlink+'"><img src="<?php echo $this->getSkinUrl('schrackdesign/Public/Images/rwd/eyeIcon.jpg');?>"></a></li>';
+                mypartslistmobile += '            <li><img onclick='+ajaxdata.all[i].deletelink+' src="<?php echo $this->getSkinUrl('schrackdesign/Public/Images/rwd/deleteIcon.png');?>"></li>';
+                mypartslistmobile += '            <li><a class="bttn-sm mypartlistAddtocart mypartslist ' + deactivatedButtonStyle + '" href="'+ajaxdata.all[i].addtocart+'"><span class="addToCartWhite"></span> <?php echo $this->__('Add to Cart');?></a></li>';
+                mypartslistmobile += '        </ul>';
+                mypartslistmobile += '        <div class="commentBx">';
+                mypartslistmobile += '            <p>'+comment+'</p>';
+                mypartslistmobile += '        </div>';
+                mypartslistmobile += '    </div>';
+                myMobile[i] = {html:mypartslistmobile};
+            }
+
+            /* render mobile version of my partslist */
+            jQuery('#my-partslist-mobile').DataTable({
+                "data": myMobile,
+				"pagingType": "full",
+                "pageLength": 5,
+                "lengthChange": false,
+				"language": {
+					"url": dataTableTranslationFileUrl
+				},
+                "searching" : false,
+                "columns": [{
+                    "data": "html"
+                }]
+            });
+
+            /* render third tab shared partslist */
+            jQuery('#shared-partslist').DataTable({
+                "data": ajaxdata.shared,
+                "pageLength": 10,
+                "lengthChange": false,
+				"language": {
+					"url": dataTableTranslationFileUrl
+				},
+                "searching" : false,
+                "columns": [{
+                    "data": "read"
+                },{
+                    "data": "last_update_notification"
+                }, {
+                    "data": "description"
+                }, {
+                    "data": "name"
+                }, {
+                    "data": "comment"
+                }, {
+                    "data": "articles"
+                }, {
+                    "data": "action",
+					"width": "240",
+                    "orderable": false
+                }],
+                "createdRow": function( row, data, dataIndex ) {
+                    if ( data.read == "<?php echo $this->__('Unread'); ?>" ) {
+                      jQuery(row).addClass( 'info' );
+                      jQuery(row).attr('data-id',data.partslist_id);
+                    }
+                }
+            });
+			// Sort shared partlist array by lastest record unread and date wise
+				jQuery('#shared-partslist').DataTable().column(0).order('desc').draw();
+				jQuery('#shared-partslist').DataTable().column(1).order('desc').draw();
+
+            /* create mobile template for shared partslist */
+            var sharedMobile = [];
+            for ( var i = 0; i < ajaxdata.shared.length; ++i ) {
+                var comment = '';
+                if (ajaxdata.shared[i].comment == null) {
+                    comment = '';
+                } else {
+                    comment = ajaxdata.shared[i].comment;
+                }
+
+                var deactivatedButtonStyle = '';
+                if (parseInt(ajaxdata.shared[i].articles) == 0) {
+                    deactivatedButtonStyle = 'button_deactivated';
+                }
+
+                var template = '<div class="inrBx">'
+                template += '    <h2>';
+                template += '        '+ajaxdata.shared[i].description+'<br><span class=smlTxt>Created At: '+ajaxdata.shared[i].last_update_notification+'</span>';
+                template += '        <div class="artcleNo">'+ajaxdata.shared[i].articles+'</div>';
+                template += '    </h2>';
+                template += '    <row>';
+                template += '    <table class="table">';
+                template += '    <tr><th>Comment</th><td>'+comment+'</td></tr>';
+                template += '    <tr><th><?php echo $this->__('Shared by'); ?></th><td>'+ajaxdata.shared[i].name+'</td></tr>';
+                template += '    <tr><th>Status</th><td>'+ajaxdata.shared[i].read+'</td></tr>';
+                template += '    </table>';
+                template += '    </row>';
+                template += '    <ul class="clearfix">';
+                template += '        <li><a class="delete deleteshared deleteIcon" data-contact="'+ajaxdata.shared[i].login_customer_wws_id+'" data-id="'+ajaxdata.shared[i].partslist_id+'" href="#"></a></li>';
+                template += '        <li><a class="bttn-sm mypartlistAddtocart normal_template ' + deactivatedButtonStyle + '" data-partlistid="' + ajaxdata.shared[i].partslist_id + '" data-href="' + ajaxdata.shared[i].addtocart + '" href="return false;"><span class="addToCartWhite"></span> <?php echo $this->__("Add to Cart");?></a></li>';
+                template += '    </ul>';
+                template += '</div>';
+                sharedMobile[i] =   {
+                                        html: template,
+                                        read: ajaxdata.shared[i].read,
+                                        partslist_id: ajaxdata.shared[i].partslist_id
+                                    };
+                }
+
+            /* render mobile version of shared partslist */
+            jQuery('#shared-partslist-mobile').DataTable({
+                "data": sharedMobile,
+				"pagingType": "full",
+                "pageLength": 5,
+                "lengthChange": false,
+                "searching" : false,
+				"language": {
+					"url": dataTableTranslationFileUrl
+				},
+                "columns": [{
+                    "data": "html"
+                }],
+                "createdRow": function( row, data, dataIndex ) {
+                    if ( data.read == "<?php echo $this->__('Unread'); ?>" ) {
+                      jQuery(row).addClass( 'info' );
+                      jQuery(row).attr('data-id',data.partslist_id);
+                    }
+                  }
+            });
+
+            /* when sharing partslist from second tab my-partslist set partslist-id as hidden field */
+            jQuery(document).on('click', '.share-partlist', function(evt){
+                evt.preventDefault();
+                jQuery('#partlistshare-id').val(jQuery(this).attr('data-id'));
+            });
+
+            /* on shared partslist if click on any unread row it will be set as read message */
+            jQuery('#shared-partslist tr.info,#shared-partslist-mobile tr.info').click(function(){
+                var partlistid = jQuery(this).attr('data-id');
+                jQuery(this).removeClass('info');
+				jQuery(this).children('td').first().html('<?php echo $this->__('Read');?>');
+				jQuery.ajax(ajaxUrl,{
+                    'dataType' : 'json',
+                    'type': 'POST',
+                    'data': {
+                    'form_key' : formKey,
+                    'setReceivedUpdateNotificationFlagFromPartslist' : {'data' : {'partslistId' : partlistid}},
+                    },
+                    'success': function (data) {
+                    var readflag = parseInt(jQuery('.read-flag .badge').html())-1;
+                    jQuery('.read-flag .badge').html(readflag>=0?readflag:0);
+                    //checkMessages(JSON.parse(data.setReceivedUpdateNotificationFlagFromPartslist.result));
+                    }
+                })
+            });
+
+            jQuery('.active-partlist-delete').click(function(){
+                if(confirmDeletePartslist()) {
+                    var deleteurl = jQuery(this).attr('data-url');
+                    jQuery.get(deleteurl).done(function(res){
+                        checkMessages(JSON.parse(res));
+                    });
+                }
+            });
+
+            /* handle shared partlist delete */
+            jQuery('.deleteshared').on('click',function(e){
+                if(confirmDeletePartslist()) {
+                    var element = jQuery(this);
+                    (e.preventDefault) ? e.preventDefault() : e.returnValue = false;
+                    var deleteid = jQuery(this).attr('data-id');
+                    var contactid = jQuery(this).attr('data-contact');
+                    jQuery.ajax(ajaxUrl,{
+                        'dataType' : 'json',
+                        'type': 'POST',
+                        'data': {
+                        'form_key' : formKey,
+                        'setDeleteMySharedPartslistAssignment' : {'data' : {'partslistId' : deleteid, 'contactId' : contactid, 'deletionMode' : 'receiver'}},
+                        },
+                        'success': function (data) {
+                            if(data.setDeleteMySharedPartslistAssignment.result.status == 'success') {
+                                appendMessageUl([data.setDeleteMySharedPartslistAssignment.result.message], 'messages', 'success-msg', 'glyphicon glyphicon-ok');
+                                console.log('appendMessageUl #28');
+                                jQuery(element).closest('tr').remove();
+                                //jQuery('.read-flag .badge').html(parseInt(jQuery('.read-flag .badge').html())-1);
+                            } else {
+                                appendMessageUl([data.setDeleteMySharedPartslistAssignment.result.message], 'messages', 'error-msg', 'glyphicon glyphicon-exclamation-sign');
+                                console.log('appendMessageUl #29');
+                            }
+                        }
+                    });
+                }
+            });
+
+            //jQuery('.shared-partlist-line-item').on('click',function(){
+			jQuery("body").on("click", ".shared-partlist-line-item", function() {
+                var lineItem = jQuery(this).attr('data-id');
+                jQuery.ajax(ajaxUrl,{
+                            'dataType' : 'json',
+                            'type': 'POST',
+                            'data': {
+                            'form_key' : formKey,
+                            'getMyActivePartslist' : {'data' : {'id' : lineItem}},
+                            }
+                        }
+                    ).done(function(data) {
+                        jQuery('.cartBx').remove();
+                        jQuery('.partslistnav li a[href="#active-tab"]').trigger('click',true);
+                        jQuery('.otherActions ul li,.norLinks').css('opacity','0.3').find('*').off('click').removeAttr('data-target onclick href').css('cursor','default');
+                        jQuery('#all-products').removeAttr('data-toggle');
+                        renderActive(data);
+						jQuery('#frmControlQuantity').attr('disabled', true);
+						//jQuery('#bulkAddCartActivePartlist').remove();
+                        jQuery('.cartBx .actionIcon').remove();
+						jQuery('.otherActions ul li,.norLinks').find('*').css('text-decoration', 'none');
+						jQuery('#menu1 .textOverFlw').text('Select PartLlist');
+                        //jQuery('.gtm-partlist-addtocart').attr('href',data[0]['fulladdtocarturl']);
+						if(jQuery('#shared-popup-info').length === 0) {
+                            jQuery('.otherActions h2').append('&nbsp;<span id="shared-popup-info"'
+                                + ' class="glyphicon glyphicon-info-sign info-icon blueTxt" data-toggle="dropdown"'
+                                + ' aria-haspopup="true" aria-expanded="false"></span><div aria-labelledby="shared-popup-info"'
+                                + ' class="popupBox qtyBoxCont dropdown-menu"><ul><li>'
+                                + '<?php echo $this->__('Products and data of a shared partlist can only be changed by the sharer.'); ?>'
+                                + '</li></ul></div>');
+						}
+						if(noactiverecords == '0') {
+							jQuery('#activePartlistContainer').show();
+							jQuery('#noActivePartlistContainer').hide();
+						}
+
+                });
+            });
+
+            jQuery('.partslistTableRow').each(function () {
+                var sku = jQuery(this).parent().attr('product-id');
+
+                if (sku) {
+                    jQuery(this).attr('data-id', sku);
+                }
+            });
+            /* ajax function to fill data ends here */
+        });
+		}
+        /* render active partslist */
+        function renderActive(active) {
+        console.log(active);
+            /* loop for every product in "active" object */
+			var j = 0;
+            var partslistItemCount = true;
+
+            for ( var i = 0; i < active.length; ++i ) {
+                if(active.propertyIsEnumerable(i)) {
+                skuList.push(active[i].article_number);
+                var info = active[i].description;
+                var infoDB = active[i].description;
+                if(active[i].description == 'null') {
+                    info = '';
+                    infoDB = '';
+                }
+                var instock = '';
+                if(active[i].quantity_unit == 'm') {
+                    instock = (parseFloat(active[i].getUnformattedDeliveryQuantity/1000) +
+parseFloat(active[i].getUnformattedPickupQuantity/1000)) + ' ' + active[i].quantity_unit;
+                } else {
+                    instock =(parseInt(active[i].getUnformattedDeliveryQuantity) +
+parseInt(active[i].getUnformattedPickupQuantity)) + ' ' + active[i].quantity_unit;
+                }
+                /* create template for each product box */
+                var block = '<div class="cartBx clearfix">';
+                block += '       <input type="hidden" class="hiddenItemCounter" value="' + (j + 1) + '">';
+                block += '       <div style="padding: 5px; font-size: 0.8em; position: absolute; width: 10px; z-index: 2;">' + (j + 1) + '</div>';
+                block += '       <div class="col-xs-3 leftSec img-container">';
+                block += '           <img src="'+active[i].pic_url+'" alt=""><br>';
+                block += '           <div><?php echo $this->__('Article #'); ?></div>';
+                block += '           <div>'+active[i].article_number+'</div>';
+                block += '       </div>';
+                block += '       <div class="col-xs-9 rightSec" id="product_'+active[i].article_number+'">';
+                block += '           <div class="productName">';
+                block += '             <div class="row">';
+                block += '               <div class="col-xs-8 col-sm-9">';
+                block += '                   <a data-sku="'+active[i].article_number+'" class="tracking_active_partslist_product" href="'+ active[i].product_url +'"><input type="checkbox" class="rowId product-checkbox" data-sku="'+active[i].article_number+'" data-qty="'+active[i].qty+'" id="rowId-'+j+'" checked="checked" style="display:none" / ><input type="hidden" id="sku-'+j+'" value="'+active[i].article_number+'"/><input type="hidden" id="qty-'+j+'" value="'+active[i].qty+'"/>'+active[i].article_name+'</a>';
+                block += '               </div>';
+                block += '               <div class="col-xs-4 col-sm-3">';
+                block += '                   <div class="actionIcon">';
+                block += '                       <div class="dropdown dropdown-products partslist-drop floatL">';
+                block += '                       <a class="partlistIcon blueTxt" id="list-'+active[i].article_number+'" data-toggle="dropdown"></a>';
+                block += '                           <ul id="dropdown-menu-dropDwnListGeneric" partlist-id="'+active[i].partslist_id+'" product-id="'+active[i].article_number+'" data-qty="'+active[i].qty+'" class="dropdown-menu dropDwnListGeneric singleProductAddPartlistTracking" role="menu" aria-labelledby="list-'+active[i].article_number+'">';
+                block += '                              <!-- console.log("position #828293983983"); -->';
+                block += '                              <li role="presentation"><a data-type="addtonewlist" onclick="partslistFE.addItemToNewList(\'Meine Merkliste\', new ListRequestManager.Product('+ active[i].productid +', 1,' + '\'' + active[i].article_number + '\'' + '));" data-brand=\"\" data-click=\"\" data-event=\"\" data-id=\"' + active[i].article_number + '\" ><span class="glyphicon glyphicon-plus-sign plusIcon"></span>&nbsp;'+Translator.translate('Add to new partslist')+'</a></li>';
+                block += '                           </ul>';
+                block += '                       </div><br><br>';
+                block += '                       <a class="active-partlist-product-delete" data-productid="' + active[i].id + '" data-partlistid="' + active[i].partslist_id+'" href="#" onClick="if (confirm(\'<?php echo $this->__('Are you sure you want to remove this product from your partslist?') ?>\')) setLocationAndTrack(\'' + active[i].removeurl + '\', \'' + active[i].article_number + '\');return false;">';
+                block += '                           <span class="deleteIcon"></span>';
+                block += '                       </a>';
+                block += '                   </div>';
+                block += '               </div>';
+if ( active[i].is_promotion ) {
+                block += '               <img src="' + BASE_URL + 'skin/frontend/schrack/default/schrackdesign/Public/Images/rwd/promotion/promotion_sticker_rot.svg"';
+                block += '                    style="position: absolute; top: 0px; right: 30px" height="28px" />';
+}
+                block += '             </div>';
+if ( active[i].additional_text ) {
+                block += '             <div style="font-size: 12px; color: #9b9b9b; width: 90%;">' + active[i].additional_text + '</div>';
+}
+                block += '           </div>';
+                if (active[i].isNotSaleable == false) {
+                    block += '           <div class="row qty">';
+                    block += '             <div class="col-xs-12 col-sm-6 col-md-6 "><span class="normalTxt product-price">&nbsp;<span class="glyphicon glyphicon-info-sign info-icon blueTxt" id="product-price-icon-'+active[i].article_number+'" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true"></span><div class="popupBox qtyBoxCont dropdown-menu" aria-labelledby="product-price-icon-'+active[i].article_number+'"></div></span></div>';
+                    block += '           </div>';
+                    block += '           <div class="row qty">';
+                    block += '               <div class="col-xs-12 col-sm-6 col-md-6 form-inline">';
+                    block += '                 <div class="form-group">';
+                    block += '                   <input type="hidden" class="sku" name="sku['+active[i].id+']" value="'+active[i].article_number+'" />';
+                    block += '                   <input type="hidden" id="description'+active[i].id+'" name="description['+active[i].id+']" value="'+active[i].description+'" />';
+                    block += '                   <label for="exampleInputName2" class="darkGray">'+active[i].quantity_label+':</label>';
+                    block += '                   <input type="number" id="frmControlQuantity" class="form-control quantity quantity_input_from_user" name="qty['+active[i].id+']" value="'+active[i].qty+'">';
+                    block += '                 </div>';
+                    block += '               </div>';
+                    block += '               ';
+                    block += '               <div class="col-xs-12 col-sm-6 col-md-6 bttnAddCrt paddingR40 addtocart_button_container">';
+                    block += '                   <a class="bttn-sm pull-right addToCartFromPartlistButton" data-pagetype="active-partlist" data-sku="' + active[i].article_number + '" data-name="' + active[i].article_name + '" data-position="'+i+'" data-category="' + active[i].category + '" data-id="' + active[i].id + '" data-price="' + active[i].price + '"><img src="<?php echo $this->getSkinUrl("schrackdesign/Public/Images/rwd/cartIconWht.png");?>"> <?php echo $this->__("Add to Cart");?></a>';
+                    block += '               </div>';
+                    block += '               ';
+                    block += '           </div>';
+                    block += '           ';
+                    block += '           <div class="product-details row">';
+                    block += '               <div class="product-description">';
+                    block += '                   <div class="stock-section hide">';
+                    block += '                       <div class="col-md-12 col-sm-12 col-xs-12 product-store"></div>';
+                    block += '                   </div>';
+                    block += '               </div>';
+                    block += '           </div>';
+                } else {
+                    block += '           <div style="height: 40px;">';
+                    block += '           <?php echo $this->__("NOT AVAILABLE")?>';
+                    block += '           </div>';
+                }
+                block += '           <div id="descriptionContainerPartslistItemPosition-' + active[i].id + '" class="descriptionContainerPartslistItemPosition">';
+                block += '              <input type="hidden" id="descriptionHeadPartslistItemPositionTextBlocker-' + active[i].id + '" value="inactive">';
+                block += '              <input type="hidden" id="editFieldBefore-' + active[i].id + '" value="">';
+                block += '              <input type="hidden" id="editFieldAfter-' + active[i].id + '" value="">';
+                block += '              <div id="descriptionHeadPartslistItemPosition-' + active[i].id + '" class="triggerDescriptionPartslistItemPositionRow">';
+                block += '                  <i id="' + active[i].id + '" name="triggerDescriptionPartslistItemPosition-' + active[i].id + '" class="fa fa-plus-square-o fa-lg trigger-item-position-description"></i>';
+                if (info) info = info; else info = '<?php echo $this->__('Add Comment To Partslist Position'); ?>';
+                block += '                  <span id="headlineAddPartslistPositionDescription-' + active[i].id + '" class="headlineAddPartslistPositionDescription">' + info + '</span>';
+                block += '                  <span id="triggerDescriptionPartslistItemPositionRowSaveMessage-' + active[i].id + '" class="triggerDescriptionPartslistItemPositionRowSaveMessage"><?php echo $this->__('Saved'); ?></span>';
+                block += '                  <div class="clearBoth"></div>';
+                block += '              </div>';
+                if (infoDB) infoDB = infoDB;
+                block += '              <div id="descriptionHeadPartslistItemPositionText-' + active[i].id + '" class="triggerDescriptionPartslistItemPositionRowText">';
+                block += '                  <input type="text" maxlength="100" class="triggerDescriptionPartslistItemPositionRowTextInput form-control nodefault" id="triggerDescriptionPartslistItemPositionRowTextInput-' + active[i].id + '" name="descriptionPartslistItemPositionRowTextContent" autocomplete="off" value="' +  infoDB + '" />';
+                block += '              </div>';
+                block += '          </div>';
+                block += '       </div>';
+                block += '     </div>';
+                /* append each product to active container in active partslist tab */
+                jQuery('.active-container').append(block);
+				jQuery('#activePartlistLoader').hide();
+                }
+				j++;
+            }
+
+            if (typeof block == "undefined") {
+                partslistItemCount = false;
+            }
+
+            jQuery('#active-partlist').on('click', '.tracking_active_partslist_product', function() {
+                var sku = jQuery(this).attr('data-sku');
+
+                var trackingData                 = new Object();
+                trackingData.trackingEnabled     = globalTRACKING_ENABLED;
+                trackingData.pageType            = 'my account partslist';
+                trackingData.affectedSku         = sku;
+                //trackingData.price             = dataProductPrice;
+                trackingData.currencyCode        = globalCURRENCY_CODE;
+                trackingData.trackingSource      = 'active partslist';
+                trackingData.typoUrl             = globalTYPO_URL;
+                trackingData.shopCategoryAjaxUrl = globalSHOP_CATEGORY_AJAX_URL;
+                trackingData.formKey             = globalFORM_KEY;
+                trackingData.crmUserId           = globalCRM_USER_ID;
+                trackingData.customerType        = globalCUSTOMER_TYPE;
+                trackingData.accountCrmId        = globalACCOUNT_CRM_ID;
+                trackingData.position            = 1;
+
+                trackProductClick(trackingData);
+            });
+
+            /* update price and stock info on all products */
+            productSKUForPrice = {"data":{"skus":skuList}};
+            productSKUForStock = {"data":{"skus":skuList,"forceRequest":1}};
+            updatePriceAndStock();
+
+            /* for each active partslist product box this initiates tooltip on description */
+            jQuery('[data-toggle="tooltip"]').tooltip();
+
+            /* for each active partslist product box this opens modal for editing comment */
+            jQuery('.comment-box').click(function(){
+                var id=jQuery(this).attr('data-linked');
+                var comment = jQuery(id).val();
+                jQuery('.current-box').removeClass('current-box');
+                jQuery(id).addClass('current-box');
+                jQuery('#comment-message-text').val(comment);
+                jQuery('#edit-comment').modal('show');
+            });
+
+            /* handles product comment update and submit the form */
+            jQuery('#update-comment').click(function(){
+                jQuery('.current-box').val(jQuery('#comment-message-text').val());
+                jQuery('#active-partlist').submit();
+            });
+
+            /* partslist drop down for each product box */
+            var dropdownhtml = jQuery('.partslist-switch ul').html();
+            var dropdownHtmlMultipleAddToPartslist = dropdownhtml.replace(/fake_dropdown_select_partslist/g, 'multiple_add');
+            jQuery('.all-products ul').append(dropdownHtmlMultipleAddToPartslist);
+            jQuery('.dropdown-products ul').each(function(){
+                var dropdownHtmlSingleAddToPartslist = dropdownhtml.replace(/fake_dropdown_select_partslist/g, 'single_add');
+                jQuery(this).append(dropdownHtmlSingleAddToPartslist);
+            });
+
+            jQuery('.single_add').on('click', function() {
+                trackPartlistAddClick(jQuery(this));
+            });
+
+            jQuery('.multiple_add').on('click', function() {
+                trackPartlistAddClick(jQuery(this));
+            });
+
+            /* partslist drop down for each product ; if clicked on any partslist in dropdown is handled here */
+            jQuery('.dropdown-products ul li a').click(function(){
+                if(jQuery(this).attr('data-type') == 'addtonewlist')
+                return;
+                var baseUrl = '<?php echo Mage::helper('schrackcore/url')->getUrlWithCurrentProtocol('wishlist/partslist/add');?>';
+                var partlistid = jQuery(this).attr('data-id');
+                var productid = jQuery(this).closest('ul').attr('product-id');
+                var qty = jQuery(this).closest('ul').attr('data-qty');
+                var finalurl = baseUrl + 'id/' + partlistid + '/product/' + productid + '/qty/' + qty;
+                window.location.href = finalurl;
+            });
+
+            /* handles "Add All products to partslist" */
+            var products = [];
+            jQuery('.cartBx').each(function(){
+				if(jQuery(this).find('.quantity').val() == 0) { var prodStrQty = 1; } else { var prodStrQty = jQuery(this).find('.quantity').val(); }
+				products.push(jQuery(this).find('.sku').val()+':'+prodStrQty);
+				//products.push(jQuery(this).find('.sku').val()+':'+jQuery(this).find('.quantity').val());
+            });
+
+            /* create all products string */
+            var productstr = products.join(';');
+            jQuery('.all-products ul li a').click(function(){
+                var baseUrl = '<?php echo $this->getUrl('wishlist/partslist/batchAdd');?>';
+                var partlistid = jQuery(this).attr('data-id');
+                var finalurl = baseUrl + 'id/' + partlistid + '/products/' + productstr;
+                jQuery.ajax(finalurl).done(function(res){
+                    checkMessages(JSON.parse(res));
+                });
+            });
+			// Bulk Add to cart button data on active partlist
+			jQuery('#bulkAddCartActivePartlist').attr('bulk-add-to-cart-data',productstr);
+
+            var blurBlocker = 'inactive';
+            var allPartslistPositionIds = [];
+
+            function autocomplete(inp, arr) {
+                if (arr) {
+
+                    //the autocomplete function takes two arguments, the text field element and an array of possible autocompleted values:
+                    var currentFocus;
+                    // execute a function when someone writes in the text field:
+                    inp.addEventListener("input", function(e) {
+                        var a, b, i, val = this.value;
+
+                        // Prevent enter illegal character(s) by CHANGE or PASTE :
+                        val = val.replace(/["';\[\]<>\x00-\x09\x0B\x0C\x0E-\x1F\xE2\x7F\n\r]/g, "");
+                        document.getElementById(this.id).value = val;
+
+                        // close any already open lists of autocompleted values
+                        closeAllLists();
+                        if (!val) { return false;}
+                        currentFocus = -1;
+                        // create a DIV element that will contain the items (values):
+                        a = document.createElement("DIV");
+                        a.setAttribute("id", this.id + "autocomplete-list");
+                        a.setAttribute("class", "autocomplete-items");
+                        // append the DIV element as a child of the autocomplete container:
+                        this.parentNode.appendChild(a);
+                        // for each item in the array...
+                        for (i = 0; i < arr.length; i++) {
+                            // check if the item starts with the same letters as the text field value:
+                            if (arr[i].substr(0, val.length).toUpperCase() == val.toUpperCase()) {
+                                // create a DIV element for each matching element:
+                                b = document.createElement("DIV");
+                                // make the matching letters bold:
+                                b.innerHTML =  '<span style="float: left; width: 100%; overflow: hidden;"><strong>' + arr[i].substr(0, val.length) + '</strong>' + arr[i].substr(val.length) + '</span>';
+                                // b.innerHTML += '<span onclick="removeAutocompleteItem(\'' + arr[i] + '\', \'' + jQuery(this).parent().prop("id") + '\', ' + i + ' );" title="<?php echo $this->__('Delete'); ?>" style="float: left; width: 4%; font-size: 1.9em; font-weight: bold; cursor: pointer; margin-top: -10px;">×</span>';
+                                b.innerHTML += '<span style="clear: both; display: none;"></span>';
+                                // insert a input field that will hold the current array item's value:
+                                b.innerHTML += "<input type='hidden' value='" + arr[i] + "'>";
+
+                                // Mouseover event listener when hover list:
+                                b.addEventListener("mouseover", function(e) {
+                                    blurBlocker = 'active';
+                                });
+
+                                // execute a function when someone clicks on the item value (DIV element):
+                                b.addEventListener("click", function(e) {
+                                    // insert the value for the autocomplete text field:
+                                    inp.value = this.getElementsByTagName("input")[0].value;
+                                    inp.focus();
+                                    blurBlocker = 'inactive';
+                                    // close the list of autocompleted values, (or any other open lists of autocompleted values:
+                                    closeAllLists();
+                                });
+
+                                a.appendChild(b);
+                            }
+                        }
+                    });
+                    // execute a function presses a key on the keyboard:
+                    inp.addEventListener("keydown", function(e) {
+                        var x = document.getElementById(this.id + "autocomplete-list");
+                        var val = this.value;
+
+                        // Prevent enter illegal character(s) by CHANGE or PASTE :
+                        val = val.replace(/["';\[\]<>\x00-\x09\x0B\x0C\x0E-\x1F\xE2\x7F\n\r]/g, "");
+                        document.getElementById(this.id).value = val;
+
+                        if (x) x = x.getElementsByTagName("div");
+                        if (e.keyCode == 40) {
+                            // If the arrow DOWN key is pressed, increase the currentFocus variable:
+                            currentFocus++;
+                            // and and make the current item more visible:
+                            addActive(x);
+                        } else if (e.keyCode == 38) { //up
+                            // If the arrow UP key is pressed, decrease the currentFocus variable:
+                            currentFocus--;
+                            // and and make the current item more visible:
+                            addActive(x);
+                        } else if (e.keyCode == 13) {
+                            // If the ENTER key is pressed, prevent the form from being submitted,
+                            e.preventDefault();
+                            if (currentFocus > -1) {
+                                // and simulate a click on the "active" item:
+                                if (x) x[currentFocus].click();
+                            }
+                        }
+                    });
+
+                    function addActive(x) {
+                        // a function to classify an item as "active":
+                        if (!x) return false;
+                        // start by removing the "active" class on all items:
+                        removeActive(x);
+                        if (currentFocus >= x.length) currentFocus = 0;
+                        if (currentFocus < 0) currentFocus = (x.length - 1);
+                        // add class "autocomplete-active":
+                        x[currentFocus].classList.add("autocomplete-active");
+                    }
+
+                    function removeActive(x) {
+                        // a function to remove the "active" class from all autocomplete items:
+                        for (var i = 0; i < x.length; i++) {
+                            x[i].classList.remove("autocomplete-active");
+                        }
+                    }
+
+                    function closeAllLists(elmnt) {
+                        // close all autocomplete lists in the document, except the one passed as an argument:
+                        var x = document.getElementsByClassName("autocomplete-items");
+                        for (var i = 0; i < x.length; i++) {
+                            if (elmnt != x[i] && elmnt != inp) {
+                                x[i].parentNode.removeChild(x[i]);
+                            }
+                        }
+                    }
+
+                    // execute a function when someone clicks in the document:
+                    document.addEventListener("click", function (e) {
+                        closeAllLists(e.target);
+                    });
+                }
+            }
+
+            function storeSavedAutocompleteItemToLocalstorage(autocompleteItemText) {
+                var autocompleteItemArray = [];
+                var getAutocompletionItemsFromLocalstorage = getAllAutompleteItems();
+
+                if (getAutocompletionItemsFromLocalstorage) {
+                    var mainIndex;
+                    var alreadyExistingAutocompleteEntry = false;
+                    for (mainIndex = 0; mainIndex < getAutocompletionItemsFromLocalstorage.length; ++mainIndex) {
+                        if (getAutocompletionItemsFromLocalstorage[mainIndex] == autocompleteItemText) {
+                            alreadyExistingAutocompleteEntry = true;
+                        }
+                    }
+                    if (alreadyExistingAutocompleteEntry == false) {
+                        getAutocompletionItemsFromLocalstorage[mainIndex] = autocompleteItemText;
+                    }
+                    autocompleteItemArray = getAutocompletionItemsFromLocalstorage;
+                } else {
+                    autocompleteItemArray[0] = autocompleteItemText;
+                }
+                localStorage.setItem("autocompleteItems", JSON.stringify(autocompleteItemArray));
+
+                // Building Autocompletion on all cart tiems:
+                var idx;
+                for (idx = 0; idx < allPartslistPositionIds.length; ++idx) {
+                    setAllAutompleteItems('triggerDescriptionPartslistItemPositionRowTextInput-' + allPartslistPositionIds[idx])
+                }
+            }
+
+            function setAllAutompleteItems(elementId) {
+                autocomplete(document.getElementById(elementId), getAllAutompleteItems());
+            }
+
+            function getAllAutompleteItems() {
+                var allAutoCompleteItemsFromLocalstorage = localStorage.getItem("autocompleteItems");
+                if (allAutoCompleteItemsFromLocalstorage) {
+                    return JSON.parse(allAutoCompleteItemsFromLocalstorage);
+                } else {
+                    return false;
+                }
+            }
+
+            function checkUserActionOnChangeAndSave(positionId) {
+                var editItemDescritionBefore = jQuery('#editFieldBefore-' + positionId).val();
+                var editItemDescritionAfter = jQuery('#editFieldAfter-' + positionId).val();
+
+                console.log('Before : ' + editItemDescritionBefore);
+                console.log('After : ' + editItemDescritionAfter);
+
+                if (editItemDescritionBefore != editItemDescritionAfter) {
+                    // Save new item-position description:
+                    saveDescription(positionId, editItemDescritionAfter)
+                }
+            }
+
+            function saveDescription (positionId) {
+                jQuery('#triggerDescriptionPartslistItemPositionRowSaveMessage-' + positionId).fadeIn(1000);
+                jQuery('#triggerDescriptionPartslistItemPositionRowSaveMessage-' + positionId).fadeOut(2000);
+
+                var descriptionTextContent = jQuery('#triggerDescriptionPartslistItemPositionRowTextInput-' + positionId).val();
+                var ajaxUrl                = '<?php echo Mage::helper('schrackcore/url')->getUrlWithCurrentProtocol('sd/AjaxDispatcher/setGetData'); ?>';
+                var partslistId            = jQuery('#dropdown-menu-dropDwnListGeneric').attr('partlist-id');
+
+                // Store unique autocomplete items to localstorage:
+                storeSavedAutocompleteItemToLocalstorage(descriptionTextContent);
+
+                // Send AJAX Call to Backend for save the text at cart item:
+                var setPartslistItemDescriptionText = {'setPartslistItemDescription': {'data': {'partslist_id': partslistId, 'item_id': positionId, 'descriptionText': descriptionTextContent}}};
+
+                jQuery.ajax(ajaxUrl, {
+                    'dataType': 'json',
+                    'type': 'POST',
+                    'data': setPartslistItemDescriptionText,
+                    'success': function (data) {
+                        console.log('checkUserActionOnChangeAndSave -> ' + positionId);
+                    }
+                });
+            }
+
+            // initiate the autocomplete function on the "myInput" element, and pass along the countries array as possible autocomplete values:
+            var index = 0;
+            jQuery('.triggerDescriptionPartslistItemPositionRowTextInput').each(function () {
+                var positionIdButton = jQuery(this).prop("id");
+                var positionId = positionIdButton.replace('triggerDescriptionPartslistItemPositionRowTextInput-', '');
+                jQuery('#triggerDescriptionPartslistItemPositionRowTextInput-' + positionId).on('focus', function (){
+                    jQuery('#descriptionHeadPartslistItemPositionTextBlocker-' + positionId).val('active');
+                });
+                jQuery('#triggerDescriptionPartslistItemPositionRowTextInput-' + positionId).on('blur', function (){
+                    if (blurBlocker == 'inactive') {
+                        jQuery('#' + positionId).removeClass("fa-minus-square-o");
+                        jQuery('#' + positionId).addClass("fa-plus-square-o");
+                        jQuery('#descriptionHeadPartslistItemPositionText-' + positionId).hide();
+                        if (jQuery('#triggerDescriptionPartslistItemPositionRowTextInput-' + positionId).val() == '') {
+                            jQuery('#headlineAddPartslistPositionDescription-' + positionId).text(jQuery('#standardTextEnterDescriptionForPartslistPosition').val());
+                            console.log('Text not present  ' + positionId + ' -> BLUR-Action');
+                        } else {
+                            console.log('Text found  ' + positionId + ' -> BLUR-Action : ' + jQuery('#triggerDescriptionPartslistItemPositionRowTextInput-' + positionId).val());
+                            jQuery('#headlineAddPartslistPositionDescription-' + positionId).text(jQuery('#triggerDescriptionPartslistItemPositionRowTextInput-' + positionId).val());
+                        }
+                        // Write the current value of the line into hidden field:
+                        jQuery('#editFieldAfter-' + positionId).val(jQuery('#triggerDescriptionPartslistItemPositionRowTextInput-' + positionId).val());
+                        // Check, if user changed something:
+                        checkUserActionOnChangeAndSave(positionId);
+                        console.log('Close Comment No  ' + positionId + ' -> BLUR-Action');
+                        // Set timeout function : after 1 second, the blocker should be deactivated!!!
+                        setTimeout(function(){ jQuery('#descriptionHeadPartslistItemPositionTextBlocker-' + positionId).val('inactive'); }, 1000);
+                    }
+                });
+
+                allPartslistPositionIds[index] = positionId;
+                setAllAutompleteItems(jQuery(this).prop("id"));
+                index++;
+            });
+
+            jQuery('.triggerDescriptionPartslistItemPositionRow').on('click', function(){
+                console.log('Line clicked');
+                jQuery('.triggerDescriptionPartslistItemPositionRow').css("pointer-events", "none");
+                var positionId = jQuery(this).find(">:first-child").prop("id");
+                if (jQuery('#descriptionHeadPartslistItemPositionTextBlocker-' + positionId).val() == 'inactive') {
+                    if (jQuery(this).find(">:first-child").hasClass('fa-plus-square-o')) {
+                        jQuery(this).find(">:first-child").removeClass("fa-plus-square-o");
+                        jQuery(this).find(">:first-child").addClass("fa-minus-square-o");
+                        jQuery('#descriptionHeadPartslistItemPositionText-' + positionId).show();
+                        jQuery('#editFieldBefore-' + positionId).val(jQuery('#triggerDescriptionPartslistItemPositionRowTextInput-' + positionId).val());
+                        jQuery('#triggerDescriptionPartslistItemPositionRowTextInput-' + positionId).focus();
+                        jQuery('#descriptionHeadPartslistItemPositionTextBlocker-' + positionId).val('active');
+                        console.log('Open Comment No  ' + positionId);
+                    } else {
+                        jQuery(this).removeClass("fa-minus-square-o");
+                        jQuery(this).addClass("fa-plus-square-o");
+                        jQuery('#descriptionHeadPartslistItemPositionText-' + positionId).hide();
+                        if (jQuery('#triggerDescriptionPartslistItemPositionRowTextInput-' + positionId).val() == '') {
+                            jQuery('#headlineAddPartslistPositionDescription-' + positionId).text(jQuery('#standardTextEnterDescriptionForPartslistPosition').val());
+                            console.log('Text not present  ' + positionId + ' -> BLUR-Action');
+                        } else {
+                            console.log('Text found  ' + positionId + ' -> BLUR-Action : ' + jQuery('#triggerDescriptionPartslistItemPositionRowTextInput-' + positionId).val());
+                            jQuery('#headlineAddPartslistPositionDescription-' + positionId).text(jQuery('#triggerDescriptionPartslistItemPositionRowTextInput-' + positionId).val());
+                        }
+                        // Write the current value of the line into hidden field:
+                        jQuery('#editFieldAfter-' + positionId).val(jQuery('#triggerDescriptionPartslistItemPositionRowTextInput-' + positionId).val());
+                        // Check, if user changed something:
+                        checkUserActionOnChangeAndSave(positionId);
+                        jQuery('#descriptionHeadPartslistItemPositionTextBlocker-' + positionId).val('inactive');
+                        console.log('Close Comment No  ' + positionId);
+                    }
+                } else {
+                    jQuery('#descriptionHeadPartslistItemPositionTextBlocker-' + positionId).val('inactive');
+                }
+
+                setTimeout(function() { jQuery('.triggerDescriptionPartslistItemPositionRow').css("pointer-events", "auto"); }, 1000);
+            });
+
+            jQuery('.quantity_input_from_user').on('keypress', function (evt) {
+                if(evt.which == 13) {
+                    jQuery('#active-partlist').submit();
+                }
+            });
+
+            return partslistItemCount;
+        }
+
+        /* in share partslist pop up add recipients to an array */
+        jQuery('.dropdown.recipient ul li a').click(function(){
+            jQuery(this).toggleClass('selected')
+            var names = [];
+            recipients = [];
+            jQuery('.dropdown.recipient ul li a.selected').each(function(){
+                names.push(jQuery(this).html().trim());
+                recipients.push(jQuery(this).attr('data-id'));
+            });
+            var str = '';
+            if(names.length > 0)
+            {
+                str = names.join(', ');
+                /* gtm addition for share partlist */
+                jQuery('.share-now').attr('data-id',recipients.join(','));
+                if(str.length>80)
+                    str = str.substr(0,80) + '...';
+            } else {
+                str = '<?php echo $this->__('Select Recipient');?>'
+            }
+
+            jQuery('.dropdown.recipient button').html(str);
+            jQuery('#recipient-id').val(jQuery(this).attr('data-id'));
+            event.preventDefault();
+        });
+
+        /* in share partslist pop up toggle beween share with contacts and share via email */
+        jQuery('.send-message').click(function(){
+            if(jQuery(this).val() == "email" ) {
+                jQuery('.message-box').removeClass('hide');
+                jQuery('.dropdown.recipient').addClass('hide');
+            } else {
+                jQuery('.message-box').addClass('hide');
+                jQuery('.dropdown.recipient').removeClass('hide');
+            }
+        });
+
+        /* reset share partslist modal inputs on modal close event  */
+        jQuery('#share-modal').on('hidden.bs.modal', function (e) {
+            jQuery('.dropdown.recipient button').html('<?php echo $this->__('Select Recipient');?>');
+            jQuery('.dropdown.recipient ul li a.selected').removeClass('selected');
+            jQuery('.send-message').prop('checked',false);
+            jQuery('.message-box #partlists-emails').val('');
+            jQuery('.message-box').addClass('hide');
+			jQuery('.dropdown.recipient').addClass('hide');
+            jQuery('.share-dropdown').removeClass('hide');
+            jQuery('.validation-advice').hide();
+        })
+
+        /* partlist share box email validation */
+        jQuery('#partlists-emails').on('blur',function(){
+            Validation.validate($('partlists-emails'));
+        });
+
+        /* handles share partlist popup share button */
+        jQuery('.share-now').click(function(){
+            var partlistid = jQuery('#partlistshare-id').val();
+            var contactid = {};
+            var method = '';
+            if(jQuery('.send-message:checked').val() == 'email') {
+                if (Validation.validate($('partlists-emails'))) {
+                    contacts = jQuery('.partlists-emails').val();
+                    var contactArray = contacts.split(",");
+                    jQuery.ajax(ajaxUrl, {
+                            'dataType' : 'json',
+                            'type': 'POST',
+                            'data': {
+                            'form_key' : formKey,
+                            setTransferOfPartslistAsCSV : {'data' : {'partslistId' : partlistid, 'emailRecipients' : contactArray}},
+                        },
+                        'success': function (data) {
+                            jQuery('#share-modal').modal('hide');
+                            //checkMessages(data.setTransferOfPartslistAsCSV.result);
+                            if(data.setTransferOfPartslistAsCSV.result.status == 'success') {
+                                if (dataLayer) {
+                                    dataLayer.push({
+                                        'event' : 'typeOfPartlistSharing',
+                                        'eventLabel' : 'email'
+                                    });
+                                }
+
+                                appendMessageUl([data.setTransferOfPartslistAsCSV.result.message], 'messages', 'success-msg', 'glyphicon glyphicon-ok');
+                                console.log('appendMessageUl #30');
+                            } else {
+                                appendMessageUl([data.setTransferOfPartslistAsCSV.result.message], 'messages', 'error-msg', 'glyphicon glyphicon-exclamation-sign');
+                                console.log('appendMessageUl #31');
+                            }
+                        }
+                    });
+                }
+            } else {
+                contactid = jQuery('#recipient-id').val();
+                jQuery.ajax(ajaxUrl, {
+                        'dataType' : 'json',
+                        'type': 'POST',
+                        'data': {
+                        'form_key' : formKey,
+                        setShareMyPartslist : {'data' : {'partsListId' : partlistid, 'contact_id_list' : recipients}},
+                    },
+                    'success': function (data) {
+                        jQuery('#share-modal').modal('hide');
+                        if(data.setShareMyPartslist.result.status == 'success') {
+                            if (dataLayer) {
+                                dataLayer.push({
+                                    'event' : 'typeOfPartlistSharing',
+                                    'eventLabel' : 'account'
+                                });
+                            }
+
+                            appendMessageUl([data.setShareMyPartslist.result.message], 'messages', 'success-msg', 'glyphicon glyphicon-ok');
+                            console.log('appendMessageUl #32');
+                        } else {
+                            appendMessageUl([data.setShareMyPartslist.result.message], 'messages', 'error-msg', 'glyphicon glyphicon-exclamation-sign');
+                            console.log('appendMessageUl #33');
+                        }
+                    }
+                });
+            }
+
+        });
+
+        /* quick add changes for GTM */
+        jQuery('#article-quantity , #article').on('change',function(){
+            var article = jQuery('#article').val();
+            var qty = jQuery('#article-quantity').val();
+            jQuery('#addpartslist').attr('data-article',article);
+            jQuery('#addpartslist').attr('data-article-qty',qty);
+        });
+
+        /* changes for GTM on rename modal submit */
+        jQuery('#partslist-name , #partslist-comment').on('change',function(){
+            var pName = jQuery('#partslist-name').val();
+            var pcomment = jQuery('#partslist-comment').val();
+            jQuery('#rename').attr('data-name',pName);
+            jQuery('#rename').attr('data-comment',pcomment);
+        });
+		// Highlight left navigation on tab click
+		jQuery('.active-tab-link').click(function(){
+			jQuery('ul.messages').empty();
+			jQuery('ul.errors').empty();
+			jQuery('.partlistnav a span').removeClass('active');
+			jQuery('.leftNavSec .leftNav li').removeClass('active');
+			jQuery('#activePlLi a span').addClass('active');
+			jQuery('#activePlLi').addClass('active');
+			if(noactiverecords == '0') {
+				jQuery('#activePartlistContainer').hide();
+				jQuery('#noActivePartlistContainer').show();
+			}
+		});
+        jQuery('.my-partslist-tab-link').click(function(){
+			jQuery('ul.messages').empty();
+			jQuery('ul.errors').empty();
+			jQuery('.partlistnav a span').removeClass('active');
+			jQuery('.leftNavSec .leftNav li').removeClass('active');
+			jQuery('#allPlLi a span').addClass('active');
+			jQuery('#allPlLi').addClass('active');
+			if(noactiverecords == '0') {
+				jQuery('#activePartlistContainer').hide();
+				jQuery('#noActivePartlistContainer').show();
+			}
+		});
+		jQuery('.shared-partslist-tab').click(function(){
+			jQuery('ul.messages').empty();
+			jQuery('ul.errors').empty();
+			jQuery('.partlistnav a span').removeClass('active');
+			jQuery('.leftNavSec .leftNav li').removeClass('active');
+			jQuery('#gtm-partlist-shared a span').addClass('active');
+			jQuery('#gtm-partlist-shared').addClass('active');
+			if(noactiverecords == '0') {
+				jQuery('#activePartlistContainer').hide();
+				jQuery('#noActivePartlistContainer').show();
+			}
+		});
+
+        /* Back to Top */
+        jQuery('body').append('<div id="toTop" class="btn btn-info print-hide-imp initialHideToTopSymbol"><span class="glyphicon glyphicon-chevron-up"></span> <?php echo $this->__('Back to Top'); ?></div>');
+        jQuery(window).scroll(function () {
+            if (jQuery(this).scrollTop() != 0) {
+                jQuery('#toTop').fadeIn();
+            } else {
+                jQuery('#toTop').fadeOut();
+            }
+        });
+        jQuery('#toTop').click(function(){
+            jQuery("html, body").animate({ scrollTop: 0 }, 600);
+            console.log('ScrollTop #65');
+            return false;
+        });
+        jQuery('#toTop').removeClass('initialHideToTopSymbol');
+        /* Back to Top */
+
+		// Bulk add to cart AJAX on Active Partlist page
+		jQuery('#bulkAddCartActivePartlist').click(function(evt){
+            evt.preventDefault();
+            if (jQuery(this).hasClass('button_deactivated'))
+                return false;
+		    var partlistID = jQuery(this).data('id');
+		    trackAndAddToCart(partlistID,'active-partlist');
+        });
+
+		// add whole partslist to cart with tracking
+        function trackAndAddToCart ( partlistid, pageType ) {
+            // Fetch trackingData via AJAX:
+            var baseUrl = '<?php echo $this->helper('schrackwishlist/partslist')->getBaseUrl(); ?>';
+            var ajaxUrl = baseUrl + 'getPartslistByAjax/partlistid/' + partlistid;
+            setOverlayLoader();
+
+            jQuery.ajax(ajaxUrl, {
+                'dataType' : 'json',
+                'type': 'POST',
+                'data': {
+                    'form_key' : '<?php echo Mage::getSingleton('core/session')->getFormKey(); ?>',
+                },
+                'success': function (data) {
+                    var parsedData = data;
+                    var dataLength = parsedData.length;
+                    var trackingData = new Object();
+                    var qtys = [];
+                    var skus = [];
+                    for ( var i = 0; i < dataLength; i++ ) {
+                        trackingData.trackingEnabled = parsedData[i].trackingEnabled;
+                        trackingData.pagetype       = pageType;
+                        trackingData.sku            = parsedData[i].sku;
+                        trackingData.name           = parsedData[i].name;
+                        //trackingData.price           = parsedData[i].price;
+                        trackingData.quantity       = parsedData[i].quantity;
+                        trackingData.category       = parsedData[i].category;
+                        trackingData.currencyCode   = parsedData[i].currencyCode;
+                        skus.push(trackingData.sku);
+                        qtys.push(trackingData.quantity);
+
+                        addToCartTracking(trackingData, 'Partlist');
+                    }
+                    // Redirect after tracking:
+                    addToCart(skus, qtys);
+                }
+            });
+        }
+
+        // add products with quantities to cart anf handle results proper
+        function addToCart ( skuArray, qtyArray ) {
+            var items = [];
+            for ( var i = 0; i < skuArray.length; ++i ) {
+                items.push( { 'sku' : skuArray[i], 'quantity' : qtyArray[i] > 0 ? qtyArray[i] : 1 } );
+            }
+            jQuery('ul.messages').empty();
+            jQuery('ul.errors').empty();
+            jQuery.ajax(ajaxUrl, {
+                'dataType' : 'json',
+                'type': 'POST',
+                'data': {
+                    'form_key' : '<?php echo Mage::getSingleton('core/session')->getFormKey(); ?>',
+                    'setBatchAddToCart' : {'data' : {'items' : items, 'forceAdd' : 1}}
+                },
+                'success': function (data) {
+                    unsetOverlayLoader();
+                    var parsedData = data;
+                    var result = parsedData.setBatchAddToCart.result;
+                    if(result.showPopup == true) {	// Open Inquiry Popup
+                        jQuery('#quantitywarningpopup').html(result.popupHtml);
+                        jQuery('#quantitywarningpopupBtn').click();
+                    } else {
+                        //jQuery("html, body").animate({ scrollTop: 0 }, "slow");
+                        //console.log('ScrollTop #63');
+                        if(result.numberOfDifferentItemsInCart){
+                            jQuery('.MyCart').append('<div id="cartNoBxItemCount" class="cartNoBx">'+result.numberOfDifferentItemsInCart+'</div>');
+                        }
+                        if (result.data.newQty && result.data.newQty > 0) {
+                            inputQuantityObject.val(result.data.newQty);
+                        }
+                        if (result.data.newDrum && result.data.newDrum.length > 0) {
+                            selectDrum(result.data.newDrum);
+                        }
+                        var messageArray = result.data.messages;
+                        if(result.result.indexOf("SUCCESS") == -1){
+                            appendMessageUl(messageArray, 'messages', 'error-msg', 'glyphicon glyphicon-exclamation-sign');
+                            console.log('appendMessageUl #34');
+                        }else{
+                            appendMessageUl(messageArray, 'messages_hidden', 'success-msg', 'glyphicon glyphicon-ok');
+                            console.log('appendMessageUl #35');
+                        }
+                        //jQuery('.messages').delay(5000).fadeOut(1000);
+                    }
+                },
+                'error': function (data) {
+                    var parsedData = data;
+                    //debugger;
+                }
+            });
+        }
+
+        jQuery('body').on('click', '.addToCartFromPartlistButton', function() {
+            var sku      = jQuery(this).attr('data-sku');
+            var id       = jQuery(this).attr('data-id');
+            var name     = jQuery(this).attr('data-name');
+            var price    = jQuery(this).attr('data-price');
+            var category = jQuery(this).attr('data-category');
+            var pagetype = jQuery(this).attr('data-pagetype');
+
+            var lineItemQtyInput = "[name='qty[" + id + "]']";
+            var quantity = jQuery(lineItemQtyInput).val();
+
+            var trackingData = new Object();
+            trackingData.trackingEnabled  = '<?php if (Mage::getStoreConfig('ec/config/active')) echo 'enabled'; else echo 'disabled'; ?>';
+            trackingData.pagetype         = pagetype;
+            trackingData.sku              = sku;
+            trackingData.name             = name;
+            //trackingData.price            = price.toString();
+            trackingData.quantity         = quantity;
+            trackingData.category         = category;
+            trackingData.currencyCode     = '<?php echo Mage::app()->getStore()->getCurrentCurrencyCode() ?>';
+            addToCartTracking(trackingData, 'Partlist');
+
+            var qty = jQuery("[name='qty["+id+"]']").val();
+            addToCart([sku], [qty]);
+        });
+
+        jQuery('body').on('click', '.mypartlistAddtocart', function(evt) {
+            evt.preventDefault();
+            if (jQuery(this).hasClass('button_deactivated'))
+                return false;
+            var partlistid  = jQuery(this).attr('data-partlistid');
+            trackAndAddToCart(partlistid,'shared-partlist');
+        });
+
+        jQuery('body').on('click', '.shared-partlist', function(evt) {
+            evt.preventDefault();
+            if (jQuery(this).hasClass('button_deactivated'))
+                return false;
+            var partlistid = jQuery(this).attr('data-partlistid');
+            trackAndAddToCart(partlistid,'my-partlist');
+        });
+
+        if (jQuery(window).width() < 993) {
+            jQuery('#breadcrumb_block').removeClass('breadcrumb_custom');
+            jQuery('#breadcrumb_block').addClass('breadcrumb_my_account');
+        }
+
+    });
+</script>
+<!-- app/design/frontend/schrack/schrackresponsive/template/wishlist/partslist/list.phtml (end) -->

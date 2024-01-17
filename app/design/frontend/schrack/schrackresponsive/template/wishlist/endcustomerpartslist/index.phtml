@@ -1,0 +1,688 @@
+<?php
+$_ecplHelper = Mage::helper('schrackwishlist/endcustomerpartslist');
+try {
+    $_partslist = $_ecplHelper->getPartslist();
+} catch(Exception $e) {
+    Mage::logException($e);
+}
+?>
+<script type="text/javascript" src="<?php echo $this->getSkinUrl('schrackdesign/Public/Javascript/jquery.simplemodal.1.4.4.min.js')?>"></script>
+<iframe src="" name="data" style="display: none"></iframe><script type="text/javascript" src="<?php echo $this->getSkinUrl('schrackdesign/Public/Javascript/foundation.js')?>"></script>
+<div class="row">
+    <div class="large-12 columns schrackcustomer-data">
+            <?php echo $this->getChildHtml('endcustomerpartslist.customer')?>
+    </div>
+</div>
+<div class="row-fine menu">
+    <div class="large-fine-14 columns-fine">
+        <div id="heading-catalogs">
+            <?php echo $this->__('Our catalogs')?>
+        </div>
+        <div id="heading-title">
+            (title)
+        </div>
+        <span id="heading-allcatalogs">&lt;&nbsp;<?php echo $this->__('All Catalogs')?></span>
+    </div>
+    <div class="large-fine-10 columns-fine">
+        <div class="row">
+            <div class="large-4 columns" id="heading-sendrequest-container">
+                <div id="heading-sendrequest" onclick="showView();showRequestOfferForm();" style="display: none;">
+                    <div class="text">
+                        <?php echo $this->__('Send request')?>
+                    </div>
+                </div>
+            </div>
+            <div class="large-5 columns large-offset-4" id="heading-partslist-container">
+                <div id="heading-partslist">
+                   <div class="text">
+                        <?php echo $this->__('Partslist')?> <span class="count" id="partslist-items-count"></span>
+                   </div>
+                </div>
+            </div>
+            <div class="large-3 columns">
+                <div id="heading-help" onclick="showIntroDialog();">
+                    <div class="text">
+                        <?php echo $this->__('Help')?>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row product-detail" id="product-detail">
+</div>
+<div class="row">
+    <div class="large-12 columns catalogs" id="catalogs-container">
+        <div class="row header" id="catalogs-explanation">
+            <div class="large-8 columns">
+                <div style="padding-left: 10px;">
+                    <?php echo $this->__('wishlist.endcustomerpartslist.catalogs.our-catalogs-explanation')?>
+                </div>
+            </div>
+            <div class="large-4 columns">
+
+            </div>
+        </div>
+
+        <div class="row">
+                <div class="large-12 columns">
+                    <iframe name="catalogs" id="catalogs" class="catalogs-frame" src="<?php echo $this->getUrl('wishlist/endcustomerpartslist/catalogs')?>"></iframe>
+                </div>
+            </div>
+     </div>
+</div>
+<?php $_customer = $this->getCustomer(); if ( $_customer && strlen($_customer->getBottomBannerUrl()) ):?>
+    <div class="row">
+        <div class="large-12 columns">
+            <img src="<?php echo $_customer->getBottomBannerUrl()?>"/>
+        </div>
+    </div>
+<?php else:?>
+    <div class="row about">
+        <div class="large-12 columns">
+            <div class="row-fine">
+                <div class="large-fine-24 columns">
+                    <h1>
+                        Impressum
+                    </h1>
+                    <h2>
+                        <?php echo $this->getCustomerText('company_name', 'Schrack Technik GmbH.')?>
+                    </h2>
+                </div>
+            </div>
+            <div class="row-fine">
+                <div class="large-fine-24 columns">
+                    <?php echo $this->getCustomerText('address1', 'Seybelgasse 13')?><br/>
+                    <?php echo $this->getCustomerText('address2', '1230 Wien')?><br/>
+                    <?php echo $this->getCustomerText('address3', 'Österreich')?>
+                </div>
+            </div>
+            <div class="row-fine legalese">
+                <div class="large-fine-5 columns">
+                    <?php echo $this->getCustomerTextHtml('uidnummer', 'UID-Nummer', 'ATU50325107')?>
+                    <?php echo $this->getCustomerTextHtml('dvrnummer', 'DVR-Nummer', '0665649')?>
+                    <?php echo $this->getCustomerTextHtml('firmenbuchnummer', 'Firmenbuchnummer', '189025d')?>
+                    <?php echo $this->getCustomerTextHtml('firmenbuchgericht', 'Firmenbuchgericht', 'Handelsgericht Wien')?>
+                    <?php echo $this->getCustomerTextHtml('kammerzugehoerigkeit', 'Kammerzugehörigkeit', 'Kammer der gewerblichen Wirtschaft')?>
+                </div>
+                <div class="large-fine-9 columns">
+                    <?php echo $this->getCustomerTextHtml('geschaeftsfuehrer', 'Geschäftsführer', 'Ing. Mag. Wilhelm Großeibl, Ing. Viktor Eßbüchl, Ing. Norbert Kasper')?>
+                    <?php echo $this->getCustomerTextHtml('grundlegenderichtung', 'Grundlegende Richtung des Webportals', 'Das Portal dient der Bewerbung und dem Verkauf von uns vertriebener Waren und Dienstleistungen sowie der Darstellung unseres Unternehmens.')?>
+                    <?php echo $this->getCustomerTextHtml('medieninhaber', 'Medieninhaber', 'Schrack Technik GmbH, Wien, Elektrohandel')?>
+                </div>
+                <div class="large-fine-10 columns">
+                    <?php echo $this->getCustomerTextHtml('aufsichtsbehoerde', 'zuständige Aufsichtsbehörde', 'Magistratisches Bezirksamt für den 23. Bezirk')?>
+                    <?php echo $this->getCustomerTextHtml('vorschriften', 'gewerbe- und berufsrechtliche Vorschriften', 'Gewerbeordnung 1994')?>
+                    <?php /* echo $this->getCustomerTextHtml('', 'Mitglied der Wirtschaftskammer Wien', 'LG Elektro- und Einrichtungsfachhandel, Elektrohandel') */?>
+                </div>
+            </div>
+        </div>
+    </div>
+<?php endif; ?>
+<div class="row" id="overlay-row">
+    <div class="large-12 columns" style="position: relative;">
+        <canvas id="overlay-topheaderline" width="1000" height="80"></canvas>
+        <div class="row-fine overlay-header">
+            <div class="large-fine-3 columns-fine large-offset-fine-2 text active" id="overlay-header-partslist">
+                <?php echo $this->__('Partslist')?>
+            </div>
+            <div class="large-fine-3 columns-fine separator"></div>
+            <div class="large-fine-4 columns-fine text" id="overlay-header-sendrequest">
+                <?php echo $this->__('Send request')?>
+            </div>
+            <div class="separator large-fine-2 columns-fine"></div>
+            <div class="large-fine-5 columns-fine text" id="overlay-header-ack">
+                <?php echo $this->__('Acknowledgement')?>
+            </div>
+            <div class="large-fine-4 columns-fine buttons">
+                <a class="back-to-catalog" onClick="hideView()"><?php echo $this->__('Back to catalog')?></a>
+            </div>
+            <div class="large-fine-1 columns">
+
+            </div>
+        </div>
+        <div class="row-fine overlay-headerline">
+            <div class="large-fine-24">
+                <canvas id="overlay-headerline"  width="1180" height="40"></canvas>
+            </div>
+        </div>
+        <div class="row table" id="request-offer-form">
+            <div class="large-6 columns request-form">
+                <form>
+                    <div class="explanation">
+                        <?php echo $this->__('Please fill in all required fields')?>
+                    </div>
+                    <div class="row">
+                        <div class="input large-6 columns">
+                            <input type="text" id="request-offer-name">
+                        </div>
+                        <div class="input large-6 columns">
+                            <input type="text" id="request-offer-address">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="input large-6 columns">
+                            <input type="text" id="request-offer-phone">
+                        </div>
+                        <div class="input large-6 columns">
+                            <input type="text" id="request-offer-email">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="input large-12 columns">
+                            <textarea id="request-offer-message"></textarea>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="input large-6 columns">
+                            <a class="request-offer" id="request-offer-send" onClick="void(sendRequest());"><?php echo $this->__('Send request')?></a>
+                        </div>
+                        <div class="large-6 columns align-right" style="padding-right: 30px; padding-top: 10px;">
+                            <a class="back" id="request-offer-back-link" onClick="void(showView());" style="color: #666666; font-size: 18px; font-weight: bold;">&lt;&nbsp;<?php echo $this->__('Back to partslist')?></a>
+                        </div>
+
+                    </div>
+                </form>
+            </div>
+            <div class="large-6 columns">&nbsp;</div>
+        </div>
+        <div id="view" class="view"></div>
+    </div>
+</div>
+
+<div id="send-email">
+    <form>
+        <div class="row title">
+            <div class="large-9 columns">
+                <div class="headline c1"><?php echo $this->__('Share by email')?></div>
+            </div>
+            <div class="large-3 columns">
+                <div class="close" id="send-email-close" onClick="jQuery('#send-email').hide();"><div class="align-right"><div class="close"></div></div></div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="large-12 columns">
+                <input type="text" name="name" id="send-email-name">
+            </div>
+        </div>
+        <div class="row">
+            <div class="large-12 columns">
+                <input type="text" name="email" id="send-email-email">
+            </div>
+        </div>
+        <div class="row">
+            <div class="large-12 columns">
+                <textarea name="message" id="send-email-message"></textarea>
+            </div>
+        </div>
+        <div class="row">
+            <div class="large-12 columns">
+                <input type="submit" name="send" id="send-email-send-button" value="<?php echo $this->__('Send')?>">
+            </div>
+        </div>
+    </form>
+</div>
+<div id="send-email-success">
+    <form>
+        <div class="row title">
+            <div class="large-9 columns">
+                <div class="headline c1"><?php echo $this->__('Share by email')?></div>
+            </div>
+            <div class="large-3 columns">
+                <div class="close" id="send-email-success-close" onClick="jQuery('#send-email-success').hide();"><div class="align-right"><div class="close"></div></div></div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="large-12 columns">
+                <div class="headline c1" style="text-align: center; padding-top: 10px;">
+                    <?php echo $this->__('Sent')?>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+<div id="intro" style="display: none" title="Herzlich willkommen in meinem Onlineschauraum.">
+    <p>Nehmen Sie sich Zeit, um Ihre gewünschten Elektrotechnikprodukte selbst zusammenzustellen und mir in Form einer automatisch erstellten Liste zukommen zu lassen.
+        Ich werde mich schnellstmöglich um eine Angebotserstellung kümmern und Sie von unserer Elektroinstallationsqualität überzeugen.</p>
+
+    <p>So funktioniert´s: Einfach das gewünschte Themenbild anklicken, dann öffnet sich ein Menü mit den weiteren Detailauswahlen.
+        Wieder ein Klick, und es öffnet sich ein Katalog, den Sie durchblättern können. Wenn Sie das Produkt Ihres Interesses gefunden haben,
+        dann die Artikelnummer im Katalog anklicken, und schon ist es in der Merkliste. Wenn Sie alle Themen, die Sie interessieren, durchgesehen haben,
+        dann auf "Merkliste" klicken und nach Angabe ihrer Kontaktdaten absenden.</p>
+
+    <p>Bei Fragen können Sie mich natürlich gerne auch direkt kontaktieren.</p>
+
+</div>
+<script type="text/javascript">//<![CDATA[
+
+    var emailSent = false;
+
+    jQuery(document).ready(function() {
+        data.document.location.href="<?php echo $this->getUrl('wishlist/endcustomerpartslist/data/')?>";
+        showAllCatalogs();
+
+        jQuery('#partslist-opener,#heading-partslist').click(function(ev) {
+            showView();
+        });
+        jQuery('#heading-allcatalogs').click(function() {
+            showAllCatalogs();
+        });
+
+        initRequestFormTexts();
+
+        jQuery('input,textarea').blur(function(ev) {
+            jQuery(ev.target).removeClass('fielderror');
+        })
+
+        jQuery.ajax('<?php echo $this->getUrl('wishlist/endcustomerpartslist/view')?>', {
+            'success': function(data) {
+                var datax = JSON.parse(data);
+                jQuery('#view').html(datax.html);
+            }
+        })
+
+        refreshPartslistItemsCount(false);
+
+        jQuery('#send-email-send-button').click(function(ev){
+            ev.preventDefault();
+            if ( !emailSent ) {
+                emailSent = true;
+                var url = '<?php echo $this->getUrl('wishlist/endcustomerpartslist/sendemail')?>';
+                jQuery.ajax(url, {
+                    data: jQuery('#send-email > form').serialize(),
+                    type: 'POST',
+                    success: function (data) {
+                        jQuery('#send-email').hide();
+                        jQuery('#send-email-success').css('position', 'fixed').css('left', shareFormCoordsForViewForm().x).css('top', shareFormCoordsForViewForm().y).show();
+                        jQuery('#send-email-success').fadeIn().delay(1000).fadeOut();
+                    }
+                });
+            }
+        });
+        <?php if ( !isset($_COOKIE['seen_intro']) ):
+            setcookie('seen_intro', '1', time()+60*60*24*365*10, '/');
+        ?>
+            showIntroDialog();
+        <?php endif?>
+    });
+
+    var showIntroDialog = function() {
+        jQuery('#intro').dialog({width: 700, modal: true});
+    }
+
+    var addToPartslist = function(sku, ref) {
+        var url = '<?php echo $this->getUrl('wishlist/endcustomerpartslist/add')?>/sku/' + sku + '/ref/' + ref;
+        jQuery.ajax(url, {
+                'success': function(data) {
+                    var datax = JSON.parse(data);
+                    if (datax.status.toString() === 'ERROR') {
+                        // showOverlayMessage('error', datax.errors.join(', '), '');
+                        alert(datax.errors.join(', '));
+                        console.log('Json errors', datax.errors);
+                    } else {
+                        jQuery('#view').html(datax.html);
+                        jQuery('#heading-sendrequest').show();
+                        jQuery('#heading-partslist-container').removeClass('large-offset-4');
+                        gaAddToCart(sku, 'add');
+                        refreshPartslistItemsCount(true);
+                    }
+                }
+            }
+        );
+    };
+
+    var showAllCatalogs = function() {
+        catalogs.document.location.href="<?php echo $this->getUrl('wishlist/endcustomerpartslist/catalogs')?>";
+        jQuery('#heading-allcatalogs').hide();
+        jQuery('#heading-title').hide();
+        jQuery('#heading-catalogs').show();
+        jQuery('#catalogs-explanation').show();
+        switchSingleCatalogClass(false);
+
+        hideView();
+    };
+
+    var switchSingleCatalogClass = function(onOff) {
+        if (onOff) {
+            jQuery('.menu,.catalogs,.catalogs iframe').addClass('single-catalog');
+        } else {
+            jQuery('.menu,.catalogs,.catalogs iframe').removeClass('single-catalog');
+        }
+    }
+
+    var showCatalog = function(url, name) {
+        ga('send', 'pageview', jQuery(location).attr('pathname') + '/' + url);
+        jQuery('#heading-allcatalogs').show();
+        jQuery('#catalogs').attr('src', url);
+        jQuery('#heading-title').html(name).show();
+        jQuery('#heading-catalogs').hide();
+        jQuery('#catalogs-explanation').hide();
+        switchSingleCatalogClass(true);
+    };
+
+    var openReferredCatalog = function(url, name) {
+        hideView();
+        showCatalog(url, name);
+    };
+
+    var hideView = function() {
+        jQuery.modal.close();
+        window.scrollBy(0, 1);
+        window.scrollBy(0, -1);
+    };
+
+    var showView = function() {
+        if ( jQuery.modal ) {
+            jQuery.modal.close();
+        }
+        var overlayLeft = '5px';
+        if ( jQuery(window).width() > 1200 ) {
+            overlayLeft = jQuery('#content > .menu').position().left + 'px';
+        }
+        console.log('window width: ', jQuery(window).width(), 'width > 1200: ', jQuery(window).width() > 1200, 'resulting overlayLeft: ', overlayLeft);
+        jQuery('#overlay-row').modal({overlayCss: { "background-color": "black" }, opacity: 50,
+            onShow: function (dialog) {
+                dialog.overlay.one('click', function () {
+                    jQuery.modal.close();
+                });
+            },
+            onClose: function(dialog) {
+                jQuery('#send-email').hide();
+                jQuery.modal.close();
+            },
+            position: ['50px', overlayLeft]
+        });
+        jQuery('#simplemodal-container').css('left', overlayLeft);
+        window.scrollBy(0, 1);
+        window.scrollBy(0, -1);
+        jQuery('#view').show();
+        jQuery('#request-offer-form').hide();
+        jQuery('#overlay-header-ack,#overlay-header-sendrequest').removeClass('active');
+        jQuery('#overlay-header-partslist').addClass('active');
+        new ProgressBar(0).paint();
+        paintTopHeaderLine();
+    };
+
+    var paintTopHeaderLine = function() {
+        var canvas = document.getElementById("overlay-topheaderline");
+        var ctx = canvas.getContext("2d");
+        ctx.beginPath();
+        ctx.strokeStyle = "#cccccc";
+        ctx.lineWidth = 1;
+        ctx.moveTo(150, 30);
+        ctx.lineTo(900, 30);
+        ctx.stroke();
+    };
+
+    var ProgressBar = function(which) {
+        this.xes = [ getMiddleXForId('overlay-header-partslist'), getMiddleXForId('overlay-header-sendrequest'), getMiddleXForId('overlay-header-ack') ];
+        this.y = 20;
+        this.which = which;
+        this.canvas = document.getElementById("overlay-headerline");
+        this.ctx = this.canvas.getContext("2d");
+
+        this.paint = function() {
+            this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+            this.ctx.beginPath();
+            this.ctx.strokeStyle = "#cccccc";
+            this.ctx.lineWidth =1;
+            this.ctx.moveTo(0, this.y);
+            this.ctx.lineTo(1180, this.y);
+            this.ctx.stroke();
+            this.blueLineToX();
+            this.paintArcs();
+        };
+        this.blueLineToX = function() {
+            this.ctx.beginPath();
+            this.ctx.moveTo(0, this.y);
+            this.ctx.strokeStyle = "#0082aa";
+            this.ctx.fillStyle = "#0082aa";
+            this.ctx.lineWidth = 1;
+            this.ctx.lineTo(this.xes[this.which], this.y);
+            this.ctx.stroke();
+        };
+        this.paintArcs = function() {
+            var i;
+            for (i=0; i < this.xes.length; ++i) {
+                this.ctx.beginPath();
+                if ( i < this.which ) {
+                    this.ctx.strokeStyle = "#0082aa";
+                    this.ctx.fillStyle = "#ffffff";
+                } else if ( i === this.which ) {
+                    this.ctx.strokeStyle = "#0082aa";
+                    this.ctx.fillStyle = "#0082aa";
+                } else {
+                    this.ctx.strokeStyle = "#cccccc";
+                    this.ctx.fillStyle = "#ffffff";
+                }
+                this.ctx.arc(this.xes[i], this.y, 4, 0, 2 * Math.PI);
+                this.ctx.fill();
+                this.ctx.stroke();
+            }
+        };
+    };
+
+    var getMiddleXForId = function(id) {
+        return jQuery('#' + id).offset().left - jQuery('#' + id).parent().offset().left + jQuery('#' + id).width() / 2;
+    };
+
+
+var showRequestOfferForm = function() {
+        jQuery('#view').hide();
+        jQuery('#request-offer-form').show();
+        jQuery('#overlay-header-ack,#overlay-header-partslist').removeClass('active');
+        jQuery('#overlay-header-sendrequest').addClass('active');
+        new ProgressBar(1).paint();
+        jQuery('#send-email').hide();
+    }
+
+    var requestOfferFormDefaultTexts = {
+        'request-offer-name': '<?php echo $this->__('Your Name')?> *',
+        'request-offer-address': '<?php echo $this->__('Address')?>',
+        'request-offer-phone': '<?php echo $this->__('Phone')?> *',
+        'request-offer-email': '<?php echo $this->__('Email')?> *',
+        'request-offer-message': '<?php echo $this->__('Your message')?>'
+    };
+
+    var requestOfferFormRequiredFields = [ 'request-offer-name', 'request-offer-phone', 'request-offer-email' ];
+
+    var sendRequest = function() {
+        try {
+            jQuery(requestOfferFormRequiredFields).each(function(i, field) {
+                var val = jQuery('#' + field).val();
+                if (jQuery.inArray(field, requestOfferFormRequiredFields) > -1 && (val === '' || val === requestOfferFormDefaultTexts[field])) {
+                    jQuery('#' + field).addClass('fielderror').focus();
+                    throw 'Field must be set';
+                }
+            });
+        } catch (e) {
+            return;
+        }
+
+        gaEndTransaction();
+        var url = '<?php echo $this->getUrl('wishlist/endcustomerpartslist/sendrequest')?>';
+        jQuery.ajax(url,
+            {
+                'type': 'POST',
+                'data': {
+                    'name': jQuery('#request-offer-name').val(),
+                    'address': jQuery('#request-offer-address').val(),
+                    'phone': jQuery('#request-offer-phone').val(),
+                    'email': jQuery('#request-offer-email').val(),
+                    'message': jQuery('#request-offer-message').val()
+                },
+                'success': function(data) {
+                    var datax = JSON.parse(data);
+                    jQuery('#request-offer-form').html(datax.html);
+                    jQuery('#overlay-header-partslist,#overlay-header-sendrequest').removeClass('active');
+                    jQuery('#overlay-header-ack').addClass('active');
+                    new ProgressBar(2).paint();
+                }
+            }
+        );
+    };
+
+    var initRequestFormTexts = function() {
+        for (var id in requestOfferFormDefaultTexts) {
+            if (requestOfferFormDefaultTexts.hasOwnProperty(id)) {
+                jQuery('#' + id)
+                    .val(requestOfferFormDefaultTexts[id])
+                    .focus(function(ev) {
+                        if ( jQuery(this).val() == '' )
+                            jQuery(this).val(requestOfferFormDefaultTexts[jQuery(this).attr('id')]);
+                        else if ( jQuery(this).val() ==  requestOfferFormDefaultTexts[jQuery(this).attr('id')])
+                            jQuery(this).val('');
+                    })
+                    .blur(function(ev) {
+                        if ( jQuery(this).val() == '' )
+                            jQuery(this).val(requestOfferFormDefaultTexts[jQuery(this).attr('id')]);
+                    })
+                ;
+            }
+        }
+    }
+
+    var refreshPartslistItemsCount = function(highlight) {
+        if (arguments.length === 0) {
+            highlight = false;
+        }
+
+        var url = '<?php echo $this->getUrl('wishlist/endcustomerpartslist/getPartslistItemsCount')?>';
+        jQuery.ajax(url,
+            {
+                'success': function(data) {
+                    var datax = JSON.parse(data);
+                    if (datax.status.toString() === 'ERROR') {
+                        // showOverlayMessage('error', datax.errors.join(', '), '');
+                        alert(datax.errors.join(', '));
+                        console.log('Json errors', datax.errors);
+                    } else {
+                        jQuery('#partslist-items-count').html(datax.html);
+                        if (highlight) {
+                            jQuery('#heading-partslist').addClass('highlighted').delay(2000).queue(function (next) {
+                                jQuery(this).removeClass('highlighted');
+                                next();
+                            });
+                        }
+                    }
+                }
+            }
+        );
+    };
+
+    var refreshProductDetail = function(sku) {
+        var url = '<?php echo $this->getUrl('wishlist/endcustomerpartslist/productDetail/')?>' + 'sku/' + sku;
+        jQuery.ajax(url,
+            {
+                'success': function(data) {
+                    var datax = JSON.parse(data);
+                    if (datax.status.toString() === 'ERROR') {
+                        // showOverlayMessage('error', datax.errors.join(', '), '');
+                        alert(datax.errors.join(', '));
+                        console.log('Json errors', datax.errors);
+                    } else {
+                        jQuery('.product-detail').empty().hide();
+                        jQuery('#productdetail-' + sku).empty().html(datax.html);
+                        var dummies = document.getElementsByClassName('refresh-after-ajax');
+                        var i;
+                        var dummy;
+                        for (i = 0; i < dummies.length; ++i) { dummy = dummies[i].getBoundingClientRect().top; dummy = dummies[i].offsetTop;}
+                        dummy = document.getElementById('productdetail-' + sku).offsetTop;
+                        jQuery('#productdetail-' + sku).show();
+                        jQuery('#show-product-detail-' + sku).hide();
+                        jQuery('#hide-product-detail-' + sku).show();
+                        Shadowbox.init({ skipSetup: true }); Shadowbox.setup();
+                        jQuery(document).foundation();
+                        jQuery('#sb-container').style.zIndex = "10000";
+                    }
+                }
+            }
+        );
+    };
+
+    var hideProductDetail = function(sku) {
+        jQuery('#productdetail-' + sku).hide();
+        jQuery('#hide-product-detail-' + sku).hide();
+        jQuery('#show-product-detail-' + sku).show();
+    };
+    function showShareForm(x, y) {
+        initShareFormTexts();
+        jQuery('#send-email').css('position', 'fixed').css('left', x).css('top', y).show();
+    }
+
+    function shareFormCoordsForViewForm() {
+        return { x: (jQuery('#wishlist-view-form .share').offset().left), y: ((jQuery('#wishlist-view-form .share').offset().top) - 210) };
+    }
+    function shareFormCoordsForSuccessForm() {
+        return { x: (jQuery('#success-form .share').offset().left), y: ((jQuery('#success-form .share').offset().top) + 40) };
+    }
+
+    var shareFormDefaultTexts = {
+        'send-email-name': '<?php echo $this->__('Your Name')?> *',
+        'send-email-address': '<?php echo $this->__('Address')?>',
+        'send-email-phone': '<?php echo $this->__('Phone')?> *',
+        'send-email-email': '<?php echo $this->__('Email of recipient')?> *',
+        'send-email-message': '<?php echo $this->__('Your message')?>'
+    };
+
+    var initShareFormTexts = function() {
+        for (var id in shareFormDefaultTexts) {
+            if (shareFormDefaultTexts.hasOwnProperty(id)) {
+                jQuery('#' + id)
+                    .val(shareFormDefaultTexts[id])
+                    .focus(function(ev) {
+                        if ( jQuery(this).val() == '' )
+                            jQuery(this).val(shareFormDefaultTexts[jQuery(this).attr('id')]);
+                        else if ( jQuery(this).val() ==  shareFormDefaultTexts[jQuery(this).attr('id')])
+                            jQuery(this).val('');
+                    })
+                    .blur(function(ev) {
+                        if ( jQuery(this).val() == '' )
+                            jQuery(this).val(shareFormDefaultTexts[jQuery(this).attr('id')]);
+                    })
+                ;
+            }
+        }
+    }
+//]]>
+</script>
+
+<script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+            (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+        m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-17094309-23', 'auto');
+    ga('send', 'pageview');
+    ga('require', 'ec');
+
+    function gaAddToCart(sku, action) {
+        ga('ec:addProduct', {
+            'id': sku,
+            'name': sku
+        });
+        ga('ec:setAction', action);
+        ga('send', 'event', 'UX', 'click', 'add to cart');
+    }
+
+    function gaEndTransaction() {
+        jQuery('#wishlist-view-form').find('.row-fine').each(function(index){
+            var sku = jQuery(this).find('.catalog-nr').text();
+            //var name = jQuery(this).find('.product-name a').attr('title');
+            var qty = jQuery(this).find('.qty').val();
+            ga('ec:addProduct', {
+                'id': sku,
+                'name': sku,
+                'price': '1.00',
+                'quantity': qty
+            });
+        });
+        ga('ec:setAction', 'purchase', {          // Transaction details are provided in an actionFieldObject.
+            'id': Mage.Cookies.get('pl').substring(8,16),                         // (Required) Transaction id (string).
+            'affiliation': Mage.Cookies.get('cid'), // Affiliation (string).
+            'revenue': '1.00'
+        });
+        ga('send', 'event', 'UX', 'click', 'submit wishlist');
+    }
+</script>

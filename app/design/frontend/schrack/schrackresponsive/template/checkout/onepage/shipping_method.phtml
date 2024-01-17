@@ -1,0 +1,427 @@
+<!-- app/design/frontend/schrack/schrackresponsive/template/checkout/onepage/shipping_method.phtml (start) -->
+
+<?php
+    $quote = Mage::getSingleton('checkout/session')->getQuote();
+    $quoteItems = $quote->getItemsCollection();
+?>
+
+<style>
+
+#shipping-method-buttons-container {
+    width: 100% !important;
+}
+
+ .checkout_saveShippingMethodButton {
+     width: 139px !important;
+     margin-left: auto !important;
+     margin-right: 5% !important;
+     margin-bottom: 2% !important;
+ }
+
+
+#shipping-method-please-wait {
+    margin-left: 13px;
+    float: left;
+    padding-left: 40px;
+    text-align: left;
+}
+
+#shipping-method-warning {
+    color: red;
+    font-size: 1em;
+    height: 15px;
+    font-weight: bold;
+    display: none;
+}
+
+@media (min-width: 638px) and (max-width: 991px) {
+    .checkout_saveShippingMethodButton {
+        margin-top: 10px;
+    }
+}
+</style>
+
+
+<form id="co-shipping-method-form" action="">
+    <?php echo $this->getBlockHtml('formkey'); ?>
+    <div id="shipping-method-warning"></div>
+    <div id="checkout-shipping-method-load">
+        <?php echo $this->getChildHtml('available') ?>
+    </div>
+    <script type="text/javascript">
+    //<![CDATA[
+        var shippingMethod = new ShippingMethod('co-shipping-method-form', "<?php echo $this->getUrl('checkout/onepage/saveShippingMethod') ?>");
+    //]]>
+    </script>
+    <div id="onepage-checkout-shipping-method-additional-load" style="margin-left: 15px;">
+        <?php echo $this->getChildHtml('additional') ?>
+    </div>
+    <div class="buttons-set" id="shipping-method-buttons-container">
+        <button id="checkout_saveShippingMethodButton" type="button" class="bttn-lg checkout_saveShippingMethodButton">
+        <span id="shipping-method-please-wait"
+            style="display: none;background:url('<?php echo $this->getSkinUrl('images/opc-ajax-loader.gif') ?>') left center no-repeat;">
+            &nbsp;
+            </span>
+            <span id="checkout_saveShippingMethodButtonContinue"><?php echo $this->__('Continue') ?></span>
+        </button>
+    </div>
+</form>
+
+<script type="text/javascript">
+    //<![CDATA[
+
+    jQuery(document).ready(function() {
+
+        jQuery('.checkout_saveShippingMethodButton').on('click', function() {
+            let shippingMethodCheck = localStorage.shippingMethodCheck;
+            console.log('Save Shipping Method Button Clicked');
+            jQuery('#checkSelectionButton').hide();
+
+
+            // jQuery('#checkout_saveShippingMethodButtonContinue').hide();
+            // jQuery('#checkout_saveShippingMethodButton').hide();
+            localStorage.newCheckoutProcessLastUpdateTime = Math.floor(Date.now() / 1000);
+
+            //---------------- Delivery chosen
+            if (shippingMethodCheck == 'delivery') {
+                jQuery('#checkout_select_store_pickup_container').hide();
+                jQuery('#shipping-form-inpost-choice').hide();
+
+
+                console.log('Chosen Method: Delivery');
+                localStorage.newCheckoutPickupLocation = '';
+                localStorage.newCheckoutDeliveryLocation = jQuery('.checkout_schrackdelivery_trigger').val();
+                localStorage.newCheckoutShippingMethod = 'delivery';
+
+                if ((localStorage.newCheckoutProcessSpecialAction == 'full-register-prospect-application'
+                        && localStorage.newCheckoutRunningProcess == 'processCheckoutAsNonLoggedInUser') ||
+                    localStorage.newCheckoutProcessCurrentRole == 'guest') {
+
+                    console.log('CHECKPOINT shipping_method.phtml #001');
+                    console.log('Open Billing Form (= Shipping Data) + Delivery as Method');
+                    jQuery('#shipping-form-container').hide();
+                    localStorage.newCheckoutProcessCurrentStep = 'opc-billing';
+
+                    // Change functionality of the save billing button:
+                    jQuery('#checkout_saveBillingButton').removeClass('checkout_saveBillingButtonAlternate');
+                    jQuery('#checkout_saveBillingButton').removeClass('checkout_saveBillingButton');
+                    jQuery('#checkout_saveBillingButton').addClass('checkout_saveBillingButton');
+
+                    if (<?php echo Mage::getStoreConfig('ec/config/active') ?>) {
+                        if (localStorage.trackingQuoteItems) {
+                            console.log('TRACKING >>>>>>> #1-BillingForm');
+                            trackAnalyticsCheckoutStep('checkoutShippingAddress', 'Shipping Address', 2, 'order_shipping_address', JSON.parse(localStorage.trackingQuoteItems));
+                        }
+                    }
+
+                    localStorage.checkoutShippingStep = 'two';
+                } else {
+                    console.log('Open Shipping Form + Delivery as Method');
+
+                    if (<?php echo Mage::getStoreConfig('ec/config/active') ?>) {
+                        if (localStorage.trackingQuoteItems) {
+                            console.log('TRACKING >>>>>>> #1-ShippingForm');
+                            trackAnalyticsCheckoutStep('checkoutShippingAddress', 'Shipping Address', 2, 'order_shipping_address', JSON.parse(localStorage.trackingQuoteItems));
+                        }
+                    }
+
+                    localStorage.checkoutShippingStep = 'two';
+                    localStorage.newCheckoutProcessCurrentStep = 'opc-shipping';
+                }
+
+                console.log('Executing: shippingMethod.save() (#1) (-> DELIVERY Case)');
+                jQuery('#opc-billing').show();
+                shippingMethod.save();
+            }
+
+            //---------------- Container chosen
+            else if (shippingMethodCheck == 'container') {
+                jQuery('#shipping-form-input').hide();
+                jQuery('#shipping-form-inpost-choice').hide();
+
+                console.log('Chosen Method: Container');
+                localStorage.newCheckoutWwsIdContainer = '';
+                localStorage.newCheckoutShippingMethod = 'container';
+
+                if ((localStorage.newCheckoutProcessSpecialAction == 'full-register-prospect-application'
+                        && localStorage.newCheckoutRunningProcess == 'processCheckoutAsNonLoggedInUser') ||
+                    localStorage.newCheckoutProcessCurrentRole == 'guest') {
+
+
+                    console.log('CHECKPOINT shipping_method.phtml #001');
+                    console.log('Open Billing Form (= Shipping Data) + Container as Method');
+                    localStorage.newCheckoutProcessCurrentStep = 'opc-billing';
+
+                    // Change functionality of the save billing button:
+                    jQuery('#checkout_saveBillingButton').addClass('checkout_saveBillingButtonAlternate');
+                    jQuery('#checkout_saveBillingButton').removeClass('checkout_saveBillingButton');
+                    jQuery('#checkout_saveBillingButton').addClass('container-address');
+
+                    localStorage.checkoutShippingStep = 'two';
+                    console.log('Executing: shippingMethod.save() (-> PICKUP Case (new-customer))');
+                    shippingMethod.save();
+                } else {
+                    console.log('Open Shipping Form + Container as Method');
+
+                    if (<?php echo Mage::getStoreConfig('ec/config/active') ?>) {
+                        if (localStorage.trackingQuoteItems) {
+                            console.log('TRACKING >>>>>>> #1-ShippingForm');
+                            trackAnalyticsCheckoutStep('checkoutShippingAddress', 'Shipping Address', 2, 'order_shipping_address', JSON.parse(localStorage.trackingQuoteItems));
+                        }
+                    }
+
+                    localStorage.checkoutShippingStep = 'two';
+                    localStorage.newCheckoutProcessCurrentStep = 'opc-shipping';
+                    // localStorage.newCheckoutContainerLocation = localStorage.newCheckoutSelectedContainerLocation;
+                }
+                jQuery('#co-shipping-method-form').hide();
+                jQuery('#checkout-step-shipping').show();
+                jQuery('#shipping-form-container').show();
+
+                if (<?php echo Mage::getStoreConfig('ec/config/active') ?>) {
+                    if (localStorage.trackingQuoteItems) {
+                        console.log('TRACKING >>>>>>> #2-ShippingForm');
+                        trackAnalyticsCheckoutStep('checkoutShippingAddress', 'Shipping Address', 2, 'order_shipping_address', JSON.parse(localStorage.trackingQuoteItems));
+                    }
+                }
+
+                localStorage.checkoutShippingStep = 'two';
+
+                jQuery('#shipping-form-container-choice').show();
+                jQuery('#co-shipping-form').hide();
+                jQuery('#checkout_select_store_pickup_container').hide();
+
+                localStorage.newCheckoutProcessCurrentStep = 'opc-shipping';
+
+                // Change display settings for new tab (shipping) - Part 1:
+                console.log('progress number 2 reached');
+                localStorage.newCheckoutProcessLastUpdateTime = Math.floor(Date.now() / 1000);
+                localStorage.newCheckoutProcessCurrentStep = 'opc-shipping';
+                checkout.accordion.openSection('opc-shipping');
+
+
+                jQuery('#checkout_tab_header_shipping').removeClass('checkout_step_inactive_tab');
+                jQuery('#checkout_tab_header_shipping').addClass('checkout_step_active_tab');
+                jQuery('#checkout_tab_header_shipping_method').removeClass('checkout_step_active_tab');
+                jQuery('#checkout_tab_header_shipping_method').addClass('checkout_step_inactive_tab');
+
+                jQuery('#step_one_progress_circle').html('&#10112;');
+                jQuery('#step_one_progress_circle').addClass('checkout_progress_link');
+                jQuery('#step_one_progress_circle').addClass('checkout_progress_color_active');
+                jQuery('#step_one_two_progress_circle_line').addClass('checkout_progress_hr_line_active');
+                jQuery('#step_two_progress_circle').html('&#10123;');
+                jQuery('#step_two_progress_circle').addClass('checkout_progress_color_active');
+                // Reset progress bar-display to current status (remove deprecated CSS-Classes):
+                jQuery('#step_two_progress_circle').removeClass('checkout_progress_link');
+                jQuery('#step_three_progress_circle').removeClass('checkout_progress_link');
+                jQuery('#step_three_progress_circle').html('&#10124;');
+                jQuery('#step_four_progress_circle').html('&#10125;');
+                jQuery('#step_two_three_progress_circle_line').removeClass('checkout_progress_hr_line_active');
+                jQuery('#step_three_four_progress_circle_line').removeClass('checkout_progress_hr_line_active');
+                jQuery('#step_three_progress_circle').removeClass('checkout_progress_color_active');
+                jQuery('#step_four_progress_circle').removeClass('checkout_progress_color_active');
+            }
+
+            //---------------- InPost chosen
+            else if (shippingMethodCheck == 'inpost') {
+                jQuery('#shipping-form-container').css("border", "0px");
+                jQuery('#shipping-form-inpost-choice').show();
+
+                console.log('Chosen Method: InPost');
+                localStorage.newCheckoutShippingMethod = 'inpost';
+
+                //  extracting the inpost id on click
+                console.log("%c############## Getting the inpost id", "color: green");
+
+                if ((localStorage.newCheckoutProcessSpecialAction == 'full-register-prospect-application'
+                        && localStorage.newCheckoutRunningProcess == 'processCheckoutAsNonLoggedInUser') ||
+                    localStorage.newCheckoutProcessCurrentRole == 'guest') {
+                    jQuery('#opc-billing').hide();
+
+                    console.log('CHECKPOINT shipping_method.phtml #001');
+                    console.log('Open Billing Form (= Shipping Data) + InPost as Method');
+                    localStorage.newCheckoutProcessCurrentStep = 'opc-billing';
+
+                    // Change functionality of the save billing button:
+                    jQuery('#checkout_saveBillingButton').removeClass('checkout_saveBillingButtonAlternate');
+                    jQuery('#checkout_saveBillingButton').removeClass('checkout_saveBillingButton');
+                    jQuery('#checkout_saveBillingButton').addClass('checkout_saveBillingButton');
+
+                    jQuery('#co-shipping-method-form').hide();
+                    jQuery('#checkout-step-shipping').show();
+
+                    localStorage.checkoutShippingStep = 'two';
+                    console.log('Executing: shippingMethod.save() (-> PICKUP Case (new-customer))');
+                } else {
+                    console.log('Open Shipping Form + Inpost as Method');
+
+                    if (<?php echo Mage::getStoreConfig('ec/config/active') ?>) {
+                        if (localStorage.trackingQuoteItems) {
+                            console.log('TRACKING >>>>>>> #1-ShippingForm');
+                            trackAnalyticsCheckoutStep('checkoutShippingAddress', 'Shipping Address', 2, 'order_shipping_address', JSON.parse(localStorage.trackingQuoteItems));
+                        }
+                    }
+                    localStorage.checkoutShippingStep = 'two';
+                    localStorage.newCheckoutProcessCurrentStep = 'opc-shipping';
+                }
+                jQuery('#co-shipping-method-form').hide();
+                jQuery('#checkout-step-shipping').show();
+
+                shippingMethod.save();
+            }
+
+            //---------------- Pickup chosen
+            else if (shippingMethodCheck == 'pickup') {
+                jQuery('#shipping-form-inpost-choice').hide();
+                jQuery('#opc-billing').show();
+
+                console.log('Chosen Method: Pickup');
+                localStorage.newCheckoutDeliveryLocation = '';
+                localStorage.newCheckoutShippingMethod = 'pickup';
+
+                if ((localStorage.newCheckoutProcessSpecialAction == 'full-register-prospect-application'
+                        && localStorage.newCheckoutRunningProcess == 'processCheckoutAsNonLoggedInUser') ||
+                    localStorage.newCheckoutProcessCurrentRole == 'guest') {
+
+                    console.log('Open Billing Form (= Shipping Data) + Pickup as Method (Pickup-Store Selectlist)');
+                    jQuery('#shipping-form-container').hide();
+                    jQuery('#co-shipping-method-form').hide();
+                    localStorage.newCheckoutProcessCurrentStep = 'opc-billing';
+
+                    // Change functionality of the save billing button:
+                    jQuery('#checkout_saveBillingButton').removeClass('checkout_saveBillingButtonAlternate');
+                    jQuery('#checkout_saveBillingButton').removeClass('checkout_saveBillingButton');
+                    jQuery('#checkout_saveBillingButton').addClass('checkout_saveBillingButton');
+
+                    // jQuery('#checkout_saveBillingButton').removeClass('checkout_saveBillingButton');
+                    // jQuery('#checkout_saveBillingButton').addClass('checkout_saveBillingButtonAlternate');
+
+                    console.log('Executing: shippingMethod.save() (-> PICKUP Case (new-customer))');
+                } else {
+                    console.log('Open Shipping Tab + Pickup as Method (Pickup-Store Selectlist)');
+
+                    if (localStorage.customerNotLoggedIn == "0"
+                        && localStorage.newCheckoutProcessCurrentRole == 'prospect-user'
+                        && localStorage.newCheckoutProspectRole == 'prospect-light'
+                        && localStorage.newCheckoutProcessSpecialAction == 'full-register-prospect-application') {
+
+                        console.log('Status : light prospect needs to be complete all company address data and other company related data (pickup route 1)');
+                        console.log('Executing: shippingMethod.save() (-> PICKUP Case (Light-prospect))');
+
+                        localStorage.newCheckoutProcessCurrentStep = 'opc-shipping';
+                        localStorage.checkoutShippingStep = 'two';
+
+
+                        // Check first, if article is avilable (in condition of this should be ignored)
+                        var ajaxURL     = '<?php echo Mage::helper('schrackcore/url')->getUrlWithCurrentProtocol('catalog/product/getProductAvailabilityInStore'); ?>';
+                        var formKey     = '<?php echo Mage::getSingleton('core/session')->getFormKey(); ?>';
+                        var pickupStore = localStorage.newCheckoutSelectedPickupLocation;
+
+                        getProductAvailabilityInStore(ajaxURL, pickupStore, formKey, 'action_three');
+                    } else {
+                        console.log('CHECKPOINT shipping_method.phtml #002');
+
+                        // Open tab with shipping information, but only showing store pickup selection options:
+                        jQuery('#co-shipping-form').hide();
+
+                        if (jQuery('#shipping-form-container #checkout_select_store_pickup_container').length > 0) {
+                            console.log('Number of Buttons = ' + jQuery('#shipping-form-container #checkout_select_store_pickup_container').length);
+                        } else {
+                            console.log('Number of Buttons = 0');
+                            jQuery("#checkout_select_store_pickup_container").appendTo("#shipping-form-container");
+                        }
+
+                        jQuery('#co-shipping-method-form').hide();
+                        jQuery('#checkout-step-shipping').show();
+                        jQuery('#shipping-form-container').show();
+
+                        if (<?php echo Mage::getStoreConfig('ec/config/active') ?>) {
+                            if (localStorage.trackingQuoteItems) {
+                                console.log('TRACKING >>>>>>> #2-ShippingForm');
+                                trackAnalyticsCheckoutStep('checkoutShippingAddress', 'Shipping Address', 2, 'order_shipping_address', JSON.parse(localStorage.trackingQuoteItems));
+                            }
+                        }
+
+                        localStorage.checkoutShippingStep = 'two';
+
+                        jQuery('#checkout_select_store_pickup').removeClass('hidden');
+                        jQuery('#checkout_select_store_pickup_container').show();
+
+                        localStorage.newCheckoutProcessCurrentStep = 'opc-shipping';
+                        localStorage.newCheckoutShippingMethod = 'pickup';
+                        localStorage.newCheckoutPickupLocation = localStorage.newCheckoutSelectedPickupLocation;
+
+                        // Change display settings for new tab (shipping) - Part 1:
+                        console.log('progress number 2 reached');
+                        localStorage.newCheckoutProcessLastUpdateTime = Math.floor(Date.now() / 1000);
+                        localStorage.newCheckoutProcessCurrentStep = 'opc-shipping';
+                        checkout.accordion.openSection('opc-shipping');
+
+                        jQuery('#checkout_tab_header_payment').removeClass('checkout_step_active_tab');
+                        jQuery('#checkout_tab_header_payment').removeClass('checkout_step_inactive_tab ');
+                        jQuery('#checkout_tab_header_payment').addClass('checkout_step_inactive_untouched_tab');
+                        jQuery('#checkout_tab_header_review').removeClass('checkout_step_active_tab');
+                        jQuery('#checkout_tab_header_review').removeClass('checkout_step_inactive_tab ');
+                        jQuery('#checkout_tab_header_review').addClass('checkout_step_inactive_untouched_tab');
+                        jQuery('#checkout_tab_header_shipping').removeClass('checkout_step_inactive_tab');
+                        jQuery('#checkout_tab_header_shipping').addClass('checkout_step_active_tab');
+                        jQuery('#checkout_tab_header_shipping_method').removeClass('checkout_step_active_tab');
+                        jQuery('#checkout_tab_header_shipping_method').addClass('checkout_step_inactive_tab');
+
+                        jQuery('#step_one_progress_circle').html('&#10112;');
+                        jQuery('#step_one_progress_circle').addClass('checkout_progress_link');
+                        jQuery('#step_one_progress_circle').addClass('checkout_progress_color_active');
+                        jQuery('#step_one_two_progress_circle_line').addClass('checkout_progress_hr_line_active');
+                        jQuery('#step_two_progress_circle').html('&#10123;');
+                        jQuery('#step_two_progress_circle').addClass('checkout_progress_color_active');
+                        // Reset progress bar-display to current status (remove deprecated CSS-Classes):
+                        jQuery('#step_two_progress_circle').removeClass('checkout_progress_link');
+                        jQuery('#step_three_progress_circle').removeClass('checkout_progress_link');
+                        jQuery('#step_three_progress_circle').html('&#10124;');
+                        jQuery('#step_four_progress_circle').html('&#10125;');
+                        jQuery('#step_two_three_progress_circle_line').removeClass('checkout_progress_hr_line_active');
+                        jQuery('#step_three_four_progress_circle_line').removeClass('checkout_progress_hr_line_active');
+                        jQuery('#step_three_progress_circle').removeClass('checkout_progress_color_active');
+                        jQuery('#step_four_progress_circle').removeClass('checkout_progress_color_active');
+                    }
+                }
+                shippingMethod.save();
+            } else {
+                jQuery('#shipping-form-inpost-choice').hide();
+
+                console.log('Chosen Method: None !');
+                jQuery('#shipping-method-warning').text('<?php echo $this->__('Please specify shipping method.'); ?>');
+                jQuery('#shipping-method-warning').show();
+                jQuery('#shipping-method-warning').fadeOut(5000);
+                jQuery('#checkout_saveShippingMethodButtonContinue').show();
+            }
+        });
+
+        //jQuery('.checkout_saveShippingMethodButtonAlternate').unbind('click');
+        jQuery('#checkout_saveShippingMethodButtonAlternate').on('click', function() {
+            console.log('CHECKPOINT shipping_method.phtml #003');
+
+            var ajaxURL     = '<?php echo Mage::helper('schrackcore/url')->getUrlWithCurrentProtocol('catalog/product/getProductAvailabilityInStore'); ?>';
+            var formKey     = '<?php echo Mage::getSingleton('core/session')->getFormKey(); ?>';
+            var pickupStore = localStorage.newCheckoutSelectedPickupLocation;
+
+            if (jQuery('#checkout_saveShippingMethodButtonAlternate').hasClass('checkout_saveShippingMethodButtonAlternate')) {
+                console.log('Chosen Method: Pickup Confirmed #1');
+
+                // Check first, if article is avilable (in condition of this should be ignored)
+                getProductAvailabilityInStore(ajaxURL, pickupStore, formKey, 'action_one');
+            }
+
+            if (localStorage.newCheckoutProspectRole == 'prospect-light' && localStorage.newCheckoutProcessCurrentStep == 'opc-shipping') {
+                console.log('Chosen Method: Pickup Confirmed #2');
+
+                // Check first, if article is avilable (in condition of this should be ignored)
+                getProductAvailabilityInStore(ajaxURL, pickupStore, formKey, 'action_two');
+            }
+        });
+
+    });
+
+    //]]>
+</script>
+<!-- app/design/frontend/schrack/schrackresponsive/template/checkout/onepage/shipping_method.phtml (end) -->

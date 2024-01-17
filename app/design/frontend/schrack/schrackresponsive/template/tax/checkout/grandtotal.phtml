@@ -1,0 +1,364 @@
+<!-- app/design/frontend/schrack/schrackresponsive/template/tax/checkout/grandtotal.phtml (start) -->
+<?php
+    // Schracklive rounding differences:
+    $grandTotal = $this->getTotal()->getAddress()->getGrandTotal();
+    $subTotal = $this->getTotal()->getAddress()->getSubtotal();
+    $tax = $this->getTotal()->getAddress()->getTaxAmount();
+    $shipping = $this->getTotal()->getAddress()->getShippingAmount();
+
+    $difference = round($grandTotal - $shipping - $tax - $subTotal, 2);
+    $_currency = Mage::getStoreConfig('currency/options/default');
+
+    $schrackWwsOrderId = Mage::getSingleton('checkout/session')->getQuote()->getSchrackWwsOrderNumber();
+    $hasCashDisount = 0;
+
+    #   CH tax solution
+    $countryCheck = Mage::getStoreConfig('schrack/general/country');
+    $subTotalWithShippingCost = $this->getTotal()->getAddress()->getSubtotalWithShippingCost();
+    $netAmount = $subTotal + $shipping;
+
+    if($countryCheck == 'CH') {
+        $_value = $netAmount * 0.077;
+        $totalGrandValue = $netAmount + $subTotalWithShippingCost + $_value;
+    } else {
+        $totalGrandValue = $this->getTotal()->getValue();
+    }
+
+    if ($schrackWwsOrderId) {
+        $resource = Mage::getSingleton('core/resource');
+        $readConnection = $resource->getConnection('core_read');
+
+        $query  = "SELECT has_discount FROM wws_insert_update_order_response";
+        $query .= " WHERE wws_order_id LIKE '" . $schrackWwsOrderId . "'";
+        $query .= " ORDER BY response_datetime DESC";
+        $query .= " LIMIT 1";
+        $hasCashDisount = $readConnection->fetchOne($query);
+    }
+?>
+
+<style>
+    .checkout_review_grandtotal_with_tax_excluded_totals {
+        /* border: 1px solid green; */
+    }
+
+    .checkout_review_grandtotal_with_tax_included_totals {
+        /* border: 1px solid green; */
+    }
+
+    .checkout_review_grandtotal_with_tax_excluded_totals_left {
+        width: 73% !important;
+        float: left !important;
+        height: 50px !important;
+        padding-left: 16px !important;
+        padding-top: 21px !important;
+    }
+
+    .checkout_review_grandtotal_with_tax_excluded_totals_right {
+        width: 27% !important;
+        float: left !important;
+        height: 50px !important;
+        padding-left: 5px !important;
+        padding-right: 5px !important;
+        padding-top: 18px !important;
+    }
+
+    .checkout_review_grandtotal_with_tax_included_totals_left {
+        width: 73% !important;
+        float: left !important;
+        height: 50px !important;
+        padding-left: 16px !important;
+        padding-top: 21px !important;
+    }
+
+    .checkout_review_grandtotal_with_tax_included_totals_right {
+        width: 27% !important;
+        float: left !important;
+        height: 50px !important;
+        padding-left: 5px !important;
+        padding-right: 5px !important;
+        padding-top: 18px !important;
+    }
+
+    .checkout_review_grandtotal_with_tax_included_totals_left {
+        width: 73% !important;
+        float: left !important;
+        height: 50px !important;
+        padding-left: 16px !important;
+        padding-top: 14px !important;
+        font-size: 1em !important;
+    }
+
+    .checkout_review_grandtotal_with_tax_included_totals_right {
+        width: 27% !important;
+        float: left !important;
+        height: 50px !important;
+        padding-left: 5px !important;
+        padding-right: 5px !important;
+        padding-top: 7px !important;
+    }
+
+    .checkout_review_grandtotal_subtotal_price_currency {
+        font-size: 0.8em !important;
+        font-weight: bold !important;
+        display: block !important;
+        float: left !important;
+        margin-top: 14px !important;
+        width: 33% !important;
+    }
+
+    .checkout_review_grandtotal_subtotal_price {
+        font-size: 0.9em !important;
+        font-weight: bold !important;
+        display: block !important;
+        float: left !important;
+        text-align: right !important;
+        width: 67% !important;
+        margin-top: 13px !important;
+    }
+    #grandtotal_separator {
+        display: block !important;
+        height: 1px !important;
+        border: 0 !important;
+        border-top: 1px solid #007FE4 !important;
+        margin: 1em 0 !important;
+        padding: 0 !important;
+    }
+
+    @media (min-width: 366px) and (max-width: 499px) {
+        .checkout_review_grandtotal_with_tax_excluded_totals_left {
+            width: 73% !important;
+            font-size: 1em !important;
+        }
+        .checkout_review_grandtotal_with_tax_excluded_totals_right {
+            width: 27% !important;
+            padding-top: 18px !important;
+        }
+        .checkout_review_grandtotal_with_tax_included_totals_left {
+            width: 73% !important;
+            font-size: 1.1em !important;
+            font-weight: bold !important;
+        }
+        .checkout_review_grandtotal_with_tax_included_totals_right {
+            width: 27% !important;
+            padding-top: 18px !important;
+        }
+        .checkout_review_grandtotal_subtotal_price_currency {
+            font-size: 0.6em !important;
+            margin-top: 6px !important;
+            width: 33% !important;
+            text-align: left !important;
+        }
+        .checkout_review_grandtotal_subtotal_price {
+            font-size: 1.0em !important;
+            width: 67% !important;
+            text-align: left !important;
+            margin-top: 0 !important;
+        }
+    }
+
+    @media (min-width: 500px) and (max-width: 700px) {
+        .checkout_review_grandtotal_with_tax_excluded_totals_left {
+            width: 76% !important;
+            font-size: 1em !important;
+        }
+        .checkout_review_grandtotal_with_tax_excluded_totals_right {
+            padding-top: 15px !important;
+            width: 24% !important;
+        }
+        .checkout_review_grandtotal_with_tax_included_totals_left {
+            width: 76% !important;
+            padding-top: 15px !important;
+            font-size: 1.1em !important;
+            font-weight: bold !important;
+        }
+        .checkout_review_grandtotal_with_tax_included_totals_right {
+            width: 24% !important;
+            padding-top: 15px !important;
+        }
+        .checkout_review_grandtotal_subtotal_price_currency {
+            font-size: 0.8em !important;
+            margin-top: 6px !important;
+            text-align: left !important;
+            width: 33% !important;
+        }
+        .checkout_review_grandtotal_subtotal_price {
+            font-size: 1em !important;
+            text-align: left !important;
+            width: 67% !important;
+            margin-top: 3px !important;
+        }
+    }
+
+    @media (min-width: 701px) and (max-width: 991px) {
+        .checkout_review_grandtotal_with_tax_excluded_totals_left {
+            width: 82% !important;
+            font-size: 1em !important;
+        }
+        .checkout_review_grandtotal_with_tax_excluded_totals_right {
+            width: 18% !important;
+            padding-top: 11px !important;
+        }
+        .checkout_review_grandtotal_with_tax_included_totals_left {
+            padding-top: 11px !important;
+            font-size: 1.2em !important;
+            font-weight: bold !important;
+            width: 82% !important;
+        }
+        .checkout_review_grandtotal_with_tax_included_totals_right {
+            width: 18% !important;
+        }
+        .checkout_review_grandtotal_subtotal_price_currency {
+            font-size: 0.8em !important;
+            margin-top: 10px !important;
+            text-align: left !important;
+            width: 33% !important;
+        }
+        .checkout_review_grandtotal_subtotal_price {
+            font-size: 1.2em !important;
+            text-align: left !important;
+            width: 67% !important;
+            margin-top: 4px !important;
+        }
+    }
+
+    @media (min-width: 992px) and (max-width: 1240px) {
+        .checkout_review_grandtotal_with_tax_excluded_totals_left {
+            width: 86% !important;
+            font-size: 1em !important;
+        }
+        .checkout_review_grandtotal_with_tax_excluded_totals_right {
+            width: 14% !important;
+            padding-top: 11px !important;
+        }
+        .checkout_review_grandtotal_with_tax_included_totals_left {
+            padding-top: 11px !important;
+            font-size: 1.2em !important;
+            font-weight: bold !important;
+            width: 86% !important;
+        }
+        .checkout_review_grandtotal_with_tax_included_totals_right {
+             width: 14% !important;
+        }
+        .checkout_review_grandtotal_subtotal_price_currency {
+            font-size: 0.9em !important;
+            margin-top: 9px !important;
+            text-align: left !important;
+            width: 33% !important;
+        }
+        .checkout_review_grandtotal_subtotal_price {
+            font-size: 1.3em !important;
+            text-align: left !important;
+            width: 67% !important;
+            margin-top: 3px !important;
+        }
+    }
+
+    @media (min-width: 1241px) and (max-width: 3000px) {
+        .checkout_review_grandtotal_with_tax_excluded_totals_left {
+            width: 86% !important;
+            font-size: 1em !important;
+            padding-top: 13px !important;
+        }
+        .checkout_review_grandtotal_with_tax_excluded_totals_right {
+            width: 14% !important;
+            padding-top: 12px !important;
+        }
+        .checkout_review_grandtotal_with_tax_included_totals_left {
+            width: 86% !important;
+            padding-top: 12px !important;
+            font-size: 1.4em !important;
+            font-weight: bold !important;
+        }
+        .checkout_review_grandtotal_with_tax_included_totals_right {
+            width: 14% !important;
+            padding-top: 12px !important;
+        }
+        .checkout_review_grandtotal_subtotal_price_currency {
+            font-size: 0.9em !important;
+            margin-top: 9px !important;
+            text-align: left !important;
+            width: 33% !important;
+        }
+        .checkout_review_grandtotal_subtotal_price {
+            font-size: 1.3em !important;
+            text-align: left !important;
+            width: 67% !important;
+            margin-top: 3px !important;
+        }
+    }
+
+    .surcharges_not_reducable_info {
+        font-size: 0.8em !important;
+        margin-left: 15px !important;
+    }
+</style>
+
+<?php
+    echo '<!-- WWS-Order: ' . Mage::getSingleton('checkout/session')->getQuote()->getSchrackWwsOrderNumber() . ' -->';
+?>
+
+<?php if ($this->includeTax() && $this->getTotalExclTax()>=0) : ?>
+    <div class="checkout_review_grandtotal_with_tax_excluded_totals">
+        <div class="checkout_review_grandtotal_with_tax_excluded_totals_left">
+        <!-- Nettobetrag : CASE #1: -->
+            <?php echo $this->helper('tax')->__('Grand Total Excl. Tax'); ?>
+        </div>
+        <div class="checkout_review_grandtotal_with_tax_excluded_totals_right">
+            <span class="checkout_review_grandtotal_subtotal_price_currency"><?php echo $_currency; ?></span>
+            <span class="checkout_review_grandtotal_subtotal_price"><?php echo $this->helper('checkout')->formatPrice($this->getTotalExclTaxFromWws()) ?></span>
+        </div>
+        <div style="clear: both;"></div>
+    </div>
+    <?php echo $this->renderTotals('taxes', $this->getColspan()); ?>
+    <hr id="grandtotal_separator">
+    <div class="checkout_review_grandtotal_with_tax_included_totals" id="grand-total">
+        <div class="checkout_review_grandtotal_with_tax_included_totals_left">
+            <?php
+                if ($hasCashDisount == 1) {
+                    echo $this->__("Total Cash Amount") . ' (' . $this->__("Total Gross Amount Minus Cash Discount") . ') ';
+                } else {
+                    echo $this->helper('tax')->__('Grand Total Incl. Tax');
+                }
+            ?>
+        </div>
+        <div class="checkout_review_grandtotal_with_tax_included_totals_right">
+            <span class="checkout_review_grandtotal_subtotal_price_currency"><?php echo $_currency; ?></span>
+            <span class="checkout_review_grandtotal_subtotal_price"><?= $this->helper('checkout')->formatPrice($totalGrandValue) ?></span>
+        </div>
+        <div style="clear: both;"></div>
+    </div>
+    <?php
+        if ($hasCashDisount == 1) {
+            echo '<div class="surcharges_not_reducable_info">';
+            echo '<span style="color: red;">* </span>' . $this->__("Surcharges Are Not Reducible");
+            echo '</div>';
+        }
+    ?>
+<?php else : ?>
+    <div class="checkout_review_grandtotal_with_tax_excluded_totals">
+        <div class="checkout_review_grandtotal_with_tax_excluded_totals_left">
+            <!-- Nettobetrag : CASE #2: -->
+            <?php echo $this->getTotal()->getTitle() ?>
+        </div>
+        <div class="checkout_review_grandtotal_with_tax_excluded_totals_right">
+            <span class="checkout_review_grandtotal_subtotal_price_currency"><?php echo $_currency; ?></span>
+            <span class="checkout_review_grandtotal_subtotal_price"><?php echo $this->helper('checkout')->formatPrice($this->getTotal()->getValue()) ?></span>
+        </div>
+        <div style="clear: both;"></div>
+    </div>
+<?php endif;?>
+
+<?php if ($difference > 0.0) : ?>
+    <div class="checkout_review_grandtotal_with_tax_excluded_totals">
+        <div class="checkout_review_grandtotal_with_tax_excluded_totals_left">
+            <!-- Nettobetrag : CASE #3: -->
+            <?php echo $this->helper('tax')->__('Rounding difference'); ?>
+        </div>
+        <div class="checkout_review_grandtotal_with_tax_excluded_totals_right">
+            <span class="checkout_review_grandtotal_subtotal_price_currency"><?php echo $_currency; ?></span>
+            <span class="checkout_review_grandtotal_subtotal_price"><?php echo $this->helper('checkout')->formatPrice($difference); ?></span>
+        </div>
+        <div style="clear: both;"></div>
+    </div>
+<?php endif; ?>
+<!-- app/design/frontend/schrack/schrackresponsive/template/tax/checkout/grandtotal.phtml (end) -->

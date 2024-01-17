@@ -1,0 +1,583 @@
+<!-- app/design/frontend/schrack/schrackresponsive/template/customer/account/act_as_user.phtml (start) -->
+<?php
+    $_session = Mage::getSingleton('customer/session');
+    $sessionCustomer  = $_session->getCustomer();
+    if ( !$sessionCustomer ) {
+      $actAsCustomerPossible = false;
+    } else {
+        if ($sessionCustomer->isActAsUserPossibleDashboard($sessionCustomer)) {
+            $actAsCustomerPossible = true;
+        } else {
+            $actAsCustomerPossible = false;
+        }
+    }
+?>
+
+<style>
+#actasacustomer_submit {
+    width: 200px !important;
+    margin-top: 20px !important;
+    height: 39px !important;
+    padding: 5px !important;
+}
+#detailed_result_list {
+    margin-top: 12px !important;
+    color: black !important;;
+    font-size: 16px !important;
+    width: 100% !important;
+}
+.login_as_button {
+    height: 30px;
+    padding-top: 3px;
+    padding-bottom: 3px;
+    padding-left: 7px;
+    padding-right: 7px;
+    background: #d1222b;
+    color: #fff !important;
+    font-size: 14px;
+    margin-right: 6px;
+    border: none;
+    width: 120px !important;
+}
+
+.detailed_customer_search_result_item {
+    background: #f5f5f5;
+}
+
+.detailed_customer_search_result_item_right_aligned {
+    background: #f5f5f5;
+    padding-left: 6px;
+    margin-left: 120px;
+}
+
+.detailed_customer_search_result_item_separator {
+    height: 10px;
+}
+
+#back_to_my_account_button {
+    width: 10%;
+    float: right !important;
+    background: #d1222b;
+    color: #fff !important;
+    font-size: 14px;
+    height: 39px;
+    padding-top: 10px;
+    text-align: center;
+}
+.headingBg {
+    width: 90%;
+    float: left;
+}
+.result {
+    list-style:none;
+    width: 90% !important;
+}
+.result li {
+    padding:5px;
+    border:1px solid #d6d6d6;
+    border-top:0;
+    cursor: pointer;
+    color:#000;
+
+}
+.result li:hover {
+    background:#00589d;
+    color:#fff;
+}
+.dropdown {
+    position:absolute;
+    z-index: 1000;
+    background: #ffffff;
+}
+#result_list_dropdown {
+    width: 100% !important;
+}
+.detailed_dropdown {
+    z-index: 100;
+    background: #ffffff;
+}
+#detailed_result_list_dropdown {
+    width: 100% !important;
+}
+#act_as_a_customer_search_container {
+    margin-bottom: 10px !important;
+    margin-top: 0 !important;
+    width: 100.25% !important;
+}
+#customer_search_line_wrapper {
+    float:left;
+    box-shadow: 0 0 2px 1px rgba(0,0,0,.1);
+    width: 90% !important;
+    height: 33px !important;
+    margin-top: 2px !important;
+}
+#customer_search_line {
+    height: 33px !important;
+    width: 100% !important;
+    border: 0;
+    padding-left: 9px !important;
+    font-size: 16px !important;
+}
+#customer_search_line:focus {
+    outline: 0;
+    -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075), 0 0 8px rgba(102, 175, 233, .6);
+    box-shadow: inset 0px 1px 1px rgba(0,0,0,0.075), 0px 0px 8px rgba(102,175,233,0.6);
+}
+#customer_search_magnifier_button {
+    float: left !important;
+    width: 10% !important;
+    height: 37px !important;
+    color: #fff !important;
+    background: #00589d !important;
+}
+#customer_search_magnifier_button:hover {
+    cursor: pointer;
+}
+#act_as_a_customer_search_container_wrapper {
+    margin-top: 10px !important;
+    margin-bottom: 25px !important;
+}
+#act_as_a_customer_search_filter_container {
+    border-top: 1px solid #ddd !important;
+    border-left: 1px solid #ddd !important;
+    border-right: 1px solid #ddd !important;
+    padding-left: 3px !important;
+    color: #333 !important;
+    font-size: 14px !important;
+    font-weight: 400 !important;
+    background: #f9f9f9 !important;
+    font-family: 'robotomedium', Helvetica, Arial, Sans-Serif !important;
+}
+.act_as_a_customer_search_container_headline {
+    margin-top: 24px !important;
+}
+.customer_search_auto_suggest::-ms-clear {
+    display: none;
+    width : 0;
+    height: 0;
+}
+
+    @media (min-width: 1px) and (max-width: 992px) {
+        .my_account_act_as_customer_content_wrapper {
+            margin-right: 16px !important;
+        }
+    }
+
+    @media (min-width: 60px) and (max-width: 320px) {
+        .yes_no_button {
+            height: 30px !important;
+        }
+        .detailed_customer_search_result_item {
+            font-size: 0.8em;
+        }
+        .detailed_customer_search_result_item_right_aligned {
+            font-size: 0.8em;
+            padding-left: 6px;
+            margin-left: 120px;
+        }
+        #back_to_my_account_button {
+            width: 20%;
+        }
+        .headingBg {
+            width: 80%;
+        }
+        #customer_search_line_wrapper {
+            width: 90% !important;
+        }
+        .result {
+            width: 90% !important;
+        }
+        #customer_search_magnifier_button {
+            padding-left: 9px !important;
+        }
+    }
+    @media (min-width: 321px) and (max-width: 480px) {
+        .yes_no_button {
+            height: 30px !important;
+        }
+        .detailed_customer_search_result_item {
+            font-size: 0.8em;
+        }
+        .detailed_customer_search_result_item_right_aligned {
+            font-size: 0.8em;
+            padding-left: 6px;
+            margin-left: 120px;
+        }
+        #back_to_my_account_button {
+            width: 20%;
+        }
+        .headingBg {
+            width: 80%;
+        }
+        #customer_search_line_wrapper {
+            width: 90% !important;
+        }
+        .result {
+            width: 90% !important;
+        }
+        #customer_search_magnifier_button {
+            padding-left: 9px !important;
+        }
+    }
+    @media (min-width: 481px) and (max-width: 767px) {
+        .yes_no_button {
+            height: 30px !important;
+        }
+        .detailed_customer_search_result_item {
+            font-size: 1em;
+        }
+        .detailed_customer_search_result_item_right_aligned {
+            font-size: 1em;
+            padding-left: 6px;
+            margin-left: 120px;
+        }
+        #back_to_my_account_button {
+            width: 20%;
+        }
+        .headingBg {
+            width: 80%;
+        }
+        #customer_search_magnifier_button {
+            padding-left: 9px !important;
+        }
+    }
+</style>
+
+<div id="my_account_act_as_customer_wrapper" class="my_account_act_as_customer_content_wrapper">
+    <div>
+        <h2 class="headingBg"><?php echo $this->__('Customer Search'); ?></h2>
+        <a id="back_to_my_account_button" href="<?php echo $this->getUrl('customer/account'); ?>" title="<?php echo $this->__('Overview'); ?>"><?php echo $this->__('Back'); ?></a>
+        <div style="clear: both;"></div>
+    </div>
+
+
+<?php if ($actAsCustomerPossible == true) : ?>
+    <div id="act_as_a_customer_search_container_wrapper">
+        <h1 class="act_as_a_customer_search_container_headline"><?php echo $this->__('Act As Customer'); ?></h1>
+        <div id="act_as_a_customer_search_filter_container" style="height: 37px !important;">
+            <div style="padding-top: 9px !important; padding-left: 3px;">
+                <input type="checkbox" id="only_show_my_contacts_checkbox" style="margin-top: 2px;">
+                <span id="only_show_my_contacts_checkbox_text"><?php echo $this->__('Only Show My Contacts'); ?></span>
+            </div>
+        </div>
+        <div id="act_as_a_customer_search_container" style="position: relative;">
+            <div id="customer_search_line_wrapper">
+                <input id="customer_search_line" class="customer_search_auto_suggest" />
+            </div>
+            <span id="customer_search_magnifier_button" style="padding-top: 10px; background: #00589d !important; color: white !important; height: 37px !important;" class="input-group-addon">
+                <img id="searchLoader" class="ajaxSpinnerOverlay" style="display: none; widtH: 20px; height: 20px;" src="<?php echo $this->getSkinUrl('schrackdesign/Public/Images/download_ajax_loader.gif'); ?>" >
+                <span id="searchMagnifierImage" class="glyphicon glyphicon-search"></span>
+            </span>
+            <div style="clear: both;"></div>
+            <div id="result_list_dropdown" class="dropdown">
+                <ul id="result_list" class="result"></ul>
+            </div>
+            <div id="detailed_result_list_dropdown" class="detailed_dropdown">
+                <ul id="detailed_result_list"></ul>
+            </div>
+        </div>
+    </div>
+<?php endif; ?>
+</div>
+
+<input type="hidden" name="form_key" value="<?php echo Mage::getSingleton('core/session')->getFormKey(); ?>" />
+<div class="row">
+    <div class="large-9 columns">
+        <input type="hidden" name="customer_id" />
+    </div>
+</div>
+
+<form id="act_as_a_customer_form" method="post" action="<?php echo Mage::getUrl('customer/account/actAsUserPost'); ?>" >
+    <input type="hidden" name="form_key" value="<?php echo Mage::getSingleton('core/session')->getFormKey(); ?>" />
+    <input type="hidden" name="customer_id" id="customer_id" />
+</form>
+
+<input type="hidden" id="selectedWwwsId"/>
+
+<script type="text/javascript">
+    //<![CDATA[
+    jQuery(document).ready(function() {
+
+        function isNumber(inputCharacter) {
+            return /^-?[\d.]+(?:e-?\d+)?$/.test(inputCharacter);
+        }
+
+        jQuery('body').append('<div id="toTop" class="btn btn-info print-hide-imp initialHideToTopSymbol"><span class="glyphicon glyphicon-chevron-up"></span> <?php echo $this->__('Back to Top'); ?></div>');
+
+        var sidebar = jQuery("#crtRtAction");
+        var offset  = sidebar.offset();
+
+        var searchDefaultText = '<?php echo $this->__('Customer Search'); ?>';
+        var searchBox = jQuery("#customer_search_line");
+        //default text after load
+        if(searchBox.val() == ''){
+            searchBox.val(searchDefaultText);
+        }
+        //on focus behaviour
+        searchBox.on('focus', function() {
+            if (searchBox.val() == searchDefaultText) {//clear text field
+                searchBox.css('color', '#000');
+                searchBox.val('');
+            }
+        });
+        //on blur behaviour
+        searchBox.on('blur', function() {
+            if (searchBox.val() == "") {//restore default text
+                searchBox.css('color', '#888');
+                searchBox.val(searchDefaultText);
+                jQuery('#result_list').html('');
+            }
+        });
+
+        jQuery(window).scroll(function () {
+            /* Back to Top */
+            if (jQuery(this).scrollTop() != 0) {
+                jQuery('#toTop').show();
+                jQuery('#toTop').fadeOut(3000);
+            } else {
+                jQuery('#toTop').fadeOut();
+            }
+        });
+
+        jQuery('#toTop').click(function(){
+            jQuery("html, body").animate({ scrollTop: 0 }, 600);
+            console.log('ScrollTop #72');
+            return false;
+        });
+
+        function confirmLoginAsSelectedCustomerFromEntireList(selectedWwsId, selectedCustomerCompanyname) {
+            console.log('WWS-ID = ' + selectedWwsId);
+            console.log('Account-Name = ' + selectedCustomerCompanyname);
+
+            var confirmMessage1 = '<?php echo $this->__("Are You Sure You Would Like To Login As The Following Customer?") ?>';
+            var confirmMessage2 = selectedCustomerCompanyname + ' (' + selectedWwsId + ')';
+
+            if(jQuery("#bootstrap-confirm-box-modal").length == 0) {
+                jQuery("body").append('<div id="bootstrap-confirm-box-modal" class="modal fade">\
+            <div class="modal-dialog">\
+                <div class="modal-content">\
+                    <div class="modal-header" style="min-height:40px;">\
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>\
+                        <h4 class="modal-title"></h4>\
+                    </div>\
+                    <div class="modal-body">\
+                        <p id="confirmText1" style="text-align: center; font-weight: bold;"></p>\
+                        <p id="confirmText2" style="text-align: center; font-weight: bold; font-family: robotomedium; color: #00589d;"></p>\
+                    </div>\
+                    <div class="modal-footer">\
+                        <button href="#" style="margin-left: 22px !important;" data-dismiss="modal" class="bttn-md yes_no_button"><?php echo $this->__('Cancel'); ?></a>\
+                        <button href="#" style="float: right; margin-right: 40px;" class="bttn-md confirm_yes yes_no_button">' + '<?php echo $this->__('Yes'); ?>' + '</a>\
+                    </div>\
+                </div>\
+            </div>\
+        </div>');
+                jQuery("#bootstrap-confirm-box-modal .modal-footer .confirm_yes").on('click', function () {
+                    jQuery("#bootstrap-confirm-box-modal").modal('hide');
+
+                    localStorage.actAsACustomer = 1;
+                    localStorage.actAsACustomerRealEmail = '<?php echo Mage::getSingleton('customer/session')->getCustomer()->getEmail(); ?>';
+
+                    jQuery('#customer_id').val(jQuery('#selectedWwwsId').val());
+                    localStorage.actAsACustomerSearchText = '';
+                    jQuery('#act_as_a_customer_form').submit();
+
+                    return false;
+                });
+            }
+
+            // jQuery("#bootstrap-confirm-box-modal .modal-header h4").text(title || "");
+            jQuery("#confirmText1").text(confirmMessage1 || "");
+            jQuery("#confirmText2").text(confirmMessage2 || "");
+            jQuery("#bootstrap-confirm-box-modal").modal('show');
+        }
+
+        function customer_search_request() {
+            var ajax_url = '<?php echo $this->getUrl('customer/account/getCustomerSearchResults'); ?>';
+            var query = jQuery('#customer_search_line').val();
+
+            jQuery('#searchMagnifierImage').hide();
+            jQuery('#searchLoader').show();
+
+            jQuery.ajax(ajax_url,{
+                'dataType' : 'json',
+                'type': 'post',
+                'data': {
+                    'form_key' : '<?php echo Mage::getSingleton('core/session')->getFormKey(); ?>',
+                    'search_query' : query,
+                    'search_query_limit' : 10,
+                    'search_only_show_my_contacts' : localStorage.actAsACustomerSearchOnlyShowMyContacts
+                },
+                'success': function (data) {
+                    if (data.results >= 1) {
+                        var searchResultItems = '';
+                        var wws_id = '';
+                        var wws_id_html = '';
+
+                        for (var index = 0; index < data.results; index++) {
+                            if (data.list_wws_ids[index] > 0) wws_id_html = ', ' + data.list_wws_ids[index]; else wws_id_html = '';
+                            searchResultItems += '<li id="' + data.list_wws_ids[index] + '" ref="' + data.list_description[index] + '" class="customer_search_result_item">' + data.list_description[index] + wws_id_html + '</li>';
+                        }
+
+                        jQuery('#result_list').html(searchResultItems);
+
+                        jQuery('.customer_search_result_item').on('click', function() {
+                            var selectedWwsId = jQuery(this).attr('id');
+                            var selectedCustomerCompanyname = jQuery(this).attr('ref');
+                            jQuery('#selectedWwwsId').val(selectedWwsId);
+                            confirmLoginAsSelectedCustomerFromEntireList(selectedWwsId, selectedCustomerCompanyname);
+                        });
+                    } else {
+                        jQuery('#result_list').html('');
+                    }
+
+                    jQuery('#searchLoader').hide();
+                    jQuery('#searchMagnifierImage').show();
+                }
+            });
+        }
+
+        function detailed_customer_search_request() {
+            var ajax_url = '<?php echo $this->getUrl('customer/account/getCustomerSearchResults'); ?>';
+            var query = localStorage.actAsACustomerSearchText;
+
+            jQuery('#searchMagnifierImage').hide();
+            jQuery('#searchLoader').show();
+
+            jQuery.ajax(ajax_url,{
+                'dataType' : 'json',
+                'type': 'post',
+                'data': {
+                    'form_key' : '<?php echo Mage::getSingleton('core/session')->getFormKey(); ?>',
+                    'search_query' : query,
+                    'search_only_show_my_contacts' : localStorage.actAsACustomerSearchOnlyShowMyContacts
+                },
+                'success': function (data) {
+                    if (data.results >= 1) {
+                        var searchResultItems = '';
+                        var wws_id = '';
+                        var wws_id_html = '';
+                        var login_as_button_html = '';
+                        var wws_customer_number_label = '<?php echo $this->__('WWS customer number:'); ?>' + ' ';
+
+                        for (var index = 0; index < data.results; index++) {
+                            if (data.list_wws_ids[index] > 0) wws_id_html = data.list_wws_ids[index]; else wws_id_html = '';
+                            login_as_button_html = '<button id="' + data.list_wws_ids[index] + '" ref="' + data.list_description[index] + '" class="login_as_button">' + '<?php echo $this->__("Login As"); ?>' + '</button>';
+                            searchResultItems += '<div class="detailed_customer_search_result_item">' + login_as_button_html + '<span style="font-weight: bold">' + data.list_description[index] + '</span></div>';
+                            searchResultItems += '<div class="detailed_customer_search_result_item_right_aligned">' + wws_customer_number_label + wws_id_html + '</div>';
+                            searchResultItems += '<div class="detailed_customer_search_result_item_right_aligned">' + data.list_zip[index] + ' ' + data.list_city[index] + '</div>';
+                            if (localStorage.actAsACustomerSearchOnlyShowMyContacts == 'off') {
+                                searchResultItems += '<div class="detailed_customer_search_result_item_right_aligned">' + data.list_emplyee[index] + '</div>';
+                            }
+                            searchResultItems += '<div class="detailed_customer_search_result_item_separator"></div>';
+                        }
+
+                        jQuery('#detailed_result_list').html(searchResultItems);
+
+                        jQuery('.login_as_button').on('click', function(evt) {
+                            evt.preventDefault();
+                            var selectedWwsId = jQuery(this).attr('id');
+                            var selectedCustomerCompanyname = jQuery(this).attr('ref');
+                            jQuery('#selectedWwwsId').val(selectedWwsId);
+                            confirmLoginAsSelectedCustomerFromEntireList(selectedWwsId, selectedCustomerCompanyname);
+                        });
+                    } else {
+                        jQuery('#detailed_result_list').html('');
+                    }
+
+                    jQuery('#searchLoader').hide();
+                    jQuery('#searchMagnifierImage').show();
+                }
+            });
+        }
+
+        if (localStorage.actAsACustomerSearchText != '') {
+            detailed_customer_search_request();
+        }
+
+        jQuery('#actasacustomer_submit').on('click', function(){
+            localStorage.actAsACustomer = 1;
+            localStorage.actAsACustomerRealEmail = '<?php echo Mage::getSingleton('customer/session')->getCustomer()->getEmail(); ?>';
+        });
+
+        jQuery('#customer_search_line').val(localStorage.actAsACustomerSearchText);
+        jQuery('#customer_search_line').css('color', '#000');
+
+        jQuery('#customer_search_line').bind('keydown change paste', function(evt) {
+            jQuery('#customer_search_line').css('color', 'black');
+            setTimeout(function(){
+                    jQuery('#customer_search_line').val(jQuery('#customer_search_line').val().replace(/["';\[\]<>\x00-\x09\x0B\x0C\x0E-\x1F\xE2\x7F\n\r]/g, ""));
+                    if (isNumber(jQuery('#customer_search_line').val())) {
+                        if (jQuery('#customer_search_line').val().length > 3) {
+                            customer_search_request();
+                        } else {
+                            jQuery('#result_list').html('');
+                        }
+                    } else {
+                        if (jQuery('#customer_search_line').val().length > 2) {
+                            customer_search_request();
+                        } else {
+                            jQuery('#result_list').html('');
+                        }
+                    }
+                }, 50
+            );
+        });
+
+        jQuery(document).on('keypress', function(evt) {
+            if ( jQuery(evt.target).attr('id') === 'customer_search_line' && evt.which == 13 ) {
+                jQuery('#customer_search_line').val(jQuery('#customer_search_line').val().replace(/["';\[\]<>\x00-\x09\x0B\x0C\x0E-\x1F\xE2\x7F\n\r]/g, ""));
+                if (jQuery('#customer_search_line').val().length > 2 && jQuery('#customer_search_line').val() != searchDefaultText) {
+                    localStorage.actAsACustomerSearchText = jQuery('#customer_search_line').val();
+                    window.location.href = '<?php echo Mage::getUrl('customer/account/actAsUser'); ?>';
+                }
+            }
+        });
+
+        jQuery('#customer_search_magnifier_button').on('click', function () {
+            jQuery('#customer_search_line').val(jQuery('#customer_search_line').val().replace(/["';\[\]<>\x00-\x09\x0B\x0C\x0E-\x1F\xE2\x7F\n\r]/g, ""));
+            if (jQuery('#customer_search_line').val().length > 2 && jQuery('#customer_search_line').val() != searchDefaultText) {
+                localStorage.actAsACustomerSearchText = jQuery('#customer_search_line').val();
+                window.location.href = '<?php echo Mage::getUrl('customer/account/actAsUser'); ?>';
+            }
+        });
+
+        jQuery('#only_show_my_contacts_checkbox').on('click', function() {
+            jQuery('#customer_search_line').css('color', '#888');
+            jQuery('#customer_search_line').val(searchDefaultText);
+            jQuery('#result_list').html('');
+            if (jQuery('#only_show_my_contacts_checkbox').prop('checked') ) {
+                jQuery('#only_show_my_contacts_checkbox_text').css('color', '#333');
+                localStorage.actAsACustomerSearchOnlyShowMyContacts = 'on';
+            } else {
+                jQuery('#only_show_my_contacts_checkbox_text').css('color', '#888');
+                localStorage.actAsACustomerSearchOnlyShowMyContacts = 'off';
+            }
+        });
+
+        if (localStorage.actAsACustomerSearchOnlyShowMyContacts != 'on' && localStorage.actAsACustomerSearchOnlyShowMyContacts != 'off') {
+            localStorage.actAsACustomerSearchOnlyShowMyContacts = 'on';
+        }
+
+        if (localStorage.actAsACustomerSearchOnlyShowMyContacts != 'on') {
+            jQuery('#only_show_my_contacts_checkbox').prop('checked', false);
+            jQuery('#only_show_my_contacts_checkbox_text').css('color', '#888');
+            localStorage.actAsACustomerSearchOnlyShowMyContacts = 'off';
+        } else {
+            jQuery('#only_show_my_contacts_checkbox').prop('checked', true);
+            jQuery('#only_show_my_contacts_checkbox_text').css('color', '#333');
+        }
+
+        jQuery(window).on('orientationchange', function() {
+            window.location.reload();
+        });
+
+        if (jQuery(window).width() < 993) {
+            jQuery('#breadcrumb_block').removeClass('breadcrumb_custom');
+            jQuery('#breadcrumb_block').addClass('breadcrumb_my_account');
+        }
+
+    });
+    //]]>
+</script>
+
+<!-- app/design/frontend/schrack/schrackresponsive/template/customer/account/act_as_user.phtml (end) -->

@@ -1,0 +1,89 @@
+<!-- app/design/frontend/schrack/schrackresponsive/template/customer/account/documents/snippet/ordersMobile.phtml (start) -->
+<?php
+    $orders = json_decode(json_encode(Mage::registry('dashboardOrders')),TRUE);
+    $counter = 0;
+    if ( intval(Mage::getStoreConfigFlag('schrack/shop/enable_custom_project_info_in_checkout')) == 1 ) {
+        $referenceTitle = $this->__('Order-/Project Reference');
+    } else {
+        $referenceTitle = $this->__('Meine Bestellangabe');
+    }
+?>
+
+<?php
+    if(count($orders) > 0) :
+        foreach ($orders as $order) :	// For Tablet & Mobile View
+?>
+            <tr class="<?php echo (++$counter%2==0) ? "even": "odd" ?>">
+                <td>
+                <div class="tabularCont hidden-md hidden-lg">
+                    <div class="row-tbl">
+                        <div class="body">
+                            <div class="mobilSecLft">
+                                <div class="flexbox col-xs-12 col-sm-12 col-md-2 colmn docuemntDatetime3 large-fine-5 columns-fine">
+                                    <div class="flexcol responsiveHd"><?php echo $referenceTitle; ?>:</div>
+                                    <div class="flexcol"><?php echo $order['nameProject']; ?></div>
+                                </div>
+                                <div class="flexbox col-xs-12 col-sm-12 col-md-3 colmn documentNumber3 large-fine-6 columns-fine">
+                                    <div class="flexcol responsiveHd"><?php echo $this->__('Order #'); ?>:</div>
+                                    <div class="flexcol">
+                                        <a href="<?php echo $order['detailUrl']; ?>">
+                                            <?php echo $order['orderNumber']; ?>
+                                        </a>
+                                    </div>
+                                </div>
+                                <div class="flexbox col-xs-12 col-sm-12 col-md-3 colmn documentReference large-fine-7 columns-fine">
+                                    <div class="flexcol responsiveHd"><?php echo $this->__('Date'); ?>:</div>
+                                    <div class="flexcol"><?php echo $order['creationDate']; ?></div>
+                                </div>
+                            </div>
+                            <div class="mobilSecRgt"><?php echo $order['status']; ?></div>
+                        </div>
+                    </div>
+                </div>
+                </td>
+            </tr>
+        <?php endforeach; ?>
+    <?php endif; ?>
+
+<script type="text/javascript">
+//<![CDATA[
+
+    jQuery(document).ready(function() {
+
+        // We have 2 forms, with 2 ok-buttons to submit new-partslist-form, with same id in footer (remove number one in cart):
+        // Wait one second, and remove the first element, after it is loaded by AJAX:
+        setTimeout( function() {
+            if (jQuery('.save_new_partslist').length > 1) {
+                jQuery('.save_new_partslist')[0].remove();
+            }
+        }, 2000);
+
+        jQuery('.print_button_overview_csv').on('click', function () {
+            var documentDownloadUrl = jQuery(this).attr('href');
+            var documentType = 'no document type found';
+
+            if (documentDownloadUrl.indexOf("offer") >= 0) documentType = 'offer (csv)';
+            if (documentDownloadUrl.indexOf("order") >= 0) documentType = 'order (csv)';
+            if (documentDownloadUrl.indexOf("invoice") >= 0) documentType = 'invoice (csv)';
+            if (documentDownloadUrl.indexOf("shipment") >= 0) documentType = 'shipment (csv)';
+            if (documentDownloadUrl.indexOf("invoice") >= 0) documentType = 'invoice (csv)';
+            if (documentDownloadUrl.indexOf("creditmemo") >= 0) documentType = 'creditmemo (csv)';
+
+            if (dataLayer) {
+                dataLayer.push({
+                    'event' : 'userDownloads',
+                    'eventCategory' : 'File Download',
+                    'eventAction' : 'Document Download',
+                    'eventLabel' : documentType
+                });
+            }
+
+            window.location.href = documentDownloadUrl;
+            return false;
+        });
+
+    });
+
+//]]>
+</script>
+<!-- app/design/frontend/schrack/schrackresponsive/template/customer/account/documents/snippet/ordersMobile.phtml (end) -->

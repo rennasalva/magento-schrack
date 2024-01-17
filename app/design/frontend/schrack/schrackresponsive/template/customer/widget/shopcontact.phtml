@@ -1,0 +1,54 @@
+<?php
+/* @var $this Schracklive_SchrackCustomer_Block_Widget_Shopcontact */
+
+/*
+ * Usage:
+ * 
+ *  {{block type=schrackcustomer/widget_shopcontact}}
+ * or
+ *  {{block type=schrackcustomer/widget_shopcontact advisor=<magento.customer.id>}}
+ * or
+ *  {{block type=schrackcustomer/widget_shopcontact customer=<magento.customer.id>}}
+ * 
+ * The widget will find the advisor of the supplied customer.
+ */
+
+$_advisor = $this->getAdvisor();
+$_fontAttributes = $this->getFontAttributes();
+
+?>
+
+<table border="0" cellspacing="0" cellpadding="0">
+	<?php if ($_advisor->getName()): ?>
+		<tr>
+			<td valign="top" colspan="2"><?php echo $this->fontWrap($_advisor->getName()); ?></td>
+		</tr>
+	<?php endif; ?>
+		<tr>
+			<td valign="top" colspan="2"><?php echo $this->fontWrap($this->getAddress()); ?></td>
+		</tr>
+		<tr>
+			<td valign="top"><font <?php echo $_fontAttributes; ?>>T&nbsp;</font></td>
+			<td valign="top"><?php echo $this->fontWrap($this->getTelephone()); ?></td>
+		</tr>
+	<?php if ($_advisor->getSchrackMobilePhone()): ?>
+			<tr>
+				<td valign="top"><font <?php echo $_fontAttributes; ?>>M&nbsp;</font></td>
+				<td valign="top"><?php echo $this->fontWrap($_advisor->getSchrackMobilePhone()); ?></td>
+			</tr>
+	<?php endif; ?>
+			<tr>
+				<td valign="top"><font <?php echo $_fontAttributes; ?>>F&nbsp;</font></td>
+				<td valign="top"><?php echo $this->fontWrap($this->getFax()); ?></td>
+			</tr>
+	<?php if ($_advisor->getEmail()): ?>
+				<tr>
+					<td valign="top"><font <?php echo $_fontAttributes; ?>>E&nbsp;</font></td>
+					<td valign="top"><?php echo $this->getEmailLink(); ?></td>
+				</tr>
+	<?php endif; ?>
+				<tr>
+					<td valign="top"><font <?php echo $_fontAttributes; ?>>W&nbsp;</font></td>
+					<td valign="top"><?php echo $this->getHomepageLink(); ?></td>
+	</tr>
+</table>

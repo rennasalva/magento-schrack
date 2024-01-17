@@ -1,0 +1,47 @@
+<!-- app/design/frontend/schrack/schrackresponsive/template/checkout/onepage/review/totals.phtml (start) -->
+<?php
+$_session = Mage::getSingleton('customer/session');
+
+$aclrole = '';
+if ($_session->isLoggedIn()) {
+    $sessionLoggedInCustomer = $_session->getCustomer();
+    $aclrole = $sessionLoggedInCustomer->getSchrackAclRole();
+    if($aclrole == 'list_price_customer') {
+        if ($sessionLoggedInCustomer) {
+            $maySpecialCaseCustomerCanSeePrices = $sessionLoggedInCustomer->isAllowed('price', 'view');
+        }
+    }
+}
+
+?>
+
+<style>
+    .checkout_totals_container {
+        margin-top: 16px;
+        color: #ffffff;
+        background-color: #00599D;
+        padding-bottom: 15px;
+        padding-top: 15px;
+    }
+</style>
+
+<?php if ($aclrole == 'list_price_customer' && $maySpecialCaseCustomerCanSeePrices == false) : ?>
+<?php else : ?>
+    <div class="checkout_totals_container">
+        <?php if ($this->getTotals() && Mage::helper('geoip')->maySeePrices()) : ?>
+            <?php echo $this->renderTotals(null, 6); ?>
+            <?php echo $this->renderTotals('footer', 6); ?>
+            <?php if ($this->needDisplayBaseGrandtotal()):?>
+            <div>
+                <div class="a-right" colspan="<?php echo 6; ?>">
+                    <small><?php echo $this->helper('sales')->__('Your credit card will be charged for') ?></small>
+                </div>
+                <div class="a-right">
+                    <small><?php echo $this->displayBaseGrandtotal() ?></small>
+                </div>
+            </div>
+            <?php endif?>
+        <?php endif; ?>
+    </div>
+<?php endif; ?>
+<!-- app/design/frontend/schrack/schrackresponsive/template/checkout/onepage/review/totals.phtml (end) -->

@@ -1,0 +1,104 @@
+<?php if (Mage::getStoreConfig('ec/config/active')): ?>
+<?php 
+/**
+ * Google Tag Manager Enhanced Ecommerce Promotion Tracking
+ * 
+ * @copyright Anowave
+ * @since 22/03/2016
+ * 
+ * @example Promotion tracking works by using a data-promotion attribute to elements in HTML. 
+ * 
+ * To enable promotion tracking simply, add to your banners/promotions wrappers a data-promotion="true" attribute and add promotion related attributes.
+ * 
+ * @example <span data-promotion="true" data-id="B1" data-name="Cool banner" data-creative="banner" data-position="1"></span>
+ * @example <img src="" data-promotion="true" data-promo-id="B1" data-promo-name="Cool banner" data-promo-creative="banner" data-promo-position="1" />
+ */
+?>
+<script type="text/javascript">
+
+	if ('undefined' !== typeof jQuery && 'undefined' !== typeof dataLayer)
+	{
+		jQuery(document).ready(function()
+		{
+		    var PromotionTrack = (function($, dataLayer)
+		    {
+		        return {
+		            apply: function()
+		            {
+		                var promotions = [], position = 0;
+		
+		                $('[data-promotion]').each(function()
+		                {
+		                    promotions.push(
+	                        {
+	                            id:      	$(this).data('promotion-id'),
+	                            name:    	$(this).data('promotion-name'),
+	                            creative:	$(this).data('promotion-creative'),
+	                            position:	++position
+	                        });
+	
+		                    $(this).on(
+	                        {
+	                            click: function()
+	                            {
+		                           	var data = 
+			                        {
+	                           			'event': 'promotionClick',
+                                        'ecommerce': 
+                                        {
+                                            'promoClick': 
+                                            {
+                                                'promotions':
+                                                [
+	                                                {
+		                                                'id':       $(this).data('promotion-id'),
+		                                                'name':     $(this).data('promotion-name'),
+		                                                'creative': $(this).data('promotion-creative'),
+		                                                'position': $(this).data('promotion-position')
+	                                                }
+                                                ]
+                                            }
+                                        }
+					                };
+					                
+	                                dataLayer.push(data);
+
+	                                /**
+	                                 * Save persistent data
+	                                 */
+	                                AEC.Persist.push(AEC.Persist.CONST_KEY_PROMOTION,
+	    	                        {
+		    	                        'promotion':data.ecommerce.promoClick.promotions[0]
+		    	                    });
+	                            }
+	                        });
+		                });
+		
+		                if (promotions.length)
+		                {
+		                    dataLayer.push(
+	                        {
+		                        'event':'promoViewNonInteractive',
+	                            'ecommerce':
+	                            {
+	                                'promoView':
+	                                {
+	                                    'promotions': promotions
+	                                }
+	                            }
+	                        });
+		                }
+		
+		                return this;
+		            }
+		        }
+		    })(jQuery, dataLayer).apply();
+		});
+	}
+	else 
+	{
+		console.log('Promotion tracking requires jQuery and dataLayer[] object defined.');
+	}
+	
+</script>
+<?php endif ?>

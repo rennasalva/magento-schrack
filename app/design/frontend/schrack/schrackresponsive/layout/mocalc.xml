@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<layout version="0.1.0">
+    <mocalc_index_mocalc>
+        <reference name="head">
+            <action method="setTitle" translate="title">
+                <title>Circuitbreaker configurator tool</title>
+            </action>
+        </reference>
+
+        <reference name="root">
+            <action method="setTemplate">
+                <template>page/1column.phtml</template>
+            </action>
+        </reference>
+
+        <reference name="content">
+            <block type="page/html" name="mocalc_main" template="mocalc/main.phtml">
+                <block type="page/html" name="step01" template="mocalc/step01.phtml"/>
+                <block type="page/html" name="step02" template="mocalc/step02.phtml"/>
+                <block type="page/html" name="step03" template="mocalc/step03.phtml"/>
+                <block type="page/html" name="step04" template="mocalc/step04.phtml"/>
+                <block type="page/html" name="step05" template="mocalc/step05.phtml"/>
+                <block type="page/html" name="step06" template="mocalc/step06.phtml"/>
+                <block type="page/html" name="step07" template="mocalc/step07.phtml"/>
+                <block type="page/html" name="step08" template="mocalc/step08.phtml"/>
+                <block type="page/html" name="step09" template="mocalc/step09.phtml"/>
+                <block type="page/html" name="step10" template="mocalc/step10.phtml"/>
+                <block type="page/html" name="step11" template="mocalc/step11.phtml"/>
+                <block type="page/html" name="step12" template="mocalc/step12.phtml"/>
+                <block type="page/html" name="step13" template="mocalc/step13.phtml"/>
+            </block>
+        </reference>
+
+        <reference name="left">
+            <remove name="catalog.vertnav" />
+            <block type="customer/account_menu" name="customer_account_menu" template="customer/account/menu.phtml"></block>
+        </reference>
+    </mocalc_index_mocalc>
+</layout>

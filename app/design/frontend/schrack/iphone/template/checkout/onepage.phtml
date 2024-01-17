@@ -1,0 +1,45 @@
+<script type="text/javascript" src="<?php echo $this->getJsUrl('varien/accordion.js') ?>"></script>
+<script type="text/javascript">countryRegions = <?php echo $this->helper('directory')->getRegionJson() ?></script>
+
+<div id="topbar">
+	<div id="title"><?php echo $this->__('Checkout') ?></div>
+</div>
+<ol id="checkoutSteps" class="one-page-checkout">
+
+<?php $i=0; foreach($this->getSteps() as $_stepId => $_stepInfo): ?>
+<?php if (!$this->getChild($_stepId) || !$this->getChild($_stepId)->isShow()): continue; endif; $i++ ?>
+    <li id="opc-<?php echo $_stepId ?>" class="section <?php echo !empty($_stepInfo['allow'])?'allow':'' ?> <?php echo !empty($_stepInfo['complete'])?'saved':'' ?>">
+        <div class="head">
+            <h3><span class="step-count"><?php echo $i ?></span> &nbsp;<?php echo $_stepInfo['label'] ?></h3><a href="#"><?php echo $this->__('Edit') ?></a>
+            <div class="clear"></div>
+        </div>
+        <div id="checkout-step-<?php echo $_stepId ?>" class="box<?php if($_stepId=='shipping_method'): ?>-no-padding<?php endif; ?> a-item" style="display:none;">
+            <?php echo $this->getChildHtml($_stepId) ?>
+        </div>
+    </li>
+<?php endforeach ?>
+</ol>
+
+<script type="text/javascript">
+//<![CDATA[
+    var accordion = new Accordion('checkoutSteps', '.head', true);
+    <?php if($this->getSchrackActiveStep(true)): ?>
+    // DLA 20160914: Workaround for not longer working sudo checkout in app
+    // TODO: find out why element 'shipping' has no classname 'allow' in that case
+    Element.addClassName($('opc-<?php echo $this->getSchrackActiveStep(true) ?>'), 'allow');
+    accordion.openSection('opc-<?php echo $this->getSchrackActiveStep(true) ?>');
+    <?php endif ?>
+
+    var checkout = new Checkout(accordion,{
+        progress: '<?php echo $this->getUrl('mobile/onepage/progress') ?>',
+        review: '<?php echo $this->getUrl('mobile/onepage/review') ?>',
+        saveMethod: '<?php echo $this->getUrl('mobile/onepage/saveMethod') ?>',
+        failure: '<?php echo $this->getUrl('mobile/onepage/error') ?>'}
+    );
+
+    jQuery(document).ready(function() {
+        jQuery('#checkout-step-shipping').show();
+    });
+
+//]]>
+</script>

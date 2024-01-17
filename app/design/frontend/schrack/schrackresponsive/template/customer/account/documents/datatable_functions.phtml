@@ -1,0 +1,318 @@
+<!-- app/design/frontend/schrack/schrackresponsive/template/customer/account/documents/datatable_functions.phtml (start) -->
+<script type="text/javascript">
+var resttFlag = false;
+jQuery(document).ready(function () {
+    /* filter toogle */
+    if (resttFlag == false) {
+        jQuery('#filterMenu').click(function () {
+            console.log('filter click #2');
+            jQuery('.filterPopup').toggle();
+            resttFlag = true;
+        });
+    }
+
+    /* Search implementation */
+    jQuery('#textsearch').on('keyup',function(e) {
+        if(e.which == 13) {
+            var funcname = jQuery(this).attr('data-func');
+            var seachVal = jQuery(this).val();
+            dataArray['form_key'] = formKey;
+            dataArray[funcname] = {'data': {'filter' : {'text' : seachVal }}};
+            jQuery.ajax(ajaxUrl, {
+                'dataType': 'json',
+                'type': 'POST',
+                'data': dataArray,
+                'success': function(orderData) {
+                    var order = orderData.order;
+                    var mobile = orderData.mobile;
+                    jQuery('#orders-datatable').DataTable().destroy();
+                    jQuery('#orders-datatable-xs').DataTable().destroy();
+                    jQuery('#dashFilterContainer .dynamic-filters').remove();
+                    desktopOrder(order, mobile);
+                    dataArray = {};
+                }
+            });
+        }
+    });
+	
+	// Trigger text box enter on search icon click
+	jQuery('#listingSearchIcon').click(function(){
+        var searchtextContent = jQuery('#textsearch').val();
+        var defaultSearchText = '<?php echo $this->__('Order/Offer Data, Names, Addresses, Article IDs'); ?>';
+        if (searchtextContent == '' || searchtextContent == defaultSearchText) {
+            // Do not track !
+        } else {
+            console.log('Tracked from datatable_functions #1');
+            trackUserDetailDocumentSearch(searchtextContent);
+        }
+		var e = jQuery.Event("keyup");
+		e.which = 13;
+		jQuery('#textsearch').trigger(e);
+	});
+	
+	// Trigger text box enter on search icon enter
+	jQuery('#listingSearchIcon').keydown(function(){
+        var searchtextContent = jQuery('#textsearch').val();
+        var defaultSearchText = '<?php echo $this->__('Order/Offer Data, Names, Addresses, Article IDs'); ?>';
+        if (searchtextContent == '' || searchtextContent == defaultSearchText) {
+            // Do not track !
+        } else {
+            console.log('Tracked from datatable_functions #2');
+            trackUserDetailDocumentSearch(searchtextContent);
+        }
+		var e = jQuery.Event("keyup");
+		e.which = 13;
+		jQuery('#textsearch').trigger(e);
+	});
+	
+});
+function addDateHandler() {
+        jQuery.fn.dataTableExt.afnFiltering.push(function (oSettings, aData, iDataIndex) {
+        var iFini = document.getElementById('from-date').value;
+        var iFfin = document.getElementById('to-date').value;
+        var iStartDateCol = 0;
+        var iEndDateCol = 0;
+        iFini = iFini.substring(0, 4) + iFini.substring(5, 7) + iFini.substring(8, 10);
+        iFfin = iFfin.substring(0, 4) + iFfin.substring(5, 7) + iFfin.substring(8, 10);
+        var datofini = aData[iStartDateCol].substring(0, 4) + aData[iStartDateCol].substring(5, 7) + aData[iStartDateCol].substring(8, 10);
+        var datoffin = aData[iEndDateCol].substring(0, 4) + aData[iEndDateCol].substring(5, 7) + aData[iEndDateCol].substring(8, 10);
+        if (iFini === "" && iFfin === "") {
+            return true;
+        } else if (iFini <= datofini && iFfin === "") {
+            return true;
+        } else if (iFfin >= datoffin && iFini === "") {
+            return true;
+        } else if (iFini <= datofini && iFfin >= datoffin) {
+            return true;
+        }
+        return false;
+    });
+}
+function filterHandler() {
+    /* create instance for datatable */
+    var mytable = jQuery('#orders-datatable').DataTable();
+    var mymobiletable = jQuery('#orders-datatable-xs').DataTable();
+    /*saves raw data from datatable*/
+    var mytabledata = mytable.data();
+    var mobiledata = mymobiletable.data();
+    /* listner for checkbox */
+    jQuery('.filterdata').on('click', function() {
+        /* clears the table and reload with initial data to search */
+        mytable.clear();
+        mymobiletable.clear();
+        var resultset = [];
+        var resultsetmobile = [];
+        mytable.rows.add(mytabledata);
+        mymobiletable.rows.add(mobiledata);
+        /* iterate for each checked filter */
+        jQuery('.filterdata:checked').each(function() {
+            /* gets column and the value to search in that columnd */
+            var columnid = jQuery(this).attr('data-id');
+            var value = jQuery(this).val();
+            /* search the column and extract all records matching */
+            data = mytable.column(columnid).search(value).rows({
+                filter: 'applied'
+            }).data();
+            var mobileresult = mymobiletable.column(1).search(value).rows({
+                filter: 'applied'
+            }).data();
+            /*reset the search for that column & push data to resultset array*/
+            mytable.column(columnid).search('');
+            mymobiletable.column(1).search('');
+            resultset.push(data);
+            resultsetmobile.push(mobileresult);
+        });
+        /* clear the table data */
+        mytable.clear();
+        mymobiletable.clear();
+        /* push all the resultset to datatable */
+        for (var j in resultset) {
+            if (resultset.propertyIsEnumerable(j)) {
+                mytable.rows.add(resultset[j]);
+            }
+        }
+        for (var k in resultsetmobile) {
+            if (resultsetmobile.propertyIsEnumerable(k)) {
+                mymobiletable.rows.add(resultsetmobile[k]);
+            }
+        }
+
+        /* if no checkbox is checked then resets the data on table */
+        if (resultset.length == 0) {
+            mytable.rows.add(mytabledata).draw();
+        } else {
+            /* removes duplicate records from datatable results */
+            var dataset = mytable.data();
+            var d = {};
+            var out = [];
+            for (var i = 0; i < dataset.length; i++) {
+                var item = dataset[i];
+                var rep = JSON.stringify(item);
+                if (!d[rep]) {
+                    d[rep] = true;
+                    out.push(item);
+                }
+            }
+            /* clear the table and sets final unique data */
+            mytable.clear();
+            mytable.rows.add(out).draw();
+        }
+
+                /* if no checkbox is checked then resets the data on table */
+        if (resultsetmobile.length == 0) {
+            mymobiletable.rows.add(mobiledata).draw();
+        } else {
+            /* removes duplicate records from datatable results */
+            var mobiledataset = mymobiletable.data();
+            var d = {};
+            var out = [];
+            for (var i = 0; i < mobiledataset.length; i++) {
+                var item = mobiledataset[i];
+                var rep = JSON.stringify(item);
+                if (!d[rep]) {
+                    d[rep] = true;
+                    out.push(item);
+                }
+            }
+            /* clear the table and sets final unique data */
+            mymobiletable.clear();
+            mymobiletable.rows.add(out).draw();
+        }
+    });
+    /* attach time and reset-all filters */
+    timeandreset();
+}
+
+function mobileOrder(mobile) {
+    jQuery('#orders-datatable-xs').DataTable({
+        "data": mobile,
+		"pagingType": "full",
+        "pageLength": 5,
+        "lengthChange": false,
+		"language": {
+			"url": dataTableTranslationFileUrl
+		},
+        "columns": [{
+            "data": "created_at"
+        }, {
+            "data": "html"
+        }],
+        initComplete: function() {
+            this.api().column(0).visible(0);
+            // Sort array by lastest record date wise
+			jQuery('#dashboardLoaderDesktop').hide();
+            jQuery('#orders-datatable-xs').DataTable().column(0).order('desc').draw();
+        }
+    });
+}
+
+function dataTableFilter() {
+    jQuery('input.time-span').click(function() {
+        var today = new Date();
+        var dateFrom = '';
+        var dateTo = '';
+        var months = jQuery(this).val();
+        dateTo = new Date(today).toISOString().slice(0, 10);
+        today.setMonth(today.getMonth() - months);
+        dateFrom = new Date(today).toISOString().slice(0, 10);
+        from.val(dateFrom);
+        to.val(dateTo);
+        jQuery('#to-date').trigger('keyup');
+    });
+    jQuery('#to-date,#from-date').click(function() {
+        jQuery('input[name="time-rangle"]').prop("checked", true)
+    });
+    var table = jQuery('#orders-datatable').DataTable();
+    var tablexs = jQuery('#orders-datatable-xs').DataTable();
+    var from = jQuery('#from-date');
+    var to = jQuery('#to-date');
+    from.keyup(function() {
+        table.draw();
+        tablexs.draw();
+    });
+    to.keyup(function() {
+        table.draw();
+        tablexs.draw();
+    });
+}
+
+function addFilter(column) {
+    jQuery('<div class="panel panel-default dynamic-filters">            <div class="panel-heading" id="headingOne" role="tab">                <h4 class="panel-title">                    <a class="accordion-toggle collapsed" aria-controls="collapse-' + column.index() + '" aria-expanded="false" data-parent="#accordion" data-toggle="collapse" href="#collapse-' + column.index() + '" role="button">' + jQuery(column.header()).html() + '</a>                </h4>            </div>            <div aria-labelledby="headingOne" class="panel-collapse collapse" id="collapse-' + column.index() + '" role="tabpanel">                <div class="panel-body"></div>            </div>        </div>').appendTo(jQuery('#accordion'));
+    var select = jQuery('<ul id="column-' + column.index() + '">' + '<li><input type="checkbox" class="reset-me" name="column-' + column.index() + '" value="">&nbsp;<?php echo $this->__("All"); ?></input></li>' + '</ul>').appendTo(jQuery('#collapse-' + column.index() + ' .panel-body'));
+    /* code for count on each filter data */
+    var countFilter = {};
+    column.data().each(function(d, j) {
+        if (countFilter[d]) {
+            countFilter[d] = countFilter[d] + 1;
+        } else {
+            countFilter[d] = 1;
+        }
+    });
+    column.data().unique().sort().each(function(d, j) {
+        select.append('<li><input class="filterdata" type="checkbox" data-id="' + column.index() + '" id="id-column-' + column.index() + d + '" name="column-' + column.index() + '" value="' + d + '"><label for="id-column-' + column.index() + d + '" name="column-' + column.index() + '">&nbsp;' + d + '(' + countFilter[d] + ')</label></input></li>')
+    });
+}
+
+function dateSortHandler() {
+        jQuery('.datesort').click(function(){
+            if(jQuery(this).hasClass('desc')) {
+                jQuery('#orders-datatable').DataTable().columns(0).order('asc').draw();
+                jQuery(this).removeClass('desc');
+                jQuery(this).addClass('asc');
+            } else {
+                jQuery('#orders-datatable').DataTable().columns(0).order('desc').draw();
+                jQuery(this).removeClass('asc');
+                jQuery(this).addClass('desc');
+            }            
+        });
+}
+
+function dateSortHandlerOffer() {
+        jQuery('.datesort-valid').click(function(){
+            if(jQuery(this).hasClass('desc')) {
+                jQuery('#orders-datatable').DataTable().columns(1).order('asc').draw();
+                jQuery(this).removeClass('desc');
+                jQuery(this).addClass('asc');
+            } else {
+                jQuery('#orders-datatable').DataTable().columns(1).order('desc').draw();
+                jQuery(this).removeClass('asc');
+                jQuery(this).addClass('desc');
+            }
+            jQuery(this).toggleClass('desc');
+        });
+}
+
+function timeandreset() {
+        /* clear all filterss */
+        jQuery('.clear-filter').click(function () {
+            /* clear time filter */
+            jQuery('.reset-me').first().trigger('click');
+            jQuery('#dashFilterContainer input[type="checkbox"]:checked').trigger('click');
+            jQuery('#dashFilterContainer input[type="checkbox"]').prop('checked',false);
+        });
+
+        jQuery('.time-range').click(function () {
+            jQuery('#from-date,#to-date').val("");
+            jQuery('#from-date').trigger('keyup');
+        });
+
+        jQuery('.reset-me').on('click',function(){
+            if(jQuery(this).prop('checked') == true) {
+                jQuery(this).parent().parent().find('input[type="checkbox"]:not(checked)').trigger('click');
+                jQuery(this).parent().parent().find('input[type="checkbox"]').prop('checked',true);
+            }
+            else
+            {
+                jQuery(this).parent().parent().find('input[type="checkbox"]:checked').trigger('click');
+                jQuery(this).parent().parent().find('input[type="checkbox"]').prop('checked',false);
+            }
+        });
+}
+
+</script>
+<style type="text/css">
+    .dataTables_filter{
+        display: none;
+    }
+</style>
+<!-- app/design/frontend/schrack/schrackresponsive/template/customer/account/documents/datatable_functions.phtml (end) -->

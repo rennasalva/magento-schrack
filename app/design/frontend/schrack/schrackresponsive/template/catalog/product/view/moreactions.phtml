@@ -1,0 +1,47 @@
+<!-- app\design\frontend\schrack\schrackresponsive\template\catalog\product\view\moreactions.phtml (start) -->
+<?php
+    $product = Mage::registry('product');
+    $customer = Mage::getSingleton('customer/session')->getCustomer();
+
+    $partslistHelper = Mage::helper('schrackwishlist/partslist');
+    $priceHelper = Mage::helper('schrackcatalog/price');
+    $replacingProduct = Mage::registry('replacingProduct');
+    $replacingProductURL = $replacingProduct ? $replacingProduct->getProductUrl() : null;
+
+    $precedingProduct = $precedingProductURL = null;
+if (!$product->isDiscontinuation() && !$product->isDead()) {
+        $precedingProduct = $product->getLastAlivePrecedingProduct();
+        $precedingProductURL = $precedingProduct ? $precedingProduct->getProductUrl() : null;
+}
+if(!$product->isDead()){
+?>
+ <h4><?php echo $this->__('Other Actions'); ?></h4>
+<ul class="product-info-links hide-on-print">    
+        <li class="partlist-label-container">
+            <a href="#" id="parlistdropdownbtn-<?php echo $product->getSku(); ?>" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true"  class="lgtGray" onclick="return false;">
+                <span class="glyphicon glyphicon-pushpin pin-icon"></span>
+                <span><?php echo $this->__('Add to Partslist') ?></span>
+            </a>
+            <ul class="dropdown-list dropdown-menu withoutLgn" aria-labelledby="parlistdropdownbtn-<?php echo $product->getSku(); ?>">
+                <li><a href='<?php echo Mage::getUrl('customer/account/login', array('referer' => Mage::helper('core')->urlEncode(Mage::getUrl('', array('_current' => true,'_use_rewrite' => true))))) ?>' title='Login'><?php echo $this->__('Please login first!'); ?></a></li>
+            </ul>
+        </li>
+    <?php if ($priceHelper->doOfferProjectPrice($product) ) : ?>
+        <li class="project-price">
+            <a id="project-price" href="<?php echo $priceHelper->getProjectPriceUrl($product->getSku()) ?>" target="_blank"><img src="<?php echo $this->getSkinUrl('schrackdesign/Public/Images/rwd/project-price.png'); ?>"><span><?php echo $this->__('Request Project Price') ?></span></a>
+        </li>
+    <?php endif; ?>
+    <?php if ( $replacingProductURL ) : ?>
+        <li>
+            <a href="<?php echo $replacingProductURL; ?>" name="nextProd" class="moreactions_replacing_product_link"><img src="<?php echo $this->getSkinUrl('schrackdesign/Public/Images/rwd/article.png'); ?>" /> <span><?php echo $this->__('To Replacing Product'); ?></span></a>
+        </li>
+    <?php endif; ?>
+    <?php if ( $precedingProductURL ) : ?>
+        <li>
+            <a href="<?php echo $precedingProductURL; ?>" name="prevProd"><img src="<?php echo $this->getSkinUrl('schrackdesign/Public/Images/rwd/article.png'); ?>" /> <span><?php echo $this->__('Preceding Article'); ?></span></a>
+        </li>
+    <?php endif; ?>
+                    
+</ul>
+<?php } ?>
+<!-- app\design\frontend\schrack\schrackresponsive\template\catalog\product\view\moreactions.phtml (end) -->

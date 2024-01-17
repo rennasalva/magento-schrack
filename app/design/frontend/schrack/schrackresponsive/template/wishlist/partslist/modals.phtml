@@ -1,0 +1,612 @@
+<!-- app/design/frontend/schrack/schrackresponsive/template/wishlist/partslist/modals.phtml (start) -->
+<?php
+    $_quickaddHelper = Mage::helper('schrackcheckout/quickadd');
+    $contacts = $this->getLayout()->createBlock('schrackcustomer/account_administration')->getVisibleContacts();
+    try {
+        $active_flag = true;
+        $active = Mage::getModel('schrackwishlist/partslist')->loadActiveListByCustomer(Mage::getSingleton('customer/session')->getCustomer()->getId(), false);
+    } catch (Exception $e) {
+        $active_flag = false;
+    }
+
+    $data = openssl_random_pseudo_bytes(16);
+    assert(strlen($data) == 16);
+
+    $data[6] = chr(ord($data[6]) & 0x0f | 0x40); // set version to 0100
+    $data[8] = chr(ord($data[8]) & 0x3f | 0x80); // set bits 6-7 to 10
+
+    $uuid = vsprintf('%s%s-%s-%s-%s-%s%s%s', str_split(bin2hex($data), 4));
+
+    $formUrl = $this->getUrl('wishlist/partslist/addCsv', array('id' => $active->getId(), 'partlist_csv_upload_hash' => $uuid));
+
+?>
+
+<style>
+
+    #article {
+        font-size: 16px !important;
+    }
+    #quickadd-sku-div-partslist {
+        float: left;
+        width: 91% !important;
+    }
+    #article-quantity {
+        font-size: 16px !important;
+        width: 91% !important;s
+    }
+    #sku_found_okay_partslist {
+        float: left;
+        width: 3%;
+        font-size: 1.1em;
+        color: #00589d;
+        padding-top: 9px;
+        margin-left: 10px;
+        margin-top: 27px;
+        display: none;
+    }
+    #ean_equivalent_partslist {
+        height: 20px;
+        min-height: 20px;
+        float: left;
+        margin-top: -4px;
+        margin-bottom: 10px;
+        font-size: 0.9em;
+    }
+    #wait_loader {
+        position: absolute;
+        width: 48px;
+        height: 22px;
+        z-index: 2;
+        margin-left: 55%;
+    }
+    .quickadd-autocomplete {
+        border: none;
+    }
+    .html_sku_select_list_container_partslist {
+        position: absolute;
+        z-index: 1;
+        background: white;
+        margin-left: -1px;
+        color: #888;
+        margin-top: 1px;
+        border: 1px solid #efefef;
+        width: 83%;
+    }
+    .html_sku_select_list_row_partslist {
+        height: 30px;
+        padding-top: 3px;
+        padding-left: 14px;
+    }
+    .html_sku_select_list_row_partslist:hover {
+        background: #00589d;
+        color: white;
+        cursor: pointer;
+    }
+    .quickadd_partslist_button_grey {
+        background: grey !important;
+    }
+    .quickadd_partslist_button_grey:after {
+        background: grey !important;
+    }
+    .quickadd_partslist_button_red {
+        background: #d1222b !important;
+    }
+    .quickadd_partslist_button_red:after {
+        background: #d1222b !important;
+    }
+    #partslist-name {
+        font-size: 16px !important;
+    }
+    #partslist-comment {
+        font-size: 16px !important;
+    }
+    #addpartslist {
+        height: 39px;
+    }
+    @media (min-width: 60px) and (max-width: 320px) {
+        .save_rename_partslist {
+            height: 30px !important;
+        }
+        .save_rename_partslist_deactivated {
+            height: 30px !important;
+        }
+        #addpartslist {
+            height: 30px;
+        }
+    }
+    @media (min-width: 321px) and (max-width: 480px) {
+        .save_rename_partslist {
+            height: 30px !important;
+        }
+        .save_rename_partslist_deactivated {
+            height: 30px !important;
+        }
+        #addpartslist {
+            height: 30px;
+        }
+    }
+    @media (min-width: 481px) and (max-width: 767px) {
+        .save_rename_partslist {
+            height: 30px !important;
+        }
+        .save_rename_partslist_deactivated {
+            height: 30px !important;
+        }
+        #addpartslist {
+            height: 30px;
+        }
+    }
+    @media (min-width: 768px) and (max-width: 767px) {
+        #addpartslist {
+            height: 34px
+        }
+    }
+    .save_rename_partslist_deactivated {
+        background: #d1d1d1 !important;
+    }
+    .save_rename_partslist_deactivated:after {
+        background: #d1d1d1 !important;
+    }
+    .save_rename_partslist_deactivated {
+        cursor: auto !important;
+        margin-left: -14px !important;
+    }
+    #rename {
+        margin-left: 0 !important;
+    }
+</style>
+
+
+<div class="modal fade" id="share-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&<?php echo $this->__('times'); ?>;</span></button>
+                <h4 class="modal-title" id="myModalLabel"><?php echo $this->__('Choose from Contacts') ?></h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-group share-dropdown">
+                    <div class="form-check">
+                        <label class="form-check-label">
+                            <input type="radio"
+                                   name="send-message"
+                                   value="account"
+                                   class="send-message form-check-input"
+                            /> <?php echo $this->__('Share within the Account'); ?>:
+                        </label>
+                    </div>
+                    <!--start -->
+                    <div class="dropdown recipient hide">
+                        <button class="btn dropdown-toggle" type="button" id="menu1" data-toggle="dropdown">
+                            <?php echo $this->__('Select Recipient'); ?>
+                        </button>
+                        <input type="hidden" id="recipient-id" >
+                        <input type="hidden" id="partlistshare-id">
+                        <ul class="dropdown-menu dropDwnListGeneric" role="menu" aria-labelledby="menu1">
+                            <?php
+                            foreach ($contacts as $customer) {
+                                $customer->load($customer->getId());
+									if(!$customer->isInactiveContact()) {
+                                ?>
+                                <li role="presentation">
+                                    <a role="menuitem" tabindex="-1" href="#" onclick="return false;" data-id="<?php echo $customer->getSchrackWwsContactNumber(); ?>">
+                                        <?php echo $customer->getName(); ?>
+                                    </a>
+                                </li> 
+                            <?php
+									}
+								}
+							?>
+                        </ul>
+                    </div>
+                    <!-- end -->
+                </div>
+                <div class="form-check">
+                    <label class="form-check-label">
+                        <input type="radio"
+                               name="send-message"
+                               value="email"
+                               id="send-message"
+                               class="send-message form-check-input"
+                        /> <?php echo $this->__('Share Via E-mail'); ?>
+                    </label>
+                </div>
+                <div class="form-group message-box hide">
+                    <label for="partlists-emails" class="control-label posRel"><?php echo $this->__('Recipient Emails'); ?>: 
+                        <span class="glyphicon glyphicon-info-sign info-icon blueTxt" id="email-helper" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></span>
+                        <div class="popupBox qtyBoxCont dropdown-menu" aria-labelledby="email-helper">
+                            <ul>
+                                <li><?php echo $this->__('for mutiple emails please use comma(,)');?></li>
+                            </ul>
+                        </div>
+                    </label>
+                    <input type="text" id="partlists-emails" class="form-control partlists-emails required-entry validate-multi-email" />
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="bttn-md share-now tracking_partlistsharing_type"><?php echo $this->__('Share'); ?></button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<?php if ($active_flag) : ?>
+    <!-- quick add modal start -->
+    <div class="modal fade" id="quick-add" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog modal-sm" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&<?php echo $this->__('times'); ?>;</span></button>
+                    <h4 class="modal-title" id="myModalLabel"><?php echo $this->__('Quick Add') ?></h4>
+                </div>
+                <form class="" action="<?php echo Mage::helper('schrackcore/url')->getUrlWithCurrentProtocol('checkout/cart/quickadd') ?>" method="post" id="partlist_product_quickadd_form">
+                    <div class="modal-body">
+                        <input type="hidden" name="target" class="quickadd-target" value="current-partslist">
+                        <input type="hidden" name="id" class="quickadd-id" value="<?php $active->getId(); ?>">
+                        <input type="hidden" name="url" class="quickadd-url" value="">
+                        <div id="wait_loader">
+                            <img id="wait_loader_inline_gif_partslist" style="width: 20px; height: 20px; float: right; display: none;" src="<?php echo $this->getSkinUrl('schrackdesign/Public/Images/download_ajax_loader.gif'); ?>">
+                        </div>
+                        <div id="quickadd-sku-div-partslist" class="form-group">
+                            <label for="article"><?php echo $this->__('Article Number') ?></label>
+							<input type="text" class="form-control" id="article" name="sku" maxlength="13" placeholder="<?php echo $this->__('Article Number'); ?>" title="<?php echo $this->__('Article Number'); ?>" required autocomplete="off" autofocus>
+							<div id="quickadd_autocomplete_partlist" class="quickadd-autocomplete"></div>
+                        </div>
+                        <div id="sku_found_okay_partslist"><i class="fa fa-check" aria-hidden="true"></i></div>
+                        <div style="clear: both;"></div>
+                        <div style="clear: both;"></div>
+                        <div style="height: 20px; width: 100%;">
+                            <span id="ean_equivalent_partslist"></span>
+                        </div>
+                        <div style="clear: both;"></div>
+                        <div class="form-group">
+                            <label for="article-quantity"><?php echo $this->__('Quantity') ?></label>
+                            <input type="text" class="form-control" id="article-quantity" name="qty">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" id="addpartslist" class="bttn-md" style="cursor: auto;"><?php echo $this->__('Add to Partslists'); ?></button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <!-- quick add modal end -->
+
+    <!-- rename modal start -->
+    <div class="modal fade" id="active-rename" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog modal-sm" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel"><?php echo $this->__('Edit Partslist') ?></h4>
+                </div>
+
+                <div class="modal-body">
+                    <div class="rename-alert alert alert-info" role="alert" style="display: none"></div>
+                    <input type="hidden" name="target" class="quickadd-target" value="current-partslist">
+                    <input type="hidden" name="id" class="quickadd-id" value="<?php $active->getId(); ?>">
+                    <input type="hidden" name="url" class="quickadd-url" value="">
+                    <div class="form-group">
+                        <label for="partslist-name"><?php echo $this->__('Name of list') ?></label>
+                        <input type="text" class="form-control" id="partslist-name" name="sku" value="<?php echo $active->getDescription(); ?>" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="partslist-comment"><?php echo $this->__('Comment') ?></label>
+                        <input type="text" class="form-control" id="partslist-comment" value="<?php echo $active->getComment(); ?>" name="qty" required>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" id="rename_deactivated" class="bttn-md save_rename_partslist_deactivated"><?php echo $this->__('Update Partslists') ?></button>
+                        <button type="button" id="rename" class="bttn-md save_rename_partslist"><?php echo $this->__('Update Partslists'); ?></button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <!-- re
+
+    <!-- upload csv start -->
+	<div class="modal fade" id="upload-csv" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+		<div class="modal-dialog modal-sm" style="width: 340px !important;" role="document">
+			<div class="modal-content">
+                <div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&<?php echo $this->__('times'); ?>;</span></button>
+					<h4 class="modal-title" id="myModalLabel"><?php echo $this->__('Upload CSV') ?></h4>
+				</div>				
+				<div class="loginCont">
+                    <div class="quickadd row">
+                        <form id="upload-csv-form"
+                          action="<?php echo $formUrl; ?>" enctype="multipart/form-data" method="POST">
+                            <div class="col-xs-12">
+                                <h3><?php echo $this->__('Upload CSV') ?> <a href="<?php echo Mage::getStoreConfig('schrack/typo3/typo3url') . Mage::getStoreConfig('schrack/typo3/uploadcsvtext_url'); ?>">[?]</a></h3>
+                            </div>
+                            <div class="upload col-xs-12">
+                                <input type="file" name="csv" id="partslist-csv" accept=".csv" />
+                            </div>
+                            <div class="add_product col-xs-6">
+                                <div class="right-align-container">
+                                    <button type="button" id="upload-csv-button" class="bttn-md quickadd_partslist_button_grey" style="cursor: auto;"><?php echo $this->__('Upload'); ?></button>
+                                    <input id="verifyUploadFilePartslist" type="hidden" value="">
+                                </div>
+                            </div>
+                        </form>
+					</div>
+				</div>				
+			</div>
+		</div>
+	</div>
+    <!-- upload csv end -->
+<?php else : ?>
+    <p></p>
+<?php endif; ?>
+
+<!-- edit-comment start -->
+<div class="modal fade" id="edit-comment" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog modal-sm" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&<?php echo $this->__('times'); ?>;</span></button>
+                <h4 class="modal-title" id="myModalLabel"><?php echo $this->__('Edit Comment') ?></h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="partslist-name"><?php echo $this->__('comment') ?></label>
+                    <textarea class="form-control" id="comment-message-text"></textarea>
+                </div>          
+            </div>
+
+            <div class="modal-footer">
+                <button type="submit" id="update-comment" class="bttn-md" style="cursor: auto;"><?php echo $this->__('update'); ?></button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- edit-comment end -->
+
+<!-- print label start -->
+<div  id="print-label" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+</div>
+<!-- print label end -->
+
+<script>
+//<![CDATA[
+	var partlistProductQuickaddForm = new VarienForm('partlist_product_quickadd_form');
+	jQuery(document).ready(function () {
+
+        function isInt(value) {
+            return !isNaN(value) &&
+                parseInt(Number(value)) == value &&
+                !isNaN(parseInt(value, 10));
+        }
+
+        localStorage.quickaddFound2 = 0;
+
+        var maxFocus = 0;
+        var currentFocus = 0;
+        var itemNumber = 0;
+
+        jQuery('#article').on('input' , function (e) {
+            currentFocus = 0;
+            var query = jQuery('#article').val();
+
+            if (query.length > 2) {
+                jQuery('#wait_loader_inline_gif_partslist').show();
+                jQuery.ajax('/?eID=schrack_suggest&q=' + encodeURIComponent(query), {
+                    'dataType': 'json',
+                    'type': 'GET',
+                    'success': function (data) {
+                        if (data.products.length > 0) {
+                            var skuString = '';
+                            var isEAN = false;
+
+                            if (isInt(query)) {
+                                isEAN = true;
+                            }
+                            var html_sku_select_list = '<ul class="html_sku_select_list_container_partslist">';
+                            var index = 0;
+                            itemNumber = 0;
+
+                            for (index; index < data.products.length; index++) {
+                                // CHECK for return value: span, then SKU is real SKU, and derived from input:
+                                skuString = data.products[index].sku;
+                                var realSKU = skuString.replace('<span class="results-highlight">', '');
+                                realSKU = realSKU.replace('</span>', '');
+                                var count = (skuString.match(/results-highlight/g) || []).length;
+                                if (count > 0) {
+                                    maxFocus++;
+                                    itemNumber++;
+                                    html_sku_select_list += '<li class="html_sku_select_list_row_partslist listItemNumberPartslist' + itemNumber + '">' + realSKU + '</li>';
+                                }
+
+                                if (isEAN) {
+                                    maxFocus++;
+                                    itemNumber++;
+                                    html_sku_select_list += '<li class="html_sku_select_list_row_partslist listItemNumberPartslist' + itemNumber + '">' + realSKU + '</li>';
+                                }
+                            }
+                            html_sku_select_list += '</ul>';
+                            if (index == 1) {
+                                if (isEAN) {
+                                    jQuery('#article').val(realSKU);
+                                    jQuery('#ean_equivalent_partslist').text('= ' + query + ' (<?php echo $this->__('EAN'); ?>)');
+                                    jQuery('#article-quantity').focus();
+                                } else {
+                                    jQuery('#article').val(realSKU);
+                                    jQuery('#article-quantity').focus();
+                                }
+                                jQuery('#quickadd_autocomplete_partlist').html('');
+                                jQuery('#sku_found_okay_partslist').show();
+                                localStorage.quickaddFound2 = 1;
+                            } else {
+                                jQuery('#quickadd_autocomplete_partlist').html(html_sku_select_list);
+
+                                jQuery('.html_sku_select_list_row_partslist').on('click', function () {
+                                    jQuery('#article').val(jQuery(this).html());
+                                    jQuery('#sku_found_okay_partslist').show();
+                                    localStorage.quickaddFound2 = 1;
+                                    jQuery('#quickadd_autocomplete_partlist').html('');
+                                    jQuery('#article-quantity').focus();
+                                    currentFocus = 0;
+                                    maxFocus = 0;
+                                    itemNumber = 0;
+                                });
+                            }
+                        } else {
+                            jQuery('#quickadd_autocomplete_partlist').html('');
+                        }
+                        jQuery('#wait_loader_inline_gif_partslist').hide();
+                    },
+                    'error': function (data) {
+                    }
+                });
+            } else {
+                jQuery('#quickadd_autocomplete_partlist').html('');
+                jQuery('#wait_loader_inline_gif_partslist').hide();
+            }
+        });
+
+        jQuery('#article').on('focus' , function (e) {
+            if (localStorage.quickaddFound2 == 1) {
+                jQuery('#article').val('');
+                localStorage.quickaddFound2 = 0;
+                jQuery('#sku_found_okay_partslist').hide();
+                jQuery('#ean_equivalent_partslist').text('');
+                currentFocus = 0;
+                maxFocus = 0;
+                itemNumber = 0;
+            }
+        });
+
+        jQuery('#article').on('keyup', function (event) {
+            if (event.keyCode == 40) {
+                if (currentFocus >= 0 && currentFocus < maxFocus) {
+                    // If the arrow DOWN key is pressed, increase the currentFocus variable:
+                    currentFocus++;
+                    // and and make the current item more visible:
+                    if (currentFocus > 1) {
+                        jQuery('.listItemNumberPartslist' + (currentFocus - 1)).css('color', '#888');
+                        jQuery('.listItemNumberPartslist' + (currentFocus - 1)).css('background', 'white');
+                    }
+                    jQuery('.listItemNumberPartslist' + currentFocus).css('color', 'white');
+                    jQuery('.listItemNumberPartslist' + currentFocus).css('background', '#00589d');
+                }
+            }
+
+            if (event.keyCode == 38) {
+                // If the arrow UP key is pressed, decrease the currentFocus variable:
+                if (currentFocus > 1) {
+                    currentFocus--;
+
+                    jQuery('.listItemNumberPartslist' + (currentFocus + 1)).css('color', '#888');
+                    jQuery('.listItemNumberPartslist' + (currentFocus + 1)).css('background', 'white');
+
+                    jQuery('.listItemNumberPartslist' + currentFocus).css('color', 'white');
+                    jQuery('.listItemNumberPartslist' + currentFocus).css('background', '#00589d');
+                }
+            }
+
+            if (event.keyCode == 13 && currentFocus > 0) {
+                jQuery('#article').val(jQuery('.listItemNumberPartslist' + currentFocus).text());
+                jQuery('#sku_found_okay_partslist').show();
+                localStorage.quickaddFound2 = 1;
+                jQuery('#quickadd_autocomplete_partlist').html('');
+                jQuery('#article-quantity').focus();
+            }
+        });
+
+        function listname_validate() {
+            var listname = jQuery('#partslist-name').val();
+
+            if (listname.length > 0) {
+                jQuery('.save_rename_partslist_deactivated').hide();
+                jQuery('.save_rename_partslist').show();
+            } else {
+                jQuery('.save_rename_partslist_deactivated').show();
+                jQuery('.save_rename_partslist').hide();
+            }
+        }
+
+        listname_validate();
+        
+// Prevent enter illegal character(s) by CHANGE or PASTE :
+        jQuery('#partslist-name').bind('keydown change paste',function(e) {
+            setTimeout(function(){
+                    jQuery('#partslist-name').val(jQuery('#partslist-name').val().replace(/["';\[\]<>\x00-\x09\x0B\x0C\x0E-\x1F\xE2\x7F\n\r]/g, ""));
+                    listname_validate();
+                }, 50
+            );
+        });
+
+		jQuery('#quick-add').on('shown.bs.modal', function () {
+			document.getElementById("partlist_product_quickadd_form").reset();
+			//partlistProductQuickaddForm.reset();
+			jQuery('#article').focus();
+		}); 
+		
+		jQuery('#addpartslist').on('click', function(){;
+            var productSKU = jQuery('#article').val();
+
+            if (dataLayer) {
+                dataLayer.push({
+                    'event' : 'quickaddProductToPartlist',
+                    'eventLabel' : productSKU
+                });
+            }
+			partlistProductQuickaddForm.submit();
+		});	
+		
+		jQuery(document).keypress(function(ev) {
+			if ( jQuery(ev.target).attr('id') === 'article-quantity' && ev.which == 13 ) {
+				ev.preventDefault();
+                var productSKU = jQuery('#article').val();
+
+                if (dataLayer) {
+                    dataLayer.push({
+                        'event' : 'quickaddProductToPartlist',
+                        'eventLabel' : productSKU
+                    });
+                }
+				partlistProductQuickaddForm.submit();
+			}
+		});
+
+	});
+
+    jQuery("#partslist-csv").change(function() {
+        var files = jQuery("#partslist-csv")[0].files;
+        var fileSelected = false;
+        var fileName = '';
+
+        for (var i = 0; i < files.length; i++)
+        {
+            fileSelected = true;
+            var fileInput = document.getElementById('partslist-csv');
+            fileName = fileInput.value.split(/(\\|\/)/g).pop();
+        }
+
+        if (fileSelected == true && fileName.match(/.+csv$/i)) {
+            jQuery('#verifyUploadFilePartslist').val('true');
+            jQuery('#upload-csv-button').removeClass('quickadd_partslist_button_grey');
+            jQuery('#upload-csv-button').addClass('quickadd_partslist_button_red');
+        } else {
+            jQuery('#verifyUploadFilePartslist').val('');
+            jQuery('#upload-csv-button').removeClass('quickadd_partslist_button_red');
+            jQuery('#upload-csv-button').addClass('quickadd_partslist_button_grey');
+        }
+    });
+
+    jQuery('#upload-csv-button').on('click', function(evt) {
+        if (jQuery('#verifyUploadFilePartslist').val() == 'true') {
+            // Set flag for call AJAX, after saved CSV Items (tracking mechanism):
+            localStorage.flagPartlistCsvUploadPointer = '<?php echo $uuid; ?>';
+            jQuery('#upload-csv-form').submit();
+        } else {
+            evt.preventDefault();
+        }
+    });
+
+//]]>
+</script>
+<!-- app/design/frontend/schrack/schrackresponsive/template/wishlist/partslist/modals.phtml (end) -->

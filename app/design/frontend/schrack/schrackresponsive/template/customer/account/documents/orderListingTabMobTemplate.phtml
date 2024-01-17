@@ -1,0 +1,53 @@
+<?php
+	$orderLstTabMob = json_decode(json_encode(Mage::registry('dashboardOrderList')),TRUE);
+    $showOrderInfo = intval(Mage::getStoreConfigFlag('schrack/shop/enable_custom_project_info_in_checkout')) == 1;
+?>
+<?php /* For Tablet & Mobile View */ ?>
+	<?php
+		if(count($orderLstTabMob) > 0) {
+			$j = 0;
+			foreach ($orderLstTabMob as $orderLstObjTabMob) {	// For Tablet & Mobile View
+	?>
+			<tr class="<?php if($j%2==0) { echo "even"; } else { echo "odd"; } ?>" id="tabMobOrderTrId" totalOrderTabMobRecordCount="<?php echo count($orderLstTabMob); ?>">
+				<td>
+				<div class="tabularCont hidden-md hidden-lg">
+					<div class="row-tbl">
+						<div class="body">
+							<div class="mobilSecLft">
+								<div class="col-xs-12 col-sm-12 col-md-2 colmn docuemntDatetime3 large-fine-5 columns-fine">
+                                    <?php if ( $showOrderInfo ) : ?>
+                                        <div class="responsiveHd"><?php echo $this->__('Order-/Project Reference'); ?>:</div>
+                                        <?php echo $order['nameProject']; ?>
+                                    <?php else : ?>
+                                        <div class="responsiveHd"><?php echo $this->__('Meine Bestellangabe'); ?>:</div>
+                                        <?php echo $order['name']; ?>
+                                    <?php endif; ?>
+								</div>
+								<div class="col-xs-12 col-sm-12 col-md-3 colmn documentNumber3 large-fine-6 columns-fine">
+									<div class="responsiveHd"><?php echo $this->__('Order #'); ?>:</div>
+										<a href="<?php echo $orderLstObjTabMob['detailUrl']; ?>">
+											<?php echo $orderLstObjTabMob['orderNumber']; ?>
+										</a>	
+								</div>
+								<div class="col-xs-12 col-sm-12 col-md-3 colmn documentReference large-fine-7 columns-fine">
+									<div class="responsiveHd"><?php echo $this->__('Date'); ?>:</div>
+									<?php echo $orderLstObjTabMob['creationDate']; ?>
+								</div>
+							</div>
+							<div class="mobilSecRgt"><?php echo $orderLstObjTabMob['status']; ?></div>
+						</div>
+					</div>
+				</div>
+				</td>
+			</tr>
+	<?php	//if($j === 4) { break; }
+			$j++;
+			}
+		} else {
+	?>
+		<!--<tr class="no-documents <?php if($j%2==0) { echo "even"; } else { echo "odd"; } ?>">
+			<td><?php echo $this->__('There are no documents to display.')?></td>
+		</tr>-->
+	<?php
+		}
+	?>

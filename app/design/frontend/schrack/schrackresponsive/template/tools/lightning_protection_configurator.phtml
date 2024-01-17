@@ -1,0 +1,793 @@
+<!-- app/design/frontend/schrack/schrackresponsive/template/tools/lightning_protection_configurator.phtml (start) -->
+<?php
+$currency = Mage::app()->getStore()->getCurrentCurrencyCode();
+?>
+<h1 class="onlinetools"><?php echo $this->__('Lightning Protection Calculator'); ?></h1>
+
+<?php echo $this->getChildHtml('disclosures') ?>
+
+<h2 id="group-calculation-head" data-selected="0"
+    class="onlinetools-inactive"><?php echo $this->__('Lightning Protection Calculation'); ?></h2>
+<div id="group-calculation" style="display: none">
+
+    <h3 class="onlinetools"><?php echo $this->__('General Information'); ?></h3>
+
+    <div>
+        <div class="onlinetools-input-cell-div">
+            <label class="onlinetools-input-label"><?php echo $this->__('Lightning protection system outside available'); ?></label>
+            <fieldset class="onlinetools-one-line-radio-fieldset">
+                <input type="radio" id="outsidesystem_y" name="OutsideSystem" value="1"/>
+                <label for="outsidesystem_y" class="onlinetools-radioorcheck-label-right"><?php echo $this->__('Yes'); ?></label>
+                <input type="radio" checked id="outsidesystem_n" name="OutsideSystem" value="0"/>
+                <label for="outsidesystem_n" class="onlinetools-radioorcheck-label-right"><?php echo $this->__('No'); ?></label>
+            </fieldset>
+        </div>
+        <div class="onlinetools-input-cell-div">
+            <div style="display: flex">
+                <label for="input_useable_area" style="display: inline-block; width: 50%;"
+                       class="onlinetools-input-label"><?php echo $this->__('Useable Area (m²)'); ?></label>
+                <a href="javascript:void(0)" style="display: inline-block; width: 50%; text-align: right;"
+                   id="useable_area_advanced_input"><?php echo $this->__('Calculate usable area'); ?></a>
+            </div>
+            <input type="number" id="input_useable_area" class="onlinetools-input"/>
+        </div>
+    </div>
+
+    <div>
+        <div class="onlinetools-input-cell-div">
+            <label for="input_building_type"
+                   class="onlinetools-input-label"><?php echo $this->__('Type of Building'); ?></label>
+            <select type="" id="input_building_type" class="onlinetools-input"></select>
+        </div>
+        <div class="onlinetools-input-cell-div">
+            <label for="input_usage_type"
+                   class="onlinetools-input-label"><?php echo $this->__('Type of Usage'); ?></label>
+            <select type="" id="input_usage_type" class="onlinetools-input"></select>
+        </div>
+    </div>
+
+    <div>
+        <div class="onlinetools-input-cell-div">
+            <label for="input_protection_class"
+                   class="onlinetools-input-label"><?php echo $this->__('Lightning Protection Class'); ?></label>
+            <input readonly type="text" id="input_protection_class" class="onlinetools-input-readonly-important"/>
+        </div>
+        <div class="onlinetools-input-cell-div">
+            <label for="input_building_option"
+                   class="onlinetools-input-label"><?php echo $this->__('Building Option'); ?></label>
+            <select type="" id="input_building_option" class="onlinetools-input" multiple data-placeholder="<?php echo $this->__('(non)'); ?>"></select>
+        </div>
+    </div>
+
+    <div>
+        <div class="onlinetools-input-cell-div">
+            <label for="input_network_system"
+                   class="onlinetools-input-label"><?php echo $this->__('Network System'); ?></label>
+            <select type="" id="input_network_system" class="onlinetools-input"></select>
+        </div>
+    </div>
+
+    <div>
+        <div class="onlinetools-input-cell-div">
+            <label class="onlinetools-input-label"><?php echo $this->__('Dispatcher with Auxiliary Contact'); ?></label>
+            <fieldset class="onlinetools-one-line-radio-fieldset">
+                <input type="radio" id="auxiliary_y" name="Auxiliary" value="1"/>
+                <label for="auxiliary_y" class="onlinetools-radioorcheck-label-right"><?php echo $this->__('Yes'); ?></label>
+                <input type="radio" checked id="auxiliary_n" name="Auxiliary" value="0"/>
+                <label for="auxiliary_n" class="onlinetools-radioorcheck-label-right"><?php echo $this->__('No'); ?></label>
+            </fieldset>
+        </div>
+        <div class="onlinetools-input-cell-div" id="group-plugable-yn" style="display: none">
+            <label class="onlinetools-input-label"><?php echo $this->__('Dispatcher plugable'); ?></label>
+            <fieldset class="onlinetools-one-line-radio-fieldset">
+                <input type="radio" id="plugable_y" name="Plugable" value="1"/>
+                <label for="plugable_y" class="onlinetools-radioorcheck-label-right"><?php echo $this->__('Yes'); ?></label>
+                <input type="radio" checked id="plugable_n" name="Plugable" value="0"/>
+                <label for="plugable_n" class="onlinetools-radioorcheck-label-right"><?php echo $this->__('No'); ?></label>
+            </fieldset>
+        </div>
+    </div>
+
+    <div id="group-main-dispatcher" style="display: none;" >
+    </div>
+
+    <div>
+        <h3 class="onlinetools"><?php echo $this->__('Information for Sub Dispatchers'); ?></h3>
+        <div>
+            <div class="onlinetools-input-cell-div">
+                <label for="input_subdispatcher_neccesary"
+                       class="onlinetools-input-label"><?php echo $this->__('Sub Dispatcher'); ?></label>
+                <select type="" id="input_subdispatcher_neccesary" class="onlinetools-input"></select>
+            </div>
+            <div class="onlinetools-input-cell-div only-if-subdispatcher-neccesary" style="display: none;">
+                <label for="input_subdispatcher_count"
+                       class="onlinetools-input-label"><?php echo $this->__('Count of Sub Dispatcher >10m'); ?></label>
+                <input type="number" id="input_subdispatcher_count" class="onlinetools-input"/>
+            </div>
+        </div>
+
+        <div class="only-if-subdispatcher-neccesary" style="display: none;">
+            <div class="onlinetools-input-cell-div">
+                <label for="input_subdispatcher_network_system"
+                       class="onlinetools-input-label"><?php echo $this->__('Network System'); ?></label>
+                <select type="" id="input_subdispatcher_network_system" class="onlinetools-input"></select>
+            </div>
+            <div class="onlinetools-input-cell-div">
+                <label class="onlinetools-input-label"><?php echo $this->__('Sub Dispatcher with Auxiliary Contact'); ?></label>
+                <fieldset class="onlinetools-one-line-radio-fieldset">
+                    <input type="radio" id="subauxiliary_y" name="SubAuxiliary" value="1"/>
+                    <label for="subauxiliary_y" class="onlinetools-radioorcheck-label-right"><?php echo $this->__('Yes'); ?></label>
+                    <input type="radio" checked id="subauxiliary_n" name="SubAuxiliary" value="0"/>
+                    <label for="subauxiliary_n" class="onlinetools-radioorcheck-label-right"><?php echo $this->__('No'); ?></label>
+                </fieldset>
+            </div>
+        </div>
+    </div>
+
+    <div id="group-sub-dispatcher" style="display: none;">
+    </div>
+
+    <h3 class="onlinetools"><?php echo $this->__('Additional Components'); ?></h3>
+    <div id="additional_components">
+    </div>
+
+    <h3 class="onlinetools"><?php echo $this->__('Supply Lines'); ?></h3>
+    <div id="supplyline_group" data-count="0">
+        <div class="onlinetools-input-cell-div-fullwidth">
+            <label for="input_supplyline_count"
+                   class="onlinetools-input-label"><?php echo $this->__('Count of Supply Lines'); ?></label>
+            <div style="display: inline">
+                <input type="number" id="input_supplyline_count" class="onlinetools-input-80-plus_addon" val="0" disabled/>
+                <span id="supplyline_count_refresh_bnutton" class="onlinetools-input-addon-button-disabled"><?php echo $this->__('Refresh'); ?></span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="useable_area_popup" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel2"><?php echo $this->__('Extended Input') ?></h4>
+            </div>
+            <div class="modal-body">
+                <label for="input_useable_area_length"
+                       class="onlinetools-input-label"><?php echo $this->__('Useable Area Length (m)'); ?></label>
+                <input type="number" id="input_useable_area_length" class="onlinetools-input"/>
+                <label for="input_useable_area_width"
+                       class="onlinetools-input-label"><?php echo $this->__('Useable Area Width (m)'); ?></label>
+                <input type="number" id="input_useable_area_width" class="onlinetools-input"/>
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="close_useable_area_popup" class="btn btn-secondary" data-dismiss="modal"><?php echo $this->__('Calculate and Take Over'); ?></button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<script type="text/javascript">//<![CDATA[
+    var schrackToolModel = <?php $this->printFrontendModel('LightningProtectionModel.json'); ?>;
+    var protectionClass =  null, lightningProtectionRequired = null, plugable = null;
+    var gotAdditionalProductData = false;
+    var hasMainDispatcher = false;
+
+    jQuery(document).ready(function () {
+
+        localStorage.featureSrc = 'toolSchrackProtect';
+
+        fillSelect('#input_building_type',schrackToolModel.selections.buildings,false,false);
+        fillSelectExt('#input_building_option',schrackToolModel.selections.buildingOptions,true,true,true,false,false,true);
+        jQuery('#input_building_option').multiselect({
+            buttonWidth: '100%'
+        });
+        jQuery(".multiselect").css("height","44px");
+        jQuery(".multiselect-container").css("font-size","14px");
+        fillSelect('#input_network_system',schrackToolModel.selections.networkSystems,false,true);
+        fillSelect('#input_subdispatcher_network_system',schrackToolModel.selections.networkSystems,false,true);
+        fillSelect('#input_subdispatcher_neccesary',schrackToolModel.selections.subDispatcherNecessary,false,true);
+        jQuery('#input_project_name').focus();
+
+        jQuery('#group-calculation-head').on('click', function ( event ) {
+            toggleGroup(jQuery(this),'#group-calculation');
+        });
+
+        jQuery('#useable_area_advanced_input').on('click', function () {
+            jQuery('#useable_area_popup').modal();
+        });
+        jQuery('#close_useable_area_popup').on('click', function () {
+            var l = parseInt(jQuery('#input_useable_area_length').val());
+            var w = parseInt(jQuery('#input_useable_area_width').val());
+            if ( ! isNaN(l) && ! isNaN(w) && l > 0 && w > 0 ) {
+                jQuery('#input_useable_area').val(l * w);
+            }
+        });
+
+
+        jQuery('#input_building_type').on('change', function () {
+            console.log('EVENT: #input_building_type => change');
+            fillTypeOfUsage();
+            checkMainplugability();
+            tryCalculateMainDispatcher(); // to remove main dispatcher
+        });
+        jQuery('#input_usage_type').on('change', function () {
+            console.log('EVENT: #input_usage_type => change');
+            var protectionClass = jQuery('#input_usage_type').val();
+            jQuery('#input_protection_class').val(protectionClass);
+            checkMainauxiliary();
+            checkMainplugability();
+            tryCalculateMainDispatcher();
+            tryCalculateSupplyLines();
+        });
+        jQuery('#input_network_system').on('change', function () {
+            console.log('EVENT: #input_network_system => change');
+            jQuery('#input_subdispatcher_network_system').val(jQuery('#input_network_system').val());
+            checkMainauxiliary();
+            checkMainplugability();
+            tryCalculateMainDispatcher();
+        });
+        jQuery('#outsidesystem_y, #outsidesystem_n, #input_building_option, #auxiliary_y, #auxiliary_n').on('change', function () {
+            console.log('EVENT: #outsidesystem_y, #outsidesystem_n, #input_building_option, #auxiliary_y, #auxiliary_n => change');
+            checkMainplugability();
+            tryCalculateMainDispatcher();
+            tryCalculateSupplyLines();
+        });
+        jQuery('#plugable_y, #plugable_n').on('change', function () {
+            console.log('EVENT: #plugable_y, #plugable_n => change');
+            tryCalculateMainDispatcher();
+            tryCalculateSupplyLines();
+        });
+        jQuery('#input_useable_area').keyup(function(e) {
+            console.log('EVENT: #input_useable_area => keyup');
+            checkMainplugability();
+            tryCalculateMainDispatcher();
+            tryCalculateSupplyLines();
+        });
+
+        jQuery('#input_subdispatcher_neccesary').on('change', function () {
+            console.log('EVENT: #input_subdispatcher_neccesary => change');
+            tryCalculateSubDispatcher();
+            var selection = jQuery('#input_subdispatcher_neccesary').val();
+            if ( selection == '2' ) {
+                jQuery('.only-if-subdispatcher-neccesary').show();
+            } else {
+                jQuery('.only-if-subdispatcher-neccesary').hide();
+                jQuery("#input_subdispatcher_count").val('');
+            }
+        });
+        jQuery('#input_subdispatcher_count').keyup(function(e) {
+            console.log('EVENT: #input_subdispatcher_count => keyup');
+            tryCalculateSubDispatcher();
+        });
+        jQuery('#input_subdispatcher_network_system').on('change', function () {
+            console.log('EVENT: ##input_subdispatcher_network_system => change');
+            tryCalculateSubDispatcher();
+        });
+        jQuery('#subauxiliary_y, #subauxiliary_n').on('change', function () {
+            console.log('EVENT: #subauxiliary_y, #subauxiliary_n => change');
+            tryCalculateSubDispatcher();
+        });
+
+        jQuery('#input_supplyline_count').on('change', function () {
+            console.log('EVENT: #input_supplyline_count => change');
+            tryCalculateSupplyLines();
+        });
+
+        jQuery('#supplyline_count_refresh_bnutton').on('click', function () {
+            console.log('EVENT: #supplyline_count_refresh_bnutton => click');
+            tryCalculateSupplyLines();
+        });
+
+        buildAdditionalComponentHtmls();
+
+        jQuery('[id^="chkboxAdditional"]').on('change', function () {
+            console.log('EVENT: [id^="chkboxAdditional"] => change');
+            var id = jQuery(this).prop("id");
+            var articleHtmlId = 'group-' + id;
+            var articleHtmlIdJQ = '#' + articleHtmlId;
+            if ( jQuery(this).prop("checked") == true ) {
+                if ( ! gotAdditionalProductData ) {
+                    jQuery(this).prop("checked",false);
+                    return;
+                }
+                var name = jQuery(this).prop("name");
+                var example = {
+                    Name : name
+                };
+                var article = filterOneByExample(schrackToolModel.articles,example);
+                var reuseMain = false;
+                if ( article.SKU == '@REUSE_MAIN' ) {
+                    var note = article.Note;
+                    var sku = jQuery('#group-main-dispatcher-sku').text();
+                    if ( typeof sku == 'undefined' || sku == '' ) {
+                        jQuery(this).prop("checked",false);
+                        return;
+                    }
+                    example = {
+                        SKU: sku
+                    };
+                    article = filterOneByExample(schrackToolModel.articles,example);
+                    article.Note = note;
+                    reuseMain = true;
+                }
+                var articleHtml = buildLeftArticleHtml(articleHtmlId,'',article);
+                jQuery(articleHtmlIdJQ).replaceWith(articleHtml);
+                addProductClickEventLeftSide('Leftside-ClickTracking Executed (#01)');
+                jQuery(articleHtmlIdJQ).slideDown();
+                addRightListSku(id,article.SKU,1);
+                if ( reuseMain ) {
+                    article.Note = null;
+                }
+                var note = jQuery(this).data("note");
+                if ( note > '' ) {
+                    var group = jQuery(this).data("group");
+                    var name = jQuery(this).data("name");
+                    addDocumentationHint(id,group,name,note);
+                }
+            } else {
+                jQuery(articleHtmlIdJQ).slideUp();
+                var sku = jQuery(articleHtmlIdJQ + '-sku').text();
+                removeRightListSku(id,sku);
+                removeDocumentationHint(id);
+            }
+        });
+});
+
+    function checkMainauxiliary () {
+        var networkSystem = jQuery('#input_network_system').val();
+        var protectionClass = jQuery('#input_protection_class').val();
+        if ( networkSystem == 'TT' && (protectionClass == 'I' || protectionClass == 'II') ) {
+            jQuery('#auxiliary_y').prop('checked',true);
+            jQuery('#auxiliary_n').prop('disabled',true);
+        } else {
+            jQuery('#auxiliary_n').prop('disabled',false);
+        }
+    }
+
+    function checkMainplugability () {
+        var status = null;
+        var m2 = parseInt(jQuery('#input_useable_area').val());
+        if ( isNaN(m2) || m2 <= 0 ) {
+            status = 'both';
+        }
+        if ( ! status ) {
+            var protectionClass = jQuery('#input_protection_class').val();
+            var buildingOption = jQuery('#input_building_option').find(":selected").val();
+            var outSideSystem = jQuery("input:radio[name ='OutsideSystem']:checked").val();
+            var lightningProtectionRequred =    outSideSystem == '1'
+                                             || m2 >= 400
+                                             || (buildingOption && buildingOption > 0) ? 1 : 0;
+            if ( lightningProtectionRequred ) {
+                if ( ! protectionClass || protectionClass == '' ) {
+                    status = 'both';
+                } else if ( protectionClass == 'I' || protectionClass == 'II' ) {
+                    status = 'not_plugable';
+                } else {
+                    status = 'both';
+                }
+            } else {
+                status = 'plugable';
+            }
+        }
+
+        switch ( status ) {
+            case 'both':
+                jQuery('#group-plugable-yn').show();
+                jQuery('#plugable_n').prop('checked',true);
+                break;
+            case 'plugable' :
+                jQuery('#group-plugable-yn').hide();
+                jQuery('#plugable_y').prop('checked',true);
+                break;
+            case 'not_plugable' :
+                jQuery('#group-plugable-yn').hide();
+                jQuery('#plugable_n').prop('checked',true);
+                break;
+        }
+    }
+
+    function tryCalculateMainDispatcher () {
+        var m2, networkSystem;
+        var canShowMainDispatcher = gotAdditionalProductData;
+        if ( canShowMainDispatcher ) {
+            m2 = parseInt(jQuery('#input_useable_area').val());
+            if ( isNaN(m2) || m2 <= 0 )
+                canShowMainDispatcher = false;
+        }
+        if ( canShowMainDispatcher ) {
+            protectionClass = jQuery('#input_protection_class').val();
+            if ( ! protectionClass || protectionClass == '' )
+                canShowMainDispatcher = false;
+            else {
+                if ( protectionClass == 'I' || protectionClass == 'II' )
+                    protectionClass = 'I-II';
+                else
+                    protectionClass = 'III-IV';
+            }
+        }
+        if ( canShowMainDispatcher ) {
+            networkSystem = jQuery('#input_network_system').find(":selected").val();
+            if ( ! networkSystem || networkSystem == '' )
+                canShowMainDispatcher = false;
+        }
+        var oldSKU = jQuery('#group-main-dispatcher-sku').text();
+        if ( canShowMainDispatcher ) {
+            var buildingOption = jQuery('#input_building_option').find(":selected").val();
+            var outSideSystem = jQuery("input:radio[name ='OutsideSystem']:checked").val();
+            var auxiliaryContact = jQuery("input:radio[name ='Auxiliary']:checked").val();
+            plugable = jQuery("input:radio[name ='Plugable']:checked").val();
+            lightningProtectionRequired =    outSideSystem == '1'
+                                         || m2 >= 400
+                                         || (buildingOption && buildingOption > 0) ? 1 : 0;
+            if ( ! lightningProtectionRequired )
+                protectionClass = '';
+
+            var example = {
+                Type                            : "T_Main_Dispatcher",
+                "Auxiliary Contact"             : auxiliaryContact,
+                "Plugable"                      : plugable,
+                "Lightning Protection Class"    : protectionClass,
+                "Lightning Protection Required" : lightningProtectionRequired,
+                "Network System"                : networkSystem
+            };
+            var article = filterOneByExample(schrackToolModel.articles,example);
+            if ( article == null ) {
+                hasMainDispatcher = false;
+                alert("<?php echo $this->__('No matching article found!'); ?>");
+                jQuery('#group-main-dispatcher-sku').text('');
+                jQuery('#group-main-dispatcher').hide();
+            } else {
+                hasMainDispatcher = true;
+                var sameSKU = oldSKU == article.SKU;
+                if ( ! sameSKU ) {
+                    if ( getRightListSkuCount('main_dispatcher',oldSKU) > 0 ) {
+                        removeRightListSku('main_dispatcher',oldSKU);
+                    }
+                    jQuery('#group-main-dispatcher').slideUp('fast', function() {
+                        addRightListSku('main_dispatcher',article.SKU,1);
+                        var articleHtml = buildLeftArticleHtml('group-main-dispatcher',
+                                                               '<?php echo $this->__('Product: Main Dispatcher'); ?>',
+                                                               article);
+                        jQuery('#group-main-dispatcher').replaceWith(articleHtml);
+                        addProductClickEventLeftSide('Leftside-ClickTracking Executed (#02)');
+                        jQuery('#group-main-dispatcher').slideDown();
+                    });
+                    tryCalculateSubDispatcher();
+                    triggerReusingsOfMainDispatcher(article);
+                }
+            }
+            enableDisablePowerLines(true);
+        } else {
+            hasMainDispatcher = false;
+            jQuery('#group-main-dispatcher-sku').text('');
+            jQuery('#group-main-dispatcher').slideUp();
+            removeRightListSku('main_dispatcher',oldSKU);
+            triggerReusingsOfMainDispatcher(null);
+            enableDisablePowerLines(false);
+        }
+    }
+
+    function tryCalculateSubDispatcher () {
+        var canShowSubDispatcher = hasMainDispatcher;
+        var count = 0;
+        if ( canShowSubDispatcher ) {
+            useSubDispatcher = jQuery('#input_subdispatcher_neccesary').find(":selected").val() == '2';
+            if ( ! useSubDispatcher ) {
+                canShowSubDispatcher = false;
+            }
+        }
+        if ( canShowSubDispatcher ) {
+            var networkSystem = jQuery('#input_subdispatcher_network_system').find(":selected").val();
+            if ( ! networkSystem || networkSystem == '' )
+                canShowSubDispatcher = false;
+        }
+        if ( canShowSubDispatcher ) {
+            var s = jQuery('#input_subdispatcher_count').val();
+            if ( s == '' ) {
+                count = 0;
+            } else {
+                 count = parseInt(s);
+                 if ( isNaN(count) ) {
+                     canShowSubDispatcher = false;
+                 }
+            }
+        }
+        var oldSKU = jQuery('#group-sub-dispatcher-sku').text();
+        if ( canShowSubDispatcher ) {
+            var auxiliaryContact = jQuery("input:radio[name ='SubAuxiliary']:checked").val();
+            var example = {
+                Type                : "T_Sub_Dispatcher",
+                "Auxiliary Contact" : auxiliaryContact,
+                "Network System"    : networkSystem
+            };
+            var article = filterOneByExample(schrackToolModel.articles,example);
+            if ( article == null ) {
+                alert("<?php echo $this->__('No matching article found!'); ?>");
+                removeRightListSku('sub_dispatcher',oldSKU);
+                jQuery('#group-sub-dispatcher-sku').text('');
+                jQuery('#group-sub-dispatcher').hide();
+            } else {
+                var sameSKU = oldSKU == article.SKU;
+                var oldCount = getRightListSkuCount('sub_dispatcher',oldSKU);
+                if ( ! sameSKU ) {
+                    if ( oldCount > 0 ) {
+                        removeRightListSku('sub_dispatcher',oldSKU);
+                    }
+                    jQuery('#group-sub-dispatcher').slideUp('fast', function() {
+                        addRightListSku('sub_dispatcher',article.SKU,count);
+                        var articleHtml = buildLeftArticleHtml('group-sub-dispatcher',
+                                                               '<?php echo $this->__('Product: Sub Dispatcher'); ?>',
+                                                               article);
+                        jQuery('#group-sub-dispatcher').replaceWith(articleHtml);
+                        addProductClickEventLeftSide('Leftside-ClickTracking Executed (#03)');
+                        jQuery('#group-sub-dispatcher').slideDown();
+                    });
+                } else if ( oldCount != count ) {
+                    changeRightListSkuCount('sub_dispatcher',article.SKU,count);
+                }
+            }
+        } else {
+            jQuery('#group-sub-dispatcher-sku').text('');
+            jQuery('#group-sub-dispatcher').slideUp();
+            removeRightListSku('sub_dispatcher',oldSKU);
+        }
+    }
+
+    function fillTypeOfUsage () {
+        var buildingType = jQuery('#input_building_type').val();
+        var usageTypes = schrackToolModel.selections.buildings[buildingType];
+        jQuery("#input_usage_type option").remove();
+        fillSelect("#input_usage_type",usageTypes,false,true);
+        jQuery('#input_protection_class').val('');
+    }
+
+    function buildAdditionalComponentHtmls () {
+        var example = {
+            Type : "T_Additional_Component"
+        };
+        var lastGroup = '';
+        var articles = filterMultipleByExample(schrackToolModel.articles,example);
+        articles.forEach(function (article, index) {
+            if ( article.Group != lastGroup ) {
+                jQuery('#additional_components').append('<h4 class="onlinetools">' + article.Group + '</h4>');
+                lastGroup = article.Group;
+            }
+            var id = 'chkboxAdditional-' + index;
+            var note = typeof article.Note != 'undefined' ? article.Note : '';
+            if ( article.SKU == '@REUSE_MAIN' )
+                id += '-reuse_main';
+            var html = '<div>'
+                     + '    <div class="onlinetools-input-cell-div-fullwidth">'
+                     + '        <input type="checkbox" name="' +  article.Name + '" id="' + id + '"'
+                                        + ' data-group="' + lastGroup + '"'
+                                        + ' data-name="' + article.Name + '"'
+                                        + ' data-note="' + note + '"'
+                                        + ' value="no"/>'
+                     + '        <label for="' + id + '" class="onlinetools-radioorcheck-label-right">'
+                     + '            ' + article.Name
+                     + '        </label>'
+                     + '    </div>'
+                     + '</div>'
+                     + '<div id="group-' + id + '" style="display: none;"></div>';
+            jQuery('#additional_components').append(html);
+        });
+    }
+
+    function triggerReusingsOfMainDispatcher ( article ) {
+        jQuery('[id$="-reuse_main"]').each( function() {
+            if ( jQuery(this).prop('type') == 'checkbox' && jQuery(this).prop('checked') ) {
+                var id = jQuery(this).prop("id");
+                var articleHtmlId = 'group-' + id;
+                var articleHtmlIdJQ = '#' + articleHtmlId;
+                if ( article == null ) {
+                    jQuery(this).prop('checked',false);
+                    jQuery(articleHtmlIdJQ).hide();
+                } else {
+                    var name = jQuery(this).prop("name");
+                    var example = {
+                        Name : name
+                    };
+                    var pseudoArticle = filterOneByExample(schrackToolModel.articles,example);
+                    if ( pseudoArticle.SKU != '@REUSE_MAIN' ) {
+                        return; // SNH
+                    }
+                    article.Note = pseudoArticle.Note;
+                    var oldSKU = jQuery(articleHtmlIdJQ + '-sku').text();
+                    removeRightListSku(id, oldSKU);
+                    var articleHtml = buildLeftArticleHtml(articleHtmlId,'',article);
+                    jQuery(articleHtmlIdJQ).replaceWith(articleHtml);
+                    addProductClickEventLeftSide('Leftside-ClickTracking Executed (#04)');
+                    jQuery(articleHtmlIdJQ).slideDown();
+                    addRightListSku(id,article.SKU,1);
+                    article.Note = null;
+                }
+            }
+        });
+    }
+
+    function tryCalculateSupplyLines () {
+        if ( plugable == null || protectionClass == null || lightningProtectionRequired == null ) {
+            return; // no main dispatcher selected
+        }
+        var newCount = parseInt(jQuery('#input_supplyline_count').val());
+        var oldCount = parseInt(jQuery('#supplyline_group').data('count'));
+        if ( ! isNaN(newCount) && ! isNaN(oldCount) && newCount >= 0 && oldCount >= 0 ) {
+            jQuery('#supplyline_group').data('count', newCount);
+            if ( newCount > oldCount ) {
+                addSupplyLines(oldCount,newCount);
+                updateSupplyLines(oldCount);
+            } else if ( newCount < oldCount ) {
+                removeSupplyLines(oldCount,newCount);
+                updateSupplyLines(newCount);
+            } else if ( newCount > 0 ) {
+                updateSupplyLines(newCount);
+            }
+        }
+    }
+
+    function enableDisablePowerLines ( enable ) {
+        if ( enable ) {
+            if ( jQuery('#supplyline_count_refresh_bnutton').hasClass('onlinetools-input-addon-button-disabled') ) {
+                jQuery('#supplyline_count_refresh_bnutton').addClass('onlinetools-input-addon-button');
+                jQuery('#supplyline_count_refresh_bnutton').removeClass('onlinetools-input-addon-button-disabled');
+                jQuery('#input_supplyline_count').prop("disabled", false);
+            }
+        } else {
+            if ( jQuery('#supplyline_count_refresh_bnutton').hasClass('onlinetools-input-addon-button') ) {
+                jQuery('#supplyline_count_refresh_bnutton').removeClass('onlinetools-input-addon-button');
+                jQuery('#supplyline_count_refresh_bnutton').addClass('onlinetools-input-addon-button-disabled');
+                var count = parseInt(jQuery('#input_supplyline_count').val());
+                removeSupplyLines(count,0);
+                jQuery('#input_supplyline_count').val(0);
+                jQuery('#input_supplyline_count').prop("disabled", true);
+            }
+        }
+    }
+
+    function addSupplyLines ( oldCount, newCount ) {
+        if ( oldCount == 0 )
+            jQuery('.onlinetools-input-supplylines-table').slideDown();
+        for ( var i = oldCount; i < newCount; ++i ) {
+            var articleHtmlId = 'article_supplyline_' + i;
+            var html = '<div id="supplyline_countainer_' + i + '">'
+                     + '    <div class="onlinetools-input-cell-div-quarterwidth">'
+                     + '        <label for="input_network_system_supplylines_' + i + '"'
+                     + '               class="onlinetools-input-label"><?php echo $this->__('Network System'); ?></label>'
+                     + '        <select type="" id="input_network_system_supplyline_' + i + '" class="onlinetools-input" data-rowNo="' + i + '"></select>'
+                     + '    </div>'
+                     + '    <div class="onlinetools-input-cell-div-quarterwidth">'
+                     + '        <label class="onlinetools-input-label"><?php echo $this->__('with Auxiliary Contact'); ?></label>'
+                     + '        <fieldset class="onlinetools-one-line-radio-fieldset-small">'
+                     + '            <input type="radio" id="subauxiliary_supplyline_' + i + '_y" name="subauxiliary_supplyline_' + i + '" value="1"  data-rowNo="' + i + '"/>'
+                     + '            <label for="subauxiliary_supplyline_' + i + '_y" class="onlinetools-radioorcheck-label-right-small"><?php echo $this->__('Yes'); ?></label>'
+                     + '            <input type="radio" checked id="subauxiliary_supplyline_' + i + '_n" name="subauxiliary_supplyline_' + i + '" value="0" data-rowNo="' + i + '"/>'
+                     + '            <label for="subauxiliary_supplyline_' + i + '_n" class="onlinetools-radioorcheck-label-right-small"><?php echo $this->__('No'); ?></label>'
+                     + '        </fieldset>'
+                     + '    </div>'
+                     + '    <div class="onlinetools-input-cell-div-quarterwidth">'
+                     + '        <label class="onlinetools-input-label"><?php echo $this->__('Single Phase'); ?></label>'
+                     + '        <fieldset class="onlinetools-one-line-radio-fieldset-small">'
+                     + '            <input type="radio" id="singlephase_supplyline_' + i + '_y" name="singlephase_supplyline_' + i + '" value="1" data-rowNo="' + i + '"/>'
+                     + '            <label for="singlephase_supplyline_' + i + '_y" class="onlinetools-radioorcheck-label-right-small"><?php echo $this->__('Yes'); ?></label>'
+                     + '            <input type="radio" checked id="singlephase_supplyline_' + i + '_n" name="singlephase_supplyline_' + i + '" value="0" data-rowNo="' + i + '"/>'
+                     + '            <label for="singlephase_supplyline_' + i + '_n" class="onlinetools-radioorcheck-label-right-small"><?php echo $this->__('No'); ?></label>'
+                     + '        </fieldset>'
+                     + '    </div>'
+                     + '    <div class="onlinetools-input-cell-div-quarterwidth">'
+                     + '        <label class="onlinetools-input-label"><?php echo $this->__('Close to the Building'); ?></label>'
+                     + '        <fieldset class="onlinetools-one-line-radio-fieldset-small">'
+                     + '            <input type="radio" checked id="buildingdistance_supplyline_' + i + '_y" name="buildingdistance_supplyline_' + i + '" value="1" data-rowNo="' + i + '"/>'
+                     + '            <label for="buildingdistance_supplyline_' + i + '_y" class="onlinetools-radioorcheck-label-right-small"><?php echo $this->__('Yes'); ?></label>'
+                     + '            <input type="radio" id="buildingdistance_supplyline_' + i + '_n" name="buildingdistance_supplyline_' + i + '" value="0" data-rowNo="' + i + '"/>'
+                     + '            <label for="buildingdistance_supplyline_' + i + '_n" class="onlinetools-radioorcheck-label-right-small"><?php echo $this->__('No'); ?></label>'
+                     + '        </fieldset>'
+                     + '    </div>'
+                     + '    <div id="' + articleHtmlId + '"></div>'
+                     + '</div>';
+
+            jQuery('#supplyline_group').append(html);
+            fillSelectExt('#input_network_system_supplyline_' + i,schrackToolModel.selections.networkSystems,
+                          false,false,true,false,"<?php echo $this->__('TN-S'); ?>",false);
+            ensureMatchingSupplylineArticles(i);
+            var jqrSelector = '#input_network_system_supplyline_' + i + ', '
+                            + '#subauxiliary_supplyline_' + i + '_y,     #subauxiliary_supplyline_' + i + '_n, '
+                            + '#singlephase_supplyline_' + i + '_y,      #singlephase_supplyline_' + i + '_n, '
+                            + '#buildingdistance_supplyline_' + i + '_y, #buildingdistance_supplyline_' + i + '_n';
+            jQuery(jqrSelector).off('change').on('change', { row: i }, function ( event ) {
+                var rowNo = event.data.row;
+                console.log('EVENT: supplyline ' + rowNo + ' control changed.');
+                ensureMatchingSupplylineArticles(rowNo);
+            });
+
+        }
+    }
+
+    function removeSupplyLines ( oldCount, newCount ) {
+        for ( var i = oldCount - 1; i >= newCount; --i ) {
+            jQuery('#supplyline_countainer_' + i).remove();
+            removeAllRightListSkusForKey('supplyline_' + i);
+        }
+    }
+
+    function updateSupplyLines ( count ) {
+        for ( var i = 0; i < count; ++i )
+            ensureMatchingSupplylineArticles(i);
+    }
+
+    function ensureMatchingSupplylineArticles ( supplylineNo ) {
+        var rightListKey = 'supplyline_' + supplylineNo;
+        var articleHtmlId    = 'article_supplyline_' + supplylineNo;
+        var networkSystem    = jQuery('#input_network_system_supplyline_' + supplylineNo).find(":selected").val();
+        var auxiliaryContact = parseInt(jQuery("input:radio[name ='subauxiliary_supplyline_" + supplylineNo + "']:checked").val());
+        var singlePhase      = parseInt(jQuery("input:radio[name ='singlephase_supplyline_" + supplylineNo + "']:checked").val());
+        var closeBuilding    = parseInt(jQuery("input:radio[name ='buildingdistance_supplyline_" + supplylineNo + "']:checked").val());
+        var articleHtml      = '<div id = "' + articleHtmlId + '"><?php echo $this->__('No matching article found!'); ?></div>';
+        var example = {
+            Type                            : "T_Supplyline",
+            "Auxiliary Contact"             : auxiliaryContact,
+            "Network System"                : networkSystem,
+            "Single Phase"                  : singlePhase,
+        };
+
+        if ( ! closeBuilding && lightningProtectionRequired ) {
+            example["Lightning Protection Class"]    = protectionClass;
+            example["Lightning Protection Required"] = lightningProtectionRequired;
+            example["Close to Building"]             = closeBuilding
+            if ( protectionClass == "III-IV" )
+                example["Plugable"] = parseInt(plugable);
+        } else {
+            example["Lightning Protection Class"] = "";
+            example["Lightning Protection Required"] = 0;
+        }
+        var article = filterOneByExample(schrackToolModel.articles,example);
+        if ( article != null ) {
+            // check sku and possible sub-skus
+            var oldSKU = jQuery('#article_supplyline_' + supplylineNo + '-sku').text();
+            if ( article.SKU == oldSKU ) {
+                if ( typeof article.AdditionalSKUs == 'object' && article.AdditionalSKUs.length > 0 ) {
+                    var oldSubSKUs = [];
+                    var idStart = 'article_supplyline_' + supplylineNo + '_sub_';
+                    var idEnd = '-sku';
+                    jQuery("[id^=" + idStart + "][id$=" + idEnd + "]").each(function() {
+                        oldSubSKUs.push(jQuery(this).text());
+                    });
+                    if ( article.AdditionalSKUs.length == oldSubSKUs.length ) {
+                        var i = 0;
+                        while ( i < oldSubSKUs.length && article.AdditionalSKUs[i] == oldSubSKUs[i] )
+                            ++i;
+                        if ( i >= oldSubSKUs.length ) {
+                            // everything already there, do nothing
+                            return;
+                        }
+                    }
+                } else {
+                    // already there, do nothing
+                    return;
+                }
+            }
+            articleHtml = buildLeftArticleHtml(articleHtmlId,'',article);
+            removeAllRightListSkusForKey(rightListKey);
+            addRightListSku(rightListKey,article.SKU,1);
+        }
+        jQuery('#' + articleHtmlId).replaceWith(articleHtml);
+        var subSKUs = article.AdditionalSKUs;
+        if ( typeof subSKUs != 'undefined' ) {
+            for ( var j = 0; j < subSKUs.length; ++j ) {
+                article = schrackToolModel.articlesQuickAcces[subSKUs[j]];
+                if ( typeof article != 'undefined' ) {
+                    addRightListSku(rightListKey,subSKUs[j],1);
+                    article.SKU = subSKUs[j];
+                    var subArticleId = articleHtmlId + '_sub_' + j;
+                    var subArticleHtml = buildLeftArticleHtml(subArticleId,'',article);
+                    jQuery('#' + articleHtmlId).append(subArticleHtml);
+                    jQuery('#' + subArticleId).show();
+                }
+            }
+        }
+        jQuery('#' + articleHtmlId).slideDown();
+    }
+
+//]]></script>
+<!-- app/design/frontend/schrack/schrackresponsive/template/tools/lightning_protection_configurator.phtml (end) -->

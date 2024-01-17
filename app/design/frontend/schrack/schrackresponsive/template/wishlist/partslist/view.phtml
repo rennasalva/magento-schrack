@@ -1,0 +1,699 @@
+<!-- default/template/wishlist/partslist/view.phtml (start) -->
+<?php
+/* @var $this Schracklive_SchrackWishlist_Block_Partslist */
+?>
+<?php
+   $_infoHelper = Mage::helper('schrackcatalog/info');
+   $_productHelper = Mage::helper('schrackcatalog/product');
+   $_customer = Mage::getSingleton('customer/session')->getCustomer();
+   $_stockHelper = Mage::helper('schrackcataloginventory/stock');
+   /** @var Schracklive_SchrackGoogleAnalytics_Helper_Data $_gaHelper */
+   $_gaHelper = Mage::helper('googleanalytics');
+   $_imgCartUrl = $this->getSkinUrl('images/cart_raute1.png');
+   $_imgTruckUrl = $this->getSkinUrl('images/truck_white_diamond.png');
+   $_imgInvisUrl = $this->getSkinUrl('images/no_truck_no_cart.png');
+   $_partslistHelper = $this->helper('schrackwishlist/partslist');
+   $_partslist = $_partslistHelper->getPartslist();
+   $_wishlistHelper = Mage::helper('schrackwishlist/data');
+   $_priceHelper = Mage::helper('schrackcatalog/price');
+   $changeInvalidQuantity = $this->getRequest()->getParam('changeinvalidquantity', 0);
+   /* @var $_infoHelper Schracklive_SchrackCatalog_Helper_Info */
+   /* @var $_productHelper Schracklive_SchrackCatalog_Helper_Product */
+
+    $sessionCustomerId = Mage::getSingleton('customer/session')->getCustomer()->getId();
+    $aclRoleId = Mage::getModel('customer/customer')->load($sessionCustomerId)->getSchrackAclRoleId();
+    $isProjectant = Mage::helper('schrack/acl')->isProjectantRoleId($aclRoleId);
+?>
+
+<script type="text/javascript">//<![CDATA[
+
+    var partslist = new ListRequestManager.List('<?php echo $_partslistHelper->getBaseUrl() ?>');
+    var partslistFE = new ListRequestManager.Frontend(partslist, ListRequestManager.Product);
+
+    var cart = new ListRequestManager.List('<?php echo $this->getUrl('customer/account/')?>', true);
+    cart.setProductBatchAddUrl('<?php echo $this->getUrl('customer/account/batchAddProductsToCart/')?>');
+    var cartFE = new ListRequestManager.Frontend(cart, ListRequestManager.Product);
+
+    var compare = new ListRequestManager.List('<?php echo $_partslistHelper->getBaseUrl() ?>', true);
+    compare.setProductBatchAddUrl('<?php echo $_partslistHelper->getBaseUrl() ?>batchAddProductsToCompare/');
+    var compareFE = new ListRequestManager.Frontend(compare, ListRequestManager.Product);
+
+    function setAllCheckboxes(className, el) {
+        jQuery('input[type="checkbox"].' + className).prop('checked', jQuery(el).is(':checked'));
+    }
+//]]>
+</script>
+<?php echo $this->getMessagesBlock()->getGroupedHtml() ?>
+<div class="large-12 columns">
+    <div class="headline a"><?php echo $this->__('My Active Partslist') ?></div>
+    <input type="hidden" id="change-invalid-quantity" value="<?php echo $changeInvalidQuantity; ?>">
+    <div class="wishlist row info-box three-d hide-on-print">
+        <div class="large-12 columns">
+            <div class="controlsArea"></div>
+            <div class="row wishlist-header">
+                <div class="large-8 columns">
+                    <div class="headline b1">
+                        <?php if ($_partslist) echo $_partslist->getDescription();?>
+                        <select class="dropdown-menu partslist nospanclick" title="<?php echo $this->__('Select partslist')?>">
+                            <option></option>
+                            <option class="add-to-new-partslist no-auto-activate" onClick="createPartslist('<?php echo $this->__('Create partslist')?>', '<?php echo $this->__('Your partslist has been created.')?>');return false;"><?php echo $this->__('Create partslist') ?></option>
+                            <?php foreach ($_partslistHelper->getPartslists() as $pl): ?>
+                                <?php if ($pl->getId() !== $_partslist->getId()): ?>
+                                    <option onClick="window.location.href='<?php echo $this->getUrl('wishlist/partslist/view', array('id' => $pl->getId()))?>';"><?php echo $pl->getDescription()?></option>
+                                <?php endif; ?>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+                </div>
+                <div class="large-4 columns"><div class="right-align-container">
+                    <?php if ($_customer->isAllowed('customerOrder','order') && !$isProjectant): ?>
+                        <?php if($this->isSaleable($_partslist)):?>
+                            <button id="addAllWItemsToCartButton" type="button" title="<?php echo $this->__('Add All to Cart') ?>" class="button-red small fixed-width addalltocart"><?php echo $this->__('Add All to Cart') ?></button>
+                        <?php endif;?>
+                    <?php endif;?>
+                </div></div>
+            </div>
+            <?php if ($_partslist):?>
+                <div class="row wishlist-header">
+                    <div class="large-12 columns">
+
+                            <p>
+                                <?php $_comment = $_partslist->getComment(); if (isset($_comment) && strlen($_comment)): echo $_comment; else: ?><a href="<?php echo $this->getUrl('*/*/*')?>" title="<?php echo $this->__('Add comment')?>" onClick="jQuery('#listname_form #name').val('<?php echo $_partslist->getDescription();?>');jQuery('#listname_form #comment').val('<?php echo $_partslist->getComment();?>');editPartslist('<?php echo $this->__('Edit partslist')?>', <?php echo $_partslist->getId();?>);return false;"><?php echo $this->__('Add comment')?></a><?php endif;?>
+                            </p>
+                            <p>
+                                <a href="<?php echo $this->getUrl('*/*/*')?>" title="<?php echo $this->__('Rename')?>" onClick="jQuery('#listname_form #name').val('<?php echo $_partslist->getDescription();?>');jQuery('#listname_form #comment').val('<?php echo $_partslist->getComment();?>');editPartslist('<?php echo $this->__('Edit partslist')?>', <?php echo $_partslist->getId();?>);return false;"><?php echo $this->__('Rename')?></a> |
+                                <a href="<?php echo $this->getUrl('*/*/*')?>" title="<?php echo $this->__('Delete')?>" onClick="if (confirmDeletePartslist()) setLocation('<?php echo Mage::getUrl('wishlist/partslist/delete', array('id' => $_partslist->getId()))?>');return false;"><?php echo $this->__('Delete')?></a> |
+                                <a href="<?php echo $this->getUrl('*/*/*')?>" title="<?php echo $this->__('Truncate')?>" onClick="if (confirmEmptyPartslist()) setLocation('<?php echo Mage::getUrl('wishlist/partslist/truncate', array('id' => $_partslist->getId()))?>');return false;"><?php echo $this->__('Truncate')?></a>
+                            </p>
+                    </div>
+                </div>
+                <?php echo $this->getChildHtml('quickadd'); ?>
+            <?php endif ?>
+        </div>
+    </div>
+    <div class="print-only">
+        <div class="headline a">
+            <?php if ($_partslist):?>
+                <?php echo $this->__('Partslist')?>: <?php echo $_partslist->getDescription();?>
+            <?php endif;?>
+        </div>
+        <?php if (isset($_partslist)):?>
+        <p>
+            <?php $_comment = $_partslist->getComment(); if (isset($_comment) && strlen($_comment)): echo $_comment; endif;?>
+        </p>
+        <?php endif;?>
+    </div>
+
+    <div class="row wishlist-body">
+        <div class="large-12 columns">
+            <?php if ($_partslist):?>
+                <?php if (!$_partslist->hasPartslistItems()): ?>
+                    <p><?php echo $this->__('You have no items in your partslist.') ?></p>
+                <?php else: ?>
+                    <?php if (Mage::getStoreConfig('schrack/media_zip_download/enable_download')) :?>
+                        <div class="download-media-files-button" style="margin-left: -5px; margin-top: 5px; width: 143px; height: 55px; float: left;">
+                            <button class="button-blue small big-button" style="width: 238px; height: 46px;">
+                                <div style="text-align: center; padding-left: 3px;">
+                                    <span><?php echo $this->__('Media Download') . ' & ' . $this->__('Barcode Label Print'); ?></span><br>
+                                </div>
+                            </button>
+                        </div>
+                        <div><span id="no_item_selected_message" style="color: red; margin-top: 6px; padding: 5px 4px 4px 5px; margin-left: 122px; border: 1px solid red; float: left; width: 450px; display: none;">
+                                <?php echo $this->__('No Item Selected')?>
+                            </span>
+                        </div>
+                        <div style="clear: both;"></div>
+                    <?php endif;?>
+                    <form id="wishlist-view-form" action="<?php echo $this->getUrl('*/*/update', array('id' => $_partslist->getId())) ?>" method="post">
+                    <?php echo $this->getBlockHtml('formkey')?>
+                        <div class="productListArea"></div>
+                        <div class="product-list table">
+                            <div class="header row-fine hide-on-print">
+                                <div class="large-fine-1 columns-fine" style="padding-left: 5px; padding-top: 12px;"><span class="checkbox-container"><input type="checkbox" onClick="setAllCheckboxes('rowId', this);"/></span></div>
+                                <div class="large-fine-9 columns-fine product-col" style=" margin-top: 3px;"><div class="bottom-align-container-5" style="font-size: 1.5em !important;"><?php echo $this->__('Product') ?></div></div>
+                                <div class="large-fine-5 columns-fine availability-col" style=" margin-top: 3px;"><div class="bottom-align-container-5" style="font-size: 1.5em !important;"><?php echo $this->__('Availability'); ?></div></div>
+                                <div class="large-fine-3 columns-fine price-col" style=" margin-top: 3px;"><div class="bottom-align-container-5" style="font-size: 1.5em !important;"><?php echo $this->__('Your price'); ?></div></div>
+                                <div class="large-fine-6 columns-fine buttons-col">&nbsp;</div>
+                            </div>
+                            <div class="header row print-only">
+                                <div class="large-6 columns"><div class="bottom-align-container-5"><?php echo $this->__('Product')?></div></div>
+                                <div class="large-3 columns"><div class="bottom-align-container-5"><?php echo $this->__('Availability')?></div></div>
+                                <div class="large-3 columns"><div class="bottom-align-container-5"><?php echo $this->__('Price')?></div></div>
+                            </div>
+                            <?php
+                            $_partslistItems = $this->getPartslistItems($_partslist);
+                            $products = array();
+                            foreach ($_partslistItems as $item) {
+                                $products[] = $item->getProduct();
+                            }            
+                            $_infoHelper->preloadProductsInfo($products, $_customer);
+                            ?>
+                            <?php 
+                                $i = 0; foreach ($_partslistItems as $item): /* start foreach for products loop */
+                            ?>
+                                <?php
+                                    $_product = $item->getProduct();
+                                    $_url = $_product->getProductUrl();
+                                ?>
+                                <div class="product-item" style="display: none;"<?php echo $_gaHelper->getDataTags($_product, ($i+1)); ?>></div>
+                                <div class="row-fine body hide-on-print">
+                                    <div class="large-fine-1 columns-fine">
+                                        <span class="checkbox-container"><input type="checkbox" class="rowId" id="rowId-<?php echo $_product->getId() ?>"/></span>
+                                        <input type="hidden" class="skuValueHiddenField" id="sku-<?php echo $_product->getId() ?>" name="sku[<?php echo $item->getId() ?>]" value="<?php echo $_product->getSku()?>" />
+                                    </div>
+                                    <div class="large-fine-9 columns-fine product-col">
+                                        <?php $_product_image = $this->helper('catalog/image')->init($_product, 'small_image')->constrainOnly(true)->resize(66, 66);?>
+                                        <a href="<?php echo $_url ?>" title="<?php echo $this->htmlEscape($this->getImageLabel($_product, 'small_image')) ?>" class="product-image">
+                                            <img src="<?php echo str_replace(array('http:', 'https:'), '', $_product_image); ?>" width="<?php echo $_product_image->getWidth() ?>" height="<?php echo $_product_image->getHeight() ?>" alt="<?php echo $this->htmlEscape($this->getImageLabel($_product, 'small_image')) ?>" />
+                                        </a>
+                                        <?php if($_product->getSku()): ?>
+                                            <span class="catalog-nr"><?php echo $this->htmlEscape($_product->getSku()); ?></span>
+                                        <?php endif; ?>
+                                        <h2 class="product-name"><a href="<?php echo $_url ?>" title="<?php echo $this->htmlEscape($_product->getName()) ?>"><?php echo $this->htmlEscape($_product->getName())?></a></h2>
+                                    </div>
+
+                                        <div class="availability-col large-fine-5 columns-fine availability">
+                                            <?php if ( ! $_productHelper->isAvailInAnyStock($_product) ): ?>
+                                                <div class="row"><div class="large-12 columns onrequest"><?php echo $this->__('on request') ?></div></div>
+                                            <?php elseif ($_product->isSaleable()): ?>
+                                                <?php $stock = $_stockHelper->getCustomerPickupStock($_customer);?>
+                                                <?php if ( $_productHelper->isAvailInStock($_product,$stock)): ?>
+                                                    <div class="row-fine avail-item">
+                                                        <div class="large-fine-4 columns-fine pickupable"></div>
+                                                        <div class="large-fine-20 columns-fine">
+                                                            <div class="qty"><?php echo $this->__('Pickupable') ?>: <?php echo $_productHelper->getFormattedPickupQuantity($_product);?></div>
+                                                            <div><?php echo $_productHelper->trimLength($this->__('at') . ' ' . $stock->getStockName(),16); ?></div>
+                                                        </div>
+                                                    </div>                                    
+                                                <?php endif; ?>
+                                                <?php if ( $_productHelper->isAvailInAnyDeliveryStock($_product) ): ?>
+                                                    <?php $stock = $_stockHelper->getLocalDeliveryStock(); $stockNo = $stock ? $stock->getStockNumber() : 0;?>
+                                                    <?php if ( $_productHelper->isAvailInStock($_product,$stock)): ?>
+                                                        <div class="row-fine avail-item">
+                                                            <div class="large-fine-4 columns-fine deliverable"></div>
+                                                            <div class="large-fine-20 columns-fine">
+                                                                <div class="qty"><?php echo $this->__('Deliverable') ?>: <?php echo $_productHelper->getFormattedDeliveryQuantity($_product);?></div>
+                                                                <div><?php echo $_productHelper->getFormattedDeliveryTime($_product,$stockNo);?></div>
+                                                            </div>
+                                                        </div>
+                                                    <?php endif; ?>
+                                                    <?php $stock = $_stockHelper->getForeignDeliveryStock(); $stockNo = $stock ? $stock->getStockNumber() : 0;?>
+                                                    <?php if ( $_productHelper->isAvailInStock($_product,$stock)): ?>
+                                                        <div class="row-fine avail-item">
+                                                            <div class="large-fine-4 columns-fine deliverable"></div>
+                                                            <div class="large-fine-20 columns-fine">
+                                                                <div class="qty"><?php echo $_productHelper->getFormattedDeliveryQuantity($_product,$stockNo);?></div>
+                                                                <div><?php echo $_productHelper->getFormattedDeliveryTime($_product,$stockNo);?></div>
+                                                            </div>
+                                                        </div>
+                                                    <?php endif; ?>
+                                                    <?php $stockNo = $_stockHelper->getThirdPartyDeliveryStockNumber(); ?>
+                                                    <?php if ( ! $_product->isDiscontinuation() && $_productHelper->isAvailInStockNo($_product,$stockNo) ): ?>
+                                                        <div class="row-fine avail-item">
+                                                            <div class="large-fine-10 columns-fine deliverable"></div>
+                                                            <div class="large-fine-14 columns-fine">
+                                                                <div class="qty"><?php echo $_productHelper->getFormattedDeliveryQuantity($_product,$stockNo);?></div>
+                                                                <div><?php echo $_productHelper->getFormattedDeliveryTime($_product,$stockNo);?></div>
+                                                            </div>
+                                                        </div>
+                                                    <?php endif; ?>
+                                                <?php endif; ?>
+                                            <?php else: ?>
+                                                <div class="row"><div class="large-12 columns outofstock"><?php echo $this->__('Out of stock') ?></div></div>
+                                            <?php endif; ?>
+                                        </div>      
+                                        <div class="price-leftbound large-fine-3 columns-fine price-col">
+                                            <?php $_currency = $_priceHelper->getCurrencyForCustomer($_product, $_customer);?>
+                                            <div class="price-scale">
+                                                <?php $_prices = array_reverse(Mage::helper('schrackcatalog/info')->getGraduatedPricesForCustomer($_product, $_customer));?>
+                                                <?php if ( Mage::helper('geoip')->maySeePrices()):?>
+                                                    <?php if ( count($_prices) > 0 ) {
+                                                        $_price = Mage::helper('core')->formatPrice($_prices[0]['price']);
+                                                    } else {
+                                                        try {
+                                                            $_price = $_priceHelper->getFormattedBasicPriceForCustomer($_product, $_customer);
+                                                        } catch(Exception $e) {
+                                                            $_price = null;
+                                                            $_currency = null;
+                                                        }
+                                                    }?>
+                                                     <span class="nobr annotation">
+                                                        <?php echo $_currency . ' ' . $this->helper('checkout')->formatPrice($_price); ?>
+                                                    </span>
+                                                <?php endif?>
+                                            </div>
+
+                                            <div><?php echo $this->__('per').' '.($_product->getSchrackPriceunit() > 1 ? $_product->getSchrackPriceunit().' ' : '').$_product->getSchrackQtyunit(); ?></div>
+                                            <div><?php echo $this->__('excl. surcharges, net of VAT'); ?></div>
+                                        </div>
+                                        <div class="large-fine-6 columns-fine buttons-col">
+                                            <?php if ($_customer->isAllowed('customerOrder','order') && !$isProjectant): ?>
+                                                <?php if($_product->isSaleable()): ?>
+                                                    <div class="addtocart small">
+                                                        <input type="text"
+                                                               style="padding-right: 3px; font-size: 1.1em;"
+                                                               id="qty-<?php echo $_product->getId() ?>"
+                                                               name="qty[<?php echo $item->getId() ?>]"
+                                                               maxlength="12"
+                                                               value="<?php echo Mage::helper('schrackcore/string')->numberFormat($item->getQty());?>"
+                                                               title="<?php echo $this->__('Qty') ?>"
+                                                               class="qty qty-<?php echo $item->getId() ?>"
+                                                        />
+                                                        <label class="unit"><?php echo $_product->getSchrackQtyunit() ?></label>
+                                                        <button id="add-qty-<?php echo $_product->getId() ?>" type="button" title="<?php echo $this->__('Add to Cart') ?>" class="addItemToCartFromWishlist">
+                                                            <div><?php echo $this->__('Buy now') ?></div>
+                                                        </button>
+                                                        <input type="hidden" id="itemNumber-<?php echo $_product->getId() ?>" value="<?php echo $item->getId() ?>">
+                                                    </div>
+                                                <?php endif; ?>
+                                            <?php endif; ?>
+                                            <div class="button-bar">
+                                                <select class="dropdown-menu partslist">
+                                                    <?php $activePl = $_partslistHelper->getActiveOrFirstPartslist();?>
+                                                    <?php if (!$activePl):?>
+                                                        <?php $activePl = null; ?>
+                                                    <?php endif;?>
+                                                    <option></option>
+                                                    <option class="add-to-new-partslist" onClick="partslistFE.addItemToNewList('<?php echo $this->__('New partslist')?>', new ListRequestManager.Product(<?php echo $_product->getId()?>, $('qty-<?php echo $_product->getId()?>').value));"><?php echo $this->__('Add to new partslist')?></option>
+                                                    <?php foreach ($_partslistHelper->getPartslists() as $pl): ?>
+                                                        <?php if (($activePl === null || $pl->getId() !== $activePl->getId()) && $_partslist->getId() !== $pl->getId()):?>
+                                                            <option onClick="partslistFE.addItemToList(<?php echo $pl->getId()?>, new ListRequestManager.Product(<?php echo $_product->getId()?>, $('qty-<?php echo $_product->getId()?>').value), false);" title="<?php echo $pl->getDescription()?>"><?php echo $this->__('Add to %s', $pl->getDescription())?></option>
+                                                        <?php endif; ?>
+                                                    <?php endforeach; ?>
+                                                </select>
+                                                <ul class="product-info-links">
+                                                    <?php if($_compareUrl=$this->getAddToCompareUrl($_product)): ?>
+                                                        <li>
+                                                            <a rel="nofollow" onclick="return checkCompare();" href="<?php echo $_compareUrl ?>" class="link-compare" title="<?php echo $this->__('Add to Compare'); ?>"><div></div></a>
+                                                        </li>
+                                                    <?php endif; ?>     
+                                                    <li>
+                                                        <a rel="nofollow" href="<?php echo $_partslistHelper->getItemRemoveUrl($_partslist, $item) ?>" title="<?php echo $this->__('Remove item')?>" onclick="return confirmRemovePartslistItem()" class="link-delete"><div></div></a>
+                                                    </li>
+                                                    <li>
+                                                        <a rel="nofollow" onclick="switchDescription(<?php echo $item->getId()?>);return false;" href="" class="link-description" title="<?php echo $this->__('Comment'); ?>"><div></div></a>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                            <div class="row description <?php if (strlen($item->getDescription())):?>active<?php endif?> <?php if ($i % 2 === 1):?>odd<?php endif;?>" id="description-row-<?php echo $item->getId()?>">
+                                                <div class="large-12 columns">
+                                                    <textarea class="description" name="description[<?php echo $item->getId() ?>]" id="description-<?php echo $item->getId()?>" rows="4" cols="25" onChange="partslist.setItemDescription(<?php echo $item->getId()?>, jQuery('#description-<?php echo $item->getId()?>').val())"><?php echo $item->getDescription() ?></textarea>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                            
+                                    <!-- ///////////////////// print version /////////////////////// -->
+                                    
+                                    <div class="row body print-only">
+                                        <div class="large-6 columns print-min-height-100">
+                                            <?php $_product_image = $this->helper('catalog/image')->init($_product, 'small_image')->constrainOnly(true)->resize(66, 66);?>
+                                            <img src="<?php echo $_product_image ?>" width="<?php echo $_product_image->getWidth() ?>" height="<?php echo $_product_image->getHeight() ?>" alt="<?php echo $this->htmlEscape($this->getImageLabel($_product, 'small_image')) ?>" />
+                                            <?php if($_product->getSku()): ?>
+                                                <span class="catalog-nr"><?php echo $this->htmlEscape($_product->getSku()); ?></span>
+                                            <?php endif; ?>
+                                            <h2 class="product-name"><?php echo $this->htmlEscape($_product->getName())?></h2>
+                                        </div>
+
+                                        <div class="availability-col large-3 columns availability print-min-height-100">
+                                            <?php if ( ! $_productHelper->isAvailInAnyStock($_product) ): ?>
+                                                <div class="row"><div class="large-12 columns onrequest"><?php echo $this->__('on request') ?></div></div>
+                                            <?php elseif ($_product->isSaleable()): ?>
+                                                <?php $stock = $_stockHelper->getCustomerPickupStock($_customer);?>
+                                                <?php if ( $_productHelper->isAvailInStock($_product,$stock)): ?>
+                                                    <div class="row-fine avail-item">
+                                                        <div class="large-fine-4 columns-fine pickupable"></div>
+                                                        <div class="large-fine-20 columns-fine">
+                                                            <div class="qty"><?php echo $this->__('Pickupable') ?>: <?php echo $_productHelper->getFormattedPickupQuantity($_product);?></div>
+                                                            <div><?php echo $_productHelper->trimLength($this->__('at') . ' ' . $stock->getStockName(),16); ?></div>
+                                                        </div>
+                                                    </div>                                    
+                                                <?php endif; ?>
+                                                <?php if ( $_productHelper->isAvailInAnyDeliveryStock($_product) ): ?>
+                                                    <?php $stock = $_stockHelper->getLocalDeliveryStock(); $stockNo = $stock ? $stock->getStockNumber() : 0;?>
+                                                    <?php if ( $_productHelper->isAvailInStock($_product,$stock)): ?>
+                                                        <div class="row-fine avail-item">
+                                                            <div class="large-fine-4 columns-fine deliverable"></div>
+                                                            <div class="large-fine-20 columns-fine">
+                                                                <div class="qty"><?php echo $this->__('Deliverable') ?>: <?php echo $_productHelper->getFormattedDeliveryQuantity($_product);?></div>
+                                                                <div><?php echo $_productHelper->getFormattedDeliveryTime($_product,$stockNo);?></div>
+                                                            </div>
+                                                        </div>
+                                                    <?php endif; ?>
+                                                    <?php $stock = $_stockHelper->getForeignDeliveryStock(); $stockNo = $stock ? $stock->getStockNumber() : 0;?>
+                                                    <?php if ( $_productHelper->isAvailInStock($_product,$stock)): ?>
+                                                        <div class="row-fine avail-item">
+                                                            <div class="large-fine-4 columns-fine deliverable"></div>
+                                                            <div class="large-fine-20 columns-fine">
+                                                                <div class="qty"><?php echo $_productHelper->getFormattedDeliveryQuantity($_product,$stockNo);?></div>
+                                                                <div><?php echo $_productHelper->getFormattedDeliveryTime($_product,$stockNo);?></div>
+                                                            </div>
+                                                        </div>
+                                                    <?php endif; ?>
+                                                    <?php $stockNo = $_stockHelper->getThirdPartyDeliveryStockNumber(); ?>
+                                                    <?php if ( ! $_product->isDiscontinuation() && $_productHelper->isAvailInStockNo($_product,$stockNo) ): ?>
+                                                        <div class="row-fine avail-item">
+                                                            <div class="large-fine-10 columns-fine deliverable"></div>
+                                                            <div class="large-fine-14 columns-fine">
+                                                                <div class="qty"><?php echo $_productHelper->getFormattedDeliveryQuantity($_product,$stockNo);?></div>
+                                                                <div><?php echo $_productHelper->getFormattedDeliveryTime($_product,$stockNo);?></div>
+                                                            </div>
+                                                        </div>
+                                                    <?php endif; ?>
+                                                <?php endif; ?>
+                                            <?php else: ?>
+                                                <div class="row"><div class="large-12 columns outofstock"><?php echo $this->__('Out of stock') ?></div></div>
+                                            <?php endif; ?>
+                                        </div>                                                                                                                                                                
+                                        <div class="large-3 columns buttons-col print-min-height-100">
+                                            <div class="table">
+                                                <?php echo $this->getPriceHtml($_product, true) ?> 
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- /printversion -->
+                                <?php ++$i;endforeach; ?>
+
+                                <div class="row-fine hide-on-print">
+                                    <div class="large-fine-1 columns-fine"><span class="checkbox-container"><input type="checkbox" onClick="setAllCheckboxes('rowId', this);"/></span></div>
+                                    <div class="buttons large-fine-23 columns-fine list-actions">
+                                        <?php if (!$isProjectant) : ?>
+                                            <div class="button-label-container"><button id="add-selected-wishlist-items-to-cart-button" class="button-blue addtocart" title="<?php echo $this->__('Add to Cart') ?>"><?php echo $this->__('Add to Cart') ?></button></div>
+                                        <?php endif; ?>
+                                        <?php if ( Mage::getSingleton('customer/session')->isLoggedIn() ) : ?>
+                                            <div class="button-label-container">
+                                                <select class="dropdown-menu partslist" title="<?php echo $this->__('Add to partslist')?>">
+                                                    <option></option>
+                                                    <option class="add-to-new-partslist no-auto-activate" onClick="partslistFE.addCheckedItemsToNewList('<?php echo $this->__('New partslist')?>', 'rowId', 'sku', 'qty', '<?php echo Mage::getSingleton('core/session')->getFormKey(); ?>');"><?php echo $this->__('Add to new partslist')?></option>
+                                                    <?php if ($_partslistHelper->getPartslistCount() > 0): ?>
+                                                        <?php $activePl = $_partslistHelper->getActiveOrFirstPartslist();?>
+                                                        <?php if ($activePl->getId() !== $_partslist->getId()): ?>
+                                                            <option onClick="partslistFE.addCheckedItemsToList(<?php echo $activePl->getId()?>, 'rowId', 'sku', 'qty', '<?php echo Mage::getSingleton('core/session')->getFormKey(); ?>');" selected="selected" title="<?php echo $activePl->getDescription()?>"><?php echo $this->__('Add to %s', $activePl->getDescription())?></option>
+                                                        <?php endif; ?>
+                                                    <?php else: ?>
+                                                        <?php $activePl = null; ?>
+                                                    <?php endif; ?>
+                                                    <?php foreach ($_partslistHelper->getPartslists() as $pl): ?>
+                                                        <?php if ($activePl === null || $pl->getId() !== $activePl->getId() && $pl->getId() !== $_partslist->getId()):?>
+                                                            <option onClick="partslistFE.addCheckedItemsToList(<?php echo $pl->getId()?>, 'rowId', 'sku', 'qty', '<?php echo Mage::getSingleton('core/session')->getFormKey(); ?>');" title="<?php echo $pl->getDescription()?>"><?php echo $this->__('Add to %s', $pl->getDescription())?></option>
+                                                        <?php endif; ?>
+                                                    <?php endforeach; ?>
+                                                </select>
+                                                <?php echo $this->__('Add to partslist')?>
+                                            </div>
+                                       <?php endif; ?>
+
+                                        <?php if($_compareUrl=$this->getAddToCompareUrl($_product)): ?>
+                                            <div class="button-label-container">
+                                                <a rel="nofollow" onclick="compareFE.addCheckedItemsToList('rowId', 'sku', 'qty', true);return false;" class="link-compare" title="<?php echo $this->__('Add to Compare'); ?>"><div></div></a>
+                                                <?php echo $this->__('Add to Compare'); ?>
+                                            </div>
+                                        <?php endif; ?>  
+                                        <div class="button-label-container">
+                                            <button class="button-blue remove" title="<?php echo $this->__('Remove items')?>" onclick="partslistFE.removeCheckedItemsFromList(<?php echo $_partslist->getId()?>, 'rowId', 'sku', 'qty');return false;"><div><?php echo $this->__('Remove items')?></div></button>
+
+                                        </div>
+                                        <div class="button-label-container">
+                                            <button class="button-blue save" title="<?php echo $this->__('Save')?>"><div><?php echo $this->__('Save')?></div></button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    <script type="text/javascript">//<![CDATA[
+                        decorateTable('products-list');
+                    //]]></script>
+            <?php endif; ?>
+        <?php endif; ?>
+        </div>
+    </div>
+</div>
+<div id="selectmediagpopup" class="product-warning" title="&nbsp;"></div>
+
+<script type="text/javascript">//<![CDATA[
+
+    function saveQty(itemId) {
+        var data = {};
+        data['qty[' + itemId + ']'] = jQuery('input[name="qty[' + itemId + ']"]').val();
+        data['description[' + itemId + ']'] = jQuery('#description-' + itemId).val();
+        data['id'] = <?php if (is_object($_partslist)) echo $_partslist->getId()?>;
+        jQuery.ajax('<?php echo $this->getUrl('wishlist/partslist/update')?>', {
+            'type': 'POST',
+            'data' : data
+        });
+    }
+
+
+    <?php if ($_partslist): ?>
+        function confirmRemoveCheckedItems() {
+            return confirm('<?php echo $this->__('Are you sure you want to remove these products from your partslist?') ?>');
+        }
+
+        function confirmRemovePartslistItem() {
+            return confirm('<?php echo $this->__('Are you sure you want to remove this product from your partslist?') ?>');
+        }
+
+        function confirmDeletePartslist() {
+            return confirm('<?php echo $this->__('Are you sure you want to delete this partslist?') ?>');
+        }
+
+        function confirmEmptyPartslist() {
+            return confirm('<?php echo $this->__('Are you sure you want to empty this partslist?') ?>');
+        }
+
+        function addWItemToCart(itemId) {
+            // Check for valid input (we don't need nonsense!):
+            var inputQuantity = jQuery('.qty-' + itemId).val();
+
+            if(inputQuantity == "") {
+                inputQuantity = "1";
+                jQuery('.qty-' + itemId).val(1);
+            }
+            if (!inputQuantity.match(/^\d+$/) || inputQuantity == 0) {
+                // Do nothing but stop execution:
+                console.log('Invalid quantity');
+                return false;
+            }
+
+            var url = '<?php echo $this->getItemAddToCartUrl('%item%') ?>';
+            url = url.gsub('%item%', itemId);
+            var form = $('wishlist-view-form');
+            if (form) {
+                var input = form['qty[' + itemId + ']'];
+                if (input) {
+                    var separator = (url.indexOf('?') >= 0) ? '&' : '?';
+                    url += separator + input.name + '=' + encodeURIComponent(input.value);
+                }
+            }
+            setLocation(url);
+        }
+
+        function addAllWItemsToCart() {
+            var rows = jQuery('.rowId.hidden-field');
+            // Select all available items in wishlist:
+            rows.each(function(i, e) {
+               //console.log(this);
+                jQuery(this).prop('checked', true);
+                jQuery(this).next().addClass('checked');
+            });
+
+            // Try to put all items into cart, but check quantities before:
+            cartFE.addCheckedItemsToList('rowId', 'sku', 'qty');
+            return false;
+        }
+
+        function addSelectedWItemsToCart() {
+            var url = '<?php echo $this->getAddAllToCartUrl() ?>';
+            var separator = (url.indexOf('?') >= 0) ? '&' : '?';
+            var rows = jQuery('.rowId:checked');
+            if (rows.length == 0) {
+                // showOverlayMessage('error', '<?php echo $this->__('Please select an entry from the list, by selecting at least one checkbox first.')?>', '');
+                alert('<?php echo $this->__('Please select an entry from the list, by selecting at least one checkbox first.')?>');
+                return;
+            }
+            rows.each(function(i, e) {
+                var id = jQuery(this).prop('id');
+                var rowId = id.split('-')[1];
+                var sku = jQuery('#sku-' + rowId);
+                var qty = jQuery('#qty-' + rowId);
+                if (sku && qty) {
+                    var skun = sku.attr('name');
+                    var skup = skun+'='+encodeURIComponent(sku.val());
+                    var qtyn = qty.attr('name');
+                    var qtyp = qtyn+'='+encodeURIComponent(qty.val());
+                    url += separator + skup + '&' + qtyp;
+                    separator = '&';
+                }
+            });
+            setLocation(url);
+        }
+
+        function focusComment(obj) {
+            if( obj.value == '<?php echo $this->__('Please, enter your comments...') ?>' ) {
+                obj.value = '';
+            } else if( obj.value == '' ) {
+                obj.value = '<?php echo $this->__('Please, enter your comments...') ?>';
+            }
+        }
+
+        function setQty() {
+            $$('#wishlist-view-form .qty').each(
+                function (input, index) {
+                    input.value = '1';
+                }
+            );
+        }
+    <?php endif;?>
+
+    function switchDescription(itemId) {
+        jQuery('#description-row-' + itemId).toggleClass('active');
+    }
+
+    function checkCompare() {
+        var items = <?php echo $this->helper('catalog/product_compare')->getItemCount(); ?>;
+        if (items >= 5) {
+            alert ('<?php echo $this->__('Compare Error'); ?>');
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    jQuery(".download-media-files-button").on("click", 'button', function () {
+        getDownloadMediaDialog("<?php echo Mage::helper('schrackcore/url')->getUrlWithCurrentProtocol('catalog/download/getDownloadMediaDialog'); ?>", "partslist.view.phtml");
+        return false;
+    });
+
+    var getDownloadMediaDialog = function (ajaxUrl, source) {
+        localStorage.mediaDownloadSource = source;
+        localStorage.partslistID = <?php if (is_object($_partslist)) echo $_partslist->getId()?>;
+        var selectedSKUValues = [];
+        var rowIdName = '';
+        jQuery('.skuValueHiddenField').each(function() {
+            // Checks, if checkbox is selected:
+            rowIdName = jQuery(this).prop('id');
+            rowIdName = rowIdName.replace('sku', 'rowId');
+            if(jQuery('#' + rowIdName).prop('checked') === true) {
+                selectedSKUValues.push(jQuery(this).val());
+            }
+        });
+
+        if(selectedSKUValues.length > 0) {
+            jQuery.ajax(ajaxUrl, {
+                'type': 'POST',
+                'async': false,
+                'data': {
+                    'source': source,
+                    'affectedItems': selectedSKUValues
+                },
+                'success': function (data) {
+                    var datax = JSON.parse(data);
+                    if (datax.html) {
+                        jQuery('#selectmediagpopup').html(datax.html);
+                        jQuery('#selectmediagpopup').dialog({
+                            'width': '700px',
+                            'modal': true
+                        });
+                    }
+                }
+            });
+        } else {
+            jQuery('#no_item_selected_message').fadeIn(500);
+            jQuery('#no_item_selected_message').fadeOut(3500);
+        }
+    };
+
+    if (jQuery('#change-invalid-quantity').val() != '0') {
+        var changeQtyListIndex = jQuery('#change-invalid-quantity').val();
+        var listIndexQty = changeQtyListIndex.split("_");
+        jQuery('#qty-' + listIndexQty[0]).val(listIndexQty[1]);
+    }
+
+    var setOverlayLoader = function() {
+        // Set overlay for
+        jQuery('.controlsArea').css({  "position": "absolute",
+            "height": "100%",
+            "width": "100%",
+            "background": "url(<?php echo $this->getSkinUrl('schrackdesign/Public/Images/download_ajax_loader.gif'); ?>) no-repeat center center",
+            "top": "0",
+            "left": "0",
+            "opacity": "0.4",
+            "z-index": "99"});
+    }
+
+    var unsetOverlayLoader = function() {
+        if (jQuery('.controlsArea')) {
+            jQuery('.controlsArea').removeAttr('style');
+        }
+    }
+
+    var setProductListOverlayLoader = function() {
+        // Set overlay for
+        jQuery('.productListArea').css({  "position": "absolute",
+            "height": "100%",
+            "width": "100%",
+            "background": "url(<?php echo $this->getSkinUrl('schrackdesign/Public/Images/download_ajax_loader.gif'); ?>) no-repeat center center",
+            "top": "0",
+            "left": "0",
+            "opacity": "0.4",
+            "z-index": "99"});
+    }
+
+    jQuery(document).ready(function() {
+
+        jQuery('#add-selected-wishlist-items-to-cart-button').on('click', function(evt) {
+            evt.preventDefault();
+            setProductListOverlayLoader();
+            cartFE.addCheckedItemsToList('rowId', 'sku', 'qty');
+            return false;
+        });
+
+        jQuery('#addAllWItemsToCartButton').on('click', function() {
+            removeMessages();
+            setOverlayLoader();
+            addAllWItemsToCart();
+            return false;
+        });
+
+        jQuery('.addItemToCartFromWishlist').each(function() {
+            var productId = jQuery(this).prop('id');
+            productId = productId.replace('add-qty-', '');
+            var itemNumber = jQuery('#itemNumber-' + productId).val();
+
+            jQuery('#qty-' + productId).on('change', function() {
+                var articelQuantity = parseInt(jQuery('#qty-' + productId).val());
+                if (articelQuantity > 0) {
+                    saveQty(itemNumber);
+                } else {
+                    jQuery('#qty-' + productId).val(1);
+                    saveQty(itemNumber);
+                }
+            });
+
+            jQuery('#add-qty-' + productId).on('click', function() {
+                var articelQuantity = jQuery('#qty-' + productId).val();
+                if (articelQuantity > 0) {
+                    // Unused
+                } else {
+                    jQuery('#qty-' + productId).val(1);
+                }
+                removeMessages();
+                setProductListOverlayLoader();
+                addWItemToCart(itemNumber);
+            });
+        });
+
+    });
+
+    function removeMessages() {
+        // Both are messages but not shown in unique manner:
+        jQuery('.messages').hide();
+        jQuery('.messages').remove();
+
+        jQuery('.errors').hide();
+        jQuery('.errors').remove();
+    }
+
+//]]></script>
+
+<!-- default/template/wishlist/partslist/view.phtml (end) -->

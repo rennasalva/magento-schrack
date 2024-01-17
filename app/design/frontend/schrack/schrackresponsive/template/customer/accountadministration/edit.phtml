@@ -1,0 +1,287 @@
+<!-- app\design\frontend\schrack\schrackresponsive\template\customer\accountadministration\edit.phtml (start) -->
+<?php
+    // @var $this Schracklive_SchrackCustomer_Block_Account_Administration
+
+    echo $this->getMessagesBlock()->getGroupedHtml();
+
+    $_customerId = Mage::app()->getRequest()->getParam('id');
+    $_customer = Mage::getModel("customer/customer")->load($_customerId);
+
+    $_session = Mage::getSingleton('customer/session');
+    $sessionCustomer  = $_session->getCustomer();
+?>
+
+<style>
+    .initialHideToTopSymbol {
+        display: none !important;
+    }
+    #email {
+        font-size: 16px !important;
+    }
+    #schrack_salutatory {
+        font-size: 16px !important;
+    }
+    #schrack_new_email {
+        font-size: 16px !important;
+    }
+
+    @media (min-width: 1px) and (max-width: 992px) {
+        .my_account_settings_edituseraccount_content_wrapper {
+            margin-right: 16px !important;
+        }
+    }
+
+    @media (min-width: 60px) and (max-width: 320px) {
+        #single_user_account_edit_button {
+            height: 30px !important;
+        }
+        .select_role_by_user {
+            font-size: 16px !important;
+        }
+    }
+
+    @media (min-width: 321px) and (max-width: 480px) {
+        #single_user_account_edit_button {
+            height: 30px !important;
+        }
+        .select_role_by_user {
+            font-size: 16px !important;
+        }
+    }
+
+    @media (min-width: 481px) and (max-width: 767px) {
+        #single_user_account_edit_button {
+            height: 30px !important;
+        }
+        .select_role_by_user {
+            font-size: 16px !important;
+        }
+    }
+</style>
+
+<?php if ($sessionCustomer->isAllowed('accessRight','edit')) :?>
+<div id="my_account_settings_edituseraccount_wrapper" class="my_account_settings_edituseraccount_content_wrapper">
+    <form action="<?php echo $this->getUrl('customer/accountadministration/editPost') ?>" method="post" id="form-validate-person">
+        <input type="hidden" name="email" id="email" value="<?php echo $this->htmlEscape($this->getCustomer()->getEmail()) ?>" />
+    <div class="row data">
+        <div class="col-xs-12 info-box">
+            <h1><?php echo $this->__('Edit Account'); ?></h1>
+            <?php if ($_customer->isInactiveContact()) : ?>
+                   <span>(<?php echo $this->__('inactive - this person has no access to the online shop.'); ?>)</span><br/>
+            <?php endif; ?>
+            <p class="required"><?php echo $this->__('* Required Fields') ?><span style="float:right">
+                        <a type="button" style="width:265px; margin-top: 10px" id="vcard" href="<?php echo Mage::getUrl('customer/account/vcard',array('id' => $_customer->getId()));?> ">
+                            <img src="<?php echo $this->getSkinUrl('schrackdesign/Public/Images/rwd/downloadIcon.png') ?>" alt="" class="vcard-icon" />
+                            <span><?php echo $this->__('Save Contact'); ?>
+                        </span>
+                        </a></span></p>
+            <div class="row content">
+                <div class="col-xs-12">
+                    <div class="fieldset loginCont">
+                        <?php echo $this->getBlockHtml('formkey') ?>
+                        <input type="hidden" name="customer_id" value="<?php echo $_customerId ?>" />
+                        <h2 class="headingBg"><?php echo $this->__('Account Information') ?></h2>
+                        <div class="formContianer">
+                            <ul class="form-list">
+                                <li>
+                                    <div class="row">
+                                        <?php $_gender = $this->getLayout()->createBlock('customer/widget_gender') ?>
+                                        <?php if ($_gender->isEnabled()): ?>
+                                                <div class="col-xs-3 col-sm-2">
+                                                <?php echo $_gender->setGender($_customer->getGender())->toHtml() ?>
+                                                </div>
+                                        <?php endif ?>
+                                        <?php //echo $this->getLayout()->createBlock('schrackcustomer/widget_addressname')->setObject($_customer)->toHtml() ?>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="row">
+                                        <?php echo $this->getLayout()->createBlock('schrackcustomer/widget_addressname')->setObject($_customer)->toHtml() ?>
+                                    <div>
+                                </li>
+                                <li>
+                                    <div class="row">
+                                        <div class="col-xs-12 col-sm-12">
+                                        <input type="text" name="schrack_salutatory" value="<?php echo $_customer->getSchrackSalutatory() ?>" title="<?php echo $this->__('Salutation') ?>" id="schrack_salutatory" class="input-text form-control" maxlength="50" placeholder="<?php echo $this->__('Salutation') ?>" />
+                                        </div>
+                                        <div class="col-xs-12 col-sm-6">
+                                        <?php if (!$_customer->getEmailAddress()): ?>
+                                                        <input type="text" name="schrack_new_email" value="" title="<?php echo $this->__('Email Address') ?>" id="schrack_new_email" class="input-text validate-email form-control""  maxlength="255" placeholder="<?php echo $this->__('Email Address') ?>" />
+                                        <?php endif ?>
+                                        </div>
+                                    </div>
+
+                                </li>
+                                <?php echo $this->getLayout()->createBlock('schrackcustomer/widget_phonenumber')->setObject($_customer)->toHtml() ?>
+                                <li>
+                                    <h3><?php echo $this->__('Permissions') ?></h3>
+                                    <div class="input-box">
+                                            <?php echo Mage::helper('schrack/acl')->getAclRoleSelectorBoxForCustomerId($_customerId) ?>
+                                    </div>
+                                    <h3>
+                                            <?php if (Mage::getStoreConfig('schrack/typo3/aclrolesurl')): ?>
+                                                    <a href="<?php echo Mage::getStoreConfig('schrack/typo3/aclrolesurl') ?>" target="_new"><?php echo $this->__('Explanation of different permissions:') ?></a>
+                                            <?php else: ?>
+                                                    <?php echo $this->__('Explanation of different permissions:') ?>
+                                            <?php endif; ?>
+                                    </h3>
+
+                                    <p><?php echo $this->__('admin – is allowed to add new users, change data and set the user\'s rights. More than one (but minimum one) admin per customer is possible. This user is allowed to see purchase prices and send orders.') ?></p>
+                                    <p><?php echo $this->__('customer – sees purchase prices, can send orders.') ?></p>
+                                    <p><?php echo $this->__('staff – sees purchase prices, can not send orders.') ?></p>
+                                    <p><?php echo $this->__('projectant – sees no prices, can not send orders.') ?></p>
+
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row content">
+                <div class="col-xs-6">
+                    <button id="single_user_account_edit_button" data-id="<?php echo $_customerId;?>" type="submit" title="<?php echo $this->__('Save') ?>" class="bttn-md"><span><span><?php echo $this->__('Save') ?></span></span></button>
+                </div>
+                <div class="col-xs-6 text-right">
+                    <a href="<?php echo $this->getUrl('*/accountadministration/'); ?>" class=""><?php echo $this->__('Back'); ?></a>
+                </div>
+            </div>
+        </div>
+    </div>
+    </form>
+</div>
+<?php else : ?>
+    <div>No Right</div>
+<?php endif; ?>
+
+
+<script type="text/javascript">
+	//<![CDATA[
+
+    <?php if (!$sessionCustomer->isAllowed('accessRight','edit')) :?>
+        console.log('Keine Berechtigung');
+    <?php endif; ?>
+
+    var dataForm = new VarienForm('form-validate-person', true);
+	var dataFormRights = new VarienForm('form-validate', true);
+
+    var s4y_salut_format = new Object();
+
+    s4y_salut_format['de_DE_1'] = "Sehr geehrter Herr %title% %last_name%";
+    s4y_salut_format['de_DE_2'] = "Sehr geehrte Frau %title% %last_name%";
+    s4y_salut_format['de_AT_1'] = "Sehr geehrter Herr %title% %last_name%";
+    s4y_salut_format['de_AT_2'] = "Sehr geehrte Frau %title% %last_name%";
+    s4y_salut_format['en_EN_1'] = "Dear Mr. %last_name%";
+    s4y_salut_format['en_EN_2'] = "Dear Ms. %last_name%";
+    s4y_salut_format['hr_HR_1'] = "Poštovani gospodine %title% %last_name%";
+    s4y_salut_format['hr_HR_2'] = "Poštovana gospodo %title% %last_name%";
+    s4y_salut_format['fr_FR_1'] = "Monsieur %last_name%";
+    s4y_salut_format['fr_FR_2'] = "Madame %last_name%";
+    s4y_salut_format['nl_NL_1'] = "Geachte heer %last_name%";
+    s4y_salut_format['nl_NL_2'] = "Geachte mevrouw %last_name%";
+    s4y_salut_format['ro_RO_1'] = "Stimate domnule %last_name%";
+    s4y_salut_format['ro_RO_2'] = "Stimata doamna %last_name%";
+    s4y_salut_format['sr_SR_1'] = "Poštovani gospodine %title% %last_name%";
+    s4y_salut_format['sr_SR_2'] = "Poštovana gospodo %title% %last_name%";
+    s4y_salut_format['sl_SL_1'] = "Spoštovani gospod %title% %last_name%";
+    s4y_salut_format['sl_SL_2'] = "Spoštovana gospa %title% %last_name%";
+    s4y_salut_format['cs_CS_1'] = "Vážený Pane %title% %last_name%";
+    s4y_salut_format['cs_CS_2'] = "Milá Paní %title% %last_name%";
+    s4y_salut_format['hu_HU_1'] = "Tisztelt %title% %last_name% Úr!";
+    s4y_salut_format['hu_HU_2'] = "Tisztelt %title% %last_name% Asszony!";
+    s4y_salut_format['sk_SK_1'] = "Vážený pán %title% %last_name%";
+    s4y_salut_format['sk_SK_2'] = "Vážená pani %title% %last_name%";
+    s4y_salut_format['bg_BG_1'] = "Уважаеми господин %last_name%";
+    s4y_salut_format['bg_BG_2'] = "Уважаема госпожо %last_name%";
+    s4y_salut_format['pl_PL_1'] = "Szanowny Panie %last_name%";
+    s4y_salut_format['pl_PL_2'] = "Szanowna Pani %last_name%";
+
+    function s4y_gen_salutatory() {
+        var language = "<?php echo Mage::app()->getLocale()->getLocaleCode();?>";
+
+        // if (language == "pl_PL")
+        // return true;
+
+        var s4y_gender = jQuery("#gender").val();
+        var s4y_salutatory;
+
+        if (s4y_gender == "1") {
+            s4y_salutatory = s4y_salut_format[language+"_1"];
+        } else {
+            s4y_salutatory = '';
+        }
+
+        if (s4y_gender == "2") {
+            s4y_salutatory = s4y_salut_format[language+"_2"];
+        }
+
+        s4y_salutatory = s4y_salutatory.replace(/undefined/g, "");
+        s4y_salutatory = s4y_salutatory.replace("%title%", jQuery("#prefix").val());
+        s4y_salutatory = s4y_salutatory.replace("%first_name%", jQuery("#firstname").val());
+        s4y_salutatory = s4y_salutatory.replace("%last_name%", jQuery("#lastname").val());
+        s4y_salutatory = s4y_salutatory.replace("  ", " ");
+
+        jQuery("#schrack_salutatory").val(s4y_salutatory);
+        return true;
+    }
+
+    jQuery("#gender, #lastname, #firstname, #prefix").change(function() {
+        s4y_gen_salutatory();
+    });
+	
+	jQuery(document).ready(function() {	// Set tabindex to all element of forms
+
+		jQuery('#firstname').focus();
+		jQuery('#form-validate-person :input,select,button,a').each(function (ifvp) { if (this.type != "hidden") { jQuery(this).attr('tabindex', ifvp + 1); } });
+
+        // Prevent enter illegal character(s) by CHANGE or PASTE :
+        jQuery('#schrack_salutatory').bind('keydown change paste',function(e) {
+            setTimeout(function(){
+                    jQuery('#schrack_salutatory').val(jQuery('#schrack_salutatory').val().replace(/["';\[\]<>\x00-\x09\x0B\x0C\x0E-\x1F\xE2\x7F\n\r]/g, ""));
+                }, 50
+            );
+        });
+
+        // Prevent enter illegal character(s) by CHANGE or PASTE :
+        jQuery('#schrack_new_email').bind('keydown change paste',function(e) {
+            setTimeout(function(){
+                    jQuery('#schrack_new_email').val(jQuery('#schrack_new_email').val().replace(/["';\[\]<>\x00-\x09\x0B\x0C\x0E-\x1F\xE2\x7F\n\r]/g, ""));
+                }, 50
+            );
+        });
+
+        /* Back to Top */
+        jQuery('body').append('<div id="toTop" class="btn btn-info print-hide-imp initialHideToTopSymbol"><span class="glyphicon glyphicon-chevron-up"></span> <?php echo $this->__('Back to Top'); ?></div>');
+        jQuery(window).scroll(function () {
+            if (jQuery(this).scrollTop() != 0) {
+                jQuery('#toTop').fadeIn();
+            } else {
+                jQuery('#toTop').fadeOut();
+            }
+        });
+        jQuery('#toTop').click(function(){
+            jQuery("html, body").animate({ scrollTop: 0 }, 600);
+            console.log('ScrollTop #80');
+            return false;
+        });
+        jQuery('#toTop').removeClass('initialHideToTopSymbol');
+        /* Back to Top */
+
+        jQuery('#single_user_account_edit_button').on('click', function() {
+            if (dataLayer) {
+                dataLayer.push({
+                    'event' : 'userSettingChange',
+                    'eventLabel' : 'User Account Change'
+                });
+            }
+        });
+
+        if (jQuery(window).width() < 993) {
+            jQuery('#breadcrumb_block').removeClass('breadcrumb_custom');
+            jQuery('#breadcrumb_block').addClass('breadcrumb_my_account');
+        }
+
+	});
+
+		//]]>
+</script>
+<!-- app\design\frontend\schrack\schrackresponsive\template\customer\accountadministration\edit.phtml (end) -->

@@ -1,0 +1,184 @@
+<!-- app/design/frontend/schrack/schrackresponsive/template/customer/form/edit.phtml (start) -->
+
+<?php
+    $_helper = $this->helper('schrackcustomer');
+    $customer = $this->getCustomer();
+
+    if (is_object($customer) && !$customer->getId() > 0) {
+        $customer = Mage::getSingleton('customer/session')->getCustomer();
+    }
+    if (!is_object($customer)) {
+        $customer = Mage::getSingleton('customer/session')->getCustomer();
+    }
+    $showBecauseImNotAProspect = true;
+    $customerType = $customer->getSchrackCustomerType(); // ProspectTypes: 'light-prospect' / 'full-prospect'
+    // Prospect Light / Full
+    if (!in_array($customerType, array('light-prospect', 'full-prospect'))) {
+        $showBecauseImNotAProspect = false;
+    }
+    $currentUrl = Mage::helper('core/url')->getCurrentUrl();
+?>
+
+<style>
+    .initialHideToTopSymbol {
+        display: none !important;
+    }
+
+    @media (min-width: 1px) and (max-width: 992px) {
+        .my_account_settings_userdata_content_wrapper {
+            margin-right: 16px !important;
+        }
+    }
+
+    @media (min-width: 60px) and (max-width: 320px) {
+        #save_personal_data_button {
+            height: 30px !important;
+        }
+    }
+
+    @media (min-width: 321px) and (max-width: 480px) {
+        #save_personal_data_button {
+            height: 30px !important;
+        }
+    }
+
+    @media (min-width: 481px) and (max-width: 767px) {
+        #save_personal_data_button {
+            height: 30px !important;
+        }
+    }
+</style>
+
+<?php echo $this->getMessagesBlock()->getGroupedHtml() ?>
+<div id="my_account_settings_userdata_wrapper" class="my_account_settings_userdata_content_wrapper">
+    <div class="row">
+        <div class="col-xs-12">
+            <h1>
+                <?php echo $this->__('Manage Account') ?>
+            </h1>
+            <?php if($showBecauseImNotAProspect == false) { ?>
+            <form action="<?php echo $this->getUrl('customer/account/editPost') ?>" method="post" id="form-validate">
+                <input type="hidden" name="email" id="email" value="<?php echo $this->htmlEscape($this->getCustomer()->getEmail()) ?>" />
+                <div class="gray-form loginCont">
+                    <h2 class="headingBg"><?php echo $this->__('My User Data'); ?></h2>
+                    <div class="heading3"><?php echo $this->__('Personal Information') ?></div>
+                    <div>
+                        <p class="required" id="required-info"><?php echo $this->__('* Required Fields') ?></p>
+                    </div>
+                    <div class="formContianer">
+                        <?php echo $this->getBlockHtml('formkey')?>
+                        <ul class="form-list">
+                            <li>
+                                    <div class="row">
+                                            <?php $_gender = $this->getLayout()->createBlock('customer/widget_gender') ?>
+                                            <?php if ($_gender->isEnabled()): ?>
+                                                    <!-- div class="col-xs-3 col-sm-2" -->
+                                                    <?php echo $_gender->setGender($this->getCustomer()->getGender())->toHtml() ?>
+                                                    <!-- /div -->
+                                            <?php endif ?>
+                                            <?php echo $this->getLayout()->createBlock('schrackcustomer/widget_addressname')->setObject($this->getCustomer())->toHtml() ?>
+                                    </div>
+                            </li>
+                            <li>
+                                <div class="row">
+                                    <div class="col-xs-12 col-sm-6">
+                                        <h3><?php echo $this->__('Salutation') ?></h3>
+                                        <input type="text" name="schrack_salutatory" placeholder="<?php echo $this->__('Salutation') ?>" value="<?php echo $this->getCustomer()->getSchrackSalutatory() ?>" title="<?php echo $this->__('Salutation') ?>" id="schrack_salutatory" class="input-text form-control" maxlength="50" />
+                                    </div>
+                                    <div class="col-xs-12 col-sm-6">
+                                        <h3><?php echo $this->__('Department') ?></h3>
+                                        <input type="text" name="schrack_department" placeholder="<?php echo $this->__('Department') ?>" value="<?php echo $this->getCustomer()->getSchrackDepartment() ?>" title="<?php echo $this->__('Department') ?>" id="schrack_department" class="input-text form-control" maxlength="50" />
+                                    </div>
+                                </div>
+                            </li>
+                            <?php echo $this->getLayout()->createBlock('schrackcustomer/widget_phonenumber')->setObject($this->getCustomer())->toHtml() ?>
+                            <?php $_dob = $this->getLayout()->createBlock('customer/widget_dob') ?>
+                            <?php if ($_dob->isEnabled() && false): ?>
+                                <li><?php echo $_dob->setDate($this->getCustomer()->getDob())->toHtml() ?></li>
+                            <?php endif ?>
+                            <?php $_taxvat = $this->getLayout()->createBlock('customer/widget_taxvat') ?>
+                            <?php if ($_taxvat->isEnabled()): ?>
+                                <li><?php echo $_taxvat->setTaxvat($this->getCustomer()->getTaxvat())->toHtml() ?></li>
+                            <?php endif ?>
+                        </ul>
+
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-6">
+                        <button id="save_personal_data_button" class="bttn-md" title="<?php echo $this->__('Save') ?>"><?php echo $this->__('Save') ?></button>
+                    </div>
+                    <div class="col-xs-6 text-right">
+                        <p class="back-link hidden-xs hidden-sm"><a href="<?php echo Mage::helper('schrackcore/url')->getUrlWithCurrentProtocol('customer/account'); ?>"><small>&laquo; </small><?php echo $this->__('Back') ?></a></p>
+                        <p class="back-link hidden-md hidden-lg"><a href="<?php echo Mage::helper('schrackcore/url')->getUrlWithCurrentProtocol('account/account/index'); ?>" ><small>&laquo; </small><?php echo $this->__('Back') ?></a></p>
+                    </div>
+                </div>
+            </form>
+            <?php } ?>
+        </div>
+    </div>
+</div>
+
+
+<script type="text/javascript">
+//<![CDATA[
+
+    var dataForm = new VarienForm('form-validate', true);
+	jQuery(document).ready(function() {	// Set tabindex to all element of forms
+
+		jQuery('#firstname').focus();
+		jQuery('#form-validate :input,select,button,a').each(function (fv) { if (this.type != "hidden") { jQuery(this).attr('tabindex', fv + 1); } });
+
+        // Prevent enter illegal character(s) by CHANGE or PASTE :
+        jQuery('#schrack_salutatory').bind('keydown change paste',function(e) {
+            setTimeout(function(){
+                    jQuery('#schrack_salutatory').val(jQuery('#schrack_salutatory').val().replace(/["';\[\]<>\x00-\x09\x0B\x0C\x0E-\x1F\xE2\x7F\n\r]/g, ""));
+                }, 50
+            );
+        });
+
+        // Prevent enter illegal character(s) by CHANGE or PASTE :
+        jQuery('#schrack_department').bind('keydown change paste',function(e) {
+            setTimeout(function(){
+                    jQuery('#schrack_department').val(jQuery('#schrack_department').val().replace(/["';\[\]<>\x00-\x09\x0B\x0C\x0E-\x1F\xE2\x7F\n\r]/g, ""));
+                }, 50
+            );
+        });
+
+        /* Back to Top */
+        jQuery('body').append('<div id="toTop" class="btn btn-info print-hide-imp initialHideToTopSymbol"><span class="glyphicon glyphicon-chevron-up"></span> <?php echo $this->__('Back to Top'); ?></div>');
+        jQuery(window).scroll(function () {
+            if (jQuery(this).scrollTop() != 0) {
+                jQuery('#toTop').fadeIn();
+            } else {
+                jQuery('#toTop').fadeOut();
+            }
+        });
+        jQuery('#toTop').click(function(){
+            jQuery("html, body").animate({ scrollTop: 0 }, 600);
+            console.log('ScrollTop #88');
+            return false;
+        });
+        jQuery('#toTop').removeClass('initialHideToTopSymbol');
+        /* Back to Top */
+
+        jQuery('#save_personal_data_button').on('click', function() {
+            if (dataLayer) {
+                dataLayer.push({
+                    'event' : 'userSettingChange',
+                    'eventLabel' : 'My Data Change'
+                });
+            }
+        });
+
+        if (jQuery(window).width() < 993) {
+            jQuery('#breadcrumb_block').removeClass('breadcrumb_custom');
+            jQuery('#breadcrumb_block').addClass('breadcrumb_my_account');
+        }
+
+	});
+
+//]]>
+</script>
+
+<!-- app/design/frontend/schrack/schrackresponsive/template/customer/form/edit.phtml (end) -->

@@ -1,0 +1,64 @@
+<?php
+$productHelper = Mage::helper('schrackcatalog/product');
+?>
+<html>
+<head>
+    <style type="text/css">
+        body {
+            color: #00589D;
+
+        }
+        p {
+            padding-bottom: 10px;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+<p>
+<?php $customer = $partslist->getCustomer(); $salutatory = $customer->getSchrackSalutatory();
+
+if ( $salutatory && strlen($salutatory) ) {
+    echo $salutatory;
+} else {
+    echo $this->__('Hello, %s!', $customer->getName());
+}
+?>
+</p>
+
+<p>
+<?php echo $this->__('Name')?>: <?php echo $params['name']?><br/>
+<?php echo $this->__('Address')?>: <?php echo $params['address']?><br/>
+<?php echo $this->__('Email')?>: <?php echo $params['email']?><br/>
+<?php if ( isset($params['message']) && strlen($params['message']) ) { echo $this->__('Message')?>: <?php echo $params['message']?><?php } ?><br/>
+</p>
+
+<table>
+    <?php foreach ($partslist->getItemCollection() as $item):
+        $product = $item->getProduct();
+        echo '<tr><td>' . $product->getSku() . '</td><td>' . $product->getName() . '</td><td>' . $productHelper->formatQty($product, $item->getQty()) . '</td></tr>';
+    endforeach?>
+</table>
+
+<p>
+<?php echo $this->__('Ihre Merkliste im Schrack Technik Online Shop')?>: <?php echo $this->getUrl('wishlist/partslist/view', array('id' => $partslist->getId()))?><br/>
+</p>
+
+<p>
+    Mit freundlichen Grüßen / Kind regards<br/>
+    Trummer Patricia<br/>
+    Online Marketing<br/>
+    <br/>
+    Schrack Technik GmbH<br/>
+    Seybelgasse 13 / Top 1<br/>
+    A-1230 Wien<br/>
+    Tel +43 1 866 85-5913 mobil: +43 699 17650015<br/>
+    Fax +43 1 866 85-99000<br/>
+    <a href="mailto:p.trummer@schrack.com">p.trummer@schrack.com</a><br/>
+    <a href="http://www.schrack.at/"></a><br/>
+    <br/>
+    Der schnellste Weg zu Ihrem Produkt? www.schrack.at/shop<br/>
+    The information contained in this e-mail is confidential and may be privileged. It is intended for the addressee only. If you are not intended recipient, please delete this e-mail immediately. The contents of this e-mail must not be disclosed or copied without the sender's consent. We cannot accept responsibility for viruses, so please scan all attachments. The statements and opinions expressed in this message are those of the author and do not necessarily reflect those of the company. The company does not take any responsibility for the views of the author.<br/>
+</p>
+</body>
+</html>

@@ -1,0 +1,102 @@
+<?php
+/**
+ * Product view template
+ *
+ * @see Mage_Catalog_Block_Product_View
+ * @see Mage_Review_Block_Product_View
+ */
+
+?>
+<?php
+$_customer = Mage::getSingleton('customer/session')->getCustomer();
+$_helper = $this->helper('catalog/output');
+$_infoHelper = Mage::helper('schrackcatalog/info');
+$_productHelper = Mage::helper('schrackcatalog/product');
+$_stockHelper = Mage::helper('schrackcataloginventory/stock');
+$_partslistHelper = Mage::helper('schrackwishlist/partslist');
+$_wishlistHelper = Mage::helper('schrackwishlist');
+$_product = $this->getProduct();
+$_minQty = $this->getMinimalQty($_product);
+$_drumsqty = $this->getRequest()->getParam('qty', '');
+$productUrl = $_product->getUrlModel()->getUrl($_product, array('_escape'=>true,'_ignore_category'=>true,'_nosid'=>true));
+$_prices = array_reverse(Mage::helper('schrackcatalog/info')->getGraduatedPricesForCustomer($_product, $_customer));
+$_infoHelper->preloadProductsInfo(array($_product), $_customer, true);
+$_priceHelper = Mage::helper('schrackcatalog/price');
+$_currency = $_priceHelper->getCurrencyForCustomer($_product, $_customer);
+if (count($_prices) > 0) {
+    $_price = Mage::helper('core')->formatPrice($_prices[0]['price']);
+}
+else {
+    try {
+        $_price = $_priceHelper->getFormattedBasicPriceForCustomer($_product, $_customer);
+    } catch(Exception $e) {
+        $_price = null;
+    }
+}
+$_currency = Mage::app()->getStore()->getCurrentCurrency()->getCode();
+$_imgCartUrl = $this->getSkinUrl('images/cart_raute1.png');
+$_imgTruckUrl = $this->getSkinUrl('images/truck_white_diamond.png');
+$_imgInvisUrl = $this->getSkinUrl('images/no_truck_no_cart.png');
+$_dfltDeliveryWarehouseId = (int) $_stockHelper->getLocalDeliveryStock()->getStockNumber();
+
+list($_qty,$_formattedQty) = $_productHelper->getFormattedAndUnformattedDeliveryQuantity($_product,$_dfltDeliveryWarehouseId,true);
+
+/* @var $_helper Mage_Catalog_Helper_Output */
+/* @var $_infoHelper Schracklive_SchrackCatalog_Helper_Info */
+/* @var $_productHelper Schracklive_SchrackCatalog_Helper_Product */
+
+$currentCategory = Mage::registry('current_category');
+$categoryUrl = '';
+$previousProduct = null;
+$nextProduct = null;
+$showBrowseBlock = false;
+if ($currentCategory) {
+    $categoryUrl = $currentCategory->getUrl();
+
+    try {
+        $previousProduct = $currentCategory->getProductAtOffsetOrDefault($_product, -1);
+        $nextProduct = $currentCategory->getProductAtOffsetOrDefault($_product, 1);
+
+        $showBrowseBlock = true;
+    } catch (Exception $e) {
+        $showBrowseBlock = false;
+    }
+}
+if (Mage::helper('schrackcatalog/product')->hasDrums($_product)) {
+    $_possibleDeliveryDrums = Mage::helper('schrackcatalog/info')->getPossibleDrums($_product, array($_dfltDeliveryWarehouseId));
+}
+$_categories = $_product->getCategoryCollection();
+$_categoryNames = array();
+foreach($_categories as $_category) {
+    $_fullCategoryName = array();
+    foreach ($_category->getParentCategories() as $_parentCategory) {
+        $_fullCategoryName[] = $_parentCategory->getName();
+    }
+    $_categoryNames[] = $this->htmlEscape(implode(' > ', $_fullCategoryName));
+}
+$_maySeePrices = Mage::helper('geoip/data')->maySeePrices();
+$_allPickupLocations = $_productHelper->getAllPickupQuantities($_product);
+?>
+<?php echo $this->getMessagesBlock()->getGroupedHtml(); ?>
+<script type="text/javascript">//<![CDATA[
+
+    function checkCompare() {
+        var items = <?php echo $this->helper('catalog/product_compare')->getItemCount(); ?>;
+        if (items >= 5) {
+            alert ('<?php echo $this->__('Compare Error'); ?>');
+            return false;
+        } else {
+            return true;
+        }
+    }
+//]]>
+</script>
+
+<div class="row">
+    <div class="large-3 columns product-detail-left-bar">
+        <?php echo $this->getChildHtml('media') ?>
+    </div>
+    <div class="large-9 columns product-detail-main-bar">
+        <?php echo $this->getChildHtml('attributes') ?>
+    </div>
+</div>

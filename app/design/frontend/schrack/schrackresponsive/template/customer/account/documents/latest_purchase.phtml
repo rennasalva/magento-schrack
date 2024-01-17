@@ -1,0 +1,72 @@
+<!-- app/design/frontend/schrack/schrackresponsive/template/customer/account/documents/latest_purchase.phtml (start) -->
+<style>
+    #latestpurproduct {
+        /*z-index: 10 !important;*/
+    }
+    ul.product-list-slide-list li {
+        min-width: 122px;
+        width: 210px;
+    }
+    .latestPurchasedItemActionButtons {
+        margin-left: 167px !important;
+    }
+    .latestPurchasedSkuHeader {
+        color: #005b9f;
+        font-size: 16px;
+        float: left;
+        margin-left: -106px !important;
+    }
+    .add-to-new-partslist {
+        height: auto !important;
+        width: 86px !important;
+    }
+    .addToExistingPartslist {
+        height: auto !important;
+        text-align: left !important;
+        font-size: 11px !important;
+        width: 122px !important;
+    }
+    .partslist_dropdown_menu {
+        height: 265px !important;
+        width: 141px !important;
+        left: 46px !important;
+    }
+    .newPartslistDiv {
+        height: 24px;
+        margin-left: -11px !important;
+    }
+    .newPartslistText {
+        font-size: 10px !important;
+        word-wrap: break-word;
+        text-align: left;
+        margin-left: 25px !important;
+    }
+    .bx-wrapper, .bx-viewport {
+        height: 300px !important;
+    }
+    .sliderBoxItem {
+        height: 300px !important;
+    }
+    .imgBox {
+        margin-bottom: -17px !important;
+    }
+
+</style>
+
+<div class="row purchaseProdCont" id="latestslidercontainer" style="display:none;">
+    <div class="col-md-12 col-sm-12 col-xs-12 related-products product-list-slide">
+        <div class="col-md-9 col-sm-9 col-xs-9 padL0">
+            <h1>
+                <?php echo $this->__('Latest Purchase Products') ?>
+            </h1>
+        </div>
+		<?php $latestProductsViewAllLink = 'catalogsearch/result/?fq=%7B"facets"%3A%7B%7D%2C"general_filters"%3A%7B"last_purchased"%3A1%7D%7D'; ?>
+        <div class="col-md-3 col-sm-3 col-xs-3 padR0 pull-right text-right topLink"><a href='<?php echo Mage::getBaseUrl(). $latestProductsViewAllLink; ?>'><?php echo $this->__('View All'); ?></a></div>
+    </div>
+    <div class="inner related-products col-md-12 col-sm-12 col-xs-12">
+        <!-- This UL can be filled from AJAX response coming from dashboard_ajax.phtmml file -->
+        <ul id="latestpurproduct" class="latest_products product-list-slide-list">
+        </ul>          
+    </div>
+</div>
+<!-- app/design/frontend/schrack/schrackresponsive/template/customer/account/documents/latest_purchase.phtml (end) -->

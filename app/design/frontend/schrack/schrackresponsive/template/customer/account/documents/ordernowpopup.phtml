@@ -1,0 +1,258 @@
+<!-- app\design\frontend\schrack\schrackresponsive\template\customer\account\documents\ordernowpopup.phtml (start) -->
+<style>
+    .zip-download-animation {
+        margin-left: -42px !important;
+        margin-top: -61px !important;
+        width: 231px !important;
+    }
+
+    @media (min-width: 1px) and (max-width: 320px) {
+        #button-ok {
+            height: 30px !important;
+        }
+        #button-cancel {
+            height: 30px !important;
+        }
+    }
+
+    @media (min-width: 321px) and (max-width: 360px) {
+        #button-ok {
+            height: 30px !important;
+        }
+        #button-cancel {
+            height: 30px !important;
+        }
+    }
+
+    @media (min-width: 361px) and (max-width: 410px) {
+        #button-ok {
+            height: 30px !important;
+        }
+        #button-cancel {
+            height: 30px !important;
+        }
+    }
+
+    @media (min-width: 411px) and (max-width: 460px) {
+        #button-ok {
+            height: 30px !important;
+        }
+        #button-cancel {
+            height: 30px !important;
+        }
+    }
+
+    @media (min-width: 461px) and (max-width: 480px) {
+        #button-ok {
+            height: 30px !important;
+        }
+        #button-cancel {
+            height: 30px !important;
+        }
+    }
+
+    @media (min-width: 481px) and (max-width: 560px) {
+        #button-ok {
+            height: 30px !important;
+        }
+        #button-cancel {
+            height: 30px !important;
+        }
+    }
+
+    @media (min-width: 561px) and (max-width: 639px) {
+        #button-ok {
+            height: 30px !important;
+        }
+        #button-cancel {
+            height: 30px !important;
+        }
+    }
+
+    @media (min-width: 640px) and (max-width: 767px) {
+        #button-ok {
+            height: 30px !important;
+        }
+        #button-cancel {
+            height: 30px !important;
+        }
+    }
+
+    @media (min-width: 768px) and (max-width: 768px) {
+        #button-ok {
+            height: 30px !important;
+        }
+        #button-cancel {
+            height: 30px !important;
+        }
+    }
+
+    @media (min-width: 769px) and (max-width: 992px) {
+        #button-ok {
+            height: 34px !important;
+        }
+        #button-cancel {
+            height: 34px !important;
+        }
+    }
+</style>
+
+<div class="modal-dialog" role="document" id="orderNowContainerWrapper">
+  <div class="modal-content">
+    <div id="ajax-loader" style="display: none;"> <img src="<?php echo $this->getSkinUrl('schrackdesign/Public/Images/download_ajax_loader.gif'); ?>" class="zip-download-animation"/> </div>
+    <div class="modal-header">
+      <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+      <h4 class="modal-title"><?php echo $this->__('Order the offer'); ?></h4>
+    </div>
+    <div class="loginCont">
+      <div class="row add-product no-table-heights">
+        <div class="col-xs-12">
+          <div id="messageField"></div>
+        </div>
+      </div>
+      <div class="table" id="messageExcludedSection">
+        <input type="hidden" name="order_no" value="<?php echo $this->getOrder()->getSchrackWwsOrderNumber() ?>">
+        <div class="row">
+          <div class="col-xs-12">
+            <h3>
+              <input type="radio" name="pickup_delivery" value="delivery" checked onClick="disableAddresses(false);">
+              <?php echo ' ' . $this->__('Delivery') ?> </h3>
+          </div>
+          <div class="col-xs-12 input-box"> <?php echo $this->getAddressesHtmlSelect() ?> </div>
+        </div>
+        <div class="row">
+          <div class="col-xs-12">
+            <h3>
+              <input type="radio" name="pickup_delivery" value="pickup" onClick="disableAddresses(true);" >
+              <?php echo ' ' . $this->__('Pickup') ?> </h3>
+          </div>
+          <div class="col-xs-12 columns input-box"> <?php echo $this->getPickupStocksHtmlSelect() ?> </div>
+        </div>
+        <div class="row">
+          <div class="col-xs-12">
+            <h3><?php echo $this->__('Meine Bestellangabe') . ':'; ?></h3>
+          </div>
+          <div class="col-xs-12">
+            <input type="text" id="do-order-customer-description-text" class="form-control marginB0" value="<?php echo $this->getOrder()->getSchrackWwsReference(); ?>" maxlength="20" />
+          </div>
+          <div class="col-xs-12 smlTxt"><?php echo $this->__('Purchase Order Number'); ?></div>
+        </div>
+        <div class="row marginT10">
+          <div class="col-xs-3">
+            <h3><?php echo $this->__('Payment') . ':'; ?></h3>
+          </div>
+          <div class="col-xs-9"><?php echo $this->__('Invoice'); ?></div>
+        </div>
+        <div class="row marginT20">
+          <div class="col-xs-12">
+            <button  type="button" id="button-ok" class="bttn-md marginR40"><?php echo $this->__('Order Now!') ?></button>
+            <button  type="button" id="button-cancel" class="bttn-md" type="button" data-dismiss="modal" aria-label="Close">
+            <?php echo $this->__('Cancel dialog') ?>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script type="text/javascript">
+    //<![CDATA[
+
+    jQuery(document).ready(function () {
+        jQuery('.messages').hide();
+
+        jQuery('#pickup-address-select').disabled = true;
+
+        jQuery('#button-ok').on('click', function () {
+            jQuery("#button-ok").css("pointer-events", "none");
+            jQuery('#button-ok').addClass('grayscale');
+            setOverlayLoader();
+            doOrderNow();
+
+            setTimeout( function() {
+                    jQuery("#button-ok").css("pointer-events", "auto");
+                    jQuery('#button-ok').removeClass('grayscale');
+                }, 1000
+            );
+        });
+    });
+
+    jQuery('#button-ok').on('dblclick', function () {
+        console.log('Double Click is not good!');
+    });
+
+    var disableAddresses = function (pickup) {
+        jQuery('#shipping-address-select').disabled = pickup;
+        jQuery('#pickup-address-select').disabled = !pickup;
+    }
+
+    var doOrderNow = function () {
+        //mustReload = jQuery('#order-button').get(0) ? false : true;
+        mustReload = 0;
+        document.getElementById('button-ok').disabled = true;
+        document.getElementById('button-cancel').disabled = true;
+        var pickupDelivery = jQuery("input:radio[name='pickup_delivery']:checked").val();
+        var shippingAddress = jQuery('#shipping-address-select').val();
+        var pickupAddress = jQuery('#pickup-address-select').val();
+        var doOrderCustomerDescription = jQuery('#do-order-customer-description-text').val();
+
+        var doOrderURL = "<?php echo Mage::helper('schrackcore/url')->getUrlWithCurrentProtocol('customer/account/doOrderNow'); ?>";
+        jQuery.ajax(doOrderURL, {
+            'type': 'POST',
+            dataType: 'json',
+            'data': {
+                'order_no': '<?php echo $this->getOrder()->getSchrackWwsOrderNumber() ?>',
+                'pickup_delivery': pickupDelivery,
+                'shipping_address_id': shippingAddress,
+                'pickup_address_id': pickupAddress,
+                'customer_reference': doOrderCustomerDescription,
+                'must_reload': mustReload
+            },
+            'success': function (data) {
+                //var datax = JSON.parse(data);
+                if (data) {
+                    if (data.html) {
+                        jQuery('.messages').show();
+                        unsetOverlayLoader();
+                        jQuery('#ordernowpopup').html(data.html);
+                        jQuery("#button-cancel").trigger('click');
+						document.getElementById('button-cancel').disabled = false
+                    } else {
+                        jQuery('.messages').hide();
+                        if (mustReload) {
+                            console.log('Reloaded #1');
+                            location.reload(true);
+                        } else {
+							unsetOverlayLoader();
+							jQuery('#orderNowContainerWrapper').hide();
+                            jQuery('.modal-backdrop').remove();
+                            jQuery('#order-button').remove();
+                            appendMessageUl([data.message], 'messages_hidden', 'success-msg');
+                            console.log('appendMessageUl #43');
+                        }
+                    }
+                } else {
+                    jQuery('.messages').hide();
+					jQuery('#messageExcludedSection').hide();
+                    unsetOverlayLoader();
+                    jQuery("#messageField").addClass('alert-danger');
+                    jQuery("#messageField").text("<?php echo $this->__('A problem occurred while trying to order this offer. Please contact your contact person (#1001)'); ?>");
+                    jQuery("#messageField").show();
+                }
+            },
+            error: function (e) {
+				jQuery('#messageExcludedSection').hide();
+                jQuery('.messages').hide();
+                unsetOverlayLoader();
+                jQuery("#messageField").addClass('alert-danger');
+                jQuery("#messageField").text("<?php echo $this->__('A problem occurred while trying to order this offer. Please contact your contact person (#1002)'); ?>");
+                jQuery("#messageField").show();
+            }
+        });
+
+        return false;
+    };
+
+    //]]>
+</script>
+<!-- app\design\frontend\schrack\schrackresponsive\template\customer\account\documents\ordernowpopup.phtml (end) -->

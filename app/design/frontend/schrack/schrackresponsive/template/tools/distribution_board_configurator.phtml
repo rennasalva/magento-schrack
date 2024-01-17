@@ -1,0 +1,121 @@
+<!-- app/design/frontend/schrack/schrackresponsive/template/tools/distribution_board_configurator.phtml (start) -->
+<?php
+    $iframeUrl = Mage::registry("distributionurl");
+?>
+
+<?php if ( $iframeUrl > '' ) : ?>
+    <iframe data-cfgrurl="<?php echo $iframeUrl; ?>" height="850px" width="100%" frameborder="0" name="DistributionBoard">
+        <p>Sorry, your browser does not support iFrames.</p>
+    </iframe>
+<?php endif; ?>
+
+<script type="application/javascript">
+    window.Combeenation = (window.Combeenation || {});
+    window.Combeenation.onCheckout = function(data) {
+        /*
+        structure of the parameter 'data':
+        data.id // id of the configuration (Provided by Combeenation)
+        data.authentication // authentication token, which is needed if a customer
+                               wants to edit the configuration. (Provided by Combeenation)
+        data.checkoutParameters // value of the checkout component property 'Parameter' (Provided by you)
+        data.checkoutParametersHash // SHA256 hash of `CheckoutParameters` (Provided by Combeenation)
+        data.queryParameters // all query parameters which are added to the iframe URL (Provided by the
+                                person who inserts the iframe in the page)
+        */
+
+        // e.g. make AJAX calls, redirects, ...
+
+        let jsonToSku = data.checkoutParameters;
+        let qty = "";
+        let check = data.checkoutParametersHash;
+
+        let sku = JSON.parse(jsonToSku);
+
+
+        if(qty == "") {
+            qty = 1;
+        }
+
+        console.log("--------- SKU: ", sku["Artikelnummer"]);
+        console.log("--------- Qty: ", qty);
+        console.log("--------- Check: ", check);
+
+        let ajaxUrl = '<?php echo Mage::helper('schrackcore/url')->getUrlWithCurrentProtocol('sd/AjaxDispatcher/setGetData'); ?>';
+
+        setOverlayLoader();
+
+        jQuery.ajax(ajaxUrl, {
+            'dataType' : 'json',
+            'type': 'POST',
+            'data': {
+                'form_key' : '<?php echo Mage::getSingleton('core/session')->getFormKey(); ?>',
+                'setAddToCart' : {'data' : {'sku' : sku, 'quantity' : qty, 'check' : check}}
+            },
+            'success': function (data) {
+                //------------------------------------------ remove ajax spinner
+                unsetOverlayLoader();
+                //---------------------------------------- get retrieved dataset
+                let parsedData = data;
+                let result = parsedData.setAddToCart.result;
+                //------------------------------------------- Open Inquiry Popup
+                //-------------------------------------- found in footerJs.pthml
+                if(result.showPopup == true) {
+                    jQuery('#quantitywarningpopup').html(result.popupHtml);
+                    jQuery('#quantitywarningpopupBtn').click();
+                } else {
+                    //----------------------------- set item count badge to cart
+                    if(result.numberOfDifferentItemsInCart){
+                        let badge = '<div id="cartNoBxItemCount" class="cartNoBx">' +
+                            result.numberOfDifferentItemsInCart +
+                            '</'+'div'+'>';
+                        jQuery('.MyCart').append(badge);
+                    }
+                    //----------- update Qty if new is returned -> false min qty
+                    let newQuantityDetected = false;
+                    if (result.data.newQty && result.data.newQty > 0) {
+                        QtyField.val(result.data.newQty);
+                        newQuantityDetected = true;
+                    }
+                    //-------------------------------------  message preparation
+                    let messageArray = result.data.messages;
+                    //-----------------------------------------  message styling
+                    let ulClass = 'messages_hidden';
+                    let liClass = 'success-msg';
+                    let iconClass = 'glyphicon glyphicon-ok';
+                    //---------------------------------------------------- error
+                    if(result.result.indexOf("SUCCESS") == -1){
+                        ulClass = 'messages';
+                        liClass = 'error-msg';
+                        iconClass = 'glyphicon glyphicon-exclamation-sign';
+                        console.log('appendMessageUl #06');
+                    } else { //-------------------------------------------- info
+                        //--------------------------------------------- tracking
+                        if (newQuantityDetected == false) {
+                            let trackingData = new Object();
+                            trackingData.trackingEnabled = jQuery(this).attr("data-tracking-enabled");
+                            trackingData.pagetype        = 'category_searchresult';
+                            trackingData.sku             = jQuery(this).attr("data-sku");
+                            trackingData.name            = jQuery(this).attr("data-name");
+                            trackingData.price           = jQuery(this).attr("data-price");
+                            trackingData.category        = jQuery(this).attr("data-category");
+                            trackingData.currencyCode    = '<?php echo Mage::app()->getStore()->getCurrentCurrencyCode() ?>';
+                            trackingData.quantity        = QtyField.val();
+                            addToCartTracking(trackingData, 'Search Result List');
+                        }
+                        console.log('appendMessageUl #07');
+                    }
+                    //------------------------------------------- write messages
+                    appendMessageUl(messageArray, ulClass, liClass, iconClass);
+                    //jQuery('.messages').delay(5000).fadeOut(1000);
+                }
+            },
+            'error': function (data) {
+                let parsedData = data;
+                //debugger;
+            }
+        });
+
+    }
+</script>
+
+<!-- app/design/frontend/schrack/schrackresponsive/template/tools/distribution_board_configurator.phtml (end) -->

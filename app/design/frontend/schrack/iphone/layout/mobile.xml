@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<layout version="0.1.0">
+	<mobile_onepage_index translate="label">
+		<update handle="checkout_onepage_index"/>
+	</mobile_onepage_index>
+	<mobile_onepage_progress>
+		<update handle="checkout_onepage_progress"/>
+	</mobile_onepage_progress>
+	<mobile_onepage_paymentmethod>
+		<update handle="checkout_onepage_paymentmethod"/>
+	</mobile_onepage_paymentmethod>
+	<mobile_onepage_shippingmethod>
+		<update handle="checkout_onepage_shippingmethod"/>
+	</mobile_onepage_shippingmethod>
+	<mobile_onepage_additional>
+		<update handle="checkout_onepage_additional"/>
+	</mobile_onepage_additional>
+	<mobile_onepage_review>
+		<update handle="checkout_onepage_review"/>
+	</mobile_onepage_review>
+	<mobile_onepage_success>
+		<update handle="checkout_onepage_success"/>
+	</mobile_onepage_success>
+	<mobile_onepage_failure>
+		<update handle="checkout_onepage_failure"/>
+	</mobile_onepage_failure>
+	<mobile_onepage_error>
+		<update handle="checkout_onepage_error"/>
+	</mobile_onepage_error>
+</layout>

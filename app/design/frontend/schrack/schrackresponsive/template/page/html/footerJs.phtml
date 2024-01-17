@@ -1,0 +1,221 @@
+<!-- app/design/frontend/schrack/schrackresponsive/template/page/html/footerJs.phtml (start) -->
+<?php echo $this->getCssJsHtml() ?>
+<?php $_partslistHelper = Mage::helper('schrackwishlist/partslist'); ?>
+
+<style>
+    .cc-cookies { position:fixed; width: 100%; left: 0; top: 0; padding: 0.5em 5%; background: #565656; background: rgba(86,86,86,0.95); z-index: 99999; }
+    .cc-cookies a, .cc-cookies a:hover { color: #00589d; text-decoration: underline; }
+    .cc-cookies a:hover { text-decoration: none; }
+    .cc-overlay { height: 100%; padding-top: 25%; }
+    .cc-cookies-error { float: left; width: 90%; text-align: center; margin: 1em 0 2em 0; background: #fff; padding: 2em 5%; border: 1px solid #ccc; font-size: 18px; color: #333; }
+    .cc-cookies a.cc-cookie-accept, .cc-cookies-error a.cc-cookie-accept, .cc-cookies a.cc-cookie-decline, .cc-cookies-error a.cc-cookie-decline, .cc-cookies a.cc-cookie-reset { display: inline-block; color: #fff; text-decoration: none; /* background: #7DAF3B; */ padding: 0.5em 0.75em; /* border-radius: 3px; */ box-shadow: 0 0 2px rgba(0,0,0,0.25); text-shadow: 0 -1px 0 rgba(0,0,0,0.35); -o-transition: background 0.5s ease-in; -webkit-transition: background 0.25s ease-in; -moz-transition: background 0.25s ease-in; }
+    .cc-cookies a.cc-cookie-decline, .cc-cookies-error a.cc-cookie-decline { /* background: #af3b3b; */ background:none; color:#00589d; text-decoration:none; box-shadow:none; text-shadow: none; margin-left: 0.5em; }
+    .cc-cookies a.cc-cookie-reset { background: #f15b00; }
+    .cc-cookies a:hover.cc-cookie-accept, .cc-cookies-error a:hover.cc-cookie-accept, .cc-cookies a:hover.cc-cookie-decline, .cc-cookies-error a:hover.cc-cookie-decline, .cc-cookies a:hover.cc-cookie-reset  { background: #000; -o-transition: background 0.5s ease-in; -webkit-transition: background 0.25s ease-in; -moz-transition: background 0.25s ease-in; }
+    .cc-cookies a:hover.cc-cookie-accept  { background:#00589d; text-decoration: none; }
+    .cc-cookies a:hover.cc-cookie-decline { background:none; text-decoration: underline;}
+    .cc-cookies-error a.cc-cookie-accept, .cc-cookies-error a.cc-cookie-decline { display: block; margin-top: 1em; }
+    .cc-cookies.cc-discreet { width: auto; padding: 0.5em 1em; left: auto; top: auto; }
+    .cc-cookies.cc-discreet a.cc-cookie-reset { background: none; text-shadow: none; padding: 0; text-decoration: underline; }
+    .cc-cookies.cc-discreet a:hover.cc-cookie-reset { text-decoration: none; }
+</style>
+
+<script type="text/javascript">//<![CDATA[
+    var partslist = new ListRequestManager.List('<?php echo $_partslistHelper->getBaseUrl() ?>');
+    var partslistFE = new ListRequestManager.Frontend(partslist, ListRequestManager.Document);
+    
+    function checkLsChkBx(liItem)
+    {
+        jQuery('input:checkbox').attr('checked', false);
+        jQuery(liItem).closest('tr').find('input[type=checkbox]').prop('checked', true);
+    }
+	
+	// Method to add single or batch SKU into Selected or New Partlist
+	function addSKUToPartlistAjaxCall(partListID, singleBatch, clickItemObj, source, documentType) {
+		//console.log(jQuery(clickItemObj).parent());
+		//var jsDocTypeShortName = '<?php //echo $_docTypeShortName; ?>';
+		if (singleBatch == 1) {
+			if (jQuery('input[type=checkbox]').is(":checked")) {
+				var arrKeyValuePairSkuQty = [];
+				var arrSku = [];
+				jQuery('.product-checkbox').each(function () {
+					if (jQuery(this).prop('checked') === true) {
+                        arrKeyValuePairSkuQty.push(jQuery(this).attr('data-sku') + ':' + jQuery(this).attr('data-qty'));
+                        arrSku.push(jQuery(this).attr('data-sku'));
+                    }
+				});
+                var arrSkuLength = arrSku.length;
+                for (var i = 0; i < arrSkuLength; i++) {
+                    if (dataLayer) {
+                        if (source == 'toolSchrackProtect') {
+                            // Do nothing per product
+                        } else {
+                            dataLayer.push({
+                                'event' : 'partlistModification',
+                                'eventAction' : 'Add',
+                                'eventLabel' : documentType,
+                                'partlistModificationSource' : source,
+                                'productSku' : arrSku[i]
+                            });
+                        }
+                    }
+                }
+
+                if (source == 'toolSchrackProtect') {
+                    // Added Google Tracking (add to partslist):
+                    dataLayer.push({
+                        'event' : 'trackingActionFromOnlineTools',
+                        'eventAction' : 'Schrack Protect',
+                        'eventLabel' : 'Add to Partslist'
+                    });
+                    console.log('Event (addtopartlist) #2 from toolSchrackProtect)');
+                } else {
+                    console.log({'Event (addtopartlist) #2 tracked IDs ' : arrSku});
+                }
+				var bacthAddPLStr = arrKeyValuePairSkuQty.join(';')
+				var addItemPartListAjaxUrl = BASE_URL + 'wishlist/partslist/batchAdd/id/' + partListID + '/products/' + bacthAddPLStr;
+			} else {
+				alert("Please select an entry from the list, by selecting at least one checkbox first.");
+			}
+		} else {
+			var selectedProdSku = jQuery(clickItemObj).parent().attr('product-sku');
+			var selectedProdQty = jQuery(clickItemObj).parent().attr('data-qty');
+            if (dataLayer) {
+                dataLayer.push({
+                    'event' : 'partlistModification',
+                    'eventAction' : 'Add',
+                    'eventLabel' : documentType,
+                    'partlistModificationSource' : source,
+                    'productSku' : selectedProdSku
+                });
+                console.log({'Event (addtopartlist) tracked ID #2 ' : selectedProdSku});
+            }
+			var addItemPartListAjaxUrl = BASE_URL + 'wishlist/partslist/batchAdd/id/' + partListID + '/products/' + selectedProdSku + ':' + selectedProdQty;
+		}
+		//jQuery('input:checkbox').attr('checked', false);
+		unsetOverlayLoader();
+		jQuery.ajax({
+			url: addItemPartListAjaxUrl,
+			method: 'POST'
+		}).done(function (data) {
+			var parlistAddData = JSON.parse(data);
+			jQuery('ul.messages').empty();
+			jQuery('ul.errors').empty();
+			if (typeof (parlistAddData.messages) != 'undefined') {
+				appendMessageUl(parlistAddData.messages_hidden, 'messages', 'success-msg');
+                console.log('appendMessageUl #26');
+			} else {
+				appendMessageUl(parlistAddData.errors, 'messages_hidden', 'error-msg');
+                console.log('appendMessageUl #27');
+			}
+			unsetOverlayLoader();
+			//jQuery("html, body").animate({scrollTop: 0}, "slow");
+            //console.log('ScrollTop #89');
+		});
+	}
+    //]]></script>
+<script type="text/javascript">//<![CDATA[
+    //jQuery('#baguetteBox-overlay').hide();
+    jQuery(document).ready(function () {
+    if ( getParameterByName('excludeAjaxCall') == null && ! __suppressAjaxDispatcherCalls ) {	// Added by Nagarro for exclude AJAX call for performance testing
+        dataArray.form_key = formKey;
+
+        //dataArray.getQuickAddPopup = '';
+        if (   typeof productSKUForPrice != 'undefined'
+            && typeof productSKUForPrice['data'] != 'undefined'
+            && typeof productSKUForPrice['data']['skus'] == 'object'
+            && productSKUForPrice['data']['skus'].length > 0 ) {
+                dataArray.getProductPrices = productSKUForPrice;
+        }
+        if (   typeof productSKUForStock != 'undefined'
+            && typeof productSKUForStock['data'] != 'undefined'
+            && typeof productSKUForStock['data']['skus'] == 'object'
+            && productSKUForStock['data']['skus'].length > 0 ) {
+                dataArray.getProductAvailabilities = productSKUForStock;
+        }
+        if (typeof mainProductSKU != 'undefined') {
+                dataArray.getIsPromotionSKU = mainProductSKU;
+        }
+        if (typeof doGetCartGrandTotal != 'undefined') {
+            dataArray.getCartGrandTotal = '';
+        }
+        //dataArray.getProductList = {'data' : {'accessory':0, 'category':  56670}};
+        //dataArray.getProductList = {'data' : {'query': 'lsd', 'start': 20, 'limit': 20, 'category': 10727, 'facets': {'schrack_nennstrom_ac-1_69': ['100A', '18A'], 'schrack_geraet': ['Sch\u00fctz']}}};
+        //setOverlayLoaderToLockScreen();
+        jQuery.ajax(ajaxUrl, {
+                'dataType': 'json',
+                'type': 'POST',
+                'data': dataArray,
+                'success': function (data) {
+                        unsetOverlayLoader();
+                        var parsedData = data;
+                        //debugger;
+                        // TODO : do something here with proxessed response data!
+                        var ajaxDispatcher = new AjaxDispatcher();
+                        jQuery.each(parsedData, function (key, value) {
+                                ajaxDispatcher[key](value.result);
+                        });
+                        dataArray = {};
+                        if(firstLoadForLoadMore){
+                            firstLoadForLoadMore = false;
+                        }
+                },
+                'error': function (data) {
+                        var parsedData = data;
+                        //debugger;
+                }
+        });
+    }
+        //add icon for message section
+        jQuery('.messages .success-msg li').each(function () {
+            jQuery(this).prepend('<span class="glyphicon glyphicon-ok"></span> ');
+        });
+        jQuery('.messages .error-msg li').each(function () {
+            jQuery(this).prepend('<span class="glyphicon glyphicon-exclamation-sign"></span> ');
+        });
+        jQuery('.messages .notice-msg li').each(function () {
+            jQuery(this).prepend('<span class="glyphicon glyphicon-ok"></span> ');
+        });
+
+        //jQuery('#baguetteBox-overlay').hide();
+    });
+    var __overlayLoaderRunning = false;
+    var setOverlayLoader = function () {
+        __overlayLoaderRunning = true;
+        // Set overlay for
+        jQuery('.controlsArea').css({"position": "fixed",
+            "height": "100%",
+            "width": "100%",
+            "background": "url(<?php echo $this->getSkinUrl('schrackdesign/Public/Images/download_ajax_loader.gif'); ?>) no-repeat center center",
+            "top": "0",
+            "left": "0",
+            "opacity": "0.4",
+            "z-index": "99999"});
+    };
+    var setOverlayLoaderToLockScreen = function () {
+        __overlayLoaderRunning = true;
+        // Set overlay for
+        jQuery('.controlsArea').css({"position": "fixed",
+            "height": "100%",
+            "width": "100%",
+            "top": "0",
+            "left": "0",
+            "opacity": "0.4",
+            "z-index": "99999"});
+    };
+    var unsetOverlayLoader = function () {
+        if (jQuery('.controlsArea')) {
+            jQuery('.controlsArea').removeAttr('style');
+        }
+        __overlayLoaderRunning = false;
+    };
+    var isOverlayLoaderRunning = function () {
+        return __overlayLoaderRunning;
+    }
+//]]></script>
+<div class="controlsArea"></div>
+<div tabindex="-1" role="dialog" aria-labelledby="quantitywarningpopupLabel" id="quantitywarningpopup" class="product-warning modal fade" title="<?php echo $this->__('Inquiry'); ?>">
+</div>
+<button type="button" id="quantitywarningpopupBtn" class="hide" data-toggle="modal" data-target="#quantitywarningpopup">
+</button>
+<!-- app/design/frontend/schrack/schrackresponsive/template/page/html/footerJs.phtml (end) -->

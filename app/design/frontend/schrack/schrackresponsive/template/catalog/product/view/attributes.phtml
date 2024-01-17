@@ -1,0 +1,415 @@
+<!-- app\design\frontend\schrack\schrackresponsive\template\catalog\product\view\attributes.phtml (start) -->
+<?php
+    $_extension2filetypeMap = array(
+        'bmp' => 'bmp',
+        'dwg' => 'dwg',
+        'edz' => 'edz',
+        'ema' => 'ema',
+        'gif' => 'gif',
+        'jpg' => 'jpg',
+        'ldt' => 'ldt',
+        'pdf' => 'pdf',
+        'png' => 'png',
+        'rfa' => 'rfa',
+        'zip' => 'zip',
+        'schrack' => 'schrackdesign'
+    );
+    $_tableHelper = Mage::helper('schrackcore/table');
+    $_helper = $this->helper('schrackcatalog/output');
+    $_product = $this->getProduct();
+    $_excludeStrings = '' . Mage::getStoreConfig('schrack/shop/product_attribute_exclude_codes');
+    $_excludeCodes = explode(',', $_excludeStrings);
+    $_attachments = $_product->getAttachments();
+    $_accessories = $_product->getAccessoryProducts();
+    foreach ($_attachments as $_key => $_attachment) {
+        if ( $_attachment->getFiletype() == 'thumbnails' ) {
+            unset($_attachments[$_key]);
+        }
+    }
+    $_additional = $this->getAdditionalData($_excludeCodes);
+    $_productSKU = $_product->getSku();
+    $_detailDescription = $_product->getSchrackDetailDescription();
+
+    $showCopyAndPasteLinks = true;
+?>
+<?php if ($_additional):
+    $_tableHelper->resetEvenOddClass();
+    ?>
+<div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+    <?php echo $this->getChildHtml('otherbatches',false); ?>
+    <input type="hidden" id="product_attributes_status" value="closed" />
+    <div id="product_attributes" class="panel panel-default">
+          <div class="panel-heading" role="tab" id="headingOne">
+            <h4 class="panel-title">
+              <a id="productDetailsAccordeonButton" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                <?php echo $this->__('Product Details'); ?>
+                <span class="glyphicon glyphicon-menu-down pull-right arrow-icon"></span>
+              </a>
+            </h4>
+          </div>
+            <div id="collapseOne" class="panel-collapse collapse" aria-expanded="true" role="tabpanel" aria-labelledby="headingOne">
+              <div class="panel-body">
+                  <?php if (isset($_detailDescription) && strlen($_detailDescription) > 0) : ?>
+                      <div class="row">
+                          <div class="col-md-12 col-sm-12 col-xs-12">
+                              <h2 class="detail-description-headline"><?php echo $this->getProduct()->getSchrackDetailDescriptionTitle() ?></h2>
+                          </div>
+                          <div class="col-md-12 col-sm-12 col-xs-12 detail-description">
+                              <?php echo $_detailDescription ?>
+                          </div>
+                      </div>
+                      <div class="row hide-on-print">
+                          <div class="col-md-12 col-sm-12 col-xs-12">
+                              <div class="hr">
+                                  <hr/>
+                              </div>
+                          </div>
+                      </div>
+                  <?php endif; ?>
+
+                  <div class="table-responsive tableCont marginB15">
+                    <table class="attributes table">
+                        <tbody>
+                        <?php foreach ($_additional as $_data): ?>
+                            <tr>
+                                <th><?php echo $this->htmlEscape($this->__($_data['label'])) ?></th>
+                                <td>
+                                    <?php
+                                        //if ($_data['code'] == 'schrack_vpes' && $productDeliverLabel > 0) {
+                                          //  $resultValue = $productDeliverLabel;
+                                        //} else {
+                                            $resultValue = $_data['value'];
+                                        //}
+                                        echo $_helper->productAttribute($_product, $resultValue, $_data['code'])
+                                    ?>
+                                </td>
+                            </tr>
+                            <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                </div>
+
+            <?php $_metaKeyword = $this->getProduct()->getMetaKeyword();
+            $_keywordForeign = $this->getProduct()->getSchrackKeywordForeign();
+            if ( strlen($_keywordForeign) || strlen($_metaKeyword) ):?>
+                <div class="row-fine foreign-keywords">
+                    <div class="heading"><?php echo $this->__('Foreign Keywords')?>:</div>
+                    <div class="content">
+                        <?php if ( strlen($_keywordForeign) ):?>
+                            <div class="row">
+                                <div class="col-md-12 col-sm-12 col-xs-12">
+                                    <?php echo $_keywordForeign?>
+                                </div>
+                            </div>
+                        <?php endif?>
+                        <?php if ( strlen($_metaKeyword) ):?>
+                            <div class="row">
+                                <div class="col-md-12 col-sm-12 col-xs-12">
+                                    <?php echo $_metaKeyword?>
+                                </div>
+                            </div>
+                        <?php endif?>
+                    </div>
+                </div>
+            <?php endif?>
+            </div>
+          </div>
+    </div>
+    <?php
+       $classDynamic = "";
+       $trackingDownloadClass = '';
+       if (count($_attachments) > 0):
+    ?>
+    <div class="panel panel-default print-hide-imp  product_downloads">
+          <div class="panel-heading" role="tab" id="headingTwo">
+            <h4 class="panel-title">
+              <a id="accordionDownloads" class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                <?php echo $this->__('Downloads'); ?>
+                <span class="glyphicon glyphicon-menu-down pull-right arrow-icon"></span>
+              </a>
+            </h4>
+          </div>
+          <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
+            <div class="panel-body">
+
+                <div id="product-files" class="product-files">
+                    <?php
+                        $counter = 0;
+                        foreach ($_attachments as $_attachment) :
+                            $attachmentLabel = $_attachment->getLabel();
+                            $attachmentHumanFilesize = $_attachment->getHumanFilesize();
+                            $attachmentHumanFiletype = $_attachment->getHumanFiletype();
+                            $attachmentUrl = $_attachment->getUrl();
+
+                            // Case: file is not available on image server:
+                            if ($attachmentUrl === '737,00 B') continue;
+
+                            $p = strrpos($attachmentUrl,'.');
+                            if ( $p > 0 ) { // being defensive...
+                                $lcExtension = strtolower(substr($attachmentUrl,$p));
+                            } else {
+                                $lcExtension = '';
+                            }
+                            if ( $p = strpos($lcExtension,'?') ) {
+                                $lcExtension = substr($lcExtension,0,$p);
+                            }
+
+                            $activateSaveAsFunctionInIE = true;
+                            if ( $lcExtension === '.pdf' ) {
+                                $activateSaveAsFunctionInIE = false;
+                                $classDynamic = ' pdfFileDownload';
+                                $trackingDownloadClass = 'pdfFileDownload';
+                            } elseif ( $lcExtension === '.png' ) {
+                                $classDynamic = " foto";
+                                $activateSaveAsFunctionInIE = false;
+                                $trackingDownloadClass = 'imageFileDownload';
+                            } elseif ( $lcExtension === '.jpg' ) {
+                                $classDynamic = " foto";
+                                $activateSaveAsFunctionInIE = false;
+                                $trackingDownloadClass = 'imageFileDownload';
+                            } elseif ( $lcExtension === '.bmp' ) {
+                                $activateSaveAsFunctionInIE = false;
+                                $classDynamic = " foto";
+                                $trackingDownloadClass = 'imageFileDownload';
+                            } elseif ( $lcExtension === '.gif' ) {
+                                $activateSaveAsFunctionInIE = false;
+                                $classDynamic = " foto";
+                                $trackingDownloadClass = 'imageFileDownload';
+                            } elseif ( $lcExtension === '.htm' ) {
+                                $classDynamic = " onlinekatalog";
+                                $activateSaveAsFunctionInIE = false;
+                                $trackingDownloadClass = 'onlinekatalogFileDownload';
+                            } elseif ( $lcExtension === '.html' ) {
+                                $classDynamic = " onlinekatalog";
+                                $activateSaveAsFunctionInIE = false;
+                                $trackingDownloadClass = 'onlinekatalogFileDownload';
+                            } elseif ( strpos($lcExtension,'.vd') === 0 && ($c = substr($lcExtension,-1)) >= '1' && $c <= '5' ) {
+                                $classDynamic = ' vd5FileDownload';
+                                $trackingDownloadClass = 'vd5FileDownload';
+                            } elseif ( $lcExtension === '.knxprod' ) {
+                                $classDynamic = ' knxFileDownload';
+                                $trackingDownloadClass = 'knxFileDownload';
+
+                            } elseif ( $lcExtension === '.schrack' ) {
+                                $classDynamic = ' schrackdesignProjektDownload';
+                                $trackingDownloadClass = 'schrackdesignProjektDownload';
+
+
+
+                            } elseif ( $lcExtension === '.zip' ) {
+                                $classDynamic = ' zipFileDownload';
+                                $trackingDownloadClass = 'zipFileDownload';
+                            } elseif ( $lcExtension === '.dwg' ) {
+                                $classDynamic = ' cadDrawingsDownload';
+                                $trackingDownloadClass = 'cadDrawingsDownload';
+                            } elseif ( $lcExtension === '.stp' ) {
+                                $classDynamic = ' stp3D';
+                                $trackingDownloadClass = '3dDrawingsDownload';
+                            } elseif ( $lcExtension === '.ldt' ) {
+                                $attachmentHumanFiletype = str_replace('octet-stream', 'ldt', $attachmentHumanFiletype);
+                                $classDynamic = ' ldtFileDownload';
+                                $trackingDownloadClass = 'ldtFileDownload';
+                            } elseif ( $lcExtension === '.rfa' ) {
+                                $classDynamic = ' bimFileDownload';
+                                $trackingDownloadClass = 'bimFileDownload';
+                            } elseif ( $lcExtension === '.ema' || $lcExtension === '.edz' ) {
+                                $classDynamic = ' eplanFileDownload';
+                                $trackingDownloadClass = 'eplanFileDownload';
+                            } elseif ( ($p = strpos($attachmentUrl,'www.youtube.com')) !== false && $p <= 8 ) {
+                                $activateSaveAsFunctionInIE = false;
+                                $attachmentHumanFiletype = 'stream';
+                                $classDynamic = ' youtubeLink';
+                                $trackingDownloadClass = 'youtubeContentDownload';
+                            } elseif ($_attachment->getFiletype() == 'onlinedatasheet') {
+                                $activateSaveAsFunctionInIE = false;
+                                $attachmentHumanFiletype = 'pdf';
+                                $classDynamic = " pdfFileDownload";
+                                $trackingDownloadClass = 'onlinedatasheetFileDownload';
+                            } elseif ($_attachment->getFiletype() == 'externalvideo') {
+                                $activateSaveAsFunctionInIE = false;
+                                $attachmentHumanFiletype = 'stream';
+                                $classDynamic = " externalStream";
+                                $trackingDownloadClass = 'externalStreamContentDownload';
+                            } else {
+                                $classDynamic = "";
+                            }
+                            $counter++;
+
+                            $linkUrl = $_attachment->getUrl();
+
+                            $lastSlashPos = strrpos($linkUrl,'/');
+                            if ( ($p = strrpos($linkUrl,'.')) !== false && $p > $lastSlashPos ) {
+                                $ext = strtolower(substr($linkUrl,$p + 1));
+                                if ( isset($_extension2filetypeMap[$ext]) ) {
+                                    $attachmentHumanFiletype = $_extension2filetypeMap[$ext];
+                                    if ($ext == 'schrack') {
+                                        $linkUrl = strtolower($linkUrl);
+                                    }
+                                }
+                            }
+
+                            if($activateSaveAsFunctionInIE == false) :
+                        ?>
+                            <div class="filelinks-single">
+                                <a rel="nofollow" class="<?php echo $_attachment->getFiletype() . $classDynamic ?>"
+                                                             id="<?php echo 'attachment' . $counter; ?>"
+                                                             href="javascript: return false"
+                                                             title="<?php echo $attachmentLabel ?>"><?php echo $attachmentLabel; ?>
+                                    <span class="filelinks-filetype">(<span
+                                            class="filelinks-fileext"><?php echo $attachmentHumanFiletype; ?>
+                                            , </span> <?php echo $attachmentHumanFilesize; ?>)</span>
+                                </a>
+                            </div>
+                            <script type="text/javascript">//<![CDATA[
+                                jQuery(document).ready(function () {
+                                    jQuery('#<?php echo 'attachment' . $counter; ?>').on('click', function(){
+                                        var realUserClicked = jQuery('#realUserIdent').val();
+                                        if (dataLayer) {
+                                            dataLayer.push({
+                                                'event' : 'userDownloads',
+                                                'eventCategory' : 'File Download',
+                                                'eventAction' : 'Single Media Detail Page Download',
+                                                'eventLabel' : '<?php echo $trackingDownloadClass; ?>',
+                                                'productSku' : '<?php echo $_product->getSku(); ?>'
+                                            });
+                                        }
+                                        <?php if ($_attachment->getFiletype() == 'onlinedatasheet') : ?>
+                                            <?php
+                                                $realLinkUrl = str_replace('deliverOnlineDataSheet/',
+                                                                            'deliverOnlineDataSheet?',
+                                                Mage::helper('schrackcore/url')->getUrlWithCurrentProtocol('catalog/download/deliverOnlineDataSheet'))
+                                                . 'articlenr='. $_product->getSku();
+                                                if ( $showCopyAndPasteLinks ) {
+                                                    $copyAndPastLinks2NamesMap[$realLinkUrl . '&realUser=yes'] = $attachmentLabel;
+                                                }
+                                            ?>
+                                            window.open('<?php echo $realLinkUrl; ?>' + realUserClicked, '_blank');
+                                        <?php else: ?>
+                                            <?php
+                                                $realLinkUrl = Mage::helper('schrackcore/url')->ensureValidMediaUrl($linkUrl);
+                                                if ( $showCopyAndPasteLinks ) {
+                                                    $copyAndPastLinks2NamesMap[$realLinkUrl] = $attachmentLabel;
+                                                }
+                                            ?>
+                                            window.open('<?php echo $realLinkUrl ?>');
+                                        <?php endif; ?>
+                                        return false; //this is critical to stop the click event which will trigger a normal file download
+                                    });
+                                });
+                                //]]>
+                            </script>
+                        <?php else :?>
+                                <div class="filelinks-single">
+                                    <?php
+                                        $realLinkUrl = Mage::helper('schrackcore/url')->ensureValidMediaUrl($linkUrl);
+                                        if ( $showCopyAndPasteLinks ) {
+                                            $copyAndPastLinks2NamesMap[$realLinkUrl] = $attachmentLabel;
+                                        }
+                                    ?>
+                                    <a rel="nofollow" class="<?php echo $_attachment->getFiletype() . $classDynamic ?>"
+                                                                 id="<?php echo 'attachment' . $counter; ?>"
+                                                                 href="<?php echo $realLinkUrl;?>"
+                                                                 target="_blank"
+                                                                 title="<?php echo $attachmentLabel; ?>"><?php echo $attachmentLabel; ?>
+                                        <span class="filelinks-filetype">(<span
+                                                class="filelinks-fileext"><?php echo $attachmentHumanFiletype; ?>
+                                                , </span> <?php echo $attachmentHumanFilesize; ?>)</span>
+                                    </a>
+                                </div>
+                            <script type="text/javascript">//<![CDATA[
+                                jQuery(document).ready(function () {
+                                    jQuery('#<?php echo 'attachment' . $counter; ?>').on('click', function(){
+                                        if (dataLayer) {
+                                            dataLayer.push({
+                                                'event' : 'userDownloads',
+                                                'eventCategory' : 'File Download',
+                                                'eventAction' : 'Single Media Detail Page Download',
+                                                'eventLabel' : '<?php echo $trackingDownloadClass; ?>',
+                                                'productSku' : '<?php echo $_product->getSku(); ?>'
+                                            });
+                                        }
+                                    });
+                                });
+                                //]]>
+                                </script>
+                            <?php endif; ?>
+
+                     <?php endforeach; ?>
+                </div>
+
+            </div>
+
+             <?php if ( $showCopyAndPasteLinks ) : ?>
+                <div id="copy_and_paste_links" style="padding: 15px; display: none; ">
+                    <h2>Copy&Paste Links:</h2>
+                    <?php foreach ( $copyAndPastLinks2NamesMap as $url => $label ) : ?>
+                        <a href="<?php echo $url; ?>"><?php echo $label; ?></a>: <?php echo $url; ?><br/><br/>
+                    <?php endforeach; ?>
+                </div>
+
+                <script type="text/javascript">//<![CDATA[
+                    jQuery(document).ready(function () {
+                        console.log("localStorage.actAsACustomer = " + localStorage.actAsACustomer);
+                        console.log("localStorage.customerLoggedInEmail = " + localStorage.customerLoggedInEmail);
+                        var realLoggedInUser = typeof localStorage.customerLoggedInEmail == 'string'
+                            ? localStorage.customerLoggedInEmail
+                            : '';
+                        if (   localStorage.actAsACustomer == 1
+                            || ( realLoggedInUser > '' && (
+                                   realLoggedInUser.match(/live.schrack.com/i)
+                                || realLoggedInUser.match(/@schrack./i)
+                                || realLoggedInUser.match(/@schrack-technik.'/i) ) ) ) {
+                            jQuery('#copy_and_paste_links').show();
+                        }
+                    });
+                //]]>
+                </script>
+
+             <?php endif; ?>
+          </div>
+    </div>
+    <?php endif; ?>
+</div>
+<?php endif; ?>
+<input type="hidden" id="realUserIdent" val=''></div>
+
+<script type="text/javascript">//<![CDATA[
+
+    jQuery(document).ready(function () {
+
+        jQuery('#accordionDownloads').on('click', function(){
+            console.log('clicked on accordion');
+            jQuery('#realUserIdent').val('&realUser=yes');
+        });
+
+        if ( window.location.href.indexOf('focusDownloads=1') > 0 ) {
+            setTimeout(function () {
+                jQuery('#accordionDownloads').trigger('click');
+            }, 500);
+            jQuery('html, body').animate({scrollTop: (jQuery('#accordionDownloads').offset().top)}, 'slow');
+        }
+
+        jQuery('#product_attributes').on('click', function() {
+            if (jQuery('#product_attributes_status').val() == 'closed') {
+                if (dataLayer) {
+                    dataLayer.push({
+                        'event' : 'productDetailsAttributesOpened',
+                        'eventLabel' : '<?php echo $_productSKU; ?>'
+                    });
+                }
+            }
+            jQuery('#product_attributes_status').val('open');
+        });
+
+<?php if (isset($_detailDescription) && strlen($_detailDescription) > 0) : ?>
+        setTimeout( function() {
+            jQuery('#productDetailsAccordeonButton').click();
+        }, 2000 );
+<?php endif; ?>
+
+    });
+
+    //]]>
+</script>
+
+<!-- app\design\frontend\schrack\schrackresponsive\template\catalog\product\view\attributes.phtml (end) -->

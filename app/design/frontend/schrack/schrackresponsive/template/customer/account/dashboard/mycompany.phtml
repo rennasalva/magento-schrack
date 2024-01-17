@@ -1,0 +1,64 @@
+<!-- app/design/frontend/schrack/schrackresponsive/template/customer/account/dashboard/mycompany.phtml (start) -->
+<?php
+$customerType = $this->getCustomer()->getSchrackCustomerType(); // ProspectTypes: 'light-prospect' / 'full-prospect'
+$wwsCustomerId = $this->getCustomer()->getSchrackWwsCustomerId();
+$roleMap = array(
+    '3' => 'Admin',
+    '4' => 'Estimator',
+    '8' => 'System',
+    '9' => 'Anonymous',
+    '10' => 'Employee',
+    '5' => 'Default',
+    '11' => 'Projectant'
+    // '12' -> list_price_customer --> never show in Frontend for selection. Only show as readonly field.
+);
+?>
+<?php if (!in_array($customerType, array('light-prospect'))) : ?>
+    <div class="row">
+        <div class="col-xs-4">
+            <?php echo $this->__('Company Name'); ?>:
+        </div>
+        <div class="col-xs-5">
+            <strong>
+                <?php echo $this->getLayout()->createBlock('account/account_name')->toHtml(); ?>
+            </strong>
+        </div>
+        <div class="col-xs-3">
+            <?php if (!in_array($customerType, array('full-prospect'))) : ?>
+                <a class="link-arrow small" href="<?php echo Mage::getUrl('account/account/edit') ?>"><?php echo $this->__('Edit') ?></a>
+            <?php endif; ?>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xs-4">
+            <?php //echo $this->__('Role'); ?>
+        </div>
+        <div class="col-xs-5">
+            <strong>
+                <?php //echo $this->getCustomer()->getSchrackAclRole() ?>
+            </strong>
+        </div>
+        <div class="col-xs-3">
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xs-4">
+            <?php //echo $this->__('Status'); ?>
+        </div>
+        <div class="col-xs-5">
+            <strong>
+                <?php
+                //echo $this->getCustomer()->getStatus();
+                /*if ($this->getCustomer()->isInactiveContact()) {
+                    echo $this->__('Inactive');
+                } else {
+                    echo $this->__('Active');
+                } */
+                ?>
+            </strong>
+        </div>
+        <div class="col-xs-3">
+        </div>
+    </div>
+<?php endif; ?>
+<!-- app/design/frontend/schrack/schrackresponsive/template/customer/account/dashboard/mycompany.phtml (end) -->

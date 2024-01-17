@@ -1,0 +1,115 @@
+<!-- app/design/frontend/schrack/schrackresponsive/template/customer/form/edit.pickup.phtml (start) -->
+
+<?php
+    $_helper = $this->helper('schrackcustomer');
+    $customer = $this->getCustomer();
+
+    if (is_object($customer) && !$customer->getId() > 0) {
+        $customer = Mage::getSingleton('customer/session')->getCustomer();
+    }
+    if (!is_object($customer)) {
+        $customer = Mage::getSingleton('customer/session')->getCustomer();
+    }
+    $showBecauseImNotAProspect = true;
+    $customerType = $customer->getSchrackCustomerType(); // ProspectTypes: 'light-prospect' / 'full-prospect'
+    // Prospect Light / Full
+    if (!in_array($customerType, array('light-prospect', 'full-prospect'))) {
+        $showBecauseImNotAProspect = false;
+    }
+    $currentUrl = Mage::helper('core/url')->getCurrentUrl();
+?>
+
+<style>
+    @media (min-width: 1px) and (max-width: 992px) {
+        .my_account_settings_standardstore_content_wrapper {
+            margin-right: 16px !important;
+        }
+    }
+
+    @media (min-width: 60px) and (max-width: 320px) {
+        #save_default_pickup_store_data_button {
+            height: 30px !important;
+        }
+    }
+
+    @media (min-width: 321px) and (max-width: 480px) {
+        #save_default_pickup_store_data_button {
+            height: 30px !important;
+        }
+    }
+
+    @media (min-width: 481px) and (max-width: 767px) {
+        #save_default_pickup_store_data_button {
+            height: 30px !important;
+        }
+    }
+</style>
+
+
+<?php if (Mage::helper('schrackshipping/pickup')->getWarehouse($this->getCustomer()->getSchrackPickup())) : ?>
+    <?php echo $this->getMessagesBlock()->getGroupedHtml() ?>
+    <div id="my_account_settings_standardstore_wrapper" class="my_account_settings_standardstore_content_wrapper">
+        <div class="row">
+            <?php if($showBecauseImNotAProspect == false) { ?>
+            <div class="col-xs-12">
+                <h1>
+                    <?php echo $this->__('Default Store') ?>
+                </h1>
+                <form action="<?php echo $this->getUrl('customer/account/setDefaultPickupLocationPost') ?>" method="post" id="form-validate">
+                    <input type="hidden" name="email" id="email" value="<?php echo $this->htmlEscape($this->getCustomer()->getEmail()) ?>" />
+                    <div class="gray-form loginCont">
+                        <h3><?php echo $this->__('Default Pickup Location') ?></h3>
+                        <div class="formContianer">
+                            <?php echo $this->getBlockHtml('formkey')?>
+                            <ul class="form-list">
+                                <?php if ($_helper->getWarehouseCount() > 0):?>
+                                    <li>
+                                        <?php echo $this->getBlockHtml('formkey')?>
+                                        <?php $_helper->getWarehouseRadioOptions('<div>', '</div>');?>
+                                    </li>
+                                <?php endif; ?>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-6">
+                            <button id="save_default_pickup_store_data_button" class="bttn-md" title="<?php echo $this->__('Save') ?>"><?php echo $this->__('Save') ?></button>
+                        </div>
+                        <div class="col-xs-6 text-right">
+                            <p class="back-link hidden-xs hidden-sm"><a href="<?php echo Mage::helper('schrackcore/url')->getUrlWithCurrentProtocol('customer/account'); ?>"><small>&laquo; </small><?php echo $this->__('Back') ?></a></p>
+                            <p class="back-link hidden-md hidden-lg"><a href="<?php echo Mage::helper('schrackcore/url')->getUrlWithCurrentProtocol('account/account/index'); ?>" ><small>&laquo; </small><?php echo $this->__('Back') ?></a></p>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <?php } ?>
+        </div>
+    </div>
+
+
+    <script type="text/javascript">
+    //<![CDATA[
+        var dataForm = new VarienForm('form-validate', true);
+
+        jQuery(document).ready(function(){
+
+            jQuery('#save_default_pickup_store_data_button').on('click', function() {
+                if (dataLayer) {
+                    dataLayer.push({
+                        'event' : 'userSettingChange',
+                        'eventLabel' : 'Default Store Change'
+                    });
+                }
+            });
+
+            if (jQuery(window).width() < 993) {
+                jQuery('#breadcrumb_block').removeClass('breadcrumb_custom');
+                jQuery('#breadcrumb_block').addClass('breadcrumb_my_account');
+            }
+
+        });
+    //]]>
+    </script>
+
+<?php endif; ?>
+<!-- app/design/frontend/schrack/schrackresponsive/template/customer/form/edit.pickup.phtml (end) -->

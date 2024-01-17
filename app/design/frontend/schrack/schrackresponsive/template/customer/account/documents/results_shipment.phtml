@@ -1,0 +1,223 @@
+<!-- app/design/frontend/schrack/schrackresponsive/template/customer/account/documents/results_shipment.phtml(start) -->
+<div class="tableCont hidden-xs hidden-sm show-for-print">
+    <table id="orders-datatable" class="table table-bordered" cellspacing="0" width="100%">
+        <thead>
+            <tr>
+                <?php
+                    if ( intval(Mage::getStoreConfigFlag('schrack/shop/enable_custom_project_info_in_checkout')) == 1 ) {
+                        $titleReference = $this->__('Order-/Project Reference');
+                    } else {
+                        $titleReference = $this->__('Meine Bestellangabe');
+                    }
+                ?>
+                <th class="sorting" sort-data-column="name" aria-data-sort="0"><?php echo $titleReference; ?> <span class="glyphicon glyphicon-sort pull-right gray"></span></th>
+                <th class="sorting" sort-data-column="shipmentNumber" aria-data-sort="0"><?php echo $this->__('Delivery Number'); ?> <span class="glyphicon glyphicon-sort pull-right gray"></span></th>
+                <th class="sorting" sort-data-column="creationDateYmd" aria-data-sort="0"><?php echo $this->__('Date'); ?> <span class="glyphicon glyphicon-sort pull-right gray"></span></th>
+                <th><?php echo $this->__('Status'); ?></th>
+                <th><?php echo $this->__('Track and Trace'); ?></th>
+                <th style="width:18%">
+                    <input type="hidden" name="dashOrderActiveSortColumnName" id="dashOrderActiveSortColumnName" value="shipmentNumber"  />
+                    <input type="hidden" name="dashOrderActiveSortColumnStatus" id="dashOrderActiveSortColumnStatus" value="0"  />
+                    <input type="hidden" name="ajax_in_progress" id="ajax_in_progress" value="0"  />
+                    <input type="hidden" name="dashOrderPageNumber" id="dashOrderPageNumber" value="1"  />
+                    <input type="hidden" name="dashOrderTotalHdnCnt" id="dashOrderTotalHdnCnt" value="0"  />
+                    <input type="hidden" name="loadedRecordCountDesk" id="loadedRecordCountDesk" value="10"  />
+                </th>
+            </tr>
+        </thead>
+        <tfoot class="hide-for-print">
+            <tr>
+                <td colspan="7"><div class="totalRecordCount"></div></td>
+            </tr>
+        </tfoot>
+        <tbody id="loadMoreOrderBodyDesktop"> </tbody>
+    </table>
+</div>
+
+<!--For Mobile -->
+<div class="tabularCont hidden-md hidden-lg">
+    <table id="orders-datatable-xs" class="table table-bordered dataTableMobil" cellspacing="0" width="100%">
+        <thead>
+            <tr>
+                <th></th>
+                <th></th>
+            </tr>
+        </thead>
+        <tfoot>
+            <tr>
+                <td><div class="totalRecordCount"></div></td>
+            </tr>
+        </tfoot>
+        <tbody id="loadMoreOrderBodyTabMob"> </tbody>
+    </table>
+</div>
+<!--For Mobile  End-->
+
+<script type="text/javascript">
+	if(getParameterByName('excludeAjaxCall') == null) {	// Added by Nagarro for exclude AJAX call for performance testing
+
+    jQuery(document).ready(function () {
+        restoreOrderSearchQueryOnBrowserBack();
+        var loadMoreOrderRecord = true;
+        var listfuncname = jQuery('#textsearch').attr('data-func');
+        var textSearch = jQuery('#textsearch').val();
+
+        dataArray['form_key'] = formKey;
+        dataArray[listfuncname] =  {
+			'data' : {
+                'filter' : {
+                    'text': textSearch,
+                },
+				'sort' : { 
+					'field' : jQuery('#dashOrderActiveSortColumnName').val(),
+					'ASC' : jQuery('#dashOrderActiveSortColumnStatus').val()
+				},
+				'pagination' : {
+					'page_size' : dashboardDeskTabMobPageSize,
+					'page' : jQuery('#dashOrderPageNumber').val()
+				}
+			}
+        };
+        setOverlayLoader();
+        jQuery('#ajax_in_progress').val(1);
+
+        /* Search implementation */
+        jQuery('#textsearch').on('keyup',function(e) {
+            if(e.which == 13) {
+                jQuery('#dynamicStatusRow').empty();	// Reset Filter Popup
+                ajaxCall();
+            }
+        });
+
+        // Trigger Search on Enter on Text Box OR On Search Icon Click
+        jQuery('#listingSearchIcon').click(function(){
+            var e = jQuery.Event("keyup");
+            e.which = 13;
+            jQuery('#textsearch').trigger(e);
+        });
+
+        jQuery('#textsearch').on('keyup',function(e) {
+            if(e.which == 13) {
+                var searchtextContent = jQuery('#textsearch').val();
+                var defaultSearchText = '<?php echo $this->__('Order/Offer Data, Names, Addresses, Article IDs'); ?>';
+                if (searchtextContent == '' || searchtextContent == defaultSearchText) {
+                    // Do not track !
+                } else {
+                    console.log('Tracked From Results-Shipments #1');
+                    trackUserDetailDocumentSearch(searchtextContent);
+                }
+            }
+        });
+
+        // Dashboard Status Filter Implementation			
+        jQuery(document).on('click', '.filterdata', function() {
+            ajaxCall();
+        });
+
+        // Dashboard Date Range Filter Implementation			
+        jQuery(document).on('click', 'input.time-span, #radio-range', function() {
+            var today = new Date();
+            var dateFrom = '';
+            var dateTo = '';
+            var $this = jQuery(this);
+            if ($this.val() != 'range') {
+                var months = $this.val();
+                dateTo = new Date(today).toISOString().slice(0, 10);
+                today.setMonth(today.getMonth() - months);
+                dateFrom = new Date(today).toISOString().slice(0, 10);
+                jQuery('#from-date').val(dateFrom);
+                jQuery('#to-date').val(dateTo);
+            }
+
+            ajaxCall();
+        });
+
+        // Dashboard Column Sorting Implementation 
+        jQuery(document).on('click touchstart', '.sorting', function() {
+            jQuery('#dashOrderActiveSortColumnName').val(jQuery(this).attr('sort-data-column'));	// Update current column name to hidden field
+            jQuery('#dashOrderActiveSortColumnStatus').val(jQuery(this).attr('aria-data-sort'));	// Update current column sorting direction to hidden field
+            jQuery('.sorting').attr('aria-data-sort', 'asc');	// Reset all column sort to default
+            jQuery('.sorting span').removeClass('glyphicon-sort-by-attributes glyphicon-sort-by-attributes-alt').addClass('glyphicon-sort');	// Reset span sorting icon
+
+            // Descending => 0, Ascending => 1
+            if(jQuery('#dashOrderActiveSortColumnStatus').val() == '0') {	// Descending
+                    var sortingClassName = 'glyphicon-sort-by-attributes-alt';
+                    jQuery('.sorting').attr('aria-data-sort', '1');
+            } else {	// Ascending
+                    var sortingClassName = 'glyphicon-sort-by-attributes';
+                    jQuery('.sorting').attr('aria-data-sort', '0');
+            }
+
+            ajaxCall();
+            jQuery(this).closest("th").find("span").removeClass('glyphicon-sort').addClass(sortingClassName);	// Remove add sorting class
+        });
+
+        // Dashboard Load More 
+        jQuery(window).scroll(function () {
+
+        if (jQuery('#ajax_in_progress').val() == 1 || jQuery('.no-documents').length > 0)
+            return;
+
+        $win_percent = 0.8;
+        if (jQuery('#dashOrderPageNumber').val() == 1) {
+            $win_percent = 0.5;
+        }
+
+        if (jQuery(window).scrollTop() >= (jQuery(document).height() - jQuery(window).height())*$win_percent) {
+
+            var pageNumber = jQuery('#dashOrderPageNumber').val();
+            pageNumber++;
+            jQuery('#dashOrderPageNumber').val(pageNumber);
+            jQuery('#ajax_in_progress').val(1);
+            ajaxCall();
+        }
+
+        });
+
+        // Reset filters
+        jQuery('.clear-filter').click(function(){
+            resetFilters();
+            ajaxCall();
+        });
+
+        // Dashboard Status Filter Implementation			
+        jQuery(document).on('click', '.all-filterdata', function(event) {
+            if (this.checked) {
+                jQuery('.filterdata').prop('checked', true);
+            } else {
+                jQuery('.filterdata').prop('checked', false);
+            }
+
+            var checkboxOrdered = jQuery('#dynamicStatusRow').find('input[type=checkbox]').filter(':visible:eq(1)');
+            if(checkboxOrdered.is(":checked")) {
+                checkboxOrdered.prop('checked', false);
+            } else {
+                checkboxOrdered.prop('checked', true);
+            }
+            checkboxOrdered.trigger('click');
+        });
+
+        // Toggle Filter Pop Up
+        jQuery('#filterMenu').click(function(){
+            console.log('filter click #9');
+            jQuery('.filterPopup').toggle();
+        });
+
+            jQuery('body').append('<div id="toTop" class="btn btn-info print-hide-imp"><span class="glyphicon glyphicon-chevron-up"></span> ' + Translator.translate('Back to Top') + '</div>');
+            jQuery(window).scroll(function () {
+                if (jQuery(this).scrollTop() != 0) {
+                        jQuery('#toTop').fadeIn();
+                } else {
+                       jQuery('#toTop').fadeOut();
+                }
+            }); 
+            jQuery('#toTop').click(function(){
+                jQuery("html, body").animate({ scrollTop: 0 }, 600);
+                console.log('ScrollTop #79');
+                return false;
+            });
+    });
+	}
+</script>
+<?php //echo $this->getChildHtml('datatablefunctions');?>
+<!-- app/design/frontend/schrack/schrackresponsive/template/customer/account/documents/results_shipment.phtml(end) -->

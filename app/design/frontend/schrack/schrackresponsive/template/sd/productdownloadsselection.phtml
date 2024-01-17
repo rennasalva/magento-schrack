@@ -1,0 +1,64 @@
+<?php
+    $conn = Mage::getSingleton('core/resource')->getConnection('common_db');
+    $conn->query("SET character_set_results = utf8");
+    $sql = "SELECT id, name, base_url FROM country ORDER BY id";
+    $rowsTmp = $conn->fetchAll($sql);
+    $co = null;
+    $rows = array();
+    foreach ( $rowsTmp as $fields ) {
+        if ( $fields['id'] == 'co' ) {
+            $co = $fields;
+            $co['name'] = $this->__('Other countries');
+            $co['id'] = 'COM';
+        } else {
+            $rows[] = $fields;
+        }
+    }
+    $rows[] = $co;
+    $submitButtonLabel = $this->__('Go to downloads');
+    $rememberCheckboxLabel = $this->__('Remember country for the next time.');
+    $ipCountry = Mage::registry('ipCountry');
+?>
+
+<style>
+    div.formdata * {
+        margin-top: 10px !important;
+        margin-bottom: 10px !important;
+        margin-left: 5px !important;
+    }
+    div.formdata .explanation {
+        margin-left: 15px !important;
+    }
+    div.formdata .cars {
+        font-size: 18px;
+    }
+    div.formdata .remember {
+        margin-left: 6px !important;
+    }
+</style>
+
+<div class="formdata">
+    <div class="explanation"><?php echo $this->__('Please select country where you want to get product information for:'); ?></div>
+    <form action="<?php echo $this->getUrl('sd/productdownloads/post') ?>" method="post" id="form-validate">
+        <input type="hidden" name="sku" value="<?php echo Mage::registry('sku'); ?>" />
+        <div>
+            <select class="countryselect" name="base_url">
+                <?php foreach ( $rows as $fields ) : ?>
+                    <?php
+                        $ctry = strtoupper($fields['id']);
+                        $label = $ctry . ' - ' . $fields['name'];
+                        $selected = $ctry == $ipCountry ? 'selected' : '';
+                    ?>
+                    <option value="<?php echo $fields['base_url']; ?>" <?php echo $selected; ?>><?php echo $label; ?></option>
+                <?php endforeach; ?>
+            </select>
+        </div>
+        <div>
+            <input type="checkbox" class="remember" name="remember" value="1" title="<?php echo $rememberCheckboxLabel; ?>">&nbsp<?php echo $rememberCheckboxLabel ?></input>
+        </div>
+        <div>
+            <button type="submit" class="bttn-md" title="<?php echo $submitButtonLabel; ?>"><?php echo $submitButtonLabel ?></button>
+        </div>
+    </form>
+
+</div>

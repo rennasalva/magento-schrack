@@ -1,0 +1,174 @@
+<!-- app\design\frontend\schrack\schrackresponsive\template\customer\widget\addressname.phtml (start) -->
+
+<?php
+    /* @var $this Schracklive_SchrackCustomer_Block_Widget_Addressname */
+    /**
+    USAGE:
+
+    <?php echo $this->getLayout()->createBlock('customer/widget_addressname')
+       ->setObject($this->getAddress())
+       ->toHtml() ?>
+    */
+
+	if ( $this->getRequest()->getActionName() == 'new' ) {
+        $prefix = $firstname = $middlename = $lastname = '';
+    } else {
+
+        $customer = $this->getObject();
+
+        if ( is_object($customer) && !$customer->getId() > 0 ) {
+            $customer = Mage::getSingleton('customer/session')->getCustomer();
+        }
+        if ( !is_object($customer) ) {
+            $customer = Mage::getSingleton('customer/session')->getCustomer();
+        }
+
+        $prefix = $customer->getPrefix();
+        $firstname = $customer->getFirstname();
+        $middlename = $customer->getMiddlename();
+        $lastname = $customer->getLastname();
+    }
+?>
+
+<style>
+    #prefix {
+        font-size: 16px !important;
+    }
+    #firstname {
+        font-size: 16px !important;
+    }
+    #lastname {
+        font-size: 16px !important;
+    }
+    #schrack_salutatory {
+        font-size: 16px !important;
+    }
+    #schrack_department {
+        font-size: 16px !important;
+    }
+    #schrack_telephone_country {
+        font-size: 16px !important;
+    }
+    #schrack_telephone_areacode {
+        font-size: 16px !important;
+    }
+    #schrack_telephone_localnumber {
+        font-size: 16px !important;
+    }
+    #schrack_telephone_extension {
+        font-size: 16px !important;
+    }
+    #schrack_fax_country {
+         font-size: 16px !important;
+     }
+    #schrack_fax_areacode {
+        font-size: 16px !important;
+    }
+    #schrack_fax_localnumber {
+         font-size: 16px !important;
+     }
+    #schrack_fax_extension {
+        font-size: 16px !important;
+    }
+    #schrack_mobile_phone_country {
+        font-size: 16px !important;
+    }
+    #schrack_mobile_phone_areacode {
+        font-size: 16px !important;
+    }
+    #schrack_mobile_phone_localnumber {
+        font-size: 16px !important;
+    }
+    #email {
+        font-size: 16px !important;
+    }
+    #password {
+        font-size: 16px !important;
+    }
+    #password_repeat {
+        font-size: 16px !important;
+    }
+</style>
+
+<?php if ($this->showPrefix()): ?>
+    <div style="clear: both;"></div>
+    <div class="col-xs-9 col-sm-5 col-md-4">
+        <h3><?php echo $this->__('Prefix') ?><?php if ($this->isPrefixRequired()) echo '<span class="red">*</span>'; ?></h3>
+        <?php if ($this->getPrefixOptions()===false): ?>
+        <input type="text" id="<?php echo $this->getFieldId('prefix')?>" name="<?php echo $this->getFieldName('prefix')?>" value="<?php echo $this->htmlEscape($this->getObject()->getPrefix()) ?>" placeholder="<?php echo $this->__('Prefix') ?>" title="<?php echo $this->__('Prefix') ?>" class="form-control input-text<?php if ($this->isPrefixRequired()):?> required-entry<?php endif; ?>" <?php echo $this->getFieldParams() ?> />
+        <?php else: ?>
+            <select id="<?php echo $this->getFieldId('prefix')?>" name="<?php echo $this->getFieldName('prefix')?>" title="<?php echo $this->__('Prefix') ?>"<?php if ($this->isPrefixRequired()):?> class="form-control required-entry"<?php endif; ?> <?php echo $this->getFieldParams() ?>>
+            <?php foreach ($this->getPrefixOptions() as $_option): ?>
+                <option value="<?php echo $_option?>"<?php if ($this->getObject()->getPrefix()==$_option):?> selected="selected"<?php endif; ?>><?php echo $this->__($_option)?></option>
+            <?php endforeach ?>
+            </select>
+        <?php endif; ?>
+    </div>
+<?php endif; ?>
+
+<div class="col-xs-9 col-sm-5 col-md-4">
+    <h3><?php echo Mage::helper('core')->quoteEscape($this->getStoreLabel('firstname')) ?> <span class="red hide">*</span></h3>
+    <input type="text" id="<?php echo $this->getFieldId('firstname')?>" name="<?php echo $this->getFieldName('firstname')?>" value="<?php echo $this->escapeHtml($firstname); ?>" title="<?php echo $this->__('First Name') ?>" class="form-control input-text validation-passed" <?php echo $this->getFieldParams() ?> maxlength="30" />
+</div>
+
+<?php if ($this->showMiddlename()): ?>
+    <div class="col-xs-9 col-sm-5 col-md-4">
+        <h3><?php echo $this->__('M.I.') ?></h3>
+        <input type="text" id="<?php echo $this->getFieldId('middlename')?>" name="<?php echo $this->getFieldName('middlename')?>" value="<?php echo $this->escapeHtml($middlename); ?>" title="<?php echo $this->__('M.I.') ?>" class="form-control input-text" <?php echo $this->getFieldParams() ?> />
+    </div>
+<?php endif; ?>
+
+<div class="col-xs-12 col-sm-5 col-md-4">
+    <h3><?php echo Mage::helper('core')->quoteEscape($this->getStoreLabel('lastname')) ?> <span class="red">*</span></h3>
+    <input type="text" id="<?php echo $this->getFieldId('lastname')?>" name="<?php echo $this->getFieldName('lastname')?>" value="<?php echo $this->escapeHtml($lastname); ?>" title="<?php echo $this->__('Last Name') ?>" class="form-control input-text required-entry" <?php echo $this->getFieldParams() ?> maxlength="30"/>
+</div>
+<?php if ($this->showSuffix()): ?>
+    <div class="col-xs-12 col-sm-5 col-md-4">
+        <h3><?php echo $this->__('Suffix') ?><?php if ($this->isSuffixRequired()) echo ' <span class="red">*</span>' ?></h3>
+        <?php if ($this->getSuffixOptions()===false): ?>
+            <input type="text" id="<?php echo $this->getFieldId('suffix')?>" name="<?php echo $this->getFieldName('suffix')?>" value="<?php echo $this->htmlEscape($this->getObject()->getSuffix()) ?>" title="<?php echo $this->__('Suffix') ?>" class="form-control input-text<?php if ($this->isSuffixRequired()):?> required-entry<?php endif; ?>" <?php echo $this->getFieldParams() ?> />
+        <?php else: ?>
+            <select id="<?php echo $this->getFieldId('suffix')?>" name="<?php echo $this->getFieldName('suffix')?>" title="<?php echo $this->__('Suffix') ?>"<?php if ($this->isSuffixRequired()):?> class="form-control required-entry"<?php endif; ?> <?php echo $this->getFieldParams() ?>>
+            <?php foreach ($this->getSuffixOptions() as $_option): ?>
+                <option value="<?php echo $_option?>"<?php if ($this->getObject()->getSuffix()==$_option):?> selected="selected"<?php endif; ?>><?php echo $this->__($_option)?></option>
+            <?php endforeach ?>
+            </select>
+        <?php endif; ?>
+    </div>
+<?php endif; ?>
+
+<script type="text/javascript">
+    //<![CDATA[
+
+    jQuery(document).ready(function() {
+
+        // Prevent enter illegal character(s) by CHANGE or PASTE :
+        jQuery('#prefix').bind('keydown change paste',function(e) {
+            setTimeout(function(){
+                    jQuery('#prefix').val(jQuery('#prefix').val().replace(/["';\[\]<>\x00-\x09\x0B\x0C\x0E-\x1F\xE2\x7F\n\r]/g, ""));
+                }, 50
+            );
+        });
+
+        // Prevent enter illegal character(s) by CHANGE or PASTE :
+        jQuery('#firstname').bind('keydown change paste',function(e) {
+            setTimeout(function(){
+                    jQuery('#firstname').val(jQuery('#firstname').val().replace(/["';\[\]<>\x00-\x09\x0B\x0C\x0E-\x1F\xE2\x7F\n\r]/g, ""));
+                }, 50
+            );
+        });
+
+        // Prevent enter illegal character(s) by CHANGE or PASTE :
+        jQuery('#lastname').bind('keydown change paste',function(e) {
+            setTimeout(function(){
+                    jQuery('#lastname').val(jQuery('#lastname').val().replace(/["';\[\]<>\x00-\x09\x0B\x0C\x0E-\x1F\xE2\x7F\n\r]/g, ""));
+                }, 50
+            );
+        });
+
+    });
+
+    //]]>
+</script>
+
+<!-- app\design\frontend\schrack\schrackresponsive\template\customer\widget\addressname.phtml (end) -->

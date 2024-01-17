@@ -1,0 +1,113 @@
+<?php
+/**
+ * Edit account template
+ *
+ * @see Schracklive_Account_Block_Address_Edit
+ */
+?>
+<!-- default/template/account/account/edit.phtml (start) -->
+<?php echo $this->getMessagesBlock()->getGroupedHtml();?>
+<div class="row address-edit data">
+    <div class="col-xs-12">
+        <div class="row">
+            <div class="col-xs-12">
+                <?php if($this->getTitle()): ?>
+                    <h1><?php echo $this->getTitle() ?> <span class="heading3">(<?php echo $this->__('Change Request') ?>)</span></h1>
+                    
+                <?php endif; ?>
+				
+                    <p class="required"><?php echo $this->__('* Required Fields') ?></p>
+            </div>
+        </div>
+        <?php if ($this->mayEdit()): ?>        
+            <form action="<?php echo $this->getUrl('account/account/editPost') ?>" method="post" id="form-validate">
+                <?php echo $this->getBlockHtml('formkey')?>
+				<div class="loginCont">
+					<div class="formContianer">
+                    <div class="heading3"><?php echo $this->__('Company Information') ?></div>
+                    <ul class="form-list">
+                        <li><h3><?php echo $this->__('Name') ?><span class="red">*</span></h3></li>
+                        <li>
+                            <div class="row">
+                                <div class="col-xs-6 col-sm-4"><input type="text" name="name1" id="name1" value="<?php echo $this->htmlEscape($this->getAccount()->getName1()) ?>" title="<?php echo $this->__('Name 1') ?>" class="input-text required-entry form-control" maxlength="30"/></div>
+                                <div class="col-xs-6 col-sm-4"><input type="text" name="name2" id="name2" value="<?php echo $this->htmlEscape($this->getAccount()->getName2()) ?>" title="<?php echo $this->__('Name 2') ?>" class="input-text form-control" maxlength="30"/></div>
+                                <div class="col-xs-6 col-sm-4"><input type="text" name="name3" id="name3" value="<?php echo $this->htmlEscape($this->getAccount()->getName3()) ?>" title="<?php echo $this->__('Name 3') ?>" class="input-text form-control" maxlength="30"/></div>
+                            </div>
+                        </li>
+                        <li><h3><?php echo $this->__('Website') ?><span class="red">*</span></h3></li>
+                        <li>
+                            <input type="text" name="homepage" id="homepage" value="<?php echo $this->htmlEscape($this->getAccount()->getHomepage()) ?>" title="<?php echo $this->__('Website') ?>" class="input-text form-control"  maxlength="30" />
+                        </li>
+                    </ul>
+                    <div class="heading3"><?php echo $this->__('Billing Address') ?></div>
+                    <ul class="form-list">
+                        <li><h3><?php echo $this->__('Street Address') ?><span class="red">*</span></h3></li>
+                        <li>
+                            <input type="text" name="street" id="street" value="<?php echo $this->htmlEscape($this->getAccount()->getStreet1()) ?>" title="<?php echo $this->__('Street') ?>" class="input-text required-entry  form-control" maxlength="30" />
+                        </li>
+                        <li>
+							<div class="row">
+								<div class="col-xs-6">
+									<h3><?php echo $this->__('Zip/Postal Code') ?><span class="red">*</span></h3>
+								</div>
+								<div class="col-xs-6">
+									<h3><?php echo $this->__('City') ?><span class="red">*</span></h3>
+								</div>
+								<div class="col-xs-6">
+									<input type="text" name="postcode" id="postcode" value="<?php echo $this->htmlEscape($this->getAccount()->getPostcode()) ?>" title="<?php echo $this->__('Post Code') ?>" class="input-text validate-zip-international required-entry  form-control" maxlength="6" />
+								</div>
+								<div class="col-xs-6">
+									<input type="text" name="city" id="city" value="<?php echo $this->htmlEscape($this->getAccount()->getCity()) ?>" title="<?php echo $this->__('City') ?>" class="input-text required-entry form-control" maxlength="30" />
+								</div>
+							</div>
+						</li>
+                        <li>
+							<div class="row">
+								<div class="col-xs-6">
+									<h3><?php echo $this->__('Telephone') ?></h3>
+								</div>
+								<div class="col-xs-6">
+									<h3><?php echo $this->__('Fax') ?></h3>
+								</div>
+								<div class="col-xs-6">
+									<input type="text" name="telephone" id="telephone" value="<?php echo $this->htmlEscape($this->getAccount()->getTelephone()) ?>" title="<?php echo $this->__('Telephone') ?>" class="input-text form-control" maxlength="30" />
+								</div>
+								<div class="col-xs-6">
+									<input type="text" name="fax" id="fax" value="<?php echo $this->htmlEscape($this->getAccount()->getFax()) ?>" title="<?php echo $this->__('Fax') ?>" class="input-text form-control" maxlength="30" />
+								</div>
+							</div>
+						</li>
+                    </ul>
+                    <div class="heading3"><?php echo $this->__('Other') ?></div>
+                    <ul class="form-list">
+                        <li><h3><?php echo $this->__('Comment') ?></h3></li>
+                        <li>
+                            <textarea name="comment" id="comment" class="form-control" cols="44" rows="6"></textarea>
+                        </li>
+                    </ul>    
+                        <div class="row">
+                            <div class="col-xs-6">
+                                <button type="submit" title="<?php echo $this->__('Send request') ?>" class="bttn-md"><span><span><?php echo $this->__('Send request') ?></span></span></button>
+                            </div>
+                            <div class="col-xs-6 text-right">
+								<a href="<?php echo Mage::getUrl('customer/address/') ?>"><small>&laquo; </small><?php echo $this->__('Back') ?></a>
+                            </div>
+                        </div>
+                </div>
+                </div>              
+            </form>
+        <?php else: ?>
+            <p><?php echo $this->__('No company information is available.') ?></p>
+        <?php endif; ?>
+    </div>
+</div>
+<script type="text/javascript">
+    //<![CDATA[
+    jQuery(document).ready(function() {
+        var shippingForm = new VarienForm('form-validate');
+		jQuery('#name1').focus();
+		jQuery('#form-validate :input,select,button,a').each(function (fv) { if (this.type != "hidden") { jQuery(this).attr('tabindex', fv + 1); } });
+    });
+    //]]>
+</script>
+<!-- default/template/account/account/edit.phtml (end) -->

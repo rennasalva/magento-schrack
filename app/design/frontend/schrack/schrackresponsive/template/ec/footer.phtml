@@ -1,0 +1,90 @@
+<?php if (Mage::getStoreConfig('ec/config/active')): ?>
+<script type="text/javascript">
+
+	if (typeof dataLayer !== "undefined")
+	{
+		for (a = 0, b = EC.length; a < b; a++)
+		{
+			EC[a].apply(this,[dataLayer]);
+			EC[a].apply(this,[dataLayerTransport]);
+		}
+
+		/**
+		 * Check if GTM is not blocked by Ad-Blocker
+		 */
+		if ('undefined' !== typeof jQuery)
+		{
+			jQuery(window).load(function()
+			{
+				if (!AEC.gtm())
+				{
+					<?php if (1 === (int) Mage::getStoreConfig('ec/blocker/detect')): ?>
+					
+						jQuery.post(AEC.Const.URL + 'ec/index/push', { data: dataLayerTransport.serialize() }, function(response){});
+						
+					<?php endif ?>
+					
+					console.log('Google Tag Manager may be blocked by Ad-Blocker or not included in page');
+				}
+			});
+		}
+
+		/* AdWords Remarketing */
+		if (window.google_tag_params)
+		{
+			dataLayer.push(
+			{  
+				'event':				'fireRemarketingTag',
+				'google_tag_params': 	window.google_tag_params
+			});
+		}
+
+		if (typeof FB !== 'undefined') 
+		{
+			FB.Event.subscribe('edge.create',function(href) 
+		 	{
+				dataLayer.push(
+				{
+					'event': 			'socialInt',
+					'socialNetwork': 	'Facebook',
+					'socialAction': 	'Like',
+					'socialTarget': 	href
+				});
+			});
+		}
+
+		window.sendPlus = function(g)
+		{
+		    dataLayer.push(
+			{
+		        'event': 			'socialInt',
+		        'socialNetwork': 	'Google',
+		        'socialAction': 	'+1',
+		        'socialTarget': 	g.href
+		    });
+		};
+
+		if (typeof twttr !== 'undefined') 
+		{
+			twttr.ready(function (twttr) 
+			{
+				twttr.events.bind('click', function()
+				{
+					dataLayer.push(
+					{
+						'event': 			'socialInt',
+						'socialNetwork': 	'Twitter',
+						'socialAction': 	'tweet',
+						'socialTarget': 	window.location.href
+					});
+				}); 
+			});
+		}
+	}
+	else
+	{
+		console.log('dataLayer[] is not intialized. Check if GTM is installed properly');
+	}
+	
+</script>
+<?php endif ?>

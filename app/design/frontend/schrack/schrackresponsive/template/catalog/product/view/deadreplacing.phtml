@@ -1,0 +1,22 @@
+<!-- app\design\frontend\schrack\schrackresponsive\template\catalog\product\view\deadreplacing.phtml (start) -->
+<?php
+$replacingProduct = Mage::registry('replacingProduct');
+$productImageUrl = Schracklive_SchrackCatalog_Helper_Image::getImageUrl($replacingProduct->getMainImageUrl(),Schracklive_SchrackCatalog_Helper_Image::PRODUCT_DETAIL_PAGE_THUMBNAIL);
+?>
+
+    <div class="dead-product  clearfix" id="product_<?php echo $replacingProduct->getSku(); ?>">
+        <h3 class="headline"><?php echo $this->__('Replaced by following product'); ?></h3>
+        <div class="product-list dead-table">
+            <div class="col-xs-4 col-sm-3 dead-table-image-cell">
+                <img src="<?php echo $productImageUrl; ?>" />
+            </div>
+            <div class="col-xs-8 col-sm-9 dead-table-main-cell">
+                <h2 class="product-name blue replceProd">
+                    <a href="<?php echo $replacingProduct->getProductUrl() ?>" title="<?php echo $this->htmlEscape($replacingProduct->getName()) ?>"><?php echo $this->htmlEscape($replacingProduct->getName()) ?></a>
+                </h2>
+                <div class="catalog-nr"><?php echo $this->__('Art.Nr.') ?> <?php echo $this->htmlEscape($replacingProduct->getSku()); ?></div>
+                <div class="product-price mrgL15min"></div>
+            </div>
+        </div>
+    </div>
+<!-- app\design\frontend\schrack\schrackresponsive\template\catalog\product\view\deadreplacing.phtml (end) -->

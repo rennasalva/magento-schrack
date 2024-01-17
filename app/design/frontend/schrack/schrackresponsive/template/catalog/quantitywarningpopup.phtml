@@ -1,0 +1,211 @@
+<?php
+if ( $this->isRestricted() ) {
+    $msg1 = $this->__('This item is currently edited by us and can therefore unfortunately not be ordered.');
+    if ($this->getFolloupProduct() != null) {
+        $msg1 .= ' ';
+        $msg1 .= $this->__('So simply order our equivalent follow-up article.');
+    }
+} else if ( $this->getAvailableQty() <= 0 ) {
+    $msg1 = $this->__('This item is currently unavailable and can therefore unfortunately not be ordered.');
+    if ($this->getFolloupProduct() != null) {
+        $msg1 .= ' ';
+        $msg1 .= $this->__('So simply order our equivalent follow-up article.');
+    }
+} else {
+    $msg1 = ''; // $this->__('This product is discontinued/on sale.') . ' '; // DLA, 20140116: removed because Ticket 2015011610000109
+    if ( $this->getAvailableQty() == 1 ) {
+        $msg1 .= $this->__("Unfortunately only %s is available.", $this->getQty());
+    } else {
+        $msg1 .= $this->__("Unfortunately only %s are available.", $this->getQty());
+    }
+    $msg1 .= ' ';
+    $msg1 .= $this->__('Please reduce your order quantity.');
+}
+$msg2 = $this->__('We would be happy to advise you personally about alternatives.');
+$msg2 .= ' ';
+$msg2 .= $this->__('Send us an inquiry and we will contact you soon.');
+$msg3 = $this->__('Please contact me regarding article %s .',$this->getSku());
+/*
+$advisor = $this->getAdvisor();
+$advEmail = $advisor->getEmail();
+$advName = $advisor->getName() . ' ';
+$advTitle = $advisor->getSchrackTitle();
+$advPhone = $advisor->getSchrackTelephone();
+ * 
+ */
+?>
+<div class="modal-dialog" role="document">
+    <div class="modal-content inquiryPopup">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel">
+            <?php echo $this->__('Inquiry'); ?>
+            <div class="subTitle"><?php echo $this->__('Contact and order information'); ?></div>
+            </h4>
+        </div>
+        <div class="modal-body">
+        <div class="row">
+            <div class="col-xs-12 catalog-nr"><?php echo $this->__('Art.Nr.')?><?php echo '&nbsp;' . $this->getSku(); ?></div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12 msg errorMsg">
+                <p><?php echo $msg1; ?></p>
+            </div>
+        </div>
+        <?php if ( ! $this->isRestricted() ) : ?>
+            <div class="row">
+                <div class="col-xs-12">
+                    <button class="bttn-md" onclick="jQuery('.inquiryPopup .close').click();"><?php echo $this->__('Adjust order quantity'); ?></button>
+                </div>
+            </div>
+        <?php endif; ?>
+        <?php if ( $this->getFolloupProduct() != null ) : ?>
+            <div class="replacing-product-box">
+            <h3 class="headline"><?php echo $this->__('Replacing product'); ?></h3>
+            <div class="innerCont">
+                <div class="row">
+                    <?php
+                    $productImage = $this->helper('catalog/image')->init($this->getFolloupProduct(), 'small_image')->constrainOnly(true)->resize(66, 66);
+                    $productImageUrl = (string)$productImage;
+                    ?>
+                    <div class="col-xs-4 col-sm-3 image">
+                        <a href="<?php echo $this->getFolloupProduct()->getProductUrl()?>" rel="nofollow">
+                            <img src="<?php echo $productImageUrl?>"/>
+                        </a>
+                    </div>
+                    <div class="col-xs-8 col-sm-9">
+                        <div class="ng3">
+                            <a href="<?php echo $this->getFolloupProduct()->getProductUrl() ?>" title="<?php echo $this->htmlEscape($this->getFolloupProduct()->getName()) ?>"><?php echo $this->htmlEscape($this->getFolloupProduct()->getName()) ?></a></h2>
+                            <div class=" darkGray"><?php echo $this->__('Art.Nr.')?> <?php echo $this->htmlEscape($this->getFolloupProduct()->getSku()); ?></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <button class="bttn-md replacing-product-button" onclick="document.location.href='<?php echo $this->getFolloupProduct()->getProductUrl()?>'"><?php echo $this->__('See replacing product'); ?></button>
+            </div>
+        <?php endif; ?>
+        <div class="row">
+            <div class="col-xs-12 msg marginTB10">
+                <p><?php echo $msg2; ?></p>
+            </div>
+        </div>
+        <form id="formular" method="post" action="<?php echo Mage::helper('schrackcore/url')->getUrlWithCurrentProtocol('catalog/product/sendDiscontinuationInquiry') ?>" >
+
+            <div class="contactBx">
+                <div class="inner">
+                    <h3 class="headline"><?php echo $this->__('Your Contact Person'); ?></h3>
+                    <div class="row">
+                        <div class="col-xs-4 col-sm-3 padR0 user-pic">
+                            
+                        </div>
+                        <div class="col-xs-8 col-sm-9 ">                            
+                            <!--<h3 class="subHeading"><?php echo $advTitle; ?></h3>-->
+                            <p class="contact"><img class="iconCont" src="<?php echo $this->getSkinUrl('schrackdesign/Public/Images/rwd/phoneIcon.png'); ?>" /> </p>
+                            <p class="mail"><img class="iconCont" src="<?php echo $this->getSkinUrl('schrackdesign/Public/Images/rwd/new-mail-icon.png'); ?>" /> </p>
+                            <p class="fax"><img class="iconCont" src="<?php echo $this->getSkinUrl('schrackdesign/Public/Images/rwd/faxIcon.png'); ?>" /> </p>
+                            <!--p><img class="iconCont" src="<?php //echo $this->getSkinUrl('schrackdesign/Public/Images/rwd/shopGlobeIcon.png'); ?>" /> <a href="<?php //echo Mage::getStoreConfig('schrack/typo3/typo3url'); ?>"><?php //echo Mage::getStoreConfig('schrack/typo3/typo3url'); ?></a></p-->
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-12 marginT30">
+                    <!--<h3 class="headline"><?php //echo $this->__('Your request'); ?></h3>-->
+                    <div class="formContianer">
+                        <input type="hidden" name="form_key" value="<?php echo Mage::getSingleton('core/session')->getFormKey(); ?>" />
+                        <input type="hidden" name="sku" id="hdnSkuInquiry" value="<?php echo $this->getSku(); ?>" />
+                        <input type="hidden" name="qty" id="hdnQtyInquiry" value="<?php echo $this->getCustomerQty(); ?>" />
+                        <ul>
+                                <li><input class="form-control" placeholder="<?php echo $this->__('Company:') ?>*" id="company" name="company" type="text" value="<?php echo $this->getCustomer() && $this->getCustomer()->getAccount() ? $this->getCustomer()->getAccount()->getName() : ''; ?>" title="<?php echo $this->__('Company:') ?>"/>
+                                </li>
+                                <li>
+                                                <input class="form-control" placeholder="<?php echo $this->__('Customer#:') ?>" id="customer-no" name="customer-no" type="text" value="<?php echo $this->getCustomer() ? $this->getCustomer()->getSchrackWwsCustomerId() : ''; ?>" title="<?php echo $this->__('Customer:') ?>"/>
+                                </li>
+                                <li>
+                                                <input class="form-control" placeholder="<?php echo '*&nbsp;' . $this->__('Name:') ?>" id="name" name="name" type="text" value="<?php echo $this->getCustomer() ? $this->getCustomer()->getName() : ''; ?>" title="<?php echo $this->__('Name:') ?>"/>
+                                </li>
+                                <li>
+                                        <input class="form-control" placeholder="<?php echo '*&nbsp;' . $this->__('Email:') ?>" id="email" name="email" type="text" value="<?php echo $this->getCustomer() ? $this->getCustomer()->getEmail() : ''; ?>" title="<?php echo $this->__('Email:') ?>"/>
+                                </li>
+                                <li>
+                                        <input class="form-control" placeholder="<?php echo $this->__('Telephone:') ?>" id="phone" name="phone" type="text" value="<?php echo $this->getCustomer() ? $this->getCustomer()->getSchrackTelephone() : ''; ?>" title="<?php echo $this->__('Telephone:') ?>"/>
+                                </li>
+                                <li>
+                                        <input class="form-control" placeholder="<?php echo '*&nbsp;' . $this->__('Country:') ?>" id="country" name="country" type="text" value="<?php echo strtoupper(Mage::helper('schrack')->getCountryTld()); ?>" title="<?php echo $this->__('Country2:') ?>"/>
+                                </li>
+                                <li>
+                                        <textarea id="text" class="form-control" placeholder="<?php echo '*&nbsp;' . $this->__('Text:') ?>" row="3" name="text" title="<?php echo $this->__('Text:') ?>"><?php echo $msg3; ?></textarea>
+                                </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </form>
+        <div id="error" style="color: red;"></div>
+    </div>
+    <div class="modal-footer">
+        <button class="bttn-md inquiry-button" onClick="validationFunc(); return false;"><?php echo $this->__('Send inquiry'); ?></button>
+    </div>
+    </div>
+</div>
+<script type="text/javascript">
+    var validationFunc = function () {
+        if ( jQuery('#formular #company').val() == '' ) {
+            jQuery('#error').html("<?php echo $this->__('Please insert your company name.'); ?>");
+            jQuery('#formular #company').focus();
+        }else if ( jQuery('#formular #name').val() == '' ) {
+            jQuery('#error').html("<?php echo $this->__('Please insert your name.'); ?>");
+            jQuery('#formular #name').focus();
+        } else if ( jQuery('#formular #email').val() == '' ) {
+            jQuery('#error').html("<?php echo $this->__('Please insert your email address.'); ?>");
+            jQuery('#formular #email').focus();
+        } else if ( jQuery('#formular #country').val() == '' ) {
+            jQuery('#error').html("<?php echo $this->__('Please insert your country.'); ?>");
+            jQuery('#formular #country').focus();
+        } else if ( jQuery('#formular #text').val() == '' ) {
+            jQuery('#error').html("<?php echo $this->__('Please insert a message.'); ?>");
+            jQuery('#formular #text').focus();
+        } else {
+            
+			var data = jQuery('#formular').serialize();
+            var sku = jQuery(jQuery('#detail-product-data')).attr("data-sku");
+            var qty = jQuery('#qty-' + sku).val();
+			setOverlayLoader();
+			var ajaxUrlInquiry = '<?php echo Mage::helper('schrackcore/url')->getUrlWithCurrentProtocol('catalog/product/sendDiscontinuationInquiryByAjax'); ?>';
+			jQuery.ajax(ajaxUrlInquiry, {
+			   'dataType' : 'json',
+			   'type': 'POST',
+			   'data': {
+					'form_key' : '<?php echo Mage::getSingleton('core/session')->getFormKey(); ?>',
+					'sku' : sku,
+					'qty' : qty,
+					'name' : jQuery('#formular #name').val(),
+					'email' : jQuery('#email').val(),
+					'phone' : jQuery('#phone').val(),
+					'text' : jQuery('#text').val(),
+					'company' : jQuery('#company').val(),
+					'customer-no' : jQuery('#customer-no').val(),
+					'country' : jQuery('#country').val()
+				},
+				
+			   'success': function (data) {					
+					unsetOverlayLoader();			
+					jQuery('#quantitywarningpopup').modal('hide');
+					jQuery("html, body").animate({ scrollTop: 0 }, "slow");
+                   console.log('ScrollTop #55');
+					if (typeof (data.status) != 'undefined') {
+						appendMessageUl(data.messages, 'messages', 'success-msg', 'glyphicon glyphicon-exclamation-sign');
+                        console.log('appendMessageUl #14');
+					}else{
+						appendMessageUl(data.messages, 'messages', 'error-msg', 'glyphicon glyphicon-ok');
+                        console.log('appendMessageUl #15');
+					}										 
+			   },
+			   'error': function (data) {
+				   var parsedData = data;
+			   }                
+			});
+        }
+    };
+    updateAgentHtml('normalMode');
+</script>

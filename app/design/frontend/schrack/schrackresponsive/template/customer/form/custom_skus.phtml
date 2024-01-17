@@ -1,0 +1,89 @@
+
+<style>
+    .buttonContainer {
+        margin-bottom: 12px;
+    }
+</style>
+
+<?php echo $this->getMessagesBlock()->getGroupedHtml() ?>
+
+<h1><?php echo $this->__('Individual Article Numbers') ?></h1>
+<div class="buttonContainer">
+    <h2><?php echo $this->__('Download') ?></h2>
+    <div class="col-xs-12 col-sm-12 buttonContainer">
+        <button id="getAllArticlesButton" type="button" class="bttn-md" title="<?php echo $this->__('Download all articles as CSV') ?>"><?php echo $this->__('Download all articles as CSV') ?></button>
+    </div>
+    <div class="col-xs-12 col-sm-12 buttonContainer">
+        <button id="getChangedArticlesButton" type="button" class="bttn-md" title="<?php echo $this->__('Download modified articles as CSV') ?>"><?php echo $this->__('Download modified articles as CSV') ?></button>
+    </div>
+</div>
+
+<div class="buttonContainer">
+    <h2><?php echo $this->__('Upload') ?></h2>
+    <form method="post" action="<?php echo Mage::helper('schrackcore/url')->getUrlWithCurrentProtocol('customer/account/customskusUploadCsv'); ?>" enctype="multipart/form-data" id="customsku-addcsv-form">
+        <div class="col-xs-12 col-sm-12 buttonContainer">
+            <input type="file" title="CSV Datei im Format &quot;Artikelnummer;Menge&quot;" name="csv" id="quickadd-csv-upload-button" accept=".csv">
+        </div>
+        <div class="col-xs-12 col-sm-12 buttonContainer">
+            <div class="right-align-container">
+                <button type="button" id="putArticlesButton" title="Upload CSV" class="bttn-md quickadd_button_grey" style="cursor: auto;"><?php echo $this->__('Upload CSV') ?></button>
+            </div>
+        </div>
+    </form>
+</div>
+
+<script>
+    //<![CDATA[
+    jQuery(document).ready(function () {
+        var fileName = '';
+
+        jQuery('#getAllArticlesButton').on('click', function () {
+            return downloadArticleCsv('<?php echo $this->getUrl('customer/account/customskusDownloadAllProductsCsv') ?>');
+        });
+
+        jQuery('#getChangedArticlesButton').on('click', function () {
+            return downloadArticleCsv('<?php echo $this->getUrl('customer/account/customskusDownloadModifiedProductsCsv') ?>');
+        });
+
+        jQuery('#putArticlesButton').on('click', function () {
+            if ( fileName > '' ) {
+                submitFormAndTrackGaEvent(jQuery('#customsku-addcsv-form').get()[0], 'customsku', 'customsku_upload', 'csv');
+            }
+        });
+
+        jQuery("#quickadd-csv-upload-button").change(function() {
+            fileName = '';
+            var files = jQuery("#quickadd-csv-upload-button")[0].files;
+            var fileSelected = false;
+
+            for ( var i = 0; i < files.length; i++ ) {
+                fileSelected = true;
+                var fileInput = document.getElementById('quickadd-csv-upload-button');
+                fileName = fileInput.value.split(/(\\|\/)/g).pop();
+            }
+
+            if ( fileSelected == true && fileName.match(/.+csv$/i) ) {
+                jQuery('#verifyUploadFile').val('true');
+                jQuery('#putArticlesButton').removeClass('quickadd_button_grey');
+                jQuery('#putArticlesButton').addClass('quickadd_button_red');
+            } else {
+                jQuery('#verifyUploadFile').val('');
+                jQuery('#putArticlesButton').removeClass('quickadd_button_red');
+                jQuery('#putArticlesButton').addClass('quickadd_button_grey');
+            }
+        });
+
+    });
+
+    function downloadArticleCsv ( url ) {
+        removeMessages();
+        setOverlayLoader();
+        window.location.href = url;
+        setTimeout(function () {
+            unsetOverlayLoader();
+        }, 6000);
+        return true;
+    }
+
+    //]]>
+</script>

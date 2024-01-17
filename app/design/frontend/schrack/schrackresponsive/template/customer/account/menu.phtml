@@ -1,0 +1,638 @@
+<!-- /app/design/frontend/schrack/schrackresponsive/template/customer/account/menu.phtml (start) -->
+<?php
+    /**  @var $this Schracklive_SchrackCustomer_Block_Account_Menu */
+    $_customerMaySeePrices = false;
+    $_customerMaySeePricesJS = "NO";
+    $_session = Mage::getSingleton('customer/session');
+    $aclroleClass = '';
+    $sessionCustomer = null;
+    $storeCountry = strtoupper(Mage::getStoreConfig('schrack/general/country'));
+
+    if ($_session->isLoggedIn()) {
+        $_customer = $_session->getCustomer();
+        $sessionCustomer = $_customer;
+        $_customerMaySeePrices = $_customer->isAllowed('price', 'view');
+        if ($_customerMaySeePrices) {
+            $_customerMaySeePricesJS = "YES";
+        }
+        $_geoipHelper = Mage::helper('geoip/data');
+        $_maySeePrices = $_geoipHelper->maySeePrices();
+        $geoIPHelperMaySeePricesJS = 'NO';
+        if ($_geoipHelper->maySeePrices()) {
+            $geoIPHelperMaySeePricesJS = "YES";
+        }
+        $geoIPHelperMayPerformCheckout = 'NO';
+        if ($_geoipHelper->mayPerformCheckout()) {
+            $geoIPHelperMayPerformCheckout = "YES";
+        }
+        $_maySeePricesJS = "NO";
+        if ($_maySeePrices) {
+            $_maySeePricesJS = "YES";
+        }
+        $aclrole = $_customer->getSchrackAclRole();
+        if($aclrole == 'staff' || $aclrole == 'projectant' || $aclrole == 'customer' || $aclrole == 'list_price_customer'){
+            $aclroleClass = 'hide';
+        }
+    } else {
+        $_customer = null;
+        $_customerMaySeePrices = false;
+        $_maySeePrices = false;
+        $_customerMaySeePricesJS = "NO";
+        $_maySeePricesJS = "NO";
+        $geoIPHelperMaySeePricesJS = 'NO';
+        $geoIPHelperMayPerformCheckout = 'NO';
+    }
+    $country = Mage::getStoreConfig('schrack/general/country');
+    $currentUrl = Mage::helper('core/url')->getCurrentUrl();
+
+    $sessionCustomerId = $_session->getCustomer()->getId();
+    $aclRoleId = Mage::getModel('customer/customer')->load($sessionCustomerId)->getSchrackAclRoleId();
+    $isProjectant = Mage::helper('schrack/acl')->isProjectantRoleId($aclRoleId);
+
+    $showMenuLineBecauseImNotAProspect = true;
+    $customerType = $_session->getCustomer()->getSchrackCustomerType(); // ProspectTypes: 'light-prospect' / 'full-prospect'
+    // Prospect Light / Full
+    if (in_array($customerType, array('light-prospect', 'full-prospect'))) {
+        $showMenuLineBecauseImNotAProspect = false;
+    }
+
+    $eRechnungLink = Mage::getStoreConfig('schrack/typo3/typo3ebill_url');
+    $eRechnungLinkDescription = Mage::getStoreConfig('schrack/typo3/typo3ebill_description');
+    if ( $eRechnungLink > '' &&  $eRechnungLinkDescription > '' ) {
+        $typoBaseUrl = Mage::getStoreConfig('schrack/typo3/typo3url');
+        $eRechnungLink = $typoBaseUrl . $eRechnungLink;
+    }  else {
+        $eRechnungLink = false;
+    }
+
+    $baseUrl                      = Mage::helper('schrackcore/url')->getUrlWithCurrentProtocol();
+    $baseUrl                      = explode('?', $baseUrl)[0];
+    $schrackdesignTranslationsUrl = $baseUrl . 'skin/frontend/schrack/default/schrackdesign/Public/Javascript/translations/';
+
+    $sessionCustomer  = Mage::getSingleton('customer/session')->getCustomer();
+    $schrackWwsContactNumber = $sessionCustomer->getSchrackWwsContactNumber();
+    if ($schrackWwsContactNumber == '-1') {
+        $actAsCustomerActivated = true;
+    } else {
+        $actAsCustomerActivated = false;
+    }
+
+    $hideDatanormFromUnauthorizedAdvisor = 'deactivated';
+
+    if ($actAsCustomerActivated == true) {
+        $readConnection = Mage::getSingleton('core/resource')->getConnection('core_read');
+        // Find out, if this advisor is authorized to download pricelists for this selected customer:
+        $schrackWwsCustomerId = $sessionCustomer->getSchrackWwsCustomerId();
+        $query  = "SELECT * FROM account";
+        $query .= " WHERE wws_customer_id LIKE '" . $schrackWwsCustomerId . "%'";
+
+        $queryResult = $readConnection->query($query);
+
+        if ($queryResult->rowCount() > 0) {
+            foreach ($queryResult as $recordset) {
+                $principalNameFromCustomerAdvisor = $recordset['advisor_principal_name'];
+                $emailFromEmployeeExploded = explode('@', $principalNameFromCustomerAdvisor);
+                $emailFromEmployeePrefix = $emailFromEmployeeExploded[0];
+            }
+
+            // Compare account-principalusername-prefix to currently logged in employee-email:
+            if (!stristr($_session->getData("real_user_email"), $emailFromEmployeePrefix)) {
+                $hideDatanormFromUnauthorizedAdvisor = 'activated';
+
+                if ($_session->getData("real_user_email")) {
+                    $queryWhitelist  = "SELECT * FROM act_as_a_customer_whitelist";
+                    $queryWhitelist .= " WHERE employee_mail_address LIKE '" . $_session->getData("real_user_email") . "'";
+                    $queryWhitelist .= " AND wws_customer_number LIKE 'all'";
+                    $queryWhitelist .= " AND active = 1";
+                    $queryWhitelistResult = $readConnection->query($queryWhitelist);
+
+                    if ($queryWhitelistResult->rowCount() > 0) {
+                        // Employee is on the whitelist and allowed to see all pricelists from userss, which are not assigned to himself:
+                        $hideDatanormFromUnauthorizedAdvisor = 'deactivated';
+                    }
+                }
+            }
+        }
+    } else {
+        if (Mage::getSingleton('customer/session')->getCustomer() && Mage::getSingleton('customer/session')->getCustomer()->getEmail()) {
+            $_session->setData("real_user_email", Mage::getSingleton('customer/session')->getCustomer()->getEmail());
+        } else {
+            $_session->setData("real_user_email", '');
+        }
+    }
+
+    if($aclrole == 'list_price_customer' || $aclrole == 'projectant') {
+        $_customerListPriceProjectantException = true;
+    } else {
+        $_customerListPriceProjectantException = false;
+    }
+?>
+
+
+<style>
+    .sezame_pairing_menu_row_icon_active {
+        color: #ffffff;
+        font-weight: 200;
+        margin-left: 5px;
+    }
+
+    .sezame_pairing_menu_row_icon_inactive {
+        color: #005B9F;
+        font-weight: 200;
+        margin-left: 5px;
+    }
+    .correction:after {
+        color: #fff !important;;
+    }
+</style>
+
+
+    <div class="leftNavSec">
+        <ul class="leftNav shop_tracking_leftNav">
+		<?php if ($_session->isLoggedIn()) : ?>
+            <li class="hd"><strong><?php echo $this->__('My Account') ?></strong></li>
+            <?php if ( ($_customerMaySeePrices && $_maySeePrices) || $_customerListPriceProjectantException == true) : ?>
+                <?php
+                $cssClassMyOffers = '';
+                // Highlighting of menu point 'My Offers'
+                if ($this->isActive('offers') || stristr($currentUrl, 'type/offer/'))
+                    $cssClassMyOffers = 'active';
+                ?>
+                <?php if ($_customerListPriceProjectantException == false && $storeCountry != "CH") : ?>
+                    <li class="<?php echo $cssClassMyOffers; ?>">
+                        <a class="gtm-myaccount" id="gtm-offers" href="<?php echo Mage::getUrl('customer/account/offers', array('reset' => 1)) ?>">
+                            <span class="offerIcon <?php echo $cssClassMyOffers; ?>"></span><?php echo $this->__('My Offers') ?>
+                        </a>
+                    </li>
+                <?php endif; ?>
+                <?php
+                $cssClassMyOrders = '';
+                // Highlighting of menu point 'My Orders'
+                if ($this->isActive('orders') || stristr($currentUrl, 'type/order/'))
+                    $cssClassMyOrders = 'active';
+                ?>
+                <?php if ($_customerListPriceProjectantException == false) : ?>
+                    <li class="<?php echo $cssClassMyOrders; ?>">
+                        <a class="gtm-myaccount" id="gtm-orders" href="<?php echo Mage::getUrl('customer/account/orders', array('reset' => 1)) ?>">
+                            <span class="orderIcon <?php echo $cssClassMyOrders; ?>"></span><?php echo $this->__('My Orders') ?>
+                        </a>
+                    </li>
+                <?php endif; ?>
+                <?php
+                    $cssClassMyShipments = '';
+                    $showShipments = "block";
+                    // Highlighting of menu point 'My Shipments'
+                    if ($this->isActive('shipments') || stristr($currentUrl, 'type/shipment/'))
+                        $cssClassMyShipments = 'active';
+                    else if($storeCountry == "CH") {
+                        $showShipments = "none";
+                    }
+                ?>
+                <li class="<?php echo $cssClassMyShipments; ?>" style="display: <?= $showShipments ?>">
+                    <a class="gtm-myaccount" id="gtm-shipment" href="<?php echo Mage::getUrl('customer/account/shipments', array('reset' => 1)) ?>">
+                        <span class="shipmentIcon <?php echo $cssClassMyShipments; ?>"></span><?php echo $this->__('My Shipments') ?>
+                    </a>
+                </li>
+                <?php
+                $cssClassMyBackorders = '';
+                // Highlighting of menu point 'My Backorders'
+                if ($this->isActive('backorders') || stristr($currentUrl, 'type/backorder/'))
+                    $cssClassMyBackorders = 'active';
+                ?>
+                <li class="<?php echo $cssClassMyBackorders; ?>" style="display: <?= $showShipments ?>">
+                    <a class="gtm-myaccount" id="gtm-backorder" href="<?php echo Mage::getUrl('customer/account/backorders') ?>">
+                        <span class="backorderIcon <?php echo $cssClassMyBackorders; ?>"></span><?php echo $this->__('My Backorders') ?>
+                    </a>
+                </li>
+                <?php
+                $cssClassMyInvoices = '';
+                // Highlighting of menu point 'My Invoices'
+                if ($this->isActive('invoices') || stristr($currentUrl, 'type/invoice/'))
+                    $cssClassMyInvoices = 'active';
+                ?>
+                <?php if ($_customerListPriceProjectantException == false) : ?>
+                    <li class="<?php echo $cssClassMyInvoices; ?>" style="display: <?= $showShipments ?>">
+                        <a class="gtm-myaccount" id="gtm-invoice" href="<?php echo Mage::getUrl('customer/account/invoices', array('reset' => 1)) ?>">
+                            <span class="invoiceIcon <?php echo $cssClassMyInvoices; ?>"></span><?php echo $this->__('My Invoices') ?>
+                        </a>
+                    </li>
+                <?php endif; ?>
+                <?php
+                $cssClassMyCreditMemos = '';
+                // Highlighting of menu point 'My Credit Memos'
+                if ($this->isActive('creditmemos') || stristr($currentUrl, 'type/creditmemo/'))
+                    $cssClassMyCreditMemos = 'active';
+                ?>
+                <?php if ($_customerListPriceProjectantException == false) : ?>
+                    <li class="<?php echo $cssClassMyCreditMemos; ?>" style="display: <?= $showShipments ?>">
+                        <a class="gtm-myaccount" id="gtm-creditmemo" href="<?php echo Mage::getUrl('customer/account/creditmemos', array('reset' => 1)) ?>">
+                            <span class="creditIcon <?php echo $cssClassMyCreditMemos; ?>"></span><?php echo $this->__('My Credit Memos') ?>
+                        </a>
+                    </li>
+                <?php endif; ?>
+                <?php if ($this->isPromotionsAvail() && !$isProjectant) : ?>
+                    <?php
+                    $cssClassPromotions = '';
+                    // Highlighting of menu point 'Promotions'
+                    if ($this->isActive('promotions'))
+                        $cssClassPromotions = 'active';
+                    ?>
+                    <li id="dashPromotionLink" class="<?php echo $cssClassPromotions; ?>" style="display: <?= $showShipments ?>">
+                        <a class="gtm-myaccount" id="gtm-promotions" href='<?php echo Mage::getBaseUrl() . 'promotions'; ?>'>
+                            <span class="promotionIcon <?php echo $cssClassPromotions; ?>"></span><?php echo $this->__('Promotions') ?>
+                        </a>
+                    </li>
+                <?php endif; ?>                
+                <?php
+                $cssClassDetailSearch = '';
+                // Highlighting of menu point 'Detail Search'
+                if ($this->isActive('documentsDetailsearch') || stristr($currentUrl, 'account/documentsDetailsearch'))
+                    $cssClassDetailSearch = 'active';
+                ?>
+                <?php if ($_customerListPriceProjectantException == false) : ?>
+                    <li class="<?php echo $cssClassDetailSearch; ?>" style="display: <?= $showShipments ?>">
+                        <a class="gtm-myaccount" id="gtm-detailsearch" href="<?php echo Mage::getUrl('customer/account/documentsDetailsearch', array('reset' => 1)) ?>">
+                            <span class="detailSearchIcon <?php echo $cssClassDetailSearch; ?>"></span><?php echo $this->__('Detail Search') ?>
+                        </a>
+                    </li>
+                <?php endif; ?>
+            <?php endif; ?>
+            <?php if (!Mage::helper('sapoci')->isSapociCheckout()) : ?>
+                <?php
+                // All Modules are enabled by default. We need second criteria (WSDL-config):
+                if (Mage::getConfig()->getModuleConfig('Schracklive_Datanorm')->is('active', 'true') &&
+                        Mage::getStoreConfig('schrack/datanorm/wsdl') &&
+                        Mage::getStoreConfig('advanced/modules_disable_output/Schracklive_Datanorm') == 0 &&
+                        $hideDatanormFromUnauthorizedAdvisor == 'deactivated'
+                ) :
+                    $cssClassDatanorm = '';
+                    // Highlighting of menu point 'Pricelist/Datanorm'
+                    if ($this->isActive('index', 'datanorm', 'index'))
+                        $cssClassDatanorm = 'active';
+                    ?>
+                    <?php if ($_customerListPriceProjectantException == false) : ?>
+                        <li class="<?php echo $cssClassDatanorm; ?>">
+                            <a class="gtm-myaccount" id="gtm-datanorms" href="<?php echo $this->getUrl('datanorm') ?>">
+                                <span class="pricelistIcon <?php echo $cssClassDatanorm; ?>"></span><?php echo $this->__('Pricelists/Datanorm') ?>
+                            </a>
+                        </li>
+                    <?php endif; ?>
+                <?php endif; ?>
+            <?php endif; ?>
+            <li class="hd">
+                <strong><?php echo $this->__('Partlist'); ?></strong>
+            </li>
+            <?php
+            $cssClassPartlist = '';
+            // Highlighting of menu point 'My Active Partlist'
+            if ($this->isActive('view', 'wishlist', 'partslist'))
+                $cssClassPartlist = 'activated';
+            ?>
+            <li id="activePlLi" class="<?php echo $cssClassPartlist; ?> partlistnav">
+                <a id="gtm-partlist-active"  class="partlistlink gtm-partlist" href="<?php echo Mage::getUrl('wishlist/partslist/view') ?>#active-tab"  data-hash="#active-tab" data-id="active-tab-link">
+                    <span class="partlistIcon <?php echo $cssClassPartlist; ?>"></span><?php echo $this->__('My Active Partslist'); ?>
+                </a>
+            </li>
+            <?php
+            $cssClassAllPartlist = '';
+            // Highlighting of menu point 'My Partlist'
+            if ($this->isActive('list', 'wishlist', 'partslist'))
+                $cssClassAllPartlist = 'activated';
+            ?>
+            <li id="allPlLi" class="<?php echo $cssClassAllPartlist; ?> partlistnav">
+                <a id="gtm-partlist-all" class="partlistlink gtm-partlist" href="<?php echo Mage::getUrl('wishlist/partslist/view') ?>#my-partslist-tab" data-hash="#my-partslist-tab" data-id="my-partslist-tab-link">
+                    <span class="partlistIcon <?php echo $cssClassAllPartlist; ?>"></span><?php echo $this->__('All Partslists'); ?>
+                </a>
+            </li>
+			<?php if ($showMenuLineBecauseImNotAProspect == true) : ?>
+            <?php
+            $cssClassSharedPartlist = '';
+            // Highlighting of menu point 'My Shared Partlist'
+            if ($this->isActive('list', 'wishlist', 'partslist'))
+                $cssClassSharedPartlist = 'activated';
+            ?>
+            <li id="sharedPlLi" class="<?php echo $cssClassSharedPartlist; ?> partlistnav">
+                <a id="gtm-partlist-shared" class="partlistlink gtm-partlist" href="<?php echo Mage::getUrl('wishlist/partslist/view') ?>#shared-partslist-tab" data-hash="#shared-partslist-tab" data-id="shared-partslist-tab">
+                    <span class="partlistIcon <?php echo $cssClassSharedPartlist; ?>"></span><?php echo $this->__('My Shared Partslists'); ?>
+                </a>
+            </li>
+			<?php endif; ?>
+
+            <?php if (!Mage::helper('sapoci')->isSapociCheckout()) : ?>
+            <?php if ($showMenuLineBecauseImNotAProspect == true || $actAsCustomerActivated == true) : ?>
+                <li class="hd"><strong><?php echo $this->__('Company Settings') ?></strong></li>
+                <?php if (($_customer && $_customer->isAllowed('accessRight', 'edit')) || $actAsCustomerActivated == true) : ?>
+                    <?php
+                    $cssClassUserAccounts = '';
+                    // Highlighting of menu point 'User Accounts'
+                    if (stristr($currentUrl, 'accountadministration'))
+                        $cssClassUserAccounts = 'active';
+                    ?>
+                <li class="<?php echo $cssClassUserAccounts; ?> <?php echo $aclroleClass; ?>">
+                        <a class="gtm-company-settings" id="gtm-user-accounts" href="<?php echo $this->getUrl('customer/accountadministration/'); ?>">
+                            <span class="manageAccountIcon <?php echo $cssClassUserAccounts; ?>"></span><?php echo $this->__('User Accounts'); ?>
+                        </a>
+                    </li>
+                <?php endif; ?>
+                <?php if ($showMenuLineBecauseImNotAProspect == true || $actAsCustomerActivated == true) : ?>
+                    <?php
+                    $cssClassAddressList = '';
+                    // Highlighting of menu point 'Address List'
+                    if ($this->isActive('index', 'customer', 'address') || stristr($currentUrl, 'address/edit') || stristr($currentUrl, 'account/account/edit/'))
+                        $cssClassAddressList = 'active';
+                    ?>
+                    <li class="<?php echo $cssClassAddressList; ?>">
+                        <a class="gtm-company-settings" id="gtm-address-list" href="<?php echo Mage::getUrl('customer/address') ?>">
+                            <span class="addressListIcon <?php echo $cssClassAddressList; ?>"></span><?php echo $this->__('Address List'); ?>
+                         </a>
+                    </li>
+                <?php endif; ?>
+                <?php if (    Mage::getStoreConfig('schrack/customer/individualSKUs')
+                           && (   ($_customer && $_customer->isAllowed('accessRight', 'edit'))
+                               || $actAsCustomerActivated == true ) ) : ?>
+                    <?php
+                    $cssClassCustomSkus = '';
+                    // Highlighting of menu point 'Address List'
+                    if (  stristr($currentUrl, 'customskus') )
+                        $cssClassCustomSkus = 'active';
+                    ?>
+                    <li class="<?php echo $cssClassCustomSkus; ?>">
+                        <a class="gtm-company-settings" id="gtm-address-list" href="<?php echo Mage::getUrl('customer/account/customskus/') ?>">
+                            <span class="pricelistIcon <?php echo $cssClassCustomSkus; ?>"></span><?php echo $this->__('Individual Article Numbers'); ?>
+                         </a>
+                    </li>
+                <?php endif; ?>
+                <?php if ( $eRechnungLink ) : ?>
+                    <li class="">
+                        <a class="gtm-company-settings" id="gtm-einvoice" href="<?php echo $eRechnungLink; ?>">
+                            <span class="eInvoiceIcon"></span><?php echo $eRechnungLinkDescription; ?>
+                        </a>
+                    </li>
+                <?php endif; ?>
+			<?php endif; ?>
+            <?php endif; ?>
+            <?php if (!Mage::helper('sapoci')->isSapociCheckout()) : ?>
+            <li class="hd"><strong><?php echo $this->__('Personal Settings') ?></strong></li>
+            <?php if ($showMenuLineBecauseImNotAProspect == true) : ?>
+                <?php
+                $cssClassMyData = '';
+                // Highlighting of menu point 'My Data'
+                if ($this->isActive('edit'))
+                    $cssClassMyData = 'active';
+                ?>
+                <li class="<?php echo $cssClassMyData; ?>">
+                    <a class="gtm-personal-settings" id="gtm-mydata" href="<?php echo Mage::getUrl('customer/account/edit') ?>">
+                        <span class="myDataIcon <?php echo $cssClassMyData; ?>"></span><?php echo $this->__('My Data'); ?>
+                    </a>
+                </li>
+                <?php if (Mage::getStoreConfig('carriers/schrackpickup/active')) : ?>
+                    <?php
+                    $cssClassDefaultAddress = '';
+                    // Highlighting of menu point 'Default Address'
+                    if ($this->isActive('editpickup'))
+                        $cssClassDefaultAddress = 'active';
+                    ?>
+                    <li class="<?php echo $cssClassDefaultAddress; ?>">
+                        <a class="gtm-personal-settings"  id="gtm-default-store" href="<?php echo $this->getUrl('customer/account/editpickup'); ?>">
+                            <span class="storeIcon <?php echo $cssClassDefaultAddress; ?>"></span><?php echo $this->__('My Default Store'); ?>
+                        </a>
+                    </li>
+                <?php endif; ?>
+                <?php
+                    $cssClassDefaultPaymentOption = '';
+                    // Highlighting of menu point 'Default Payment Option'
+                    if ($this->isActive('editpayment')) $cssClassDefaultPaymentOption = 'active';
+                ?>
+                <li class="<?php echo $cssClassDefaultPaymentOption; ?><?php echo $aclroleClass; ?>">
+                    <a class="gtm-personal-settings" id="gtm-default-payment" href="<?php echo $this->getUrl('customer/account/editpayment'); ?>">
+                        <span class="myDefaultPaymentIcon <?php echo $cssClassDefaultPaymentOption; ?>"></span><?php echo $this->__('My Default Payment Option'); ?>
+                    </a>
+                </li>
+            <?php endif; ?>
+            <?php
+                $cssClassChangePassword = '';
+                // Highlighting of menu point 'Change Password'
+                if ($this->isActive('editpassword')) $cssClassChangePassword = 'active';
+            ?>
+            <li class="<?php echo $cssClassChangePassword; ?>">
+                <a  class="gtm-personal-settings" id="gtm-change-password" href="<?php echo Mage::getUrl('customer/account/editpassword') ?>">
+                    <span class="changePasswordIcon <?php echo $cssClassChangePassword; ?>"></span><?php echo $this->__('Change Password'); ?>
+                </a>
+            </li>
+            <?php endif;?>
+            <?php else : ?>
+                <li class="hd"><strong><?php echo $this->__('My Account') ?></strong></li>
+                <li>
+                    <a id="gtm-partlist-active" class="partlistlink" href="<?php echo Mage::getUrl('wishlist/partslist/view') ?>#active-tab" data-id="active-tab-link">
+                        <span class="partlistIcon"></span>
+                        <?php echo $this->__('My Active Partslist'); ?>
+                    </a>
+                </li>
+                <?php if ( $eRechnungLink ) : ?>
+                    <li class="">
+                        <a id="gtm-einvoice" href="<?php echo $eRechnungLink; ?>">
+                            <span class="eInvoiceIcon"></span><?php echo $eRechnungLinkDescription; ?>
+                        </a>
+                    </li>
+                <?php endif; ?>
+                <li>
+                    <a id="gtm-address-list" href="<?php echo Mage::getUrl('customer/address') ?>">
+                        <span class="addressBookIcon"></span><?php echo $this->__('Address List') ?>
+                    </a>
+                </li>
+                <?php if (!Mage::helper('sapoci')->isSapociCheckout()) : ?>
+                <?php
+                    // All Modules are enabled by default. We need second criteria (WSDL-config):
+                    if (Mage::getConfig()->getModuleConfig('Schracklive_Datanorm')->is('active', 'true') &&
+                            Mage::getStoreConfig('schrack/datanorm/wsdl') &&
+                            Mage::getStoreConfig('advanced/modules_disable_output/Schracklive_Datanorm') == 0 &&
+                            $hideDatanormFromUnauthorizedAdvisor == 'deactivated'
+                    ) :
+                        $cssClassDatanorm = '';
+                        // Highlighting of menu point 'Pricelist/Datanorm'
+                        if ($this->isActive('index', 'datanorm', 'index')) $cssClassDatanorm = 'active';
+                ?>
+                        <li class="<?php echo $cssClassDatanorm; ?>">
+                            <a id="gtm-datanorms" href="<?php echo $this->getUrl('datanorm') ?>">
+                                <span class="pricelistIcon <?php echo $cssClassDatanorm; ?>"></span><?php echo $this->__('Pricelists/Datanorm') ?>
+                            </a>
+                        </li>
+                    <?php endif; ?>
+            <?php endif; ?>
+            <?php endif; ?>
+
+            <?php if (!Mage::helper('sapoci')->isSapociCheckout()) : ?>
+                <?php if (Mage::getStoreConfig('sezame/settings/enabled')) : ?>
+                    <?php
+                        $cssClassDSezamePairingOption = '';
+                        $cssClassDSezamePairingMenu   = 'sezame_pairing_menu_row_icon_inactive';
+
+                        // Highlighting of menu point :
+                        if (stristr(Mage::helper('core/url')->getCurrentUrl(), 'sezame/link')) {
+                            $cssClassDSezamePairingOption = 'active';
+                            $cssClassDSezamePairingMenu   = 'sezame_pairing_menu_row_icon_active';
+                        }
+                    ?>
+                    <li class="<?php echo $cssClassDSezamePairingOption; ?>">
+                        <a href="<?php echo Mage::getUrl('sezame/link') ?>" >
+                            <span class="<?php echo $cssClassDSezamePairingMenu; ?> glyphicon glyphicon-qrcode"></span>
+                            <span id="sezame_pairing_menu_row"><?php echo $this->__('Sezame Pairing'); ?></span>
+                        </a>
+                    </li>
+                <?php endif;?>
+            <?php endif;?>
+
+            <?php
+                $cssClassOtherAdvisors = '';
+                // Highlighting of menu point 'My Shipments'
+                if ($this->isActive('editotheradvisors')) {
+                    $cssClassOtherAdvisors = 'active';
+                }
+            ?>
+            <li class="<?php echo $cssClassOtherAdvisors; ?>">
+                <a class="gtm-personal-settings" id="gtm-otheradvisors" href="<?php echo Mage::getUrl('customer/account/editotheradvisors') ?>">
+                    <span class="otherAdvisorsIcon <?php echo $cssClassOtherAdvisors; ?>"></span><?php echo $this->__('Other Advisors') ?>
+                </a>
+            </li>
+
+            <li class="hd" id="add-to-home-screen-id" style="visibility:hidden">
+                <strong><?php echo $this->__('Add to home screen') ?></strong>
+            </li>
+
+            <?php if ( $this->isActAsUserPossible($_customer) ) : ?>
+                <li class="hd">
+                    <strong>
+                        <a style="color: red !important;" href="<?php echo Mage::getStoreConfig('schrack/typo3/explicitloginurl'); ?>">
+                            <?php if (Mage::getStoreConfig('schrack/typo3/explicitloginurl')) echo $this->__('Typo Login'); else echo $this->__('No Typo Login Link Defined'); ?>
+                        </a>
+                    </strong>
+                </li>
+                <li class="">
+                    <a href="<?php echo Mage::getBaseUrl() . 'mocalc/' ?>"><?php echo $this->__('MO Calculator NEW') ?></a>
+                </li>
+            <?php endif; ?>
+        </ul>
+    </div>
+
+
+<script type="text/javascript">
+    //<![CDATA[
+    jQuery(document).ready(function () {
+        jQuery('#orders-overview').on('click', function () {
+            jQuery('#notice-message-container').hide();
+        });
+
+        jQuery('#notice-message-container').hide();
+
+        if ( typeof localStorage.a2hsPrompt != 'undefined' ) {
+            jQuery('#add-to-home-screen-id').setStyle("visibility:visible");
+
+            jQuery('#add-to-home-screen-id').on('click',function(e) {
+              // Show the prompt
+              localStorage.a2hsPrompt.prompt();
+              // Wait for the user to respond to the prompt
+              localStorage.a2hsPrompt.userChoice
+                .then((choiceResult), function() {
+                  if (choiceResult.outcome === 'accepted') {
+                    console.log('User accepted the A2HS prompt');
+                  } else {
+                    console.log('User dismissed the A2HS prompt');
+                  }
+                  localStorage.a2hsPrompt = null;
+                  jQuery('#add-to-home-screen-id').setStyle("visibility:hidden");
+                });
+            });
+        }
+
+        // Repaired confusing SASS for TYPO / Shop Conflict:
+        jQuery('li.active a').css({'background-color' : '#00589d', 'color' : '#fff !important'});
+        jQuery('li.shop_specific.shop_specific_height a').css({'background-color' : 'white', 'color' : '#bfbfbf'});
+        jQuery('li.active.shop_specific.shop_specific_height a').css({'background-color' : 'white', 'color' : '#022644'});
+        jQuery('.partlistnav a').css({'background-color' : '#f5f5f5', 'color' : '#555 !important'});
+        jQuery('.partlistnav.activated a').css({'background-color' : '#00589d', 'color' : '#fff !important'});
+
+        jQuery("#gtm-partlist-active").on('click', function() {
+            jQuery(this).css({'background-color' : '#00589d', 'color' : '#fff !important'});
+            jQuery('#gtm-partlist-all').css({'background-color' : '#f5f5f5', 'color' : '#555 !important'});
+            jQuery('#gtm-partlist-shared').css({'background-color' : '#f5f5f5', 'color' : '#555 !important'});
+
+            jQuery('#gtm-partlist-shared span.partlistIcon').removeClass('correction');
+        });
+        jQuery('#gtm-partlist-all').on('click', function() {
+            jQuery('#gtm-partlist-active').css({'background-color' : '#f5f5f5', 'color' : '#555 !important'});
+            jQuery(this).css({'background-color' : '#00589d', 'color' : '#fff !important'});
+            jQuery('#gtm-partlist-shared').css({'background-color' : '#f5f5f5', 'color' : '#555 !important'});
+
+            jQuery('#gtm-partlist-shared span.partlistIcon').removeClass('correction');
+        });
+        jQuery('#gtm-partlist-shared').on('click', function() {
+            jQuery('#gtm-partlist-active').css({'background-color' : '#f5f5f5', 'color' : '#555 !important'});
+            jQuery('#gtm-partlist-all').css({'background-color' : '#f5f5f5', 'color' : '#555 !important'});
+            jQuery(this).css({'background-color' : '#00589d', 'color' : '#fff !important'});
+        });
+
+        jQuery('.active-tab-link').on('click', function() {
+            jQuery(this).css({'color' : '#022644 !important'});
+            jQuery('.my-partslist-tab-link').css({'color' : '#bfbfbf !important'});
+            jQuery('.shared-partslist-tab').css({'color' : '#bfbfbf !important'});
+
+            jQuery('#gtm-partlist-active').css({'background-color' : '#00589d', 'color' : '#fff !important'});
+            jQuery('#gtm-partlist-all').css({'background-color' : '#f5f5f5', 'color' : '#555 !important'});
+            jQuery('#gtm-partlist-shared').css({'background-color' : '#f5f5f5', 'color' : '#555 !important'});
+
+            jQuery('#activePlLi').addClass('activated active');
+            jQuery('#allPlLi').removeClass('activated');
+            jQuery('#allPlLi').removeClass('active');
+            jQuery('#sharedPlLi').removeClass('active');
+            jQuery('#sharedPlLi').removeClass('activated');
+
+            jQuery('#gtm-partlist-shared span.partlistIcon').removeClass('correction');
+        });
+        jQuery('.my-partslist-tab-link').on('click', function() {
+            jQuery('.active-tab-link').css({'color' : '#bfbfbf !important'});
+            jQuery(this).css({'color' : '#022644 !important'});
+            jQuery('.shared-partslist-tab').css({'color' : '#bfbfbf !important'});
+
+            jQuery('#gtm-partlist-active').css({'background-color' : '#f5f5f5', 'color' : '#555 !important'});
+            jQuery('#gtm-partlist-all').css({'background-color' : '#00589d', 'color' : '#fff !important'});
+            jQuery('#gtm-partlist-shared').css({'background-color' : '#f5f5f5', 'color' : '#555 !important'});
+
+            jQuery('#activePlLi').removeClass('active');
+            jQuery('#activePlLi').removeClass('activated');
+            jQuery('#allPlLi').addClass('activated active');
+            jQuery('#sharedPlLi').removeClass('active');
+            jQuery('#sharedPlLi').removeClass('activated');
+
+            jQuery('#gtm-partlist-shared span.partlistIcon').removeClass('correction');
+        });
+        jQuery('.shared-partslist-tab').on('click', function() {
+            jQuery('.active-tab-link').css({'color' : '#bfbfbf !important'});
+            jQuery('.my-partslist-tab-link').css({'color' : '#bfbfbf !important'});
+            jQuery(this).css({'color' : '#022644 !important'});
+
+            jQuery('#gtm-partlist-active').css({'background-color' : '#f5f5f5', 'color' : '#555 !important'});
+            jQuery('#gtm-partlist-all').css({'background-color' : '#f5f5f5', 'color' : '#555 !important'});
+            jQuery('#gtm-partlist-shared').css({'background-color' : '#00589d', 'color' : '#fff !important'});
+
+            jQuery('#activePlLi').removeClass('active');
+            jQuery('#activePlLi').removeClass('activated');
+            jQuery('#allPlLi').removeClass('activated');
+            jQuery('#allPlLi').removeClass('active');
+            jQuery('#sharedPlLi').addClass('activated active');
+
+            jQuery('#gtm-partlist-shared span.partlistIcon').addClass('correction');
+        });
+
+        console.log('Customer-Data: ACL-Role = ' + '<?php echo $aclrole; ?>');
+        console.log('Customer-Data: _maySeePrices = ' + '<?php echo $_maySeePricesJS; ?>');
+        console.log('Customer-Data: _customerMaySeePrices = ' + '<?php echo $_customerMaySeePricesJS; ?>');
+        console.log('Customer-Data: GEO IP (may see prices) = ' + '<?php echo $geoIPHelperMaySeePricesJS; ?>');
+        console.log('Customer-Data: GEO IP (may perform checkout) = ' + '<?php echo $geoIPHelperMayPerformCheckout; ?>');
+
+    });
+	// For Data Table Information Translation (include one for German [AT]) please change same for other language domain
+	var dataTableTranslationFileUrl = "<?php echo $schrackdesignTranslationsUrl . substr(Mage::getStoreConfig('schrack/general/country'), 0, 2) . '.json'; ?>";
+
+    //]]>
+</script>
+<!-- /app/design/frontend/schrack/schrackresponsive/template/customer/account/menu.phtml (end) -->

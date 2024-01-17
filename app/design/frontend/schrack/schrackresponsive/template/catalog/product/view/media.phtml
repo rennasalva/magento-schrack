@@ -1,0 +1,392 @@
+<!-- app\design\frontend\schrack\schrackresponsive\template\catalog\product\view\media.phtml (start) -->
+<?php
+/**
+ * Product media data template
+ *
+ * @see Mage_Catalog_Block_Product_View_Media
+ */
+    $_product = $this->getProduct();
+    $_images = $_product->getImageAttachments(true);
+    Mage::unregister('lg_License');
+    Mage::register('lg_License',base64_encode('90BEFCBE-F866453E-9427D25D-CD97E44A'));
+?>
+
+<style>
+    .cursor_crosshair {
+        cursor: crosshair !important;
+    }
+    .zoomIn {
+        display: inline-block;
+        position: relative;
+        overflow: hidden;
+        cursor: crosshair;
+    }
+    .sliderpoints_panel{
+        text-align: center;
+        margin: -48px auto 20px;
+    }
+    .desktop_thumb_row {
+        display:flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        width: 392px;
+    }
+    .desktop_thumb_cell {
+        border: 2px solid rgba(211,211,211,.63);
+        margin: 0 4px 6px 0;
+    }
+    .desktop_thumb_cell_selected {
+        border: 2px solid rgba(111,111,111,.63);
+        margin: 0 4px 6px 0;
+    }
+    .desktop_large_img_outher_div {
+        width: 388px;
+        height:434px;
+        padding: 15px 15px 39px 15px;
+    }
+    .desktop_large_img_inner_div {
+        width: 340px;
+        height: 380px;
+        object-fit: contain;
+    }
+
+    .img-zoom-container {
+        position: relative;
+    }
+
+    #img-zoom-lens {
+        position: absolute;
+        display: none;
+        border: 1px solid #d4d4d4;
+        background-color:rgba(0,88,157,0.15);
+        /*set the size of the lens:*/
+        width: 120px;
+        height: 90px;
+    }
+
+    .img-zoom-result {
+        position: relative;
+        top: -397px;
+        left: 400px;
+        z-index: 9999999;
+        border: 1px solid #d4d4d4;
+        /*set the size of the result div:*/
+        height: 434px;
+        background-repeat: no-repeat;
+        background-color:#FFFFFF;
+    }
+
+    #mobile-product-detail-image-group, #mobile-product-detail-image-group-ul {
+        min-height: 300px;
+    }
+
+    .pdp_mobile_gallery .lg-backdrop{
+        background-color:#FFFFFF !important;
+    }
+
+    .pdp_mobile_gallery .lg-toolbar {
+        background-color:rgba(0,0,0,0.2) !important;
+    }
+
+    .pdp_mobile_gallery .lg-thumb-outer {
+        background-color: #dadada !important;
+    }
+
+
+</style>
+
+<?php
+    $alt_txt = $this->htmlEscape($_product->getDescription());
+    $img_title = $this->htmlEscape($_product->getName());
+    //---------------------------------------------------------- Container start
+    $DesktopContent = '<div id="desktop-product-detail-image-group" class="product-images product-detail-slider" style="display:none;"> <!-- desktop image group -->';
+    //---------------------------------------------- gray out if product is dead
+    $DesktopContent .= $_product->isDead()
+                     ? '<div class="gray hide">'.$this->__('NOT AVAILABLE').'</div>'
+                     : '<span class="sale_mark mobile-sale hide"></span>';
+    //--------------------------------------------------------------------------
+    if (count($_images) > 0):
+        $image = reset($_images); 
+        $foto = $image['foto']; 
+        //----------------------------------------------------------------------
+        if ( $foto ):
+            $url = $foto->getUrl();
+            //------------------------------------------------------------------
+            $type = Schracklive_SchrackCatalog_Helper_Image::PRODUCT_DETAIL_PAGE_MAIN;
+            $type_zoom = Schracklive_SchrackCatalog_Helper_Image::PRODUCT_DETAIL_PAGE_MAIN_ZOOM;
+            //------------------------------------------------------------------
+            $largeImgUrl = Schracklive_SchrackCatalog_Helper_Image::getImageUrl($url, $type);
+            $largeImgZoomUrl = Schracklive_SchrackCatalog_Helper_Image::getImageUrl($url, $type_zoom);
+            //------------------------------------------------------------------
+            $DesktopContent .=
+                '<div class="desktop_large_img_outher_div largeCont clearfix">' .
+                    '<div class="img-zoom-container">'.
+                        "<img id='desktop-large-img' src='{$largeImgUrl}' title='{$img_title}' alt='{$alt_txt}' >". //width='300' height='240'
+                    '</div>'.
+                    "<div id='desktop-large-img-zoom' class='img-zoom-result' data-zoom-img-src='{$largeImgZoomUrl}'></div>".
+                '</div>'.
+                '<div id="zoom_explanation_text_desktop" class="hide-on-print" style="margin-top: -14px; text-align: right; margin-bottom: 10px; margin-right: 6px; font-size: 0.9em;">' .
+                    $this->__('Roll Over Image To Zoom In') .
+                '</div>';
+        endif;
+    endif;
+    //-------------------- generate thumbs only if there exist at least 2 images
+    if ( count($_images) > 1 ):
+        $imageContent = '';
+        $i = 0;
+        //----------------------------------------------------------------------
+        foreach ($_images as $image):
+            $foto = $image['foto'];
+            if ( $foto ):
+                $url = $foto->getUrl();
+                //--------------------------------------------------------------
+                $thumb_type = Schracklive_SchrackCatalog_Helper_Image::PRODUCT_DETAIL_PAGE_THUMBNAIL_DESKTOP;
+                $large_type = Schracklive_SchrackCatalog_Helper_Image::PRODUCT_DETAIL_PAGE_MAIN;
+                $zoom_type  = Schracklive_SchrackCatalog_Helper_Image::PRODUCT_DETAIL_PAGE_MAIN_ZOOM;
+                //--------------------------------------------------------------
+                $thumbImgUrl = Schracklive_SchrackCatalog_Helper_Image::getImageUrl($url,$thumb_type);
+                $largeImgUrl = Schracklive_SchrackCatalog_Helper_Image::getImageUrl($url,$large_type);
+                $zoomImgUrl = Schracklive_SchrackCatalog_Helper_Image::getImageUrl($url,$zoom_type);
+                //--------------------------------------------------------------
+                $class = $i == 0 ? 'desktop_thumb_cell_selected' : 'desktop_thumb_cell';
+                //--------------------------------------------------------------
+                $imageContent .= "<div class='{$class}'>" .
+                                    "<a class='desktop_thumb_a' data-large-img-src='{$largeImgUrl}' data-zoom-img-src='{$zoomImgUrl}' href=''>" .
+                                        "<span>" .
+                                            "<img src='{$thumbImgUrl}'  title='{$img_title}' alt='{$alt_txt}' />" .
+                                        "</span>" .
+                                    "</a>" .
+                                "</div>";
+                //----------------------- limit thumbnail generation to 8 images
+                if ( ++$i >= 8 ){ break; }
+            endif;
+        endforeach;
+        $DesktopContent .= "<div class='desktop_thumb_row clearfix'>{$imageContent}</div>";
+    endif;
+    $DesktopContent .= '</div>';
+    //--------------------------------------------------- Desktop Content output
+    echo $DesktopContent;
+
+
+    $MobileContent = '<div id="mobile-product-detail-image-group" class="product-images product-detail-slider">';
+    //---------------------------------------------- gray out if product is dead
+    $MobileContent .= $_product->isDead()
+                    ? '<div class="gray hide">'.$this->__('NOT AVAILABLE').'</div>'
+                    : '<span class="sale_mark mobile-sale hide"></span>';
+    //--------------------------------------------------------------------------
+    $MobileContent .= '<ul id="mobile-product-detail-image-group-ul"><!-- mobile image group -->';
+    //--------------------------------------------------------------------------
+    if (count($_images) > 0):
+        $i = 0;
+        $GalleryElements = [];
+        foreach ($_images as $image):
+            $foto = $image['foto'];
+            if ($foto):
+                $url = $foto->getUrl();
+                //--------------------------------------------------------------
+                $thumb_type = Schracklive_SchrackCatalog_Helper_Image::PRODUCT_DETAIL_PAGE_THUMBNAIL_DESKTOP;
+                $large_type = Schracklive_SchrackCatalog_Helper_Image::PRODUCT_DETAIL_PAGE_MAIN;
+                $zoom_type  = Schracklive_SchrackCatalog_Helper_Image::PRODUCT_DETAIL_PAGE_MAIN_ZOOM;
+                //--------------------------------------------------------------
+                $thumbImgUrl = Schracklive_SchrackCatalog_Helper_Image::getImageUrl($url,$thumb_type);
+                $largeImgUrl = Schracklive_SchrackCatalog_Helper_Image::getImageUrl($url,$large_type);
+                $zoomImgUrl = Schracklive_SchrackCatalog_Helper_Image::getImageUrl($url,$zoom_type);
+                //--------------------------------------------------------------
+                $GalleryElements[$i] = "{ 'src': '{$largeImgUrl}', 'thumb': '{$thumbImgUrl}'}";
+                //--------------------------------------------------------------
+                $class = $_product->isDead() ? 'grayscale' : '';
+                //--------------------------------------------------------------
+                $MobileContent .= "<li data-src='{$zoomImgUrl}' class='{$class}' >" .
+                                    "<img src='{$thumbImgUrl}' title='{$img_title}' alt='{$alt_txt}' />" .
+                                  "</li>";
+
+                ++$i;
+            endif;
+        endforeach;
+    endif;
+    $MobileContent .= '</ul></div>';
+    //---------------------------------------------------- Mobile Content output
+    echo $MobileContent;
+?>
+
+<script type="text/javascript">/*<![CDATA[*/jQuery(document).ready(function () {
+//==============================================================================
+    const lgLicense = '<?php echo Mage::registry('lg_License'); ?>';
+
+    const lgContainer = document.getElementById('mobile-product-detail-image-group');
+    const lgGallery = document.getElementById('mobile-product-detail-image-group-ul');
+    const inlineGallery = lightGallery(lgGallery, {
+        plugins: [ lgFullscreen, lgThumbnail, lgZoom  ],
+        licenseKey: atob(lgLicense),
+        container: lgContainer,
+        addClass: 'pdp_mobile_gallery',
+        // dynamic: false,
+        // Turn off hash plugin in case if you are using it
+        // as we don't want to change the url on slide change
+        hash: false,
+        // Do not allow users to close the gallery
+        closable: false,
+        // Add maximize icon to enlarge the gallery
+        showMaximizeIcon: true,
+        // Append caption inside the slide item
+        // to apply some animation for the captions (Optional)
+        slideDelay: 400,
+        toggleThumb: false,
+        getCaptionFromTitleOrAlt: false,
+        allowMediaOverlap: false,
+        enableSwipe: true,
+        controls: true
+    });
+
+    // Since we are using dynamic mode, we need to programmatically open lightGallery
+    jQuery(window).load(function() {
+        imageZoom("desktop-large-img", "desktop-large-img-zoom");
+        inlineGallery.openGallery();
+    });
+
+
+    jQuery('#desktop-large-img-zoom').hide();
+    jQuery('#img-zoom-lens').hide();
+
+    jQuery('#desktop-large-img').on("mouseover mouseenter mousemove", function(e) {
+       jQuery('#desktop-large-img').addClass('cursor_crosshair');
+       jQuery('#img-zoom-lens').addClass('cursor_crosshair');
+       jQuery('.img-zoom-container').addClass('cursor_crosshair');
+       jQuery('#desktop-large-img-zoom').show();
+    });
+    jQuery('#desktop-large-img').on("mouseleave", function(e) {
+        jQuery('#desktop-large-img-zoom').hide();
+        jQuery('#img-zoom-lens').hide();
+    });
+    jQuery('.row, .desktop_large_img_outher_div').on("mouseenter mouseleave", function(e) {
+        jQuery('#desktop-large-img-zoom').hide();
+        jQuery('#img-zoom-lens').hide();
+    });
+
+
+    jQuery('.desktop_thumb_a').on('click', function (e) {
+        e.preventDefault();
+        var scr = jQuery(this).data('large-img-src');
+        var zoom_scr = jQuery(this).data('zoom-img-src');
+        //------------------------------------------- set new image for mainview
+        jQuery('#desktop-large-img').attr("src",scr);
+        //----------------------------------------------- set new image for zoom
+        jQuery('#desktop-large-img-zoom').data('zoom-img-src', zoom_scr);
+        jQuery('#desktop-large-img-zoom').css('backgroundImage', "url('" + zoom_scr + "')");
+        //------------------------------------- change active status to selected
+        jQuery('.desktop_thumb_cell_selected').removeClass('desktop_thumb_cell_selected').addClass('desktop_thumb_cell');
+        jQuery(this).parent().removeClass('desktop_thumb_cell').addClass('desktop_thumb_cell_selected');
+    });
+
+    function GetIEVersion() {
+        var sAgent = window.navigator.userAgent;
+        var Idx = sAgent.indexOf("MSIE");
+
+        // If IE, return version number.
+        if (Idx > 0) {
+            return parseInt(sAgent.substring(Idx+ 5, sAgent.indexOf(".", Idx)));
+        }
+        // If IE 11 then look for Updated user agent string.
+        else if (!!navigator.userAgent.match(/Trident\/7\./)) {
+            return 11;
+        } else {
+            return 0; //It is not IE
+        }
+    }
+
+    var viewportWidth = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
+
+    if (GetIEVersion() > 0) {
+        // Old Internet Explorer
+    } else {
+        if (viewportWidth >= 320 && viewportWidth <= 767) {
+            jQuery('#sliderpoints_panel').removeClass('smallCont');
+            jQuery('#sliderpoints_panel').addClass('sliderpoints_panel');
+        }
+        if (viewportWidth > 1024) {
+            jQuery('#zoom_explanation_text').show();
+        }
+        if ( viewportWidth >= 1260 ) {
+            jQuery('#mobile-product-detail-image-group').hide();
+            jQuery('#desktop-product-detail-image-group').show();
+        }
+        jQuery('.zoomable').zoomIn({});
+    }
+    function imageZoom(imgID, resultID) {
+        var imgContainer, img, lens, result, resultRatio, cx, cy, paddingLR, paddingTB;
+        img = jQuery('#'+imgID);
+        imgContainer = img.parent();
+        result = jQuery('#'+resultID);
+        /* Create + Insert lens: */
+        jQuery('.img-zoom-container').prepend('<div id="img-zoom-lens" />');
+        lens = jQuery('#img-zoom-lens');
+        result.css("width", "calc(" + jQuery('.product-details').width() + "px - 400px)");
+        resultRatio = result.width() / result.height(); // heigth is set in css
+        lens.width( lens.height() * resultRatio + "px");
+        jQuery(window).resize(function(){
+            result.css("width", "calc(" + jQuery('.product-details').width() + "px - 400px)");
+            resultRatio = result.width() / result.height();
+            lens.width( lens.height() * resultRatio + "px");
+        });
+
+        /* Calculate the ratio between result DIV and lens: */
+        cx = ((img.outerWidth() / lens.outerWidth()));
+        cy = ((img.outerHeight() / lens.outerHeight()));
+
+        var imgMainWrapperH = jQuery('.desktop_large_img_outher_div').outerHeight();
+        var imgInnerWrapperH = imgContainer.outerHeight();
+
+
+        /* Set background properties for the result DIV */
+        if (result.css('background-image') == 'none') {
+            result.css('backgroundImage', "url('" + jQuery('#desktop-large-img-zoom').data('zoom-img-src') + "')");
+        }
+        result.css('backgroundSize', "1190px 1330px");
+
+        paddingLR = (imgContainer.outerWidth() - img.outerWidth()) / 2;
+        paddingTB = (imgMainWrapperH - imgInnerWrapperH) / 2;
+
+        /* Execute a function when someone moves the cursor over the image, or the lens: */
+        img.on("mousemove touchmove", moveLens);
+        lens.on("mousemove touchmove", moveLens);
+
+
+        function moveLens(e) {
+            var pos, x, y;
+            /* Prevent any other actions that may occur when moving over the image */
+            e.preventDefault();
+            /* Get the cursor's x and y positions: */
+            pos = getCursorPos(e);
+            /* Calculate the position of the lens: */
+            x = (pos.x + paddingLR) - (lens.outerWidth() / 2);
+            y = (pos.y - lens.outerHeight() - 10);
+            // console.log("x= " + x + " y= " + y);
+            /* Prevent the lens from being positioned outside the image: */
+            if (x > paddingLR + img.outerWidth() - lens.outerWidth()) { x = paddingLR + img.outerWidth() - lens.outerWidth();}
+            if (x <= paddingLR) { x = paddingLR; }
+            if (y > paddingTB + img.outerHeight() - lens.outerHeight()) {y = paddingTB + img.outerHeight() - lens.outerHeight();}
+            if (y <= 0) {y = 0;}
+            /* Set the position of the lens: */
+            lens.css('left' , x +  "px");
+            lens.css('top' , y + "px");
+            /* Display what the lens "sees": */
+            result.css('backgroundPosition', "-" + ((x - paddingLR) * cx) + "px -" + ((y - paddingTB) * cy) + "px");
+            jQuery('#img-zoom-lens').hide();
+
+        }
+        function getCursorPos(e) {
+            var a, x = 0, y = 0;
+            e = e || window.event;
+            /* Get the x and y positions of the image: */
+            a = img.get(0).getBoundingClientRect();
+            /* Calculate the cursor's x and y coordinates, relative to the image: */
+            x = e.pageX - a.left;
+            y = e.pageY - a.top;
+            /* Consider any page scrolling: */
+            x = x - window.pageXOffset;
+            y = y - window.pageYOffset;
+            return {x : x, y : y};
+        }
+    }
+});/*]]>-------------------------------------------------------------*/</script>
+<!-- app\design\frontend\schrack\schrackresponsive\template\catalog\product\view\media.phtml (end) -->

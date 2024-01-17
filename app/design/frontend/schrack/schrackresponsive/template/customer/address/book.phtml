@@ -1,0 +1,334 @@
+<!-- app\design\frontend\schrack\schrackresponsive\template\customer\address\book.phtml (start) -->
+<?php
+/**
+ * Template for Mage_Customer_Block_Address_Book block
+ * @var $this Mage_Customer_Block_Address_Book
+ */
+
+    $sessionCustomer = Mage::getSingleton('customer/session')->getCustomer();
+    $customerID = $sessionCustomer->getId();
+    $defaultBillingAddressId = Mage::getSingleton('customer/session')->getCustomer()->getDefaultBilling();
+    $defaultBillingAddressData = Mage::getModel('customer/address')->load($defaultBillingAddressId);
+    $defaultBillingChangeAllowed = false;
+    if ($customerID == $defaultBillingAddressData->getParentId()) {
+        $defaultBillingChangeAllowed = true;
+    }
+
+    $defaultShippingAddressId = Mage::getSingleton('customer/session')->getCustomer()->getDefaultShipping();
+    $defaultShippingAddressData = Mage::getModel('customer/address')->load($defaultShippingAddressId);
+
+    $defaultShippingChangeAllowed = false;
+    // Mysterious check??:
+    if ($customerID == $defaultShippingAddressData->getParentId()) {
+        $defaultShippingChangeAllowed = true;
+    }
+    // Set to true, until someone will complain:
+    $defaultShippingChangeAllowed = true;
+    $customerType = $sessionCustomer->getSchrackCustomerType(); // ProspectTypes: 'light-prospect' / 'full-prospect'
+    $addressFilter = Mage::registry('address_filter');
+    if ( ! $addressFilter ) {
+        $addressFilter = '';
+    }
+?>
+
+<style>
+    #billing_addres_change_container a {
+        color: #005b9f !important;
+    }
+    .initialHideToTopSymbol {
+        display: none !important;
+    }
+
+    @media (min-width: 1px) and (max-width: 992px) {
+        .my_account_settings_addresslists_content_wrapper {
+            margin-right: 16px !important;
+        }
+    }
+
+    @media (min-width: 60px) and (max-width: 320px) {
+        .edit_default_shipping_address {
+            height: 30px !important;
+            padding-top: 7px !important;
+            padding-left: 14px !important;
+        }
+        .add_new_address_button {
+            height: 30px !important;
+        }
+        .edit-shipping {
+            height: 30px !important;
+            padding-top: 7px !important;
+            padding-left: 14px !important;
+        }
+        .delete-shipping {
+            height: 30px !important;
+            padding-top: 7px !important;
+            padding-left: 14px !important;
+        }
+    }
+
+    @media (min-width: 321px) and (max-width: 480px) {
+        .edit_default_shipping_address {
+            height: 30px !important;
+            padding-top: 7px !important;
+            padding-left: 14px !important;
+        }
+        .add_new_address_button {
+            height: 30px !important;
+        }
+        .edit-shipping {
+            height: 30px !important;
+            padding-top: 7px !important;
+            padding-left: 14px !important;
+        }
+        .delete-shipping {
+            height: 30px !important;
+            padding-top: 7px !important;
+            padding-left: 14px !important;
+        }
+    }
+
+    @media (min-width: 481px) and (max-width: 767px) {
+        .edit_default_shipping_address {
+            height: 30px !important;
+            padding-top: 7px !important;
+            padding-left: 14px !important;
+        }
+        .add_new_address_button {
+            height: 30px !important;
+        }
+        .edit-shipping {
+            height: 30px !important;
+            padding-top: 7px !important;
+            padding-left: 14px !important;
+        }
+        .delete-shipping {
+            height: 30px !important;
+            padding-top: 7px !important;
+            padding-left: 14px !important;
+        }
+    }
+    .address_filter_box {
+        padding: 0 !important;
+        display: flex;
+        justify-content: flex-end;
+        align-items: stretch;
+        float:right;
+        width: 50%;
+        margin-top:-4px;
+    }
+    .address_filter_label {
+        margin-right:10px;
+    }
+    .address_filter_input {
+        display:inline-block;
+        width: 55%;
+        height: 24px;
+    }
+    .address_filter_button {
+        display:inline-block;
+        background-color: rgb(0, 88, 157);
+        color: white;
+        border: 0;
+        padding:4px 10px 3px 10px;
+        margin-right: 5px;
+    }
+    .addressbook_headline{
+        color: rgb(0, 88, 157);
+    }
+</style>
+
+<?php if ( !in_array($customerType, array('light-prospect', 'full-prospect')) ) : ?>
+    <?php echo $this->getMessagesBlock()->getGroupedHtml() ?>
+    <div id="my_account_settings_addresslists_wrapper" class="my_account_settings_addresslists_content_wrapper">
+        <div class="row data">
+            <div class="col-xs-12">
+                <h1><?php echo $this->__('Address Book') ?> (<?php echo count($this->getCustomer()->getAddresses()) ?>)</h1>
+                <div class="row">
+                    <div class="col-xs-12">
+                        <div class="userAccountCont">
+                            <h2><?php echo $this->__('Default Addresses') ?></h2>
+                            <div class="contentArea">
+                                <div class="row">
+                                    <div class="col-xs-12 col-sm-6">
+                                        <div class="box">
+                                            <?php if($defaultBillingAddressId): ?>
+                                            <div class="item">
+                                                <h3><?php echo $this->__('Default Billing Address') ?></h3>
+                                                <address>
+                                                    <?php echo $this->getAddressHtml($defaultBillingAddressData); ?>
+                                                </address>
+                                                <p>
+                                                    <?php //if($this->mayEditDefaultBilling()): ?>
+                                                    <?php if(false): ?>
+                                                <div>
+                                                    <a class="button-red small gray" href="<?php echo $this->getAddressEditUrl($defaultBillingAddressData) ?>addressaction/editdefaultbillingaddress"><?php echo $this->__('Change Billing Address') ?></a>
+                                                </div>
+                                                <?php else: ?>
+                                                    <span id="billing_addres_change_container">
+                                                            <?php echo $this->__('To change the billing address please contact <a href=%s>Schrack customer service</a>.','"'.Mage::getUrl('account/account/edit/').'"') ?>
+                                                    </span>
+                                                <?php endif ?>
+                                                </p>
+                                            </div>
+                                            <?php else: ?>
+                                                <div class="item">
+                                                    <h3><?php echo $this->__('Default Billing Address') ?></h3>
+                                                    <?php echo $this->__('You have no default billing address in your address book.') ?>
+                                                </div>
+                                            <?php endif ?>
+                                        </div>
+                                    </div>
+                                    <div class="col-xs-12 col-sm-6">
+                                        <div class="box">
+                                        <?php if($defaultShippingAddressId): ?>
+                                        <div class="item">
+                                            <h3><?php echo $this->__('Default Shipping Address') ?></h3>
+                                            <address>
+                                                <?php echo $this->getAddressHtml($defaultShippingAddressData); ?>
+                                            </address>
+                                            <?php if($defaultShippingChangeAllowed): ?>
+                                                <div>
+                                                    <a data-id="<?php echo $defaultShippingAddressId;?>" class="bttn-md edit_default_shipping_address" href="<?php echo $this->getAddressEditUrl($defaultShippingAddressData) ?>addressaction/editdefaultshippingaddress"><?php echo $this->__('Change Shipping Address') ?></a>
+                                                </div>
+                                            <?php endif ?>
+                                        </div>
+                                        <?php else: ?>
+                                            <div class="item empty">
+                                                <h3><?php echo $this->__('Default Shipping Address') ?></h3>
+                                                <p><?php echo $this->__('You have no default shipping address in your address book.') ?></p>
+                                            </div>
+                                        <?php endif ?>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xs-12">
+                        <div class="userAccountCont">
+                            <h2>
+                                <?php echo $this->__('Additional Address Entries') ?>
+                                <div class="col-sm-6 address_filter_box">
+                                    <label class="address_filter_label"><?php echo $this->__('Filter') ?>:</label>
+                                    <input class="address_filter_input" id="filter_input" type="text" value="<?php echo $addressFilter ?>"/>
+                                    <button class="address_filter_button" id="filter_button"><?php echo $this->__('Apply') ?></button>
+                                </div>
+                            </h2>
+                            <div class="contentArea">
+                            <div class="row">
+                            <div class="col-xs-12 marginB15">
+                                <button class="bttn-md add_new_address_button" title="<?php echo $this->__('Add New Address') ?>" onclick="window.location='<?php echo $this->getAddAddressUrl() ?>';"><?php echo $this->__('Add New Address') ?></button>
+                            </div>
+                            <?php if(($_additionalAddresses = $this->getFilteredAddresses()) || $addressFilter > '' ): ?>
+                            <div class="col-xs-12 marginB15">
+                            </div>
+                            <?php foreach($_additionalAddresses as $_address): ?>
+                            <div class="col-xs-12 col-sm-6">
+                                <div class="box item">
+                                    <div class="row">
+                                        <div class="col-xs-12 marginB15">
+                                        <address>
+                                                <?php echo $this->getAddressHtml($_address) ?>
+                                        </address>
+                                        </div>
+                                        <div class="col-xs-6 text-center">
+                                                <a class="bttn-md edit-shipping" data-id="<?php echo $_address->getId()?>" href="<?php echo $this->getUrl('customer/address/edit', array('id'=>$_address->getId())) ?>" title="<?php echo $this->__('Edit Address') ?>"><?php echo $this->__('Edit') ?>
+                                                </a>
+                                        </div>
+                                        <div class="col-xs-6 text-center">
+                                                <a id="deleteAddressRecord_<?php echo $_address->getId(); ?>" data-id="<?php echo $_address->getId()?>" name="deleteAddressRecord" class="bttn-md delete-shipping" href="" title="<?php echo $this->__('Delete Address') ?>">
+                                                <?php echo $this->__('Delete') ?></a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <?php endforeach; ?>
+                            <?php else: ?>
+                                    <div class="item empty">
+                                            <p><?php echo $this->__('You have no additional address entries in your address book.') ?></p>
+                                    </div>
+                            <?php endif ?>
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <p class="col-xs-12 back-link hidden-xs hidden-sm"><a href="<?php echo Mage::helper('schrackcore/url')->getUrlWithCurrentProtocol('customer/account'); ?>"><small>&laquo; </small><?php echo $this->__('Back') ?></a></p>
+            <p class="col-xs-12 back-link hidden-md hidden-lg"><a href="<?php echo Mage::helper('schrackcore/url')->getUrlWithCurrentProtocol('account/account/index'); ?>" ><small>&laquo; </small><?php echo $this->__('Back') ?></a></p>
+        </div>
+    </div>
+
+
+    <script type="text/javascript">
+    //<![CDATA[
+
+        jQuery(document).ready(function() {
+
+            function deleteAddress(addressId) {
+                if(confirm('<?php echo $this->__('Are you sure you want to delete this address?') ?>')) {
+                    window.location='<?php echo $this->getDeleteUrl() ?>id/'+addressId;
+                }
+                return false;
+            }
+
+            jQuery('[name="deleteAddressRecord"]').on('click', function(event) {
+                event.preventDefault();
+                var deleteAddressId = jQuery(this).attr('id');
+                deleteAddressId = deleteAddressId.replace('deleteAddressRecord_', '');
+                if (dataLayer) {
+                    dataLayer.push({
+                        'event' : 'userSettingChange',
+                        'eventLabel' : 'Address Delete'
+                    });
+                }
+                deleteAddress(deleteAddressId);
+            });
+
+            /* Back to Top */
+            jQuery('body').append('<div id="toTop" class="btn btn-info print-hide-imp initialHideToTopSymbol"><span class="glyphicon glyphicon-chevron-up"></span> <?php echo $this->__('Back to Top'); ?></div>');
+            jQuery(window).scroll(function () {
+                if (jQuery(this).scrollTop() != 0) {
+                    jQuery('#toTop').fadeIn();
+                } else {
+                    jQuery('#toTop').fadeOut();
+                }
+            });
+            jQuery('#toTop').click(function(){
+                jQuery("html, body").animate({ scrollTop: 0 }, 600);
+                console.log('ScrollTop #83');
+                return false;
+            });
+            jQuery('#toTop').removeClass('initialHideToTopSymbol');
+            /* Back to Top */
+
+            if (jQuery(window).width() < 993) {
+                jQuery('#breadcrumb_block').removeClass('breadcrumb_custom');
+                jQuery('#breadcrumb_block').addClass('breadcrumb_my_account');
+            }
+
+            jQuery('#filter_button').on('click', function(event) {
+                doFilter();
+            });
+
+            jQuery('#filter_input').keypress(function(event) {
+                if (event.keyCode == 13) {
+                    doFilter();
+                }
+            });
+        });
+
+        function doFilter () {
+            var filter = jQuery('#filter_input').val();
+            var url = window.location.href;
+            var tempArray = url.split("?");
+            var baseURL = tempArray[0];
+            window.location.href = baseURL + '?filter=' + filter;
+        }
+    //]]>
+    </script>
+<?php endif; ?>
+
+<!-- app\design\frontend\schrack\schrackresponsive\template\customer\address\book.phtml (end) -->

@@ -1,0 +1,371 @@
+<!-- app/design/frontend/schrack/schrackresponsive/template/page/html/breadcrumbs.phtml (start) -->
+
+<style>
+    #breadcrumb_block > li {
+        font-size: 16px !important;
+    }
+
+    #breadcrumb_block > li.sale_red_breadcrumbitem {
+        color:red;
+        font-weight:bold;
+    }
+
+    #breadcrumb_block > li.sale_red_breadcrumbitem:before {
+        padding: 0 5px;
+        color: #7c7c7c;
+        content: "\e258";
+        font-family: 'Glyphicons Halflings';
+        vertical-align: middle;
+    }
+
+    @media (min-width: 1px) and (max-width: 320px) {
+        .breadcrumb_custom {
+            margin-left: 8px !important;
+        }
+        .breadcrumb_my_account {
+            margin-left: 8px !important;
+        }
+        .breadcrumb_product_detail {
+            display: none !important;
+        }
+        #breadcrumb_block > li {
+            font-size: 14px !important;
+        }
+    }
+
+    @media (min-width: 321px) and (max-width: 360px) {
+        .breadcrumb_custom {
+            width: 94% !important;
+        }
+        .breadcrumb_my_account {
+            width: 104% !important;
+        }
+        .breadcrumb_product_detail {
+            display: none !important;
+        }
+        .breadcrumb_category_search {
+            display: none !important;
+        }
+        #breadcrumb_block > li {
+            font-size: 14px !important;
+        }
+    }
+
+    @media (min-width: 361px) and (max-width: 410px) {
+        .breadcrumb_product_detail {
+            display: none !important;
+        }
+        .breadcrumb_category_search {
+            display: none !important;
+        }
+        #breadcrumb_block > li {
+            font-size: 14px !important;
+        }
+    }
+
+    @media (min-width: 411px) and (max-width: 460px) {
+        .breadcrumb_product_detail {
+            display: none !important;
+        }
+        .breadcrumb_category_search {
+            display: none !important;
+        }
+        #breadcrumb_block > li {
+            font-size: 14px !important;
+        }
+    }
+
+    @media (min-width: 461px) and (max-width: 480px) {
+        .breadcrumb_product_detail {
+            display: none !important;
+        }
+        .breadcrumb_category_search {
+            display: none !important;
+        }
+        #breadcrumb_block > li {
+            font-size: 14px !important;
+        }
+    }
+
+    @media (min-width: 481px) and (max-width: 560px) {
+        .breadcrumb_product_detail {
+            display: none !important;
+        }
+        .breadcrumb_category_search {
+            display: none !important;
+        }
+        #breadcrumb_block > li {
+            font-size: 14px !important;
+        }
+    }
+
+    @media (min-width: 561px) and (max-width: 639px) {
+        .breadcrumb_product_detail {
+            display: none !important;
+        }
+        .breadcrumb_category_search {
+            display: none !important;
+        }
+        #breadcrumb_block > li {
+            font-size: 14px !important;
+        }
+    }
+
+    @media (min-width: 640px) and (max-width: 700px) {
+        .breadcrumb_custom {
+            margin: 0 -14px 20px !important;
+        }
+        .breadcrumb_my_account {
+            margin: 0 -14px 20px !important;
+        }
+        .breadcrumb_product_detail {
+            display: none !important;
+        }
+        .breadcrumb_category_search {
+            display: none !important;
+        }
+    }
+
+    @media (min-width: 701px) and (max-width: 767px) {
+        .breadcrumb_custom {
+            margin: 0 -15px 20px !important;
+        }
+        .breadcrumb_my_account {
+            margin: 0 -15px 20px !important;
+        }
+        .breadcrumb_product_detail {
+            display: none !important;
+        }
+        .breadcrumb_category_search {
+            display: none !important;
+        }
+    }
+
+    @media (min-width: 768px) and (max-width: 768px) {
+        .breadcrumb_custom {
+            margin-bottom: 20px !important;
+            width: 91.2% !important;
+            margin-left: 20px !important;
+        }
+        .breadcrumb_my_account {
+            margin-bottom: 20px !important;
+            width: 98% !important;
+            margin-left: -3px !important;
+        }
+        .breadcrumb_product_detail {
+            display: none !important;
+        }
+        .breadcrumb_category_search {
+            display: none !important;
+        }
+    }
+
+    @media (min-width: 769px) and (max-width: 992px) {
+        .breadcrumb_custom {
+            width: 93.5% !important;
+            margin-left: 22px !important;
+        }
+        .breadcrumb_my_account {
+            width: 93.5% !important;
+            margin-left: 22px !important;
+        }
+        .breadcrumb_product_detail {
+            display: none !important;
+        }
+        .breadcrumb_category_search {
+            display: none !important;
+        }
+    }
+</style>
+
+<?php
+    $homeLabel      = $this->__('Home');
+    $myAccountLabel = $this->__('My Account');
+    $currentUrl = Mage::helper('core/url')->getCurrentUrl();
+    $listElements = "";
+
+    // Meta description over categories
+    $getProd = Mage::getModel('catalog/product')->getCategoryId();
+    $metaId = Mage::getModel('schrackcatalog/product')->getSchrackMainCategoryStsIdFromValue($getProd);
+    $idExtraction = explode('#', $metaId);
+    $rightId = end($idExtraction);
+    if($rightId) {
+        $rightFormKey = str_replace('/', '_', $rightId) . "_metadescription";
+    } else {
+        $rightFormKey = "";
+    }
+    $data = Mage::app()->getTranslator()->translate([$rightFormKey]);
+
+    $pattern = '/^[0-9]{2}/';
+    $checkPattern = preg_match($pattern, $data);
+
+    $data = ($checkPattern || !$data) ? "Schrack Technik" : "$data | Schrack Technik";
+
+    echo "<div id='metaDescriptionData' hidden>$data</div>";
+
+    //----------------------------------------------- show excepting on checkout
+    if(!stristr($currentUrl, 'checkout/onepage/')):
+        //------------------------------------------------- if shareshoppingcart
+        if (stristr($currentUrl, 'cart/shareshoppingcart/')) {
+            return false;
+        }
+        //----------------------------------------------------------------------
+        $typo3Url = Mage::getStoreConfig('schrack/typo3/typo3url');
+        //------------------------------------------------------ set default URL
+        $url = (isset($typo3Url) && strlen($typo3Url)) ? $typo3Url : $this->getUrl('/');
+        //----------------------------------------------------------------------
+        if ($crumbs && is_array($crumbs)):
+            foreach ($crumbs as $_crumbName => $_crumbInfo):
+                $classes = $_crumbName . ($_crumbInfo['last'] ? ' last' : '');
+                //--------------------------------------------------------------
+                $label = $this->htmlEscape($this->__($_crumbInfo['label']));
+                //--------------------------------------------------------------
+                $temp = $label;
+                //--------------------------------------------------------------
+                if ($_crumbInfo['last']):
+                    $temp = '<strong>' . $label . '</strong>';
+                endif;
+                //-------------------------------------- check for existing link
+                if ($_crumbInfo['link']):
+                    $_crumbInfo['link'] = Mage::helper('schrack')->fixUrlPath($_crumbInfo['link']);
+                    //----------------------------------------------------------
+                    $link  = $_crumbInfo['link'];
+                    $title = $this->htmlEscape($this->__($_crumbInfo['title']));
+                    //----------------------------------------------- build link
+                    $temp = '<a href="' . $link . '" title="' . $title . '"'
+                          .    ' class="clickable_breadcrumb_link" >'
+                          .    $label
+                          . '</a>';
+                endif;
+                //------------------------------------------------------- output
+                $listElements .= '<li class="' . $classes . '">' . $temp . '</li>';
+            endforeach;
+        else: //-------------------------------------------------- special paths
+            $dashboard = false;
+            //-----------------------------------------  Dashboard Offer Details
+            if (stristr($currentUrl, 'type/offer/')):
+                $dashboard = true;
+                $listPageUrl = $this->getUrl('customer/account/offers/');
+                $breadCaption = $this->__('Offers');
+                $breadDetailCaption = $this->__('Offer Details');
+            endif;
+            //------------------------------------------- Dashboard Order Detail
+            if (stristr($currentUrl, 'type/order/')):
+                $dashboard = true;
+                $listPageUrl = $this->getUrl('customer/account/orders/');
+                $breadCaption = $this->__('Orders');
+                $breadDetailCaption = $this->__('Order Details');
+            endif;
+            //---------------------------------------- Dashboard Shipment Detail
+            if (stristr($currentUrl, 'type/shipment/')):
+                $dashboard = true;
+                $listPageUrl = $this->getUrl('customer/account/shipments/');
+                $breadCaption = $this->__('Shipments');
+                $breadDetailCaption = $this->__('Shipment Details');
+            endif;
+            //----------------------------------------- Dashboard Invoice Detail
+            if (stristr($currentUrl, 'type/invoice/')):
+                $dashboard = true;
+                $listPageUrl = $this->getUrl('customer/account/invoices/');
+                $breadCaption = $this->__('Invoices');
+                $breadDetailCaption = $this->__('Invoice Details');
+            endif;
+            //-------------------------------------- Dashboard Creditmemo Detail
+            if (stristr($currentUrl, 'type/creditmemo/')):
+                $dashboard = true;
+                $listPageUrl = $this->getUrl('customer/account/creditmemos/');
+                $breadCaption = $this->__('Creditmemos');
+                $breadDetailCaption = $this->__('Creditmemo Details');
+            endif;
+            //------------------------------------------ Dashboard Detail Search
+            if (stristr($currentUrl, 'account/documentsDetailsearch')):
+                $dashboard = true;
+                $listPageUrl = '';
+                $breadCaption = $this->__('Detail Search');
+                $breadDetailCaption = null;
+            endif;
+            //------------------------------------------ Dashboard Detail Search
+            if (stristr($currentUrl, 'sezame/link')):
+                $dashboard = true;
+                $listPageUrl = '';
+                $breadCaption = $this->__('Sezame Pairing');
+                $breadDetailCaption = null;
+            endif;
+            //------------------------------------------------------------------
+            if($dashboard):
+                $listElements .= dashboardBreadCrumb($url, $listPageUrl, $breadCaption, $homeLabel, $myAccountLabel, $breadDetailCaption);
+            else:
+                $listElements .= '<li class="last"><a href="' . $url . '"><strong>'. Mage::helper('cms')->__('Home') .'</strong></a></li>';
+            endif;
+        endif;
+        //--------------------------------------------------------- final output
+        echo '<ul id="breadcrumb_block" property="breadcrumb" class="breadcrumb clearfix">' .
+                $listElements .
+             '<ul>';
+    endif;
+
+    //====================================================== dashboardBreadCrumb
+    function dashboardBreadCrumb ( $url, $breadLinkUrl, $breadCaption,
+                                   $homeName, $myAccountName,
+                                   $breadDetailCaption) {
+    //==========================================================================
+        $lastUrl = Mage::getUrl('customer/account/');
+        $breadString = '<li class="last">' .
+                           '<a href="' . $url . '">' . $homeName . '</a>'.
+                       '</li>'.
+                       '<li class="last">' .
+                            '<a href="' . $lastUrl . '">' .$myAccountName . '</a>'.
+                       '</li>';
+        //----------------------------------------------------------------------
+        if ( $breadLinkUrl ):
+            $breadString .= '<li class="last">' .
+                                '<a href="' . $breadLinkUrl . '">' .
+                                    $breadCaption .
+                                '</a>'.
+                            '</li>';
+            //------------------------------------------------------------------
+            if ( ! $breadDetailCaption ) {
+                $breadDetailCaption = substr($breadCaption, 0, -1) . ' Details';
+            }
+            //------------------------------------------------------------------
+            $breadString .= '<li class="Orders Details last">' .
+                                '<strong>' . $breadDetailCaption . '</strong>'.
+                             '</li>';
+        else:
+            $breadString .= '<li class="Orders Details last">' .
+                                $breadCaption .
+                            '</li>';
+        endif;
+        //----------------------------------------------------------------------
+        return $breadString;
+    } //========================================== dashboardBreadCrumb ***END***
+
+
+?>
+<script type="text/javascript">
+    //<![CDATA[
+    // set meta description in head
+    let data = jQuery('#metaDescriptionData').text();
+    jQuery('#metaDescriptionDataHead').attr('content', data);
+    localStorage.metaDescriptionText = data;
+
+    jQuery(document).ready(function() {
+        refreshBreadcrumbOnSale(true);
+        if (jQuery(window).width() < 993) {
+            jQuery('#breadcrumb_block').addClass('breadcrumb_custom');
+        }
+
+        jQuery('.clickable_breadcrumb_link').on('click', function() {
+            if (dataLayer && jQuery(this).text()) {
+                dataLayer.push({
+                    'event' : 'allNavigation',
+                    'eventAction' : 'Breadcrumb Navigation',
+                    'eventLabel' : jQuery(this).text()
+                });
+            }
+        });
+    });
+
+    //]]>
+</script>
+<!-- app/design/frontend/schrack/schrackresponsive/template/page/html/breadcrumbs.phtml (end) -->

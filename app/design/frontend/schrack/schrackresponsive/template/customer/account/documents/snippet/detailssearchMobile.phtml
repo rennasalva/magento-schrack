@@ -1,0 +1,76 @@
+<!-- app/design/frontend/schrack/schrackresponsive/template/customer/account/documents/snippet/detailssearchMobile.phtml (start) -->
+<?php
+    $ordersList = json_decode(json_encode(Mage::registry('ordersList')),TRUE);
+    $counter = 0;
+    if ( intval(Mage::getStoreConfigFlag('schrack/shop/enable_custom_project_info_in_checkout')) == 1 ) {
+        $referenceTitle = $this->__('Order-/Project Reference');
+    } else {
+        $referenceTitle = $this->__('Meine Bestellangabe');
+    }
+?>
+
+<?php
+    if(count($ordersList) > 0) :
+        foreach ($ordersList as $order) :	// For Tablet & Mobile View
+?>
+        <tr class="<?php echo (++$counter%2==0) ? "even": "odd" ?>">
+            <td>
+            <div class="tabularCont hidden-md hidden-lg">
+                <div class="row-tbl">
+                    <div class="body">
+                        <div class="mobilSecLft">
+                            <div class="flexbox col-xs-12 col-sm-12 col-md-2 colmn docuemntDatetime3 large-fine-5 columns-fine">
+                                <div class="flexcol responsiveHd"><?php echo $referenceTitle; ?>:</div>
+                                <div class="flexcol"><?php echo $order['nameProject']; ?></div>
+                            </div>
+                            <div class="flexbox col-xs-12 col-sm-12 col-md-3 colmn documentNumber3 large-fine-6 columns-fine">
+                                <div class="flexcol responsiveHd"><?php echo $this->__('Document Number'); ?>:</div>
+                                <div class="flexcol">
+                                    <a class="order-number number_tracking_information" href="<?php echo $order['detailUrl']; ?>"><?php echo $order['documentNumber']; ?></a>
+                                </div>
+                            </div>
+                            <div class="flexbox col-xs-12 col-sm-12 col-md-3 colmn documentNumber3 large-fine-6 columns-fine">
+                                <div class="flexcol responsiveHd"><?php echo $this->__('Order Number'); ?>:</div>
+                                <div class="flexcol">
+                                    <a class="order-number number_tracking_information" href="<?php echo $order['detailUrlOrder']; ?>"><?php echo $order['isLa1'] ? '' : $order['orderNumber']; ?></a>
+                                </div>
+                            </div>
+                            <div class="flexbox col-xs-12 col-sm-12 col-md-3 colmn documentReference large-fine-7 columns-fine">
+                                <div class="flexcol responsiveHd"><?php echo $this->__('Date'); ?>:</div>
+                                <div class="flexcol"><?php echo $order['creationDate']; ?></div>
+                            </div>
+                            <div class="flexbox col-xs-12 col-sm-12 col-md-3 colmn documentReference large-fine-7 columns-fine">
+                                <div class="flexcol responsiveHd"><?php echo $this->__('Document'); ?>:</div>
+                                <div class="flexcol"><?php echo $order['documentType']; ?></div>
+                            </div>
+                        </div>
+                        <div class="mobilSecRgt"><?php echo $order['status']; ?></div>
+                    </div>
+                </div>
+            </div>
+            </td>
+        </tr>
+        <?php endforeach; ?>
+    <?php endif; ?>
+
+
+<script type="text/javascript">
+    //<![CDATA[
+
+    jQuery(document).ready(function() {
+
+        // We have 2 forms, with 2 ok-buttons to submit new-partslist-form, with same id in footer (remove number one in cart):
+        // Wait one second, and remove the first element, after it is loaded by AJAX:
+        setTimeout( function() {
+            if (jQuery('.save_new_partslist').length > 1) {
+                jQuery('.save_new_partslist')[0].remove();
+            }
+        }, 2000);
+
+    });
+
+    //]]>
+</script>
+
+
+<!-- app/design/frontend/schrack/schrackresponsive/template/customer/account/documents/snippet/detailssearchMobile.phtml (end) -->

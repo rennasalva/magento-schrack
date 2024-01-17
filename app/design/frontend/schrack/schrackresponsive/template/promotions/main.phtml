@@ -1,0 +1,2701 @@
+<!-- app/design/frontend/schrack/schrackresponsive/template/promotions/main.phtml (start) -->
+<?php
+
+    $pathSuffix = '/frontend/schrack/default/schrackdesign/Public/Images/rwd/downloadIconWhite.png';
+    $pathSuffixBlue = '/frontend/schrack/default/schrackdesign/Public/Images/rwd/downloadIconBlue.png';
+    $downlaodIconWhitePath = Mage::getBaseUrl('skin') . $pathSuffix;
+    $downlaodIconBluePath = Mage::getBaseUrl('skin') . $pathSuffixBlue;
+    $skinUrl = $this->getSkinUrl('schrackdesign/Public/Images/rwd/filter-icon.png');
+
+?>
+
+<style>
+    .lower_main_content {
+        padding-left: 15px;
+        padding-right: 15px !important;
+    }
+    .border_fix {
+        background: #edecec !important;
+        box-shadow: none !important;
+    }
+    .search-page-container {
+        padding: 32px 0 0 24px !important;
+    }
+    .break_word {
+        word-break: break-word !important;
+    }
+    .redColor {
+        color: #d1222b !important;
+    }
+    .search_result_list_tile_specific {
+        height: 306px !important;
+        width: 17% !important;
+        margin-right: 2.95% !important;
+    }
+    .prodListingSales {
+        display: table !important;
+    }
+    .search_result_list_tile_sales {
+        height: 306px !important;
+        float: left !important;
+        position: relative;
+        width: 180px;
+    }
+    .search_result_list_subtile_sales {
+        float: left !important;
+    }
+    .imgCont {
+        margin-bottom: 2px !important;
+    }
+    .loginSuggest {
+        font-weight: 400;
+        font-size: 18px;
+        height: auto !important;
+        width: 208px !important;
+        padding: 10px;
+        margin-left: -187px;
+        text-align: center;
+    }
+    .partslist_dropdown_menu {
+        height: 207px !important;
+        width: 208px !important;
+        left: -184px !important;
+        padding: 0 !important;
+        overflow-y: scroll !important;
+    }
+    .add-to-new-partslist {
+        width: 100% !important;
+        height: 55px;
+        margin-bottom: 0 !important;
+        margin-right: 0 !important;
+        text-align: left !important;
+        padding-left: 10px !important;
+        padding-top: 9px !important;
+        background: #f5f5f5 !important;
+        color: black !important;
+        cursor: pointer !important;
+        border: 0 !important;
+        border-bottom: 1px solid #e5ebef !important;
+        box-shadow: none;
+    }
+    .add-to-new-partslist:hover {
+        background: #00589d !important;
+        color: #fff !important;
+    }
+    .partslistRow {
+        width: 100% !important;
+        background: #f5f5f5 !important;
+        color: black !important;
+        font-size: 14px !important;
+        height: auto !important;
+        margin: 0 !important;
+        padding-top: 8px !important;
+        padding-bottom: 8px !important;
+        padding-left: 10px !important;
+        text-align: left !important;
+        cursor: pointer !important;
+        border: 0 !important;
+        border-bottom: 1px solid #e5ebef !important;
+        box-shadow: none;
+    }
+    .partslistRow:hover {
+        background: #00589d !important;
+        color: #fff !important;
+    }
+    .headline_list_tile_sku{
+        color: #005b9f !important;;
+        font-size: 16px !important;
+        display: block !important;
+    }
+    .modified_partslist_icon {
+        position: absolute;
+        top: 10px;
+        right: 7px;
+    }
+    .modified_partslist_icon_sales {
+        position: absolute;
+        top: 11px;
+        right: 15px;
+    }
+    .searchtresult_productdetail_link, .stock_clearance_tracking {
+        font-size: 16px;
+    }
+    .general_current_addtocart_container {
+        width: 100%;
+        margin-top: 21px;
+    }
+    .general_current_addtocart_container_sales {
+        width: 100%;
+        margin-top: 21px;
+    }
+    .addToCartListViewOffset {
+        margin-left: 26%!important;
+    }
+    .qtyaddtocartfield {
+        float: left !important;
+        margin-left: 24%;
+        width: 40px;
+        text-align: center !important;
+        color: #898989 !important;
+        font-size: 16px !important;
+        font-weight: bold !important;
+        padding: 0 !important;
+        border: 1px solid #888;
+        height: 25px !important;
+    }
+    .qtyaddtocartbutton {
+        float: left !important;
+        margin-left: 10px;
+        padding: 0;
+        border: none;
+        width: 47px;
+        height: 25px;
+    }
+    .qtyaddtocartbutton:after {
+        height: 25px !important;
+    }
+    .modified_price_label {
+        width: 100% !important;
+        height: 30px;
+        position: absolute;
+        bottom: 34px;
+        left: 0;
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+        align-items: center;
+
+    }
+    .general_current_price_container {
+        float: left;
+        margin-top: 8px !important;
+        margin-bottom: -27px !important;
+        font-size: 14px !important;
+    }
+    .general_current_price_currency {
+        display: block;
+        margin-bottom: 10px;
+        float: left;
+        font-size: 14px !important;
+        color: #888;
+    }
+    .general_current_price_view {
+        color: #005b9f;
+        font-size: 14px !important;
+        float: left;
+        margin-left: 4px;
+        margin-bottom: 10px;
+    }
+    .general_current_priceunit {
+        display: block;
+        margin-bottom: 10px;
+        float: left;
+        color: #888;
+    }
+    .trinity_sign {
+        position: absolute !important;
+        display: inline-block !important;
+        vertical-align: top !important;
+        border: 3px solid #555555 !important;
+        background: #555555 !important;
+        color: #fff !important;
+        font-size: 10px;
+        letter-spacing: 3px !important;
+        line-height: 8px;
+        font-weight: 600 !important;
+        left: auto !important;
+        right: auto !important;
+        top: 24px;
+        padding-left: 9px !important;
+        padding-right: 7px !important;
+        padding-top: 1px !important;
+        padding-bottom: 1px !important;
+        width: 90px !important;
+    }
+
+    .vignette_sign {
+        position: absolute !important;
+        display: inline-block !important;
+        vertical-align: top !important;
+        border: 3px solid #d1222b !important;
+        background: #d1222b !important;
+        color: #fff !important;
+        font-size: 10px;
+        letter-spacing: 0 !important;
+        line-height: 8px;
+        font-weight: 600 !important;
+        left: auto !important;
+        right: auto !important;
+        top: 25px;
+        padding-left: 9px !important;
+        padding-right: 7px !important;
+        padding-top: 1px !important;
+        padding-bottom: 1px !important;
+        width: 90px !important;
+    }
+
+    .promo_sign {
+        position: absolute;
+        top: 0;
+        left: 8px;
+        width: 23px;
+    }
+
+    .search_result_availability_data {
+        color: #555;
+        text-align: left;
+        padding: 0 10px 0 10px;
+        display: block;
+        /* font-family: robotoregular,Helvetica,Arial,Sans-Serif;
+        font-weight: bold;
+        font-size: 12px; */
+    }
+
+    .qty_underlined {
+        margin-top: 4px;
+        border-bottom: 1px solid #555;
+        font-weight: bold;
+    }
+
+    .stock_switch_icon {
+        position: absolute;
+        right: 0;
+        top: 36px;
+        padding: 2px;
+        color: white !important;
+        font-size: 22px;
+        font-weight: bold;
+        background: #005b9f;
+        cursor: pointer;
+    }
+
+    .avail_tab_container {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height:100%;
+        background: white;
+        z-index: 2;
+        display: none;
+        padding: 10px 0 0 0 !important;
+        overflow: hidden;
+    }
+
+    .promotion_head {
+        position: relative;
+        color: #00589d;
+        padding-left: 1.3%;
+        padding-right: 1.3%;
+    }
+    .promotion_head_img {
+        width: 100%;
+    }
+    .promotion_title_container {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        flex-direction: column;
+        justify-content: center;
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+    .promotion_title {
+        color: white;
+        text-align: center;
+    }
+    .promotion_subtitle {
+        color: white;
+        text-align: center;
+    }
+    .promotion_pdf_download {
+        position: absolute;
+        right: 3%;
+        bottom: 2%;
+        color: white;
+        background: no-repeat right center url("<?php echo $downlaodIconWhitePath; ?>");
+        padding-right: 22px;
+        cursor: pointer;
+        display: none;
+        font-size: 18px;
+    }
+    .promotion_pdf_download_mobile {
+        font-weight: bold;
+        color: #00589d !important;
+        background: no-repeat right center url("<?php echo $downlaodIconBluePath; ?>") !important;
+    }
+    .promotion_pdf_download_short {
+        display: none;
+    }
+    .promotion_selector_container {
+        margin-left: 10px;
+        margin-right: 15px;
+        margin-top: 16px;
+        border-bottom: 3px solid #00589d;
+        padding-bottom: 4px;
+        overflow: hidden;
+    }
+
+    .promotion_selector_container:after {
+        clear: both;
+        content: "";
+        display: block;
+    }
+
+    .promotion_selector {
+        font-size: 16px;
+        font-weight: bold;
+        margin-right: 24px;
+        margin-bottom: 12px;
+        float: left;
+    }
+
+    .promotion_selector_unselected {
+        color: #00589d;
+        border: 1px solid #00589d;
+        cursor: pointer;
+        padding: 8px 12px 8px 12px;
+    }
+
+    .promotion_selector_selected {
+        color: white;
+        background: #00589d;
+        padding: 9px 13px 9px 13px;
+    }
+
+    .promoProdListing li {
+        width: 17%;
+        margin-right: 2.95%;
+    }
+    .promoProdListing li > div > div > ul > li {
+        width: 100% !important;
+        margin-right: 0 !important;
+    }
+    .filter_button {
+        float: right;
+        padding: 3px 24px 6px;
+        color: #00589d;
+        font-size: 16px;
+        cursor: pointer !important;
+    }
+    .filter_button:after {
+        clear: both;
+        content: "";
+        display: block;
+    }
+    .filter_button_icon {
+        height: 16px;
+    }
+    .filter_popup {
+        display: none;
+        position: absolute;
+        right: 36px;
+        border: 1px solid #ececec;
+        box-shadow: 0 0 3px 0 rgba(0,0,0,.3);
+        background: white;
+        padding: 6px;
+        width: 290px;
+        z-index: 100;
+        cursor: default;
+        color: black;
+        font-size: 14px;
+    }
+    .filter_popup_headline {
+        font-weight: bold;
+    }
+    .filter_popup_header {
+        margin-bottom: 12px;
+    }
+    .filter_popup_label {
+        font-weight: normal;
+    }
+    .alternate_text_info_mobile_only {
+        /* border: 1px solid #00589d; */
+        margin-top: 3px;
+        margin-left: 1.3%;
+        margin-right: 1.3%;
+        padding-left: 1.3%;
+        padding-right: 1.3%;
+        padding-top: 3px;
+        padding-bottom: 3px;
+    }
+    .promotion_title_mobile {
+        font-weight: bold;
+        color: #00589d;
+    }
+    .promotion_subtitle_mobile {
+        font-weight: bold;
+        color: #00589d;
+    }
+    .download_panel_mobile {
+        position: absolute;
+        right: 3%;
+        width: 187px;
+        height: 22px;
+        /* background: yellow; */
+        margin-top: -23px;
+    }
+
+/* Smartphone Resolutions */
+
+    @media (min-width: 1px) and (max-width: 320px) {
+        .breadcrumb {
+            margin-bottom: 5px !important;
+        }
+        .promotion_title {
+            display: none;
+        }
+        .promotion_subtitle {
+            display: none;
+        }
+        .promotion_title_mobile {
+            font-size: 20px;
+        }
+        .promotion_subtitle_mobile {
+            font-size: 16px;
+        }
+        .promotion_pdf_desktop {
+            display: none !important;
+        }
+        .lower_main_content {
+            padding-left: 1.9% !important;
+        }
+        .partslist_dropdown_menu {
+            height: 270px !important;
+            width: 136px !important;
+            left: -114px !important;
+        }
+        .add-to-new-partslist {
+            font-size: 11px !important;
+            height: 41px !important;
+        }
+        .partslistRow {
+            font-size: 11px !important;
+        }
+        .save_new_partslist {
+            margin-left: -80px !important;
+        }
+        .promoProdListing li {
+            width: 84%;
+            margin-left: 24px;
+        }
+        .promotion_pdf_download_long {
+            display: none;
+        }
+        .promotion_pdf_download_short {
+        }
+        .promotion_title {
+            font-size: 24px;
+        }
+        .promotion_subtitle {
+            font-size: 14px;
+        }
+        .promotion_pdf_download {
+            font-size: 14px !important;
+            right: 28px;
+        }
+        .search-page-container {
+            padding-left: 10px !important;
+        }
+        .trinity_sign {
+            line-height: 3px !important;
+            font-size: 8px !important;
+            top: 23px !important;
+            width: 77px !important;
+            left: 33px !important;
+        }
+        .vignette_sign {
+            line-height: 3px !important;
+            font-size: 8px !important;
+            top: 23px !important;
+            width: 77px !important;
+            left: 33px !important;
+        }
+        .promo_sign {
+            left: 5px;
+            top: -3px;
+            width: 20px;
+        }
+        .searchtresult_productdetail_link {
+            font-size: 13px !important;
+        }
+        .headline_list_tile_sku{
+            font-size: 12px !important;
+            margin-top: 5px !important;
+        }
+        .qtyaddtocartfield {
+            margin-left: 8px;
+        }
+        .promotion_title_container {
+            width: 91% !important;
+            padding-left: 11px !important;
+            padding-top: 6px !important;
+        }
+        .promoProdListing {
+            margin-left: -2px !important;
+            margin-right: -29px !important;
+        }
+        .promotion_selector_container {
+            margin-top: 16px !important;
+            margin-right: 6px !important;
+            margin-bottom: 0 !important;
+            margin-left: 1.3% !important;
+        }
+        .shop_specific_height {
+            font-size: 1em !important;
+        }
+        .modified_partslist_icon {
+            right: 18px;
+        }
+        .modified_partslist_icon_sales {
+            right: 26px;
+        }
+        .general_current_price_container {
+            margin-bottom: -36px !important;
+            margin-left: 2px;
+        }
+        .general_current_addtocart_container {
+            margin-left: -32px;
+            padding-left: 39px;
+            padding-top: 10px;
+        }
+        .general_current_addtocart_container_sales {
+            margin-left: 13px !important;
+        }
+        .qtyaddtocartbutton {
+            width: 32px !important;
+            margin-left: 3px !important;
+        }
+        .addToCartListViewOffset {
+            margin-left: 9%!important;
+        }
+        .loginSuggest {
+            margin-left: -100px;
+            width: 132px !important;
+            font-size: 14px;
+        }
+        .search_result_list_tile_sales {
+            width: 100%;
+        }
+        .search_result_list_subtile_sales {
+            margin-left: 14%;
+            width: 79%;
+        }
+        .search_result_list_tile_specific {
+            float: left !important;
+            width: 43% !important;
+        }
+        .searchResultPartslistIcon {
+            margin-right: -10px;
+            margin-top: 0;
+        }
+    }
+
+    @media (min-width: 321px) and (max-width: 360px) {
+        .breadcrumb {
+            margin-bottom: 5px !important;
+        }
+        .promotion_title {
+            display: none;
+        }
+        .promotion_subtitle {
+            display: none;
+        }
+        .promotion_title_mobile {
+            font-size: 20px;
+        }
+        .promotion_subtitle_mobile {
+            font-size: 16px;
+        }
+        .promotion_pdf_desktop {
+            display: none !important;
+        }
+        .lower_main_content {
+            padding-left: 0 !important;
+        }
+        .partslist_dropdown_menu {
+            left: -135px !important;
+            width: 154px !important;
+            height: 270px !important;
+        }
+        .add-to-new-partslist {
+            font-size: 11px !important;
+            height: 41px !important;
+        }
+        .partslistRow {
+            font-size: 11px !important;
+        }
+        .save_new_partslist {
+            margin-left: -80px !important;
+        }
+        .promoProdListing li {
+            width: 92%;
+            margin-right: 24px;
+        }
+        .promotion_pdf_download_long {
+            display: none;
+        }
+        .promotion_pdf_download_short {
+        }
+        .promotion_title {
+            font-size: 24px;
+        }
+        .promotion_subtitle {
+            font-size: 14px;
+        }
+        .promotion_pdf_download {
+            font-size: 14px !important;
+            right: 28px;
+        }
+        .trinity_sign {
+            line-height: 3px !important;
+            font-size: 8px !important;
+            top: 20px !important;
+            width: 77px !important;
+            left: 30px !important;
+        }
+        .vignette_sign {
+            line-height: 3px !important;
+            font-size: 8px !important;
+            top: 20px !important;
+            width: 77px !important;
+            left: 30px !important;
+        }
+        .promo_sign {
+            left: 5px;
+            top: -5px;
+            width: 20px;
+        }
+        .shop_specific_height {
+            font-size: 0.9em !important;
+        }
+        .headline_list_tile_sku{
+            font-size: 12px !important;
+            margin-top: 3px !important;
+        }
+        .modified_partslist_icon {
+            right: 15px !important;
+            top: 3px !important;
+            margin-top: 3px !important;
+        }
+        .searchtresult_productdetail_link {
+            font-size: 13px !important;
+        }
+        .modified_partslist_icon_sales {
+            right: 26px;
+        }
+        .general_current_addtocart_container {
+            margin-left: -39px;
+        }
+        .general_current_addtocart_container_sales {
+            margin-left: 29px !important;
+        }
+        .addToCartListViewOffset {
+            margin-left: 10%!important;
+        }
+        .loginSuggest {
+            margin-left: -106px;
+            width: 132px !important;
+            font-size: 14px;
+        }
+        .search_result_list_tile_sales {
+            width: 100%;
+        }
+        .search_result_list_subtile_sales {
+            margin-left: 0;
+            width: 100%;
+        }
+        .search_result_list_tile_specific {
+            float: left !important;
+            width: 43% !important;
+        }
+        .searchResultPartslistIcon {
+            margin-right: -10px;
+            margin-top: 0;
+        }
+    }
+
+    @media (min-width: 361px) and (max-width: 400px) {
+        .breadcrumb {
+            margin-bottom: 5px !important;
+        }
+        .promotion_title {
+            display: none;
+        }
+        .promotion_subtitle {
+            display: none;
+        }
+        .promotion_title_mobile {
+            font-size: 20px;
+        }
+        .promotion_subtitle_mobile {
+            font-size: 16px;
+        }
+        .promotion_pdf_desktop {
+            display: none !important;
+        }
+        .lower_main_content {
+            padding-left: 0 !important;
+        }
+        .partslist_dropdown_menu {
+            left: -117px !important;
+            width: 136px !important;
+            height: 270px !important;
+        }
+        .add-to-new-partslist {
+            font-size: 11px !important;
+            height: 41px !important;
+        }
+        .partslistRow {
+            font-size: 11px !important;
+        }
+        .save_new_partslist {
+            margin-left: -80px !important;
+        }
+        .promoProdListing li {
+            width: 92%;
+            margin-right: 24px;
+        }
+        .promotion_pdf_download_long {
+            display: none;
+        }
+        .promotion_pdf_download_short {
+        }
+        .promotion_title {
+            font-size: 24px;
+        }
+        .promotion_subtitle {
+            font-size: 14px;
+        }
+        .promotion_pdf_download {
+            font-size: 14px !important;
+            right: 28px;
+        }
+        .trinity_sign {
+            line-height: 3px !important;
+            font-size: 8px !important;
+            top: 23px !important;
+            width: 77px !important;
+            left: 35px !important;
+        }
+        .vignette_sign {
+            line-height: 3px !important;
+            font-size: 8px !important;
+            top: 23px !important;
+            width: 77px !important;
+            left: 35px !important;
+        }
+        .promo_sign {
+            left: 5px;
+            top: -3px;
+            width: 20px;
+        }
+        .headline_list_tile_sku{
+            font-size: 13px !important;
+            margin-top: 5px !important;
+        }
+        .qtyaddtocartbutton {
+            width: 40px !important;
+            margin-left: 8px !important;
+        }
+        .searchtresult_productdetail_link {
+            font-size: 13px !important;
+        }
+        .shop_specific_height {
+            font-size: 1em !important;
+        }
+        .modified_partslist_icon {
+            right: 14px;
+            top: 6px;
+        }
+        .modified_partslist_icon_sales {
+            right: 26px;
+        }
+        .general_current_addtocart_container {
+            margin-left: -11px;
+        }
+        .general_current_addtocart_container_sales {
+            margin-left: 48px !important;
+        }
+        .addToCartListViewOffset {
+            margin-left: 13%!important;
+        }
+        .general_current_price_container {
+            margin-top: 2px !important;
+        }
+        .loginSuggest {
+            margin-left: -138px;
+            width: 167px !important;
+            font-size: 14px;
+        }
+        .search_result_list_tile_sales {
+             width: 100%;
+        }
+        .search_result_list_subtile_sales {
+            margin-left: 0;
+        }
+        .search_result_list_tile_specific {
+            float: left !important;
+            width: 43% !important;
+        }
+        .searchResultPartslistIcon {
+            margin-right: -10px;
+            margin-top: 0;
+        }
+    }
+
+    @media (min-width: 401px) and (max-width: 410px) {
+        .breadcrumb {
+            margin-bottom: 5px !important;
+        }
+        .promotion_title {
+            display: none;
+        }
+        .promotion_subtitle {
+            display: none;
+        }
+        .promotion_title_mobile {
+            font-size: 20px;
+        }
+        .promotion_subtitle_mobile {
+            font-size: 16px;
+        }
+        .promotion_pdf_desktop {
+            display: none !important;
+        }
+        .lower_main_content {
+            padding-left: 0 !important;
+        }
+        .partslist_dropdown_menu {
+            left: -135px !important;
+            width: 154px !important;
+        }
+        .add-to-new-partslist {
+            font-size: 11px !important;
+        }
+        .partslistRow {
+            font-size: 11px !important;
+        }
+        .save_new_partslist {
+            margin-left: -80px !important;
+        }
+        .promoProdListing li {
+            width: 92%;
+            margin-right: 24px;
+        }
+        .promotion_pdf_download_long {
+            display: none;
+        }
+        .promotion_pdf_download_short {
+        }
+        .promotion_title {
+            font-size: 24px;
+        }
+        .promotion_subtitle {
+            font-size: 14px;
+        }
+        .promotion_pdf_download {
+            font-size: 14px !important;
+            right: 28px;
+        }
+        .qty_right {
+            position: absolute;
+            right: 10px;
+        }
+        .trinity_sign {
+            line-height: 3px !important;
+            font-size: 8px !important;
+            top: 26px !important;
+            width: 77px !important;
+            left: 26px !important;
+        }
+        .vignette_sign {
+            line-height: 3px !important;
+            font-size: 8px !important;
+            top: 26px !important;
+            width: 77px !important;
+            left: 26px !important;
+        }
+        .promo_sign {
+            left: 5px;
+            top: -3px;
+            width: 20px;
+        }
+        .headline_list_tile_sku{
+            font-size: 13px !important;
+            margin-top: 5px !important;
+        }
+        .qtyaddtocartbutton {
+            width: 40px !important;
+            margin-left: 8px !important;
+        }
+        .searchtresult_productdetail_link {
+            font-size: 13px !important;
+        }
+        .shop_specific_height {
+            font-size: 1em !important;
+        }
+        .modified_partslist_icon {
+            right: 14px;
+            top: 6px;
+        }
+        .modified_partslist_icon_sales {
+            right: 26px;
+        }
+        .general_current_addtocart_container {
+            margin-left: -11px;
+        }
+        .general_current_addtocart_container_sales {
+            margin-left: 48px !important;
+        }
+        .addToCartListViewOffset {
+            margin-left: 13%!important;
+        }
+        .general_current_price_container {
+            margin-top: 2px !important;
+        }
+        .loginSuggest {
+            margin-left: -138px;
+            width: 167px !important;
+            font-size: 14px;
+        }
+        .search_result_list_tile_sales {
+            width: 100%;
+        }
+        .search_result_list_subtile_sales {
+            margin-left: 0;
+        }
+        .search_result_list_tile_specific {
+            float: left !important;
+            width: 43% !important;
+        }
+        .searchResultPartslistIcon {
+            margin-right: -10px;
+            margin-top: 0;
+        }
+    }
+
+    @media (min-width: 411px) and (max-width: 460px) {
+        .breadcrumb {
+            margin-bottom: 5px !important;
+        }
+        .promotion_title {
+            display: none;
+        }
+        .promotion_subtitle {
+            display: none;
+        }
+        .promotion_title_mobile {
+            font-size: 20px;
+        }
+        .promotion_subtitle_mobile {
+            font-size: 16px;
+        }
+        .promotion_pdf_desktop {
+            display: none !important;
+        }
+        .lower_main_content {
+            padding-left: 0 !important;
+        }
+        .partslist_dropdown_menu {
+            left: -135px !important;
+            width: 154px !important;
+            height: 267px !important;
+        }
+        .add-to-new-partslist {
+            font-size: 11px !important;
+            height: 41px !important;
+        }
+        .partslistRow {
+            font-size: 11px !important;
+        }
+        .save_new_partslist {
+            margin-left: -80px !important;
+        }
+        .promoProdListing li {
+            width: 92%;
+            margin-right: 24px;
+        }
+        .promotion_pdf_download_long {
+            display: none;
+        }
+        .promotion_pdf_download_short {
+        }
+        .promotion_title {
+            font-size: 24px;
+        }
+        .promotion_subtitle {
+            font-size: 14px;
+        }
+        .promotion_pdf_download {
+            font-size: 14px !important;
+            right: 28px;
+        }
+        .qty_right {
+            position: absolute;
+            right: 10px;
+        }
+        .shop_specific_height {
+            font-size: 1em !important;
+        }
+        .trinity_sign {
+            line-height: 4px !important;
+            font-size: 8px !important;
+            top: 24px !important;
+            width: 77px !important;
+            left: 43px !important;
+        }
+        .vignette_sign {
+            line-height: 4px !important;
+            font-size: 8px !important;
+            top: 24px !important;
+            width: 77px !important;
+            left: 43px !important;
+        }
+        .promo_sign {
+            left: 5px;
+            top: -3px;
+            width: 22px;
+        }
+        .headline_list_tile_sku{
+            font-size: 13px !important;
+            margin-top: 5px !important;
+        }
+        .qtyaddtocartbutton {
+            width: 40px !important;
+            margin-left: 8px !important;
+        }
+        .searchtresult_productdetail_link {
+            font-size: 14px !important;
+        }
+        .modified_partslist_icon {
+            right: 14px;
+        }
+        .modified_partslist_icon_sales {
+            right: 26px;
+        }
+        .general_current_addtocart_container {
+            margin-left: -11px;
+        }
+        .general_current_addtocart_container_sales {
+            margin-left: 57px !important;
+        }
+        .addToCartListViewOffset {
+            margin-left: 16%!important;
+        }
+        .loginSuggest {
+            margin-left: -150px;
+            width: 177px !important;
+            font-size: 14px;
+        }
+        .search_result_list_tile_sales {
+            width: 100%;
+        }
+        .search_result_list_subtile_sales {
+            margin-left: 4%;
+        }
+        .search_result_list_tile_specific {
+            float: left !important;
+            width: 43% !important;
+        }
+        .searchResultPartslistIcon {
+            margin-right: -10px;
+            margin-top: 0;
+        }
+    }
+
+    @media (min-width: 461px) and (max-width: 480px) {
+        .breadcrumb {
+            margin-bottom: 5px !important;
+        }
+        .promotion_title {
+            display: none;
+        }
+        .promotion_subtitle {
+            display: none;
+        }
+        .promotion_title_mobile {
+            font-size: 20px;
+        }
+        .promotion_subtitle_mobile {
+            font-size: 16px;
+        }
+        .promotion_pdf_desktop {
+            display: none !important;
+        }
+        .lower_main_content {
+            padding-left: 0 !important;
+        }
+        .partslist_dropdown_menu {
+            left: -135px !important;
+            width: 154px !important;
+        }
+        .add-to-new-partslist {
+            font-size: 11px !important;
+        }
+        .partslistRow {
+            font-size: 11px !important;
+        }
+        .promoProdListing li {
+            width: 92%;
+            margin-right: 24px;
+        }
+        .promotion_pdf_download_long {
+            display: none;
+        }
+        .promotion_pdf_download_short {
+        }
+        .promotion_title {
+            font-size: 24px;
+        }
+        .promotion_subtitle {
+            font-size: 14px;
+        }
+        .promotion_pdf_download {
+            font-size: 14px !important;
+            right: 28px;
+        }
+        .qty_right {
+            position: absolute;
+            right: 10px;
+        }
+        .trinity_sign {
+            line-height: 4px !important;
+            font-size: 8px !important;
+            top: 26px !important;
+            width: 77px !important;
+            left: 26px !important;
+        }
+        .vignette_sign {
+            line-height: 4px !important;
+            font-size: 8px !important;
+            top: 26px !important;
+            width: 77px !important;
+            left: 26px !important;
+        }
+        .searchtresult_productdetail_link {
+            font-size: 14px !important;
+        }
+        .modified_partslist_icon {
+            right: 19px;
+        }
+        .modified_partslist_icon_sales {
+            right: 27px;
+        }
+        .general_current_addtocart_container {
+            margin-left: -6px;
+        }
+        .general_current_addtocart_container_sales {
+            margin-left: 69px !important;
+        }
+        .addToCartListViewOffset {
+            margin-left: 18%!important;
+        }
+        .loginSuggest {
+            margin-left: -171px;
+            width: 197px !important;
+            font-size: 14px;
+        }
+        .search_result_list_tile_sales {
+            width: 100%;
+        }
+        .search_result_list_subtile_sales {
+            margin-left: 2%;
+        }
+        .search_result_list_tile_specific {
+            float: left !important;
+            width: 43% !important;
+        }
+    }
+
+    @media (min-width: 481px) and (max-width: 560px) {
+        .breadcrumb {
+            margin-bottom: 5px !important;
+        }
+        .promotion_title {
+            display: none;
+        }
+        .promotion_subtitle {
+            display: none;
+        }
+        .promotion_title_mobile {
+            font-size: 20px;
+        }
+        .promotion_subtitle_mobile {
+            font-size: 16px;
+        }
+        .promotion_pdf_desktop {
+            display: none !important;
+        }
+        .lower_main_content {
+            padding-left: 0 !important;
+        }
+        .partslist_dropdown_menu {
+            left: -135px !important;
+            width: 154px !important;
+        }
+        .add-to-new-partslist {
+            font-size: 11px !important;
+        }
+        .partslistRow {
+            font-size: 11px !important;
+        }
+        .promoProdListing li {
+            width: 47%;
+            margin-right: 2.2%;
+        }
+        .promotion_pdf_download_long {
+            display: none;
+        }
+        .promotion_pdf_download_short {
+        }
+        .promotion_title {
+            font-size: 24px;
+        }
+        .promotion_subtitle {
+            font-size: 14px;
+        }
+        .promotion_pdf_download {
+            font-size: 14px !important;
+            right: 28px;
+        }
+        .qty_right {
+            position: absolute;
+            right: 10px;
+        }
+        .trinity_sign {
+            line-height: 4px !important;
+            font-size: 8px !important;
+            top: 26px !important;
+            width: 77px !important;
+            left: 26px !important;
+        }
+        .vignette_sign {
+            line-height: 4px !important;
+            font-size: 8px !important;
+            top: 26px !important;
+            width: 77px !important;
+            left: 26px !important;
+        }
+        .searchtresult_productdetail_link {
+            font-size: 15px !important;
+        }
+        .modified_partslist_icon {
+            right: 19px;
+        }
+        .modified_partslist_icon_sales {
+            right: 27px;
+        }
+        .general_current_addtocart_container {
+            margin-left: 8px;
+        }
+        .general_current_addtocart_container_sales {
+            margin-left: 82px;
+        }
+        .addToCartListViewOffset {
+            margin-left: 19%!important;
+        }
+        .loginSuggest {
+            margin-left: -199px;
+            width: 228px !important;
+            font-size: 14px;
+        }
+        .search_result_list_tile_sales {
+            width: 100%;
+        }
+        .search_result_list_subtile_sales {
+             margin-left: 7%;
+        }
+        .search_result_list_tile_specific {
+            float: left !important;
+            width: 43% !important;
+        }
+    }
+
+    @media (min-width: 561px) and (max-width: 629px) {
+        .breadcrumb {
+            margin-bottom: 5px !important;
+        }
+        .promotion_title {
+            display: none;
+        }
+        .promotion_title_mobile {
+            font-size: 20px;
+        }
+        .promotion_subtitle_mobile {
+            font-size: 16px;
+        }
+        .promotion_subtitle {
+            display: none;
+        }
+        .promotion_pdf_desktop {
+            display: none !important;
+        }
+        .lower_main_content {
+            padding-left: 0 !important;
+        }
+        .partslist_dropdown_menu {
+            left: -135px !important;
+            width: 154px !important;
+        }
+        .add-to-new-partslist {
+            font-size: 11px !important;
+        }
+        .partslistRow {
+            font-size: 11px !important;
+        }
+        .promoProdListing li {
+            width: 47%;
+            margin-right: 2.2%;
+        }
+        .promotion_pdf_download_long {
+            display: none;
+        }
+        .promotion_pdf_download_short {
+        }
+        .promotion_title {
+            font-size: 24px;
+        }
+        .promotion_subtitle {
+            font-size: 14px;
+        }
+        .promotion_pdf_download {
+            font-size: 14px !important;
+            right: 28px;
+        }
+        .qty_right {
+            position: absolute;
+            right: 10px;
+        }
+        .trinity_sign {
+            line-height: 4px !important;
+            font-size: 8px !important;
+            top: 23px !important;
+        }
+        .vignette_sign {
+            line-height: 4px !important;
+            font-size: 8px !important;
+            top: 23px !important;
+        }
+        .promoProdListing {
+             margin-right: -35px !important;
+         }
+        .searchtresult_productdetail_link {
+            font-size: 14px !important;
+        }
+        .modified_partslist_icon {
+            right: 16px;
+        }
+        .modified_partslist_icon_sales {
+            right: 24px;
+        }
+        .general_current_addtocart_container {
+            margin-left: 22px;
+        }
+        .general_current_addtocart_container_sales {
+            margin-left: 111px;
+        }
+        .addToCartListViewOffset {
+            margin-left: 21%!important;
+        }
+        .loginSuggest {
+            margin-left: -242px;
+            width: 268px !important;
+            font-size: 14px;
+        }
+        .search_result_list_tile_sales {
+            width: 100%;
+        }
+        .search_result_list_subtile_sales {
+            margin-left: 14%;
+        }
+        .search_result_list_tile_specific {
+            float: left !important;
+            width: 43% !important;
+        }
+    }
+
+/* Tablet Resolutions */
+
+    @media (min-width: 630px) and (max-width: 639px) {
+        .breadcrumb {
+            margin-bottom: 5px !important;
+        }
+        .alternate_text_info_mobile_only {
+            display: none;
+        }
+        .promotion_title_mobile {
+            display: none;
+        }
+        .promotion_subtitle_mobile {
+            display: none;
+        }
+        .download_panel_mobile {
+            display: none;
+        }
+        .lower_main_content {
+            padding-left: 0 !important;
+        }
+        .promoProdListing li {
+            width: 47%;
+            margin-right: 2.2%;
+        }
+        .promotion_title {
+            font-size: 36px;
+        }
+        .promotion_subtitle {
+            font-size: 18px;
+        }
+        .qty_right {
+            position: absolute;
+            right: 10px;
+        }
+        .promotion_pdf_download {
+            right: 28px;
+        }
+        .trinity_sign {
+            line-height: 4px !important;
+            font-size: 8px !important;
+            top: 23px !important;
+        }
+        .vignette_sign {
+            line-height: 4px !important;
+            font-size: 8px !important;
+            top: 23px !important;
+        }
+        .promoProdListing {
+            margin-right: -35px !important;
+        }
+        .searchtresult_productdetail_link {
+            font-size: 14px !important;
+        }
+        .modified_partslist_icon {
+            right: 16px;
+        }
+        .modified_partslist_icon_sales {
+            right: 24px;
+        }
+        .general_current_addtocart_container {
+            margin-left: 22px;
+        }
+        .general_current_addtocart_container_sales {
+            margin-left: 111px;
+        }
+        .addToCartListViewOffset {
+            margin-left: 21%!important;
+        }
+        .loginSuggest {
+            margin-left: -242px;
+            width: 268px !important;
+            font-size: 14px;
+        }
+        .search_result_list_tile_sales {
+            width: 100%;
+        }
+        .search_result_list_subtile_sales {
+            margin-left: 14%;
+        }
+        .search_result_list_tile_specific {
+            float: left !important;
+            width: 43% !important;
+        }
+    }
+
+    @media (min-width: 640px) and (max-width: 734px) {
+        .breadcrumb {
+            margin-bottom: 5px !important;
+            margin-left: 9px !important;
+        }
+        .alternate_text_info_mobile_only {
+            display: none;
+        }
+        .promotion_title_mobile {
+            display: none;
+        }
+        .promotion_subtitle_mobile {
+            display: none;
+        }
+        .download_panel_mobile {
+            display: none;
+        }
+        .lower_main_content {
+            padding-left: 0 !important;
+        }
+        .add-to-new-partslist {
+            height: 41px !important;
+        }
+        .partslist_dropdown_menu {
+            width: 252px !important;
+            left: -236px !important;
+            height: 256px !important;
+        }
+        .save_new_partslist {
+            margin-left: -76px !important;
+        }
+        .promoProdListing li {
+            width: 47%;
+            margin-right: 2.2%;
+        }
+        .promotion_title {
+            font-size: 36px;
+        }
+        .promotion_subtitle {
+            font-size: 18px;
+        }
+        .qty_right {
+            position: absolute;
+            right: 10px;
+        }
+        .promotion_pdf_download {
+            right: 28px;
+        }
+        .trinity_sign {
+            line-height: 4px !important;
+            font-size: 8px !important;
+            top: 27px !important;
+        }
+        .vignette_sign {
+            line-height: 4px !important;
+            font-size: 8px !important;
+            top: 27px !important;
+        }
+        .modified_partslist_icon {
+            right: 9px;
+        }
+        .headline_list_tile_sku {
+            margin-top: 5px;
+        }
+        .modified_partslist_icon_sales {
+            right: 24px;
+        }
+        .general_current_addtocart_container {
+            margin-left: 40px;
+        }
+        .general_current_addtocart_container_sales {
+            margin-left: 149px;
+        }
+        .addToCartListViewOffset {
+            margin-left: 23%!important;
+        }
+        .loginSuggest {
+            margin-left: -287px;
+            width: 312px !important;
+            font-size: 15px;
+        }
+        .search_result_list_tile_sales {
+            width: 100%;
+        }
+        .search_result_list_subtile_sales {
+            margin-left: 20%;
+        }
+        .search_result_list_tile_specific {
+            float: left !important;
+            width: 43% !important;
+        }
+    }
+
+    @media (min-width: 735px) and (max-width: 767px) {
+        .breadcrumb {
+            margin-left: 9px !important;
+            margin-bottom: 5px !important;
+        }
+        .alternate_text_info_mobile_only {
+            display: none;
+        }
+        .promotion_title_mobile {
+            display: none;
+        }
+        .promotion_subtitle_mobile {
+            display: none;
+        }
+        .download_panel_mobile {
+            display: none;
+        }
+        .add-to-new-partslist {
+            height: 41px !important;
+        }
+        .lower_main_content {
+            padding-left: 0 !important;
+        }
+        .promoProdListing li {
+            width: 30%;
+            margin-right: 3%;
+        }
+        .promotion_title {
+            font-size: 36px;
+        }
+        .promotion_subtitle {
+            font-size: 18px;
+        }
+        .qty_right {
+            position: absolute;
+            right: 10px;
+        }
+        .promotion_pdf_download {
+            right: 28px;
+        }
+        .trinity_sign {
+            line-height: 4px !important;
+            font-size: 8px !important;
+            top: 27px !important;
+        }
+        .vignette_sign {
+            line-height: 4px !important;
+            font-size: 8px !important;
+            top: 27px !important;
+        }
+        .modified_partslist_icon {
+            right: 9px;
+        }
+        .headline_list_tile_sku {
+            margin-top: 5px;
+        }
+        .modified_partslist_icon_sales {
+            right: 24px;
+        }
+        .general_current_addtocart_container {
+            margin-left: 40px;
+        }
+        .general_current_addtocart_container_sales {
+            margin-left: 149px;
+        }
+        .addToCartListViewOffset {
+            margin-left: 23%!important;
+        }
+        .loginSuggest {
+            margin-left: -287px;
+            width: 312px !important;
+            font-size: 15px;
+        }
+        .search_result_list_tile_sales {
+            width: 100%;
+        }
+        .search_result_list_subtile_sales {
+            margin-left: 20%;
+        }
+        .search_result_list_tile_specific {
+            float: left !important;
+            width: 43% !important;
+        }
+    }
+
+    @media (min-width: 768px) and (max-width: 768px) {
+        .breadcrumb {
+            margin-bottom: 5px !important;
+        }
+        .alternate_text_info_mobile_only {
+            display: none;
+        }
+        .promotion_title_mobile {
+            display: none;
+        }
+        .promotion_subtitle_mobile {
+            display: none;
+        }
+        .download_panel_mobile {
+            display: none;
+        }
+        .add-to-new-partslist {
+            height: 41px !important;
+        }
+        .lower_main_content {
+            padding-left: 0 !important;
+            padding-right: 22px !important;
+        }
+        .add-to-new-partslist {
+            height: 50px !important;
+        }
+        .partslist_dropdown_menu {
+            left: -177px !important;
+        }
+        .promoProdListing li {
+            width: 30%;
+            margin-right: 2.2%;
+        }
+        .promotion_title {
+            font-size: 36px;
+        }
+        .promotion_subtitle {
+            font-size: 18px;
+        }
+        .qty_right {
+            position: absolute;
+            right: 10px;
+        }
+        .promotion_pdf_download {
+            right: 28px;
+        }
+        .trinity_sign {
+            line-height: 4px !important;
+            font-size: 8px !important;
+            top: 26px !important;
+        }
+        .vignette_sign {
+            line-height: 4px !important;
+            font-size: 8px !important;
+            top: 26px !important;
+            letter-spacing: 0.2em !important;
+        }
+        .quickViewStatus {
+            top: 132px !important;
+        }
+        .modified_partslist_icon {
+            right: 16px;
+        }
+        .modified_partslist_icon_sales {
+            right: 24px;
+        }
+        .general_current_addtocart_container {
+            margin-left: 11px;
+        }
+        .general_current_addtocart_container_sales {
+            margin-left: 4px;
+        }
+        .addToCartListViewOffset {
+            margin-left: 24%!important;
+        }
+        .loginSuggest {
+            margin-left: -196px;
+            width: 226px !important;
+            font-size: 15px;
+        }
+        .search_result_list_tile_sales {
+            width: 100%;
+        }
+        .search_result_list_subtile_sales {
+            margin-left: 0;
+        }
+        .search_result_list_tile_specific {
+            float: left !important;
+            width: 29.5% !important;
+        }
+    }
+
+    @media (min-width: 769px) and (max-width: 800px) {
+        .breadcrumb {
+            margin-bottom: 5px !important;
+        }
+        .alternate_text_info_mobile_only {
+            display: none;
+        }
+        .promotion_title_mobile {
+            display: none;
+        }
+        .promotion_subtitle_mobile {
+            display: none;
+        }
+        .download_panel_mobile {
+            display: none;
+        }
+        .add-to-new-partslist {
+            height: 41px !important;
+        }
+        .promoProdListing li {
+            width: 30%;
+            margin-right: 2.2%;
+        }
+        .promotion_title {
+            font-size: 36px;
+        }
+        .promotion_subtitle {
+            font-size: 18px;
+        }
+        .qty_right {
+            position: absolute;
+            right: 10px;
+        }
+        .promotion_pdf_download {
+            right: 28px;
+        }
+        .vignette_sign {
+            top: 26px !important;
+            letter-spacing: 0.2em !important;
+        }
+        .quickViewStatus {
+            top: 132px !important;
+        }
+        .general_current_addtocart_container {
+            margin-left: 11px;
+        }
+        .general_current_addtocart_container_sales {
+            margin-left: 0;
+        }
+        .loginSuggest {
+            margin-left: -205px;
+            width: 226px !important;
+            font-size: 15px;
+        }
+        .search_result_list_tile_sales {
+            width: 100%;
+        }
+        .search_result_list_subtile_sales {
+            margin-left: 3%;
+        }
+        .search_result_list_tile_specific {
+            float: left !important;
+            width: 43% !important;
+        }
+    }
+
+    @media (min-width: 801px) and (max-width: 992px) {
+        .breadcrumb {
+            margin-bottom: 5px !important;
+        }
+        .alternate_text_info_mobile_only {
+            display: none;
+        }
+        .promotion_title_mobile {
+            display: none;
+        }
+        .promotion_subtitle_mobile {
+            display: none;
+        }
+        .download_panel_mobile {
+            display: none;
+        }
+        .add-to-new-partslist {
+            height: 41px !important;
+        }
+        .promoProdListing li {
+            width: 30%;
+            margin-right: 2.2%;
+        }
+        .promotion_title {
+            font-size: 40px;
+        }
+        .promotion_subtitle {
+            font-size: 24px;
+        }
+        .qty_right {
+            position: absolute;
+            right: 10px;
+        }
+        .promotion_pdf_download {
+            right: 28px;
+        }
+        .vignette_sign {
+            top: 26px !important;
+            letter-spacing: 0.2em !important;
+        }
+        .quickViewStatus {
+            top: 132px !important;
+        }
+        .general_current_addtocart_container {
+            margin-left: 11px;
+        }
+        .general_current_addtocart_container_sales {
+            margin-left: 0;
+        }
+        .loginSuggest {
+            margin-left: -205px;
+            width: 226px !important;
+            font-size: 15px;
+        }
+        .search_result_list_tile_sales {
+            width: 100%;
+        }
+        .search_result_list_subtile_sales {
+            margin-left: 3%;
+        }
+        .search_result_list_tile_specific {
+            float: left !important;
+            width: 43% !important;
+        }
+    }
+
+    @media (min-width: 993px) and (max-width: 1023px) {
+        .breadcrumb {
+            margin-bottom: 5px !important;
+        }
+        .alternate_text_info_mobile_only {
+            display: none;
+        }
+        .promotion_title_mobile {
+            display: none;
+        }
+        .promotion_subtitle_mobile {
+            display: none;
+        }
+        .download_panel_mobile {
+            display: none;
+        }
+        .add-to-new-partslist {
+            height: 41px !important;
+        }
+        .promoProdListing li {
+            width: 22%;
+            margin-right: 2.8%;
+        }
+        .promotion_title {
+            font-size: 48px;
+        }
+        .promotion_subtitle {
+            font-size: 32px;
+        }
+        .qty_right {
+            position: absolute;
+            right: 10px;
+        }
+        .promotion_pdf_download {
+            right: 28px;
+        }
+        .vignette_sign {
+            top: 26px !important;
+            letter-spacing: 0.2em !important;
+        }
+        .quickViewStatus {
+            top: 132px !important;
+        }
+        .general_current_addtocart_container {
+            margin-left: 11px;
+        }
+        .general_current_addtocart_container_sales {
+            margin-left: 0;
+        }
+        .loginSuggest {
+            margin-left: -205px;
+            width: 226px !important;
+            font-size: 15px;
+        }
+        .search_result_list_tile_sales {
+            width: 100%;
+        }
+        .search_result_list_subtile_sales {
+            margin-left: 3%;
+        }
+        .search_result_list_tile_specific {
+            float: left !important;
+            width: 43% !important;
+        }
+    }
+
+    @media (min-width: 1024px) and (max-width: 1100px) {
+        .breadcrumb {
+            margin-bottom: 5px !important;
+        }
+        .alternate_text_info_mobile_only {
+            display: none;
+        }
+        .promotion_title_mobile {
+            display: none;
+        }
+        .promotion_subtitle_mobile {
+            display: none;
+        }
+        .download_panel_mobile {
+            display: none;
+        }
+        .add-to-new-partslist {
+            height: 41px !important;
+        }
+        .promotion_banner {
+            width: 1024px !important;
+        }
+        .promoProdListing li {
+            width: 22%;
+            margin-right: 2.8%;
+        }
+        .promotion_title {
+            font-size: 48px;
+        }
+        .promotion_subtitle {
+            font-size: 32px;
+            display: block;
+        }
+        .qty_right {
+            position: absolute;
+            right: 10px;
+        }
+        .vignette_sign {
+            top: 26px !important;
+            letter-spacing: 0.2em !important;
+        }
+        .search_result_list_tile_specific {
+            width: 21.7% !important;
+        }
+    }
+
+/* Desktop Resolutions */
+
+    @media (min-width: 1101px) and (max-width: 1280px) {
+        .breadcrumb {
+            margin-bottom: 5px !important;
+        }
+        .alternate_text_info_mobile_only {
+            display: none;
+        }
+        .promotion_title_mobile {
+            display: none;
+        }
+        .promotion_subtitle_mobile {
+            display: none;
+        }
+        .download_panel_mobile {
+            display: none;
+        }
+        .promotion_title {
+            font-size: 48px;
+        }
+        .promotion_subtitle {
+            font-size: 32px;
+        }
+        .add-to-new-partslist {
+            height: 41px !important;
+        }
+        .qty_right {
+            position: absolute;
+            right: 10px;
+        }
+        .vignette_sign {
+            top: 26px !important;
+            letter-spacing: 0.2em !important;
+        }
+    }
+
+    @media (min-width: 1281px) and (max-width: 2047px) {
+        .breadcrumb {
+            margin-bottom: 5px !important;
+        }
+        .alternate_text_info_mobile_only {
+            display: none;
+        }
+        .promotion_title_mobile {
+            display: none;
+        }
+        .promotion_subtitle_mobile {
+            display: none;
+        }
+        .download_panel_mobile {
+            display: none;
+        }
+        .promotion_banner {
+            width: 1200px !important;
+            height: 365px !important;
+        }
+        .promotion_title {
+            font-size: 48px;
+        }
+        .promotion_subtitle {
+            font-size: 32px;
+        }
+        .add-to-new-partslist {
+            height: 41px !important;
+        }
+        .qty_right {
+            position: absolute;
+            right: 10px;
+        }
+        .vignette_sign {
+            top: 26px !important;
+            letter-spacing: 0.2em !important;
+        }
+    }
+
+    @media (min-width: 2048px) {
+        .breadcrumb {
+            margin-bottom: 5px !important;
+        }
+        .alternate_text_info_mobile_only {
+            display: none;
+        }
+        .promotion_title_mobile {
+            display: none;
+        }
+        .promotion_subtitle_mobile {
+            display: none;
+        }
+        .download_panel_mobile {
+            display: none;
+        }
+        .promotion_banner {
+            width: 1200px !important;
+            height: 365px !important;
+        }
+        .promotion_title {
+            font-size: 48px;
+        }
+        .promotion_subtitle {
+            font-size: 32px;
+        }
+        .add-to-new-partslist {
+            height: 41px !important;
+        }
+        .qty_right {
+            position: absolute;
+            right: 10px;
+        }
+        .vignette_sign {
+            top: 26px !important;
+            letter-spacing: 0.2em !important;
+        }
+    }
+
+</style>
+
+<div class="promotion_head">
+    <img src="<?php echo $this->getDefaultPromotionPictureUrl() ?>"
+         class="promotion_head_img"
+         title="<?php echo $this->__('Promotions') ?>"
+         />
+    <div class="promotion_title_container">
+        <div class="promotion_title">
+            <?php echo $this->__('Promotions') ?>
+        </div>
+        <div class="promotion_subtitle"></div>
+    </div>
+    <div class="promotion_pdf_download promotion_pdf_download_long promotion_pdf_desktop">
+        <?php echo $this->__('PDF download') ?>
+    </div>
+    <div class="promotion_pdf_download promotion_pdf_download_short promotion_pdf_desktop">
+        <?php echo $this->__('PDF') ?>
+    </div>
+</div>
+<div class="alternate_text_info_mobile_only">
+    <div class="promotion_title_mobile"><?php echo $this->__('Promotions') ?></div>
+    <div class="promotion_subtitle_mobile"></div>
+    <div class="download_panel_mobile">
+        <div class="promotion_pdf_download promotion_pdf_download_mobile promotion_pdf_download_long ">
+            <?php echo $this->__('PDF download') ?>
+        </div>
+        <div class="promotion_pdf_download promotion_pdf_download_mobile promotion_pdf_download_short">
+            <?php echo $this->__('PDF') ?>
+        </div>
+    </div>
+</div>
+<div class="promotion_selector_container">
+    <?php foreach ( $this->getPromotions() as $promotion ) : ?>
+        <div class="promotion_selector promotion_selector_unselected"
+             id="promotion_selector_<?php echo $promotion['entity_id']; ?>"
+             data-id="<?php echo $promotion['entity_id']; ?>"
+             data-img="<?php echo $promotion['image_url'] ? $promotion['image_url'] : ''; ?>"
+             data-pdf="<?php echo $promotion['pdf_url'] ? $promotion['pdf_url'] : ''; ?>"
+             data-validform="<?php echo $this->formatDate($promotion['valid_from']); ?>"
+             data-validto="<?php echo $this->formatDate($promotion['valid_to']); ?>"
+             data-name="<?php echo $promotion['name']; ?>"
+        >
+            <?php echo $promotion['name']; ?>
+        </div>
+    <?php endforeach; ?>
+    <div class="promotion_selector promotion_selector_selected"
+         id="promotion_selector_0"
+         data-id="0"
+         data-img=""
+         data-pdf=""
+         data-validform=""
+         data-validto=""
+         data-name="<?php echo $this->__('Promotions'); ?>"
+    >
+        <?php echo $this->__('View All') ?>
+    </div>
+</div>
+
+<div class="filter_button">
+    <span><?php echo $this->__('Filter'); ?></span>
+    <img class="filter_button_icon" src="<?php echo $skinUrl; ?>" />
+</div>
+<div class="filter_popup">
+    <div class="filter_popup_header">
+        <span class="filter_popup_headline"><?php echo $this->__('Filter by product type') ?></span>
+        <button type="button"
+                id="filter_popup_close"
+                class="close"
+                data-dismiss="modal"
+                aria-label="Close"
+                style="cursor: auto;">
+            <span aria-hidden="true">×</span>
+        </button>
+    </div>
+    <ul id="filter_list" class="filter_popup_listgroup">
+    </ul>
+</div>
+
+<div class="search-page-container">
+    <div class="row">
+        <div class="col-xs-12 col-sm-12 col-md-12 left" id='chnageOnSaleFilter'>
+            <ul class="search-page-product prodListing clearfix promoProdListing"
+                id="gridListView"
+                data-name="results_list1">
+            </ul>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">//<![CDATA[
+    var chunckSize = 21;
+    var nextStart = 0;
+    var count = 0;
+    var loadingProducts = false;
+    var baseUrl = '<?php echo Mage::getBaseUrl() ?>';
+    var shopImageUrl = baseUrl + 'skin/frontend/schrack/default/schrackdesign/Public/Images/';
+    var ajaxLoaderGif = shopImageUrl + 'download_ajax_loader.gif';
+    var imageServer = 'https://image.schrack.com/';
+    var placeHolderImage = baseUrl + 'media/catalog/product/placeholder/default/Schrack_S_CMYK80x80_1.jpg';
+    var partsListsKeys = [];
+    var partsListsNames = [];
+    var renewFilter = true;
+    var stateParams = { promo: 0, filterCheckedStates: [], filterStaticData : null, loadedItems: 0 };
+
+    jQuery(document).ready(function () {
+        var state = history.state;
+        if ( typeof state == 'object' && state != null ) {
+            stateParams = state;
+            if ( stateParams.filterCheckedStates.length > 0 && typeof stateParams.filterStaticData == 'object' ) {
+                renewFilter = true;
+                buildFilterContentExt(stateParams.promo,stateParams.filterStaticData);
+                renewFilter = false;
+                var checkedOnes = jQuery("#filter_list input:checked");
+                for ( var i = 0; i < checkedOnes.length; ++i ) {
+                    var catid = jQuery(checkedOnes[i]).data('catid');
+                    if ( stateParams.filterCheckedStates.indexOf(catid) == -1 ) {
+                        jQuery(checkedOnes[i]).prop( "checked", false );
+                    }
+                }
+            }
+        } else {
+            var params = window.location.search;
+            if ( typeof params == 'string' &&  params.length > 0 ) {
+                var promoID = 0;
+                params = params.substring(1).split('&');
+                for (i = 0; i < params.length; i++) {
+                    var kv = params[i].split('=');
+                    if ( kv[0] == 'promo' && typeof kv[1] == 'string' ) {
+                        promoID = kv[1];
+                        break;
+                    }
+                }
+                if ( promoID > 0 ) {
+                    stateParams.promo = promoID;
+                }
+            }
+        }
+
+        jQuery('.promotion_selector_unselected').on('click', function () {
+            selectPromotion(this);
+        });
+        jQuery('.promotion_pdf_download').on('click', function () {
+            var target = jQuery('.promotion_pdf_download').data('name');
+            var url = jQuery('.promotion_pdf_download').data('pdf');
+            var formtagHtml = '<form target="' + target + '" action="' + url + '" method="get"></form>'
+            jQuery(formtagHtml).appendTo('body').submit().remove();
+        });
+
+        selectPromotionExt(jQuery('div[data-id='+stateParams.promo+']'),renewFilter);
+
+        jQuery('#filter_popup_close').on('click', function () {
+            jQuery('.filter_popup').hide();
+        });
+
+    });
+
+    function selectPromotion ( that ) {
+        selectPromotionExt(that,true);
+    }
+    function selectPromotionExt ( that, setRenewFilter ) {
+        var title = jQuery('.promotion_title');
+        var title_mobile = jQuery('.promotion_title_mobile');
+        var subtitle = jQuery('.promotion_subtitle');
+        var subtitle_mobile = jQuery('.promotion_subtitle_mobile');
+        title.css("visibility", "hidden");
+        title_mobile.css("visibility", "hidden");
+        subtitle.css("visibility", "hidden");
+        subtitle_mobile.css("visibility", "hidden");
+        var newSelected = jQuery(that);
+        var oldSelected = jQuery('.promotion_selector_selected');
+        oldSelected.removeClass('promotion_selector_selected');
+        oldSelected.addClass('promotion_selector_unselected');
+        newSelected.removeClass('promotion_selector_unselected');
+        newSelected.addClass('promotion_selector_selected');
+        jQuery('.promotion_selector_unselected').off('click').on('click', function () {
+            selectPromotion(this);
+        });
+        var img = newSelected.data('img');
+        if ( img == '' ) {
+            var dfltImg = "<?php echo $this->getDefaultPromotionPictureUrl(); ?>";
+            var curImg = jQuery('.promotion_head_img').attr('src');
+            if ( curImg != dfltImg ) {
+                jQuery('.promotion_head_img').attr('src', dfltImg);
+            }
+        } else {
+            jQuery('.promotion_head_img').attr('src', img);
+        }
+        var name = newSelected.data('name');
+        if (jQuery(window).width() > 629) {
+            title.text(name);
+        } else {
+            title_mobile.text(name);
+        }
+        var validUntil = newSelected.data('validto');
+        if ( validUntil != '' ) {
+            validUntil = "<?php echo $this->__('valid until'); ?> " + validUntil;
+        }
+        if (jQuery(window).width() > 629) {
+            subtitle.text(validUntil);
+        } else {
+            subtitle_mobile.text(validUntil);
+        }
+
+        var pdfUrl = newSelected.data('pdf');
+        if ( typeof pdfUrl == 'undefined' || pdfUrl == '' ) {
+            jQuery('.promotion_pdf_download').hide();
+        } else {
+            jQuery('.promotion_pdf_download').data('pdf',pdfUrl);
+            jQuery('.promotion_pdf_download').data('name',name);
+            if ( screen.width > 629 ) {
+                jQuery('.promotion_pdf_download_long').show();
+            } else {
+                jQuery('.promotion_pdf_download_short').show();
+            }
+        }
+        title.css("visibility", "visible");
+        title_mobile.css("visibility", "visible");
+        subtitle.css("visibility", "visible");
+        subtitle_mobile.css("visibility", "visible");
+        if ( setRenewFilter ) {
+            loadNewPromotionData(newSelected.data('id'));
+        } else {
+            loadPromotionDataExt(newSelected.data('id'), 0, stateParams.loadedItems);
+        }
+    }
+
+    function loadNewPromotionData ( id ) {
+        renewFilter = true;
+        jQuery('.filter_popup').hide();
+        jQuery('#gridListView').html('');
+        loadPromotionData(id,0);
+    }
+
+    function applyQueryParams () {
+        var qString = 'promo=' + stateParams.promo + '&filter=' + stateParams.filterCheckedStates.join();
+        history.pushState(stateParams,"",'?' + qString);
+    }
+
+    function loadNewPromotionDataWithFilter ( id ) {
+        jQuery('#gridListView').html('');
+        loadPromotionData(id,0);
+    }
+
+    function loadPromotionData ( id, start ) {
+        loadPromotionDataExt(id,start,chunckSize);
+    }
+
+    function loadPromotionDataExt ( id, start, chunckSizeParam ) {
+        if ( loadingProducts ||  start == -1 ) {
+            return;
+        }
+        loadingProducts = true;
+        jQuery(window).scroll(null);
+
+        var filterCatIDs = [];
+        if ( ! renewFilter ) {
+            var checkedOnes = jQuery("#filter_list input:checked");
+            for ( var i = 0; i < checkedOnes.length; ++i ) {
+                var catid = jQuery(checkedOnes[i]).data('catid');
+                filterCatIDs.push(catid);
+            }
+        }
+        stateParams.promo = id;
+        stateParams.filterCheckedStates = filterCatIDs;
+        stateParams.loadedItems = start + chunckSize;
+        applyQueryParams();
+
+        var requestData = {
+            'form_key': '<?php echo Mage::getSingleton('core/session')->getFormKey(); ?>',
+            'getProductsForPromoID' : {'data' :
+                                        { 'promo_id' : id,
+                                          'start': start,
+                                          'limit': chunckSizeParam,
+                                          'filter_cat_ids': filterCatIDs
+                                        }
+                                       }
+        };
+        if ( partsListsKeys.length == 0 ) {
+            requestData['getAllPartslists'] = '';
+        }
+        setOverlayLoader();
+        jQuery.ajax(ajaxUrl, {
+            'dataType': 'json',
+            'type': 'POST',
+            'data': requestData,
+            'success': function ( data ) {
+                var parsedData = data;
+                if ( partsListsKeys.length == 0 ) {
+                    Object.keys(parsedData.getAllPartslists.result).forEach(function ( key ) {
+                        partsListsKeys.push(parseInt(key));
+                        partsListsNames.push(parsedData.getAllPartslists.result[key]);
+                    });
+                }
+                unsetOverlayLoader();
+                buildPromotionContent(id,parsedData);
+                if ( renewFilter ) {
+                    buildFilterContent(id,parsedData);
+                }
+                loadingProducts = false;
+            },
+            'error': function ( data ) {
+                var parsedData = data;
+                setTimeout(function () {
+                    unsetOverlayLoader();
+                    loadingProducts = false;
+                });
+                console.log("Error: " + parsedData);
+            }
+        });
+    }
+
+    function buildFilterContent ( id, parsedData ) {
+        buildFilterContentExt(id,parsedData.getProductsForPromoID.result.filters);
+    }
+
+    function buildFilterContentExt ( id, filters ) {
+        if ( renewFilter ) {
+            var html = '';
+            for ( var i = 0; i < filters.length; ++i ) {
+                html += '<li>';
+                html += '<input type="checkbox" ';
+                html += 'class="filter_entry"';
+                html += 'id="filter_' + filters[i].id + '"';
+                html += 'data-catid="' + filters[i].id + '"';
+                html += 'name="' + filters[i].name + '" ';
+                var hasProducts = 'disabled';
+                if (filters[i].hasProducts) hasProducts = 'checked';
+                html += hasProducts;
+                html += '>'// closing input tag from above
+                html += '<label for="filter_' + filters[i].id + '" class="filter_popup_label">';
+                html += '&nbsp;' + filters[i].name;
+                html += '</label>'
+                html += '</li>';
+            }
+            jQuery('#filter_list').empty();
+            jQuery('#filter_list').append(html);
+
+            jQuery('.filter_entry').off('click').on('click', function () {
+                loadNewPromotionDataWithFilter(id);
+            });
+            renewFilter = false;
+            jQuery('.filter_button').off('click').on('click', function () {
+                jQuery('.filter_popup').show();
+            });
+            stateParams.filterStaticData = filters;
+        }
+    }
+
+    function buildPromotionContent ( id, parsedData ) {
+        var priceRequestSkus = [];
+        var productCount = parsedData['getProductsForPromoID']['result']['products'].length;
+        nextStart = parsedData['getProductsForPromoID']['result']['status']['start'] + productCount;
+        count = parsedData['getProductsForPromoID']['result']['status']['count'];
+        if ( nextStart >= count ) {
+            nextStart = -1;
+        }
+
+        for ( var i = 0; i < productCount; ++i ) {
+            var product = parsedData['getProductsForPromoID']['result']['products'][i];
+            if (jQuery('#product_' + product.sku).length) {
+                console.log('SKU = ' + product.sku + ' already exists');
+            } else {
+                var html = createProductHtml(product);
+                jQuery('#gridListView').append(html);
+                priceRequestSkus.push(product.sku);
+            }
+        }
+        if ( nextStart > -1 ) {
+            jQuery(window).off('scroll').on('scroll', function () {
+                var footerHeight = jQuery('#footer-container').outerHeight();
+                if ( Math.round(window.innerHeight + window.scrollY) >= document.body.offsetHeight - footerHeight ) {
+                    loadPromotionData(id, nextStart);
+                }
+            });
+        }
+
+        requestPrices(priceRequestSkus);
+
+        jQuery('.product-stock-icon').off('click').on('click', function() {
+            <?php $formKey = Mage::getSingleton('core/session')->getFormKey(); ?>
+            handleClickShowStockIcon(jQuery(this).data('sku'),'<?php echo $formKey; ?>');
+        });
+
+        jQuery('.product-stock-icon-close').off('click').on('click', function() {
+            handleClickShowStockIconClose(jQuery(this).data('sku'));
+        });
+    }
+
+    function createProductHtml ( product ) {
+        var image = placeHolderImage;
+        var thumbnail = placeHolderImage;
+        if ( typeof product.image == 'string' ) {
+            image = imageServer + product.image.replace('thumb400', '340x380');
+        }
+        if ( typeof product.thumbnail == 'string' ) {
+            thumbnail = imageServer + product.thumbnail.replace('thumb66x66', '90x90');
+        }
+        var currency = '<?php echo Mage::app()->getStore()->getCurrentCurrencyCode() ?>';
+        var res = '';
+        res += '<li class="search_result_list_tile_specific" id="product_' + product.sku + '">';
+        res += '    <img src="' + shopImageUrl + 'rwd/promotion/promotion_sticker_rot.svg" ';
+        res += 'class="loaded promo_sign" data-was-processed="true" height="40px; z-index: 3;">';
+        var classList = 'glyphicon glyphicon-menu-left info-icon blueTxt';
+        classList    += ' product_price_icon product-stock-icon stock_switch_icon';
+        res += '    <span class="' + classList + '" title="Show Availabilities" data-sku="' + product.sku + '"></span>';
+        res += '    <h2 class="p-sku headline_list_tile_sku">' + product.sku + '</h2>';
+        res += '    <div class="imgCont" style="min-height: 98px;">';
+
+        var productSchrackMainProducer = product.schrackMainProducer;
+        var productSchrackStsPromotionLabel = product.schrackStsPromotionLabel;
+        if (productSchrackMainProducer != null && productSchrackMainProducer.match(/Trinity/g)) {
+            if (productSchrackStsPromotionLabel.match(/Vignette/g)) {
+                res += '<span class="trinity_sign">Trinity</span>';
+            }
+        }
+
+        if (productSchrackStsPromotionLabel != null && productSchrackStsPromotionLabel.match(/Vignette/g)) {
+            res += '<span class="vignette_sign">Vignette</span>';
+        }
+
+        res += '        <span class="sale_mark sale-btn hidden"></span>';
+        res += '        <a data-preview-path="' + image + '" id="imageLink_' + product.sku + '"';
+        res += '           class="print-hide p-img previewImageHover track_product_click"';
+        res += '           data-sku="' + product.sku + '" href="' + baseUrl + product.path + '"';
+        res += '           previewimage="' + image + '" title="">'
+        res += '            <img data-src="' + thumbnail + '" class="lazy loaded" alt="' + product.sku + '"';
+        res += '              src="' + thumbnail + '" data-was-processed="true">'; // closing <img> tag
+        res += '        </a>';
+        res += '        <img class="print-only" src="' + thumbnail + '" alt="' + product.sku + '">';
+        res += '    </div>';
+        res += '    <div class="descriptionBx">';
+        res += '        <span class="hide-on-print p-name">';
+        res += '            <a id="textLink_' + product.sku + '" href="' + baseUrl + product.path + '" title=""';
+        res += '               data-sku="' + product.sku + '"';
+        res += '               class="searchtresult_productdetail_link track_product_click">';
+        res +=                  product.name
+        res += '            </a>';
+        res += '        </span>';
+        res += '        <h2 class="print-only">' + product.name + '</h2>';
+        res += '        <div class="hide detailDescription">' + product.detailDescription + '</div>';
+        res += '        <div class="hide qtyLabel">:</div>';
+        res += '    </div>';
+        res += '    <div class="modified_price_label" id="modified_price_label_' + product.sku + '">';
+        res += '        <img class="ajaxSpinnerOverlayPriceLoading loaded" src="' + ajaxLoaderGif + '"';
+        res += ' style="width: 21px !important; height: 21px !important;" data-was-processed="true">';
+        res += '    </div>';
+        res += '    <div class="modified_partslist_icon">';
+        res += '        <div class="searchResultPartslistIcon" id="searchResultPartslist' + product.sku + '">';
+        res += '            <span id="parlistdropdownbtn-' + product.sku + '"';
+        res += '              data-toggle="dropdown" aria-haspopup="true" aria-expanded="true"';
+        res += '              class="glyphicon glyphicon-pushpin blueTxt"';
+        res += '              title="Add to Partslist" style="cursor:pointer;">';
+        res += '            </span>';
+        res += '            <ul class="dropdown-list dropdown-menu partslist_dropdown_menu"';
+        res += '              id="ulDropdownElementSearchResult_' + product.sku + '"';
+        res += '              aria-labelledby="parlistdropdownbtn-' + product.sku + '">';
+        res += '                <li class="add-to-new-partslist" ';
+
+        var args1 = ' \'New parts list\', new ListRequestManager.Product(';
+        args1 += 'jQuery(\'#productId-' + product.sku + '\').val(), jQuery(\'#qty-' + product.sku + '\').val(),';
+        args1 += '\'' + product.sku + '\'), \'search result page\'';
+
+        res += '                   onclick="partslistFE.addItemToNewList( ' + args1 + ' );"';
+        res += '                   data-brand="" data-click="" data-event="" data-id="' + product.sku + '">'
+        res += '                    <span class="glyphicon glyphicon-plus-sign plusIcon"></span>';
+        res += '                    <?php echo $this->__('Add to new partslist'); ?>';
+        res += '                </li>';
+
+        for ( var i = 0; i < partsListsKeys.length; i++ ) {
+            var id = partsListsKeys[i];
+            var name = partsListsNames[i];
+
+            var args2 =  id + ', new ListRequestManager.Product(';
+            args2 += 'jQuery(\'#productId-' + product.sku + '\').val(), jQuery(\'#qty-' +  product.sku + '\').val(),';
+            args2 += '\'' + product.sku + '\'), false, \'search result page\'';
+
+            res += '            <li class="partslistRow" onclick="partslistFE.addItemToList(' + args2 + ');"';
+            res += '             data-brand="" data-click="" data-event="" data-id="' + product.sku + '"';
+            res += '             title="' + name + '">' + Translator.translate("Add to")  + ' ' + name + '</li>';
+        }
+        res += '            </ul>';
+        res += '        </div>';
+        res += '    </div>';
+
+        res += '    <div id="availtab_' + product.sku + '" class="avail_tab_container" data-loaded="0">';
+        var classes = 'glyphicon glyphicon-menu-right info-icon ';
+        classes += 'blueTxt product_price_icon product-stock-icon-close stock_switch_icon';
+        res += '        <span class="' + classes + '" title="Hide Availabilities" data-sku="' + product.sku + '"></span>';
+        res += '        <h2 class="p-sku headline_list_tile_sku">' + product.sku + '</h2>';
+        res += '        <img id="ajaxSpinnerOverlay_' + product.sku + '" title="Processing..."';
+        res += '          class="ajaxSpinnerOverlay loaded" src="' + ajaxLoaderGif + '"';
+        res += '          style="width: 100% !important;">';
+        res += '    </div>';
+        res += '</li>';
+        return res;
+    }
+
+    function requestPrices ( skus ) {
+        var requestData = {
+            'form_key': '<?php echo Mage::getSingleton('core/session')->getFormKey(); ?>',
+            'getProductPrices' : {'data' : { 'skus' : skus }}
+        };
+        jQuery.ajax(ajaxUrl, {
+            'dataType': 'json',
+            'type': 'POST',
+            'data': requestData,
+            'success': function ( data ) {
+                var parsedData = data;
+                if ( typeof parsedData.getProductPrices == 'object'
+                     && typeof parsedData.getProductPrices.result == 'object' ) {
+                    Object.keys(parsedData.getProductPrices.result).forEach(function(key) {
+                        var value = parsedData.getProductPrices.result[key];
+                        addProductPrice(key,value);
+                    });
+
+                    jQuery('.qtyaddtocartbutton').off('click').on('click', function() {
+                        qtyAddToCart(this);
+                    });
+
+                    jQuery('.qtyaddtocartfield').off('keyup').on('keyup', function(e) {
+                        if ( e.keyCode == 13 ) {
+                            var sku = jQuery(this).data('sku');
+                            var that = jQuery('#addtocart-' + sku);
+                            qtyAddToCart(that);
+                        }
+                    });
+                }
+            },
+            'error': function ( data ) {
+                var parsedData = data;
+                console.log("Error: " + parsedData);
+            }
+        });
+    }
+
+    function addProductPrice ( sku, priceData ){
+        var iconPath = shopImageUrl + 'rwd/cartIconWht.png'
+        var mayBeRedClass = priceData.promotype == 'promotion' || priceData.promotype == 'sales' ? ' redColor' : '';
+        var res = '';
+        res += '    <div class="modified_price_label" id="modified_price_label_' + sku + '">';
+        res += '        <div class="general_current_price_container" id="general_current_price_container' + sku + '">';
+        res += '            <span class="general_current_price_currency' + mayBeRedClass + '">' + priceData.currency + '</span>';
+        res += '            <span class="span_currentprice5 general_current_price_view' + mayBeRedClass + '">' + priceData.currentprice;
+        res += '            </span>';
+        res += '            <span class="general_current_priceunit' + mayBeRedClass + '">' + '/' + priceData.formattedPriceunit + '</span>';
+        res += '        </div>';
+        res += '        <div class="general_current_addtocart_container"';
+        res += '          id="general_current_addtocart_container' + sku + '">';
+        res += '            <input type="text" class="qtyaddtocartfield qty-' + sku + '" ';
+        res += '              id="qtyaddtocartfield' + sku + '" name="qty-' + sku + '" data-sku="' + sku + '">';
+        res += '            <button id="addtocart-' + sku + '" class="bttn-sm qtyaddtocartbutton"';
+        res += '              data-sku="' + sku + '" data-salesunitqty="' + priceData.priceunit + '">';
+        res += '                <img class="addToCartImage loading cartButtonImage" src="' + iconPath + '">';
+        res += '            </button>';
+        res += '        </div>';
+        res += '        <input type="hidden" id="qty-' + sku + '" value="1">';
+        res += '        <input type="hidden" id="productId-' + sku + '" value="' + sku + '">';
+        res += '    </div>';
+        jQuery('#modified_price_label_' + sku).replaceWith(res);
+    }
+
+//]]></script>
+<!-- app/design/frontend/schrack/schrackresponsive/template/promotions/main.phtml (end) -->

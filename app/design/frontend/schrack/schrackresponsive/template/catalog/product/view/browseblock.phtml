@@ -1,0 +1,71 @@
+<!-- app\design\frontend\schrack\schrackresponsive\template\catalog\product\view\browseblock.phtml (start) -->
+<?php
+    $product = Mage::registry('product');
+    $currentCategory = Mage::registry('current_category');
+    /** @var Schracklive_SchrackGoogleAnalytics_Helper_Data $gaHelper */
+    $gaHelper = Mage::helper('googleanalytics');
+    $categoryUrl = '';
+    $previousProduct = null;
+    $nextProduct = null;
+    $showBrowseBlock = false;
+    if ($currentCategory) {
+        $categoryUrl = $currentCategory->getUrl();
+        try {
+            $previousProduct = $currentCategory->getProductAtOffsetOrDefault($product, -1);
+            $nextProduct = $currentCategory->getProductAtOffsetOrDefault($product, 1);
+            $prevProductImage = $this->helper('catalog/image')->init($previousProduct, 'small_image')->constrainOnly(true)->resize(66, 66);
+            $prevProductImageUrl = (string)$prevProductImage;
+            // Removes protocol:
+            $prevProductImageUrl = str_replace(array('http:', 'https:'), '', $prevProductImageUrl);
+            $nextProductImage = $this->helper('catalog/image')->init($nextProduct, 'small_image')->constrainOnly(true)->resize(66, 66);
+            $nextProductImageUrl = (string)$nextProductImage;
+            // Removes protocol:
+            $nextProductImageUrl = str_replace(array('http:', 'https:'), '', $nextProductImageUrl);
+            $showBrowseBlock = true;
+
+            if ($previousProduct->getProductUrl() == $nextProduct->getProductUrl()) {
+                $showBrowseBlock = false;
+            }
+        } catch (Exception $e) {echo $e->getMessage();
+            $showBrowseBlock = false;
+        }
+    }
+?>
+
+<?php if ( $showBrowseBlock ): ?>
+    <div class="browse-bar hide-on-print ">
+            <!--<div class="row labels">
+                <div class="large-6 columns">
+                    <?php //echo $this->__('To previous product') ?>
+                </div>
+                <div class="large-6 columns">
+                    <?php //echo $this->__('To next product') ?>
+                </div>
+            </div>-->
+            <div class="row">
+                <div class="col-xs-12">
+				<div class="nextPreProd clearfix">
+                    <div class="col-xs-2 col-sm-1 actionBttn">
+                        <a href="<?php echo $previousProduct->getProductUrl() ?>" rel="nofollow"><img src="<?php echo $this->getSkinUrl('schrackdesign/Public/Images/rwd/slider-left-arrow.png') ?>" alt="<?php echo $this->__('To previous product') ?>"/></a>
+                    </div>
+                    <div class="product-name prev col-xs-4 col-sm-5 clearfix padR0">
+                        <div class="image"><a href="<?php echo $previousProduct->getProductUrl() ?>" rel="nofollow"><img src="<?php echo $prevProductImageUrl ?>"/></a></div>
+                        <div class="text"><a href="<?php echo $previousProduct->getProductUrl() ?>" rel="nofollow"><?php echo $previousProduct->getName() ?></a></p></div>
+                    </div>
+                    <div class="product-name next col-xs-4 col-sm-5 clearfix padL5">
+                        <div class="image">
+                            <a class="image" href="<?php echo $nextProduct->getProductUrl() ?>"rel="nofollow"><img src="<?php echo $nextProductImageUrl ?>"/></a>
+                        </div>
+                        <div class="text">
+                            <a href="<?php echo $nextProduct->getProductUrl() ?>" rel="nofollow"><?php echo $nextProduct->getName() ?></a>
+                        </div>
+                    </div>
+                    <div class="col-xs-2 col-sm-1 actionBttn text-right">
+                        <a href="<?php echo $nextProduct->getProductUrl() ?>" rel="nofollow"><img src="<?php echo $this->getSkinUrl('schrackdesign/Public/Images/rwd/slider-right-arrow.png') ?>" alt="<?php echo $this->__('To next product') ?>"/></a>
+                    </div>
+                </div>
+            </div>
+    </div>
+  </div>
+<?php endif; ?>
+<!-- app\design\frontend\schrack\schrackresponsive\template\catalog\product\view\browseblock.phtml (end) -->

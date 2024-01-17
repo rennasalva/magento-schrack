@@ -1,0 +1,169 @@
+<!-- app\design\frontend\schrack\schrackresponsive\template\customer\account\documents\results_table.phtml (start) -->
+<?php
+$_imgCartUrl = $this->getSkinUrl('images/cart_raute1.png');
+$_imgPdfUrl = $this->getSkinUrl('images/application_pdf.png');
+$_helper = Mage::helper('schracksales/order');
+$_customer = $this->getCustomer();
+?>
+<script type="text/javascript">//<![CDATA[
+
+    function setAllCheckboxes(className, el) {
+        jQuery('input[type="checkbox"].' + className).prop('checked', jQuery(el).is(':checked'));
+    }
+
+//]]></script>
+<?php if ($this->getDocuments()->count() > 0): ?>
+    <input type="hidden" name="sort_order" value="<?php echo $this->getSortOrder() ?>" />
+    <input type="hidden" name="direction" value="<?php echo $this->getDirection() ?>" />   
+
+
+    <div class="tabularCont">
+        <div class="row-tbl">
+            <div class="header hidden-xs hidden-sm">
+                <?php if ($this->haveSortableResultTable()): ?>
+                    <div class="col-sm-2 colmn documentDatetime col--<?php echo $this->getColumnNumber('date') ?> columns-fine <?php if ($this->getSortOrder() === 'document_date_time'): ?>active<?php endif; ?>"> <?php echo $this->__('Date') ?> <span class="glyphicon glyphicon-triangle-bottom smlTxt" onClick="setOrderFields('documents_form', 'document_date_time');
+                                    return false;"></span> </div>
+
+                    <div class="col-sm-3 colmn documentNumber large-fine-<?php echo $this->getColumnNumber('document_number') ?> columns-fine <?php if ($this->getSortOrder() === 'wws_document_number'): ?>active<?php endif; ?>"> <?php echo $this->getDocumentNumberFieldDescription() ?> <span class="glyphicon glyphicon-triangle-bottom smlTxt" onClick="setOrderFields('documents_form', 'wws_document_number');
+                                    return false;"></span> </div>
+
+                    <?php if ($this->showOrderNumber()): ?>
+                        <div class="col-sm-2 colmn orderNumber large-fine-<?php echo $this->getColumnNumber('order_number') ?> columns-fine <?php if ($this->getSortOrder() === 'schrack_wws_order_number'): ?>active<?php endif; ?>"> <?php echo $this->__('Order Number') ?> <span class="glyphicon glyphicon-triangle-bottom smlTxt" onClick="setOrderFields('documents_form', 'schrack_wws_order_number');
+                                            return false;"></span></div>
+                        <?php endif; ?>
+
+                    <div class="col-sm-3 colmn schrackWwsReference large-fine-<?php echo $this->getColumnNumber('reference') ?> columns-fine <?php if ($this->getSortOrder() === 'schrack_wws_reference'): ?>active<?php endif; ?>"> <?php echo $this->__('Meine Bestellangabe') ?> <span class="glyphicon glyphicon-triangle-bottom smlTxt" onClick="setOrderFields('documents_form', 'schrack_wws_reference');
+                                    return false;"></span> </div>
+
+                    <?php if ($this->isDetailsearchRequest()) : ?>
+                        <div class="col-sm-3 colmn documentType large-fine-<?php echo $this->getColumnNumber('document_type') ?> columns-fine <?php if ($this->getSortOrder() === 'document_type'): ?>active<?php endif; ?>"> <?php echo $this->__('Document') ?>
+                            <?php /* ?><span class="glyphicon glyphicon-triangle-bottom smlTxt"></span><?php */ ?>
+                        </div>
+                    <?php endif; ?>
+
+                    <div class="col-sm-2 colmn hidden-xs- hidden-sm schrackWwsStatus large-fine-<?php echo $this->getColumnNumber('status') ?>  columns-fine <?php if ($this->getSortOrder() === 'schrack_wws_status'): ?>active<?php endif; ?>"> <?php echo $this->__('Status') ?> <span class="glyphicon glyphicon-triangle-bottom smlTxt" onClick="setOrderFields('documents_form', 'schrack_wws_status');
+                                    return false;"></span> </div>
+
+                    <?php if ($this->_haveTnt): ?>
+                        <div class="col-sm-2 colmn large-fine-<?php echo $this->getColumnNumber('tnt') ?> columns-fine"><?php echo $this->__('Action'); ?></div>
+                    <?php endif; ?>
+
+                <?php else: ?>
+                    <?php /* ?><div class="col-sm-2 colmn large-fine-<?php echo $this->getColumnNumber('checkbox') ?> columns-fine">&nbsp;</div><?php */ ?>
+                    <div class="col-sm-3 colmn docuemntDatetime2 large-fine-<?php echo $this->getColumnNumber('date') ?> columns-fine date"><?php echo $this->__('Date') ?></div>
+                    <div class="col-sm-3 colmn documentNumber2 large-fine-<?php echo $this->getColumnNumber('document_number') ?> columns-fine"><?php echo $this->getDocumentNumberFieldDescription() ?></div>
+                    <?php if ($this->showOrderNumber()): ?>
+                        <div class="col-sm-3 colmn orderNumber2 large-fine-<?php echo $this->getColumnNumber('order_number') ?> columns-fine"><?php echo $this->__('Order Number') ?></div>
+                    <?php endif; ?>
+                    <div class="col-sm-3 colmn orderReference large-fine-<?php echo $this->getColumnNumber('reference') ?> columns-fine"><?php echo $this->__('Meine Bestellangabe') ?></div>
+                    <?php if ($this->isDetailsearchRequest()) : ?>
+                        <div class="col-sm-3 colmn hidden-xs- hidden-sm documentType2 large-fine-<?php echo $this->getColumnNumber('document_type') ?> columns-fine document-number"><?php echo $this->__('Document') ?></div>
+                    <?php endif; ?>
+                    <div class="col-sm-3 colmn rowStatus2 large-fine-<?php echo $this->getColumnNumber('status') ?> columns-fine"> <?php echo $this->__('Status') ?> </div>
+                <?php endif; ?>
+            </div>
+        </div>
+        <?php
+        $i = 0;
+        foreach ($this->getFinalDocuments() as $_document):
+            ?>
+            <div class="row-tbl">
+                <div class="body" <?php if ($i % 2 === 1): ?> even<?php else: ?> odd<?php endif; ?>>
+                    <input type="hidden" id="documentId-<?php echo $this->getClassId() ?><?php echo $i ?>" value="<?php echo $this->getDocumentId($_document) ?>" />
+                    <input type="hidden" id="type-<?php echo $this->getClassId() ?><?php echo $i ?>" value="<?php echo $this->getDocTypeShortName($_document) ?>" />
+                    <input type="hidden" id="orderId-<?php echo $this->getClassId() ?><?php echo $i ?>" value="<?php echo $_document->getOrderEntityId() ?>" />
+                    <input type="hidden" id="itemId-<?php echo $this->getClassId() ?><?php echo $i ?>" value="<?php echo $this->getDocumentNumber($_document, 'offer') ?>" />
+                    <div class="mobilSecLft">
+                        <?php /* ?><div class="col-xs-12 col-sm-12 col-md-3 colmn large-fine-<?php echo $this->getColumnNumber('checkbox') ?> columns-fine">
+                          <div class="responsiveHd"><?php echo $this->__('Date:') ?> </div>
+                          <input type="checkbox" class="rowId<?php echo $this->getClassId() ?>" id="rowId-<?php echo $this->getClassId() ?><?php echo $i ?>" />
+                          </div><?php */ ?>
+                        <span class="<?php echo $this->getColumnNumber('checkbox') ?> columns-fine" style="display:none;">
+                            <input type="checkbox" class="rowId<?php echo $this->getClassId() ?>" id="rowId-<?php echo $this->getClassId() ?><?php echo $i ?>" />
+                        </span>
+                        <div class="col-xs-12 col-sm-12 col-md-2 colmn docuemntDatetime3 large-fine-<?php echo $this->getColumnNumber('date') ?> columns-fine">
+                            <div class="responsiveHd"><?php echo $this->__('Order Number:') ?> </div>
+                            <?php echo $this->getFormattedDate(strtotime($_document->getDocumentDateTime())) ?></div>
+                        <div class="col-xs-12 col-sm-12 col-md-3 colmn documentNumber3 large-fine-<?php echo $this->getColumnNumber('document_number') ?> columns-fine">
+                            <div class="responsiveHd"><?php echo $this->__('Order Number:') ?> </div>
+                            <a href="<?php echo $this->getUrl('*/*/documentsDetailView', array('id' => $_document->getOrderEntityId(), 'type' => $this->getDocTypeShortName($_document), 'documentId' => $this->getDocumentId($_document))) ?>"><?php echo $this->getDocumentNumber($_document, 'offer') ?></a></div>
+                        <?php if ($this->showOrderNumber()): ?>
+                            <div class="col-xs-12 col-sm-12 col-md-2 colmn chrackWwwsOrderNumber large-fine-<?php echo $this->getColumnNumber('order_number') ?> columns-fine">
+                                <div class="responsiveHd"><?php echo $this->__('Order Number:') ?> </div>
+                                <?php echo $_document->getSchrackWwsOrderNumber() ?></div>
+                        <?php endif; ?>
+                        <div class="col-xs-12 col-sm-12 col-md-3 colmn documentReference large-fine-<?php echo $this->getColumnNumber('reference') ?> columns-fine">
+                            <div class="responsiveHd"><?php echo $this->__('Meine Bestellangabe') ?></div>
+                            <a href="<?php echo $this->getUrl('*/*/documentsDetailView', array('id' => $_document->getOrderEntityId(), 'type' => $this->getDocTypeShortName($_document), 'documentId' => $this->getDocumentId($_document))) ?>"><?php echo $this->getDocumentCustomerNumber($_document, 'offer') ?></a></div>
+                        <?php if ($this->isDetailsearchRequest()) : ?>
+                            <div class="hidden-xs hidden-sm col-md-2 colmn documentType3 large-fine-<?php echo $this->getColumnNumber('document_type') ?> columns-fine">
+                                <div class="responsiveHd"><?php echo $this->__('Status:') ?> </div>
+                                <?php echo $this->__($this->getDocTypeName($_document)) ?> </div>
+                        <?php endif; ?>
+                        <div class="col-xs-12 col-sm-12 col-md-2 colmn rowStatus3 large-fine-<?php echo $this->getColumnNumber('status') ?> columns-fine status-<?php echo $this->getUnfakedDocumentStatus($_document) ?>">
+                            <div class="responsiveHd"><?php echo $this->__('Action:') ?> </div>
+
+                            <button class="bttn-md " title="<?php echo $this->__('Add to Cart') ?>" id="atcbtnId-<?php echo $this->getClassId() ?><?php echo $i ?>" style="display:none;"><?php echo $this->__('Add to Cart') ?></button>
+
+
+                            <?php if ($_customer->isAllowed('customerOrder', 'order') && $this->isOfferList()) : ?>
+                                <a class="bttn-md"
+                                   id="orderShowEditPage-<?php echo $_document->getSchrackWwsOrderNumber() ?>"
+                                   href="<?php echo $this->getUrl('*/*/documentsDetailView', array('id' => $_document->getOrderEntityId(), 'type' => $this->getDocTypeShortName($_document), 'documentId' => $this->getDocumentId($_document))) ?>"
+                                   title="<?php echo $this->getOrderButtonText($_document) ?>" > <?php echo $this->getOrderButtonText($_document) ?> </a>
+                               <?php else : ?>
+                                &nbsp;<img class="status-icon" src="<?php echo $this->getStatusImageSkinUrl($this->getDocumentStatus($_document)) ?>" />&nbsp;<?php echo $this->__(ucwords($this->getDocumentStatus($_document))) ?>
+                            <?php endif; ?>
+                        </div>
+                        <?php
+                        if ($this->_haveTnt):
+                            $model = Mage::getModel('sales/order_shipment');
+                            $model->load($_document->getShipmentId());
+                            $collos = $this->getTrackandtraceUrl($model);
+                            ?>
+                            <div class="col-xs-12 col-sm-12 col-md-2 colmn large-fine-<?php echo $this->getColumnNumber('tnt') ?> columns-fine">
+                                <?php if (isset($collos)): ?>
+                                    <a class="trackandtrace" href="<?php echo $collos; ?>"><?php echo $this->__('Track and Trace'); ?></a>
+                                <?php endif; ?>
+                            </div>
+                        <?php endif; ?>
+                    </div>
+                    <div class="mobilSecRgt hidden-md hidden-lg colmn"><?php echo $this->__('Ordered'); ?></div>
+                </div>
+            </div>
+            <?php
+            ++$i;
+        endforeach;
+        ?>
+    </div>
+
+
+<?php else: ?>
+    <?php echo $this->__('There are no documents to display.') ?>
+<?php endif; ?>
+<script type="text/javascript">//<![CDATA[
+
+    jQuery(document).ready(function () {
+        jQuery('#filterMenu').click(function () {
+            console.log('filter click #10');
+            jQuery('.filterPopup').toggle();
+        });
+    });
+
+
+    function setOrderFields(formName, fieldName) {
+        if (document.forms[formName].elements['sort_order'].value === fieldName) {
+            document.forms[formName].elements['direction'].value =
+                    document.forms[formName].elements['direction'].value === 'asc' ?
+                    'desc' : 'asc';
+        } else {
+            document.forms[formName].elements['sort_order'].value = fieldName;
+            document.forms[formName].elements['direction'].value = 'asc';
+        }
+        resetTextIfDefault();
+        document.forms[formName].submit();
+    }
+
+    //]]></script>
+
+<!-- app\design\frontend\schrack\schrackresponsive\template\customer\account\documents\results_table.phtml (end) -->

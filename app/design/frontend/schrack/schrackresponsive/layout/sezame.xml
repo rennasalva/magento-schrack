@@ -1,0 +1,59 @@
+<?xml version="1.0"?>
+<layout version="0.1.0">
+    <customer_account_login translate="label">
+        <reference name="content">
+            <block type="core/template" name="sezame.login.button" template="sezame/button.phtml"
+                   after="customer_form_login"/>
+        </reference>
+        <reference name="before_body_end">
+            <block type="sezame/script" name="sezame.script" template="sezame/script.phtml"
+                   ifconfig="sezame/settings/enabled"/>
+        </reference>
+    </customer_account_login>
+
+    <checkout_onepage_index translate="label">
+        <reference name="checkout.onepage.login">
+            <action method="setTemplate" ifconfig="sezame/settings/enabled">
+                <template>sezame/checkout_login.phtml</template>
+            </action>
+        </reference>
+        <reference name="before_body_end">
+            <block type="sezame/script" name="sezame.script" template="sezame/script.phtml"
+                   ifconfig="sezame/settings/enabled"/>
+        </reference>
+    </checkout_onepage_index>
+
+    <customer_account>
+        <reference name="customer_account_navigation">
+            <action method="addLink" translate="label" module="customer">
+                <name>sezame</name>
+                <path>sezame/link/</path>
+                <label>Sezame</label>
+            </action>
+        </reference>
+    </customer_account>
+
+    <sezame_link_index>
+        <update handle="customer_account"/>
+        <reference name="content">
+            <block type="sezame/link" name="sezame.link.index" template="sezame/linkindex.phtml"/>
+        </reference>
+    </sezame_link_index>
+
+    <sezame_link_link>
+        <update handle="customer_account"/>
+        <reference name="content">
+            <block type="sezame/link" name="sezame.link" template="sezame/link.phtml"/>
+        </reference>
+    </sezame_link_link>
+
+    <customer_account_login>
+        <reference name="customer_form_login">
+            <action method="setTemplate">
+                <template>sezame/login.phtml</template>
+            </action>
+        </reference>
+    </customer_account_login>
+
+
+</layout>

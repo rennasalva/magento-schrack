@@ -1,0 +1,11 @@
+<?php
+$_helper    = $this->helper('catalog/output');
+$_category  = Mage::registry('current_category');
+$_subCatCnt = count(Mage::registry('categoryCollectionSolr'));
+$_text = $_helper->categoryAttribute($_category, $_category->getName(), 'name');
+if ( $_subCatCnt ) {
+    $_text .= ' (' . $_subCatCnt . '&nbsp;' . $this->__('subcategories') . ')';
+}
+?>
+<h1 class="content"><?php echo $_text; ?></h1>
+

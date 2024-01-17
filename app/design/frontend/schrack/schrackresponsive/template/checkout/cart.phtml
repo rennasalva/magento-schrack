@@ -1,0 +1,1276 @@
+<!-- app/design/frontend/schrack/schrackresponsive/template/checkout/cart.phtml (start) -->
+<?php
+    /* @var $this Mage_Checkout_Block_Cart */
+    $_quote = $this->getQuote();
+    $_isPickup = $_quote->getIsPickup();
+    $_quoteid = $_quote->getId();
+    $_partslistHelper = Mage::helper('schrackwishlist/partslist');
+    $_wishlistHelper = Mage::helper('schrackwishlist');
+    $_quickaddHelper = Mage::helper('schrackcheckout/quickadd');
+    $_geoipHelper = Mage::helper('geoip');
+    /* @var $_stockHelper Schracklive_SchrackcatalogInventory_Helper_Stock */
+    $_stockHelper = Mage::helper('schrackcataloginventory/stock');
+
+    $sessionCustomerId = Mage::getSingleton('customer/session')->getCustomer()->getId();
+    $aclRoleId = Mage::getModel('customer/customer')->load($sessionCustomerId)->getSchrackAclRoleId();
+    $isProjectant = Mage::helper('schrack/acl')->isProjectantRoleId($aclRoleId);
+
+    $_session = Mage::getSingleton('customer/session');
+
+    $isProjectantCanOrder = false;
+    if ($_session->isLoggedIn()) {
+        $sessionLoggedInCustomer = $_session->getCustomer();
+        $aclrole = $sessionLoggedInCustomer->getSchrackAclRole();
+        if($aclrole == 'list_price_customer') {
+            $isProjectantCanOrder = true;
+        }
+    }
+
+    $customer = $this->getCustomer();
+    if ($customer) {
+        $customerType = $customer->getSchrackCustomerType(); // ProspectTypes: 'light-prospect' / 'full-prospect'
+    }
+
+    $prospectLight = false;
+
+    if ($customerType == 'light-prospect') {
+        $prospectLight = true;
+    }
+
+    if (Mage::getStoreConfig('ec/config/active')) {
+        $trackingEnabled = 'enabled';
+    } else {
+        $trackingEnabled = 'disabled';
+    }
+
+    $skus = array();
+    $items = $this->getItems();
+    foreach ( $items as $item ) {
+        $skus[] = $item->getSku();
+    }
+    /* @var $promoHelper Schracklive_Promotions_Helper_Data */
+    $promoHelper = Mage::helper('promotions');
+    $promoMap = $promoHelper->getSKUsToPromotionFlags($skus);
+    Mage::unregister('sku2promoMap');
+    Mage::register('sku2promoMap',$promoMap);
+
+    $productHelper = Mage::helper('schrackcatalog/product');
+    $productHelper->preloadVpes($skus);
+?>
+
+
+<style>
+    .autocomplete-listitems {
+        left: 15px !important;
+        top: 35px !important;
+        background: #fff;
+        z-index: 1;
+        border: none;
+        opacity: 1 !important;
+    }
+    .autocomplete-listitem-container {
+        position: absolute;
+        z-index: 1;
+        background: white;
+        margin-left: 1px;
+        color: #888;
+        margin-top: 0;
+        border: 1px solid #efefef;
+    }
+    .wks_sku_list {
+        width: 120px;
+        height: 20px;
+        padding-top: 2px;
+        padding-bottom: 2px;
+        padding-left: 10px;
+    }
+    .wks_sku_list:hover {
+        background: #00589d;
+        color: white;
+        cursor: pointer;
+    }
+    .replace_button_inactive {
+        background-color: #d3d3d3;
+        color: grey;
+        border: none;
+        text-decoration: none;
+        padding-top: 3px;
+        padding-bottom: 3px;
+        margin-left: 5px;
+    }
+    .replace_button_active {
+        background-color: #d1222b;
+        color: white !important;
+        border: none;
+        text-decoration: none;
+        padding-top: 3px;
+        padding-bottom: 3px;
+        margin-left: 5px;
+    }
+    .replaceWKSArticleSku {
+        padding-left: 2px;
+    }
+    .ext_product_item {
+        margin-bottom: 10px;
+        border: 1px dotted lightgray;
+        padding: 4px;
+    }
+    html, body {
+        max-width: 100% !important;
+        overflow-x: hidden !important;
+    }
+
+    .triggerDescriptionCartItemPositionRow {
+        cursor: pointer;
+    }
+
+    @media (min-width: 1px) and (max-width: 320px) {
+        #crtSubTtlHead {
+            display: none !important;
+        }
+        .cartCont {
+            margin-left: 0 !important;
+            margin-right: 0 !important;
+        }
+    }
+
+    @media (min-width: 321px) and (max-width: 360px) {
+        #crtSubTtlHead {
+            display: none !important;
+        }
+    }
+
+    @media (min-width: 361px) and (max-width: 410px) {
+        #crtSubTtlHead {
+            display: none !important;
+        }
+        .totalAmountInfoContainer {
+            margin-right: -2px !important;
+        }
+    }
+
+    @media (min-width: 411px) and (max-width: 460px) {
+        #crtSubTtlHead {
+            display: none !important;
+        }
+        .otherActions {
+        }
+    }
+
+    @media (min-width: 461px) and (max-width: 480px) {
+        #crtSubTtlHead {
+            display: none !important;
+        }
+    }
+
+    @media (min-width: 481px) and (max-width: 560px) {
+        #crtSubTtlHead {
+            display: none !important;
+        }
+    }
+
+    @media (min-width: 561px) and (max-width: 639px) {
+        #crtSubTtlHead {
+            display: none !important;
+        }
+    }
+
+    @media (min-width: 640px) and (max-width: 767px) {
+        #crtSubTtlHead {
+            display: none !important;
+        }
+    }
+
+    @media (min-width: 768px) and (max-width: 768px) {
+
+    }
+
+    @media (min-width: 769px) and (max-width: 992px) {
+
+    }
+
+</style>
+
+<script type="text/javascript">//<![CDATA[
+    var PAGETYPE = 'CART';
+
+    var partslist = new ListRequestManager.List('<?php echo $_partslistHelper->getBaseUrl() ?>');
+    partslist.setProductAddUrl('<?php echo Mage::helper('schrackcore/url')->getUrlWithCurrentProtocol('checkout/cart/addProductToPartslist') ?>');
+    var partslistFE = new ListRequestManager.Frontend(partslist, ListRequestManager.Product);
+
+    var cart = new ListRequestManager.List('<?php echo $this->getUrl('checkout/cart/') ?>', true);
+    var cartFE = new ListRequestManager.Frontend(cart, ListRequestManager.Product);
+
+    var compare = new ListRequestManager.List('<?php echo $this->getUrl('catalog/product_compare') ?>', true);
+    var compareFE = new ListRequestManager.Frontend(compare, ListRequestManager.Product);
+
+    confirmLeave = true;
+    leaveMessage = '<?php echo $this->__('Data has changed - are you sure you want to leave?') ?>';
+
+    var doGetCartGrandTotal = true;
+//]]>
+</script>
+
+<input type="hidden" id="quote-id" value="<?php echo 'Quote-ID = ' . $_quoteid; ?>">
+
+<?php if (!$isProjectant || $isProjectantCanOrder) : ?>
+<div class="cartCont">
+    <h1 id="crtSubTtlHead"><img src="<?php echo $this->getSkinUrl('schrackdesign/Public/Images/rwd/cartIconBlue.png'); ?>" alt=""> 
+        <?php echo $this->getSummaryCount() . $this->__('Cart Subtotal') . " (<span id='crtSubCnt'>" . $this->helper('checkout/cart')->getSummaryCount() . "</span> " . $this->__('Items') . ")"; ?>
+    </h1>
+    <div class="row info-box three-d hide-on-print">
+        <div class="controlsArea"></div>
+        <?php if ($prospectLight == true) : ?>
+                <div class="col-xs-12">
+					<div id="headline-commercial-warning">
+						<?php echo $this->__('login.popup.registration-hint-only') ?>
+					</div>
+				</div>
+        <?php endif; ?>
+    </div>
+    <div id="crtRowContainer" class="row totalAmountInfoContainer">
+        <div id="messagesBlock" style="display: none;">
+            <?php echo $this->getMessagesBlock()->getGroupedHtml() ?>
+        </div>
+
+        <?php echo $this->getChildHtml('rightcartnav'); //calling cart right block ?>
+
+        <div id="crtLtItems" class="col-xs-12 col-sm-7 col-md-8 cartScroll cartItemsWrapper">
+            <?php foreach ($items as $position_number => $_item): $dataArray['data']['skus'][] = $_item->getSku(); $dataArray['data']['quantities'][] = $_item->getQty(); $dataArray['data']['cart_ids'][] = $_item->getId(); ?>
+                <?php echo $this->getItemHtml($_item) ?>
+                <input id="position_number_<?php echo $_item->getSku(); ?>" type="hidden" value="<?php echo $position_number; ?>">
+            <?php endforeach; ?>
+            <?php if (Mage::helper('ids')->isIdsSession()) : ?>
+                <?php if (Mage::helper('ids')->externalArticlesExists()) : ?>
+                    <?php echo Mage::helper('ids')->getExternalArticlesHTML(); ?>
+                <?php endif; ?>
+            <?php endif; ?>
+        </div>
+
+        <?php echo $this->getChildHtml('rightcartnavmobile'); //calling cart right block ?>
+
+        <div id="ajax-loader" style="display: none;">
+            <img src="<?php echo $this->getSkinUrl('schrackdesign/Public/Images/download_ajax_loader.gif'); ?>" class="zip-download-animation" style="margin-top: -106px; margin-left: -79px;"/>
+        </div>
+    </div>
+</div>
+
+<div tabindex="-1" role="dialog" aria-labelledby="printLabelLablel" id="selectmediagpopup" class="lableprint modal fade" title="<?php echo $this->__('Lable Print'); ?>"></div>
+<?php endif; ?>
+
+<input type="hidden" id="standardTextEnterDescriptionForCartPosition" value="<?php echo $this->__('Add Comment To Cart Position'); ?>">
+
+<script type="text/javascript">
+//<![CDATA[
+    var productSKUForPrice = <?php echo json_encode($dataArray); ?>;
+    var productSKUForStock = <?php $dataArray['data']['forceRequest'] = 0;
+echo json_encode($dataArray);
+?>;
+
+    var setQty = function (listId, qty) {
+        jQuery('input[name="cart[' + listId + '][qty]"]').val(qty);
+    };
+
+    var updateCart = function (action, listId) {
+    };
+
+    jQuery('select.dropdown-menu').dropdown({activateOnClick: false});
+
+    var availabilityCheck = function (targetfunc) {
+        try {
+            jQuery('.cart-qty').each(function (i, el) {
+                var id = jQuery(el).attr('ref').split('-').last();
+                checkAvailability("<?php echo Mage::helper('schrackcore/url')->getUrlWithCurrentProtocol('catalog/product/checkAvailability'); ?>",
+                        jQuery('#sku-' + id).val(),
+                        (jQuery('input[ref="cart-qty-' + id + '"]').val() ? jQuery('input[ref="cart-qty-' + id + '"]').val() : 1),
+                        jQuery('#drum-' + id).val(),
+<?php echo $_isPickup ? 1 : 0; ?>,
+<?php echo $_isPickup ? 0 : 1; ?>
+                ).fail(function () {
+                    throw 'Schleifenabbruch';
+                });
+            });
+            targetfunc.call(null);
+        } catch (e) {
+        }
+    };
+
+    /**
+     * update cart Quantity on data change
+     * @param {type} ajaxUrl
+     * @param {type} item_id   */
+    function cartUpdate(ajaxUrl, item_id, item_sku, isRemove) {
+        var cart_val = jQuery("#cart_" + item_id).val();
+        if (isRemove == 'true') {
+            cart_val = 0;
+        }
+
+        if (cart_val == '') {
+            cart_val = 0;
+        }
+        //------------------------------------------------------------ VTC Check
+        if( jQuery("#cart_" + item_id).data("vtcmaxqty") &&
+            cart_val > jQuery("#cart_" + item_id).data("vtcmaxqty")){
+            //------------------------------------------------------------------
+            appendMessageUl([Translator.translate("Your selected quantity may result in a longer delivery time. Please select the available quantity currently in stock or pick an alternative item. Get in touch if you would like us to recommend a suitable article.")], 'messages_hidden', 'error-msg', 'glyphicon glyphicon-exclamation-sign');
+            unsetOverlayLoader();
+            console.log('appendMessageUl #vtc-Cart');
+            return;
+        }
+
+        function isFloat(n){
+            return Number(n) === n && n % 1 !== 0;
+        }
+
+        var redItemCountField = parseInt(jQuery('#cartNoBxItemCount').text());
+
+        if (cart_val == 0 && redItemCountField == 1) {
+            setCartEmpty(ajaxUrl);
+        } else {
+            setCartItemQuantity = {'setCartItemQuantity': {'data': {'item_id': item_id, 'quantity': cart_val}}};
+            setOverlayLoader();
+            jQuery.ajax(ajaxUrl, {
+                'dataType': 'json',
+                'type': 'POST',
+                'data': setCartItemQuantity,
+                'success': function (data) {
+                    setTimeout(function () {
+                        unsetOverlayLoader();
+                    });
+                    var parsedData = data;
+                    var result = parsedData.setCartItemQuantity.result;
+                    var savedOldValueBeforeOverwrite = jQuery('#qty-' + item_sku).val();
+
+                    // Set new value to hidden field:
+                    jQuery('#qty-' + item_sku).val(cart_val);
+                    var messageArray = result.messages;
+                    jQuery('ul.messages').empty();
+                    jQuery('ul.errors').empty();
+                    if (result.result.indexOf("SUCCESS") == -1) {
+                        if (result.result == '[ERROR] Availibility problem.') {
+                            if (result.popupHtml && result.showPopup == true) {
+                                jQuery('#qty-' + item_sku).val(savedOldValueBeforeOverwrite);
+                                jQuery('#quantitywarningpopup').html(result.popupHtml);
+                                jQuery('#quantitywarningpopupBtn').click();
+                            }
+                        } else {
+                            appendMessageUl(messageArray, 'errors', 'error-msg');
+                            console.log('appendMessageUl #16');
+                        }
+                    } else {
+                        appendMessageUl(messageArray, 'messages_hidden', 'success-msg');
+                        console.log('appendMessageUl #17');
+                        if (cart_val == 0) {
+                            jQuery('#product_' + item_sku).remove();
+                            jQuery('#crtSubCnt').html(result.cart_item_count);
+                            jQuery('.MyCart .cartNoBx').html(result.cart_item_count);
+                            if (result.cart_item_count == 0) {
+                                jQuery('.cartSubTotal').remove();
+                                jQuery('#crtSubTtlHead').remove();
+                                jQuery('#crtRtAction').remove();
+                                jQuery('#crtRtMobAction').remove();
+                                jQuery('#content').html(  '<div class="large-12 columns" style="margin-top: 10px;"><h1><span><?php echo $this->__('Shopping Cart is Empty'); ?></span></h1>'
+                                                        + '<p><?php echo $this->__('You have no items in your shopping cart.'); ?></p>'
+                                                        + '<p><?php echo $this->__('Please <a href="%s">continue shopping</a>.', Mage::helper('core')->quoteEscape($this->getContinueShoppingUrl())) ?></p>'
+                                                        + '<div class="row info-box three-d"><div class="large-12 columns"></div></div></div>'
+                                );
+                            }
+                        } else {
+                            var formattedRowTotal = result.formatted_amounts.row_total;
+                            jQuery('#product-item-total-mobile-price-' + item_id).html(formattedRowTotal);
+                            jQuery('#product-item-total-price-' + item_id).html(formattedRowTotal);
+                            var resultNewQty = 0;
+                            if ( typeof result.newQty != 'undefined' ) {
+                                resultNewQty = result.newQty;
+                                jQuery("#cart_" + item_id).val(result.newQty);
+                            } else {
+                                resultNewQty = cart_val;
+                            }
+
+<?php if (Mage::helper('sapoci')->isSapociCheckout()) : ?>
+                            var rowNumberIndex = parseInt(jQuery("#position_number_" + item_sku).val()) + 1;
+                            jQuery('input[name="NEW_ITEM-QUANTITY[' + rowNumberIndex + ']"').val(resultNewQty);
+<?php endif; ?>
+                            // Tracking process:
+                            var trackingData        = {};
+                            trackingData.cartItems  = [];
+                            var allData             = {};
+
+                            var affectedArticle = jQuery('#product_' + item_sku);
+
+                            allData.id              = affectedArticle.attr("data-sku");
+                            allData.name            = affectedArticle.attr("data-name");
+                            //allData.price           = affectedArticle.attr("data-price");
+                            allData.category        = affectedArticle.attr("data-category");
+
+                            var positiveDifference = 0;
+                            var negativeDifference = 0;
+                            // Tracking of cart changes if not removed all items from single product or erase cart:
+                            // Products were reduced:
+                            if (savedOldValueBeforeOverwrite > resultNewQty) {
+                                negativeDifference = (savedOldValueBeforeOverwrite - resultNewQty);
+                                // Tracking of addToCart (amount = positiveDifference):
+                                allData.currencyCode    = '<?php echo Mage::app()->getStore()->getCurrentCurrencyCode() ?>';
+                                allData.sku = affectedArticle.attr("data-sku");
+                                allData.pagetype = 'cart';
+                                allData.quantity = negativeDifference;
+                                allData.trackingEnabled = '<?php echo $trackingEnabled; ?>';
+                                allData.trackingAction = 'decrease';
+                                cartQuantityChange(allData);
+                            } else {
+                                positiveDifference = (resultNewQty - savedOldValueBeforeOverwrite);
+                                // Tracking of addToCart (amount = positiveDifference):
+                                allData.currencyCode    = '<?php echo Mage::app()->getStore()->getCurrentCurrencyCode() ?>';
+                                allData.sku = affectedArticle.attr("data-sku");
+                                allData.pagetype = 'cart';
+                                allData.quantity = positiveDifference;
+                                allData.trackingEnabled = '<?php echo $trackingEnabled; ?>';
+                                allData.trackingAction = 'increase';
+                                cartQuantityChange(allData);
+                            }
+<?php if (Mage::helper('ids')->isIdsSession() || Mage::helper('sapoci')->isSapociCheckout()) : ?>
+                            window.location.reload();
+<?php endif; ?>
+                        }
+                        jQuery('#product-grand-total').html(result.formatted_amounts.grand_total);
+                        jQuery('#cartSubTotalHdn').val(result.raw_amounts.grand_total);
+
+                        // BOC for Bonus Point update on deletion or quantity update
+                        if ( result.online_bonus_text != '' ) {
+                            jQuery('#onlineBonusText').html(result.online_bonus_text);
+                            jQuery('.onlineBonus').show();
+                            if ( result.online_bonus_text != '' ) {
+                                jQuery('.onlineBonusAnchor').show();
+                            } else {
+                                jQuery('.onlineBonusAnchor').hide();
+                            }
+                        } else {
+                            jQuery('.onlineBonus').hide();
+                            jQuery('.onlineBonusAnchor').hide();
+                        }
+                        // EOC for Bonus Point update on deletion or quantity update
+                    }
+                    //jQuery("html, body").animate({scrollTop: 0}, "slow");
+                    // console.log('ScrollTop #70');
+                },
+                'error': function (data) {
+                    var parsedData = data;
+                    setTimeout(function () {
+                        unsetOverlayLoader();
+                    });
+                    //debugger;
+                }
+            });
+        }
+    }
+
+	 function DelocaleString(x, sep, grp, dec) {
+		//add decimals
+		var y = x.toFixed(dec);
+		//strip decimals
+		var x_integer = y.split('.')[0];
+		var x_fraction = y.split('.')[1];
+		var x_fractionString = "";
+		if (dec > 0) {
+			x_fractionString = ',' + x_fraction;
+		}
+		var sx = ('' + x_integer).split('.'), s = '', i, j;
+		sep || (sep = ' '); // default seperator
+		grp || grp === 0 || (grp = 3); // default grouping
+		i = sx[0].length;
+		while (i > grp) {
+			j = i - grp;
+			s = sep + sx[0].slice(j, i) + s;
+			i = j;
+		}
+		s = sx[0].slice(0, i) + s;
+		sx[0] = s;
+		return sx.join('.') + x_fractionString
+	}
+								
+    function removeMessages() {
+        // Both are messages but not shown in unique manner:
+        jQuery('.messages').hide();
+        jQuery('.messages').remove();
+
+        jQuery('.errors').hide();
+        jQuery('.errors').remove();
+    }
+
+    if (typeof availabilityCheck !== 'undefined' && jQuery.isFunction(availabilityCheck)) {
+        jQuery("button[name='sap_oci_checkout']").on('click', function () {
+            jQuery('#sapoci-form').submit();
+            return false;
+        });
+
+        jQuery("button[name='proceed_to_checkout']").on('click', function () {
+            console.log('Proceed to Checkout');
+
+<?php if (Mage::getStoreConfig('ec/config/active')) : ?>
+
+            var quoteItems = new Array();
+            var item;
+            var position = 1;
+
+            <?php
+                $quote         = Mage::getSingleton('checkout/session')->getQuote();
+                $quoteItems    = $quote->getItemsCollection();
+                $position      = 0;
+                $numberOfItems = 0;
+                $skuArray      = array();
+                $nameArray     = array();
+                $priceArray    = array();
+                $categoryArray = array();
+                $quantityArray = array();
+                $skuJSON       = '';
+                $nameJSON      = '';
+                $priceJSON     = '';
+                $categoryJSON  = '';
+                $quantityJSON  = '';
+
+                foreach ($quoteItems as $itemId => $item) {
+                    $position++;
+                    $product      = $item->getProduct();
+                    $coreHelper   = Mage::helper('core');
+
+                    if ($product) {
+                        $skuArray[]   = $item->getSku();
+                        $nameArray[]  = addslashes($product->getName());
+                        $priceArray[] = str_replace(',', '.', $coreHelper->formatPrice($item->getPrice()));
+                        $categoryArray[] = $product->getCategoryId4googleTagManager();
+                        $quantityArray[] = intval($item->getQty());
+                        $numberOfItems++;
+                    } else {
+                        // no product of magento;
+                    }
+                }
+
+                $skuJSON      = json_encode($skuArray);
+                $nameJSON     = json_encode($nameArray);
+                $priceJSON    = json_encode($priceArray);
+                $categoryJSON = json_encode($categoryArray);
+                $quantityJSON = json_encode($quantityArray);
+
+                $nameJSON = str_replace("\\\'", "\\'", $nameJSON);
+            ?>
+
+            var skuJSON       = JSON.parse('<?php echo $skuJSON; ?>');
+            var nameJSON      = JSON.parse('<?php echo $nameJSON; ?>');
+            var priceJSON     = JSON.parse('<?php echo $priceJSON; ?>');
+            var categoryJSON  = JSON.parse('<?php echo $categoryJSON; ?>');
+            var quantityJSON  = JSON.parse('<?php echo $quantityJSON; ?>');
+            var globalIndex   = 0;
+            var numberOfItems = <?php echo $numberOfItems; ?>;
+
+            for(var index = 0; index < skuJSON.length; index++) {
+
+                jQuery.ajax('<?php echo Mage::getStoreConfig('schrack/typo3/typo3url') ?>' + '?eID=schrack_suggest&q=' + encodeURIComponent(skuJSON[index]) + '&cat=', {
+                    'dataType': 'json',
+                    'type': 'GET',
+                    'success': function (data) {
+                        var parsedData = data;
+                        var articleCondition1 = 0;
+                        var articleCondition2 = 0;
+                        var articleCondition3 = 0;
+
+                        if (!parsedData || parsedData.hasOwnProperty('error')) {
+                            console.log('SOLR Request not successful');
+                            
+                            availabilityCheck(function () {
+                                window.location = '<?php echo $this->getUrl('checkout/onepage') ?>';
+                            });
+                        } else {
+                            if (typeof parsedData.products[0] == 'undefined') {
+                                console.log('SOLR did not answer (cannot track this item) !');
+                            } else {
+                                var url = parsedData.products[0].url;
+                                var arr = url.split('/');
+                                var arrayLength = arr.length;
+                                for (var i = 0; i < arrayLength; i++) {
+                                    if (i > 3 && i < (arrayLength - 1)) {
+                                        categoryJSON[globalIndex] = categoryJSON[globalIndex] + '/' + arr[i];
+                                    }
+                                }
+
+                                while(categoryJSON[globalIndex].charAt(0) === '/') {
+                                    categoryJSON[globalIndex] = categoryJSON[globalIndex].substring(1);
+                                }
+
+                                item = {
+                                    'id' : skuJSON[globalIndex],
+                                    'name' : nameJSON[globalIndex],
+                                    //'price' : priceJSON[globalIndex],
+                                    'category' : categoryJSON[globalIndex],
+                                    'position' : (globalIndex + 1),
+                                    'quantity' : quantityJSON[globalIndex],
+                                    'dimension8' : 'checkout',
+                                    'dimension9' : categoryJSON[globalIndex],
+                                };
+
+                                if (categoryJSON[globalIndex]
+                                    && categoryJSON[globalIndex] != ''
+                                    && categoryJSON[globalIndex] != '(not set)') {
+                                    articleCondition1 = 1;
+                                }
+
+                                if (quantityJSON[globalIndex]
+                                    && quantityJSON[globalIndex] != ''
+                                    && quantityJSON[globalIndex] != '(not set)') {
+                                    articleCondition2 = 1;
+                                }
+
+                                if (articleCondition1 == 1 && articleCondition2 == 1) {
+                                    quoteItems.push(item);
+                                }
+                            }
+
+                            globalIndex = globalIndex + 1;
+
+                            if (globalIndex == numberOfItems) {
+                                localStorage.trackingQuoteItems = JSON.stringify(quoteItems);
+                                console.log('Written to localStorage.trackingQuoteItems');
+
+                                availabilityCheck(function () {
+                                    window.location = '<?php echo $this->getUrl('checkout/onepage') ?>';
+                                });
+                            }
+                        }
+                    },
+                    'error': function (data) {
+                        var parsedData = data;
+                        console.log('Tracking ERROR from cart.phtml -> ' + skuJSON[index]);
+                        console.log("<?php echo Mage::getStoreConfig('schrack/typo3/typo3url') ?>" + "?eID=schrack_suggest&q=" + encodeURIComponent(skuJSON[index]) + "&cat=");
+                        console.log(parsedData);
+                        globalIndex = globalIndex + 1;
+                    }
+                });
+            }
+
+<?php else : ?>
+
+            availabilityCheck(function () {
+                window.location = '<?php echo $this->getUrl('checkout/onepage') ?>';
+            });
+
+<?php endif ?>
+        });
+    }
+
+    jQuery("#download-media-files-button, #download-media-files-button-mob").click(function (e) {
+        setOverlayLoader();
+        getDownloadMediaDialog("<?php echo Mage::helper('schrackcore/url')->getUrlWithCurrentProtocol('catalog/download/getDownloadMediaDialog'); ?>", "cart.phtml");
+        return false;
+    });
+
+    // Cart update:
+    jQuery('.btn-update').on('click', function () {
+        removeMessages();
+        cartUpdate();
+    });
+
+    var getDownloadMediaDialog = function (ajaxUrl, source) {
+        localStorage.mediaDownloadSource = source;
+
+        jQuery.ajax(ajaxUrl, {
+            'type': 'POST',
+            'async': true,
+            'data': {
+                'source': source
+            },
+            'success': function (data) {
+                var datax = JSON.parse(data);
+                if (datax.html) {
+                    jQuery('#selectmediagpopup').html(datax.html);
+                    jQuery('#selectmediagpopup').modal('toggle');
+                    jQuery('#selectmediagpopup').modal('show');
+					unsetOverlayLoader();
+                }
+            }
+        });
+    };
+
+    var setOverlayLoader = function () {
+        // Set overlay for
+        jQuery('.controlsArea').css({"position": "absolute",
+            "height": "100%",
+            "width": "100%",
+            "background": "url(<?php echo $this->getSkinUrl('schrackdesign/Public/Images/download_ajax_loader.gif'); ?>) no-repeat center center",
+            "top": "-241px",
+            "left": "0",
+            "opacity": "0.4",
+            "z-index": "99"});
+    };
+
+    var unsetOverlayLoader = function () {
+        if (jQuery('.controlsArea')) {
+            jQuery('.controlsArea').removeAttr('style');
+        }
+    };
+
+    var setOverlayLoaderInCartView = function () {
+        // Set overlay for
+        jQuery('.cartListTable').css({"position": "absolute",
+            "height": "100%",
+            "width": "100%",
+            //"background-color": "grey",
+            "background": "url(<?php //echo $this->getSkinUrl('schrackdesign/Public/Images/download_ajax_loader.gif');   ?>) no-repeat center center",
+            //"background-repeat": "no-repeat",
+            "top": "0",
+            "left": "0",
+            "opacity": "0.4",
+            "z-index": "99"});
+    };
+
+    var removeAutocompleteItem = function(autocompleteItemText, autocompleteListParentElementId, autocompleteListIndex) {
+        // Replace : "descriptionHeadCartItemPositionText-..." ---> "triggerDescriptionCartItemPositionRowTextInput-..."
+        var autocompleteListElementId = '#' + autocompleteListParentElementId.replace("descriptionHeadCartItemPositionText", "triggerDescriptionCartItemPositionRowTextInput") + 'autocomplete-list' + ' div:nth-child(' + autocompleteListIndex + ')';
+        console.log(autocompleteListElementId);
+        jQuery(autocompleteListElementId).remove();
+
+        // TODO : Step over all autocpmlete lists and remove this item from list:
+
+        // TODO : Remove item from Localstorage also:
+
+    };
+
+    jQuery(document).ready(function () {
+
+        localStorage.mediaDownloadSourceDetail = "Cart";
+
+        var blurBlocker = 'inactive';
+        var allCartPositionIds = [];
+
+        // Try to find ugly message from failed credit card response (PayUnity):
+        if (jQuery('ul.messages li.error-msg ul li span').text() && jQuery('ul.messages li.error-msg ul li span').text() == "User Authentication Failed") {
+            var replacementText = '<?php echo $this->__('User Authentication Failed'); ?>';
+            jQuery('ul.messages li.error-msg ul li span').text(replacementText);
+        }
+        if (jQuery('ul.messages li.error-msg ul li span').text() && jQuery('ul.messages li.error-msg ul li span').text().indexOf("transaction declined") >= 0) {
+            var replacementText = '<?php echo $this->__('User Authentication Failed'); ?>';
+            jQuery('ul.messages li.error-msg ul li span').text(replacementText);
+        }
+
+        jQuery('#messagesBlock').fadeIn(100);
+
+        function autocomplete(inp, arr) {
+            if (arr) {
+
+                //the autocomplete function takes two arguments, the text field element and an array of possible autocompleted values:
+                var currentFocus;
+                // execute a function when someone writes in the text field:
+                inp.addEventListener("input", function(e) {
+                    var a, b, i, val = this.value;
+
+                    // Prevent enter illegal character(s) by CHANGE or PASTE :
+                    val = val.replace(/["';\[\]<>\x00-\x09\x0B\x0C\x0E-\x1F\xE2\x7F\n\r]/g, "");
+                    document.getElementById(this.id).value = val;
+
+                    // close any already open lists of autocompleted values
+                    closeAllLists();
+                    if (!val) { return false;}
+                    currentFocus = -1;
+                    // create a DIV element that will contain the items (values):
+                    a = document.createElement("DIV");
+                    a.setAttribute("id", this.id + "autocomplete-list");
+                    a.setAttribute("class", "autocomplete-items");
+                    // append the DIV element as a child of the autocomplete container:
+                    this.parentNode.appendChild(a);
+                    // for each item in the array...
+                    for (i = 0; i < arr.length; i++) {
+                        // check if the item starts with the same letters as the text field value:
+                        if (arr[i].substr(0, val.length).toUpperCase() == val.toUpperCase()) {
+                            // create a DIV element for each matching element:
+                            b = document.createElement("DIV");
+                            // make the matching letters bold:
+                            b.innerHTML =  '<span style="float: left; width: 100%; overflow: hidden;"><strong>' + arr[i].substr(0, val.length) + '</strong>' + arr[i].substr(val.length) + '</span>';
+                            // b.innerHTML += '<span onclick="removeAutocompleteItem(\'' + arr[i] + '\', \'' + jQuery(this).parent().prop("id") + '\', ' + i + ' );" title="<?php echo $this->__('Delete'); ?>" style="float: left; width: 4%; font-size: 1.9em; font-weight: bold; cursor: pointer; margin-top: -10px;">×</span>';
+                            b.innerHTML += '<span style="clear: both; display: none;"></span>';
+                            // insert a input field that will hold the current array item's value:
+                            b.innerHTML += "<input type='hidden' value='" + arr[i] + "'>";
+
+                            // Mouseover event listener when hover list:
+                            b.addEventListener("mouseover", function(e) {
+                                blurBlocker = 'active';
+                            });
+
+                            // execute a function when someone clicks on the item value (DIV element):
+                            b.addEventListener("click", function(e) {
+                                // insert the value for the autocomplete text field:
+                                inp.value = this.getElementsByTagName("input")[0].value;
+                                inp.focus();
+                                blurBlocker = 'inactive';
+                                // close the list of autocompleted values, (or any other open lists of autocompleted values:
+                                closeAllLists();
+                            });
+
+                            a.appendChild(b);
+                        }
+                    }
+                });
+                // execute a function presses a key on the keyboard:
+                inp.addEventListener("keydown", function(e) {
+                    var x = document.getElementById(this.id + "autocomplete-list");
+                    var val = this.value;
+
+                    // Prevent enter illegal character(s) by CHANGE or PASTE :
+                    val = val.replace(/["';\[\]<>\x00-\x09\x0B\x0C\x0E-\x1F\xE2\x7F\n\r]/g, "");
+                    document.getElementById(this.id).value = val;
+
+                    if (x) x = x.getElementsByTagName("div");
+                    if (e.keyCode == 40) {
+                        // If the arrow DOWN key is pressed, increase the currentFocus variable:
+                        currentFocus++;
+                        // and and make the current item more visible:
+                        addActive(x);
+                    } else if (e.keyCode == 38) { //up
+                        // If the arrow UP key is pressed, decrease the currentFocus variable:
+                        currentFocus--;
+                        // and and make the current item more visible:
+                        addActive(x);
+                    } else if (e.keyCode == 13) {
+                        // If the ENTER key is pressed, prevent the form from being submitted,
+                        e.preventDefault();
+                        if (currentFocus > -1) {
+                            // and simulate a click on the "active" item:
+                            if (x) x[currentFocus].click();
+                        }
+                    }
+                });
+
+                function addActive(x) {
+                    // a function to classify an item as "active":
+                    if (!x) return false;
+                    // start by removing the "active" class on all items:
+                    removeActive(x);
+                    if (currentFocus >= x.length) currentFocus = 0;
+                    if (currentFocus < 0) currentFocus = (x.length - 1);
+                    // add class "autocomplete-active":
+                    x[currentFocus].classList.add("autocomplete-active");
+                }
+
+                function removeActive(x) {
+                    // a function to remove the "active" class from all autocomplete items:
+                    for (var i = 0; i < x.length; i++) {
+                        x[i].classList.remove("autocomplete-active");
+                    }
+                }
+
+                function closeAllLists(elmnt) {
+                    // close all autocomplete lists in the document, except the one passed as an argument:
+                    var x = document.getElementsByClassName("autocomplete-items");
+                    for (var i = 0; i < x.length; i++) {
+                        if (elmnt != x[i] && elmnt != inp) {
+                            x[i].parentNode.removeChild(x[i]);
+                        }
+                    }
+                }
+
+                // execute a function when someone clicks in the document:
+                document.addEventListener("click", function (e) {
+                    closeAllLists(e.target);
+                });
+            }
+        }
+
+        function storeSavedAutocompleteItemToLocalstorage(autocompleteItemText) {
+            var autocompleteItemArray = [];
+            var getAutocompletionItemsFromLocalstorage = getAllAutompleteItems();
+
+            if (getAutocompletionItemsFromLocalstorage) {
+                var mainIndex;
+                var alreadyExistingAutocompleteEntry = false;
+                for (mainIndex = 0; mainIndex < getAutocompletionItemsFromLocalstorage.length; ++mainIndex) {
+                    if (getAutocompletionItemsFromLocalstorage[mainIndex] == autocompleteItemText) {
+                        alreadyExistingAutocompleteEntry = true;
+                    }
+                }
+                if (alreadyExistingAutocompleteEntry == false) {
+                    getAutocompletionItemsFromLocalstorage[mainIndex] = autocompleteItemText;
+                }
+                autocompleteItemArray = getAutocompletionItemsFromLocalstorage;
+            } else {
+                autocompleteItemArray[0] = autocompleteItemText;
+            }
+            localStorage.setItem("autocompleteItems", JSON.stringify(autocompleteItemArray));
+
+            // Building Autocompletion on all cart tiems:
+            var idx;
+            for (idx = 0; idx < allCartPositionIds.length; ++idx) {
+                setAllAutompleteItems('triggerDescriptionCartItemPositionRowTextInput-' + allCartPositionIds[idx])
+            }
+        }
+
+        function setAllAutompleteItems(elementId) {
+            autocomplete(document.getElementById(elementId), getAllAutompleteItems());
+        }
+
+        function getAllAutompleteItems() {
+            var allAutoCompleteItemsFromLocalstorage = localStorage.getItem("autocompleteItems");
+            if (allAutoCompleteItemsFromLocalstorage) {
+                return JSON.parse(allAutoCompleteItemsFromLocalstorage);
+            } else {
+                return false;
+            }
+        }
+
+        function checkUserActionOnChangeAndSave(positionId) {
+            var editItemDescritionBefore = jQuery('#editFieldBefore-' + positionId).val();
+            var editItemDescritionAfter = jQuery('#editFieldAfter-' + positionId).val();
+
+            console.log('Before : ' + editItemDescritionBefore);
+            console.log('After : ' + editItemDescritionAfter);
+
+            if (editItemDescritionBefore != editItemDescritionAfter) {
+                // Save new item-position description:
+                saveDescription(positionId, editItemDescritionAfter)
+            }
+        }
+
+        // An array containing all the country names in the world:
+        //var countries = ["Afghanistan","Albania","Algeria","Andorra","Angola","Anguilla","Antigua & Barbuda","Argentina","Armenia","Aruba","Australia","Austria","Azerbaijan","Bahamas","Bahrain","Bangladesh","Barbados","Belarus","Belgium","Belize","Benin","Bermuda","Bhutan","Bolivia","Bosnia & Herzegovina","Botswana","Brazil","British Virgin Islands","Brunei","Bulgaria","Burkina Faso","Burundi","Cambodia","Cameroon","Canada","Cape Verde","Cayman Islands","Central Arfrican Republic","Chad","Chile","China","Colombia","Congo","Cook Islands","Costa Rica","Cote D Ivoire","Croatia","Cuba","Curacao","Cyprus","Czech Republic","Denmark","Djibouti","Dominica","Dominican Republic","Ecuador","Egypt","El Salvador","Equatorial Guinea","Eritrea","Estonia","Ethiopia","Falkland Islands","Faroe Islands","Fiji","Finland","France","French Polynesia","French West Indies","Gabon","Gambia","Georgia","Germany","Ghana","Gibraltar","Greece","Greenland","Grenada","Guam","Guatemala","Guernsey","Guinea","Guinea Bissau","Guyana","Haiti","Honduras","Hong Kong","Hungary","Iceland","India","Indonesia","Iran","Iraq","Ireland","Isle of Man","Israel","Italy","Jamaica","Japan","Jersey","Jordan","Kazakhstan","Kenya","Kiribati","Kosovo","Kuwait","Kyrgyzstan","Laos","Latvia","Lebanon","Lesotho","Liberia","Libya","Liechtenstein","Lithuania","Luxembourg","Macau","Macedonia","Madagascar","Malawi","Malaysia","Maldives","Mali","Malta","Marshall Islands","Mauritania","Mauritius","Mexico","Micronesia","Moldova","Monaco","Mongolia","Montenegro","Montserrat","Morocco","Mozambique","Myanmar","Namibia","Nauro","Nepal","Netherlands","Netherlands Antilles","New Caledonia","New Zealand","Nicaragua","Niger","Nigeria","North Korea","Norway","Oman","Pakistan","Palau","Palestine","Panama","Papua New Guinea","Paraguay","Peru","Philippines","Poland","Portugal","Puerto Rico","Qatar","Reunion","Romania","Russia","Rwanda","Saint Pierre & Miquelon","Samoa","San Marino","Sao Tome and Principe","Saudi Arabia","Senegal","Serbia","Seychelles","Sierra Leone","Singapore","Slovakia","Slovenia","Solomon Islands","Somalia","South Africa","South Korea","South Sudan","Spain","Sri Lanka","St Kitts & Nevis","St Lucia","St Vincent","Sudan","Suriname","Swaziland","Sweden","Switzerland","Syria","Taiwan","Tajikistan","Tanzania","Thailand","Timor L'Este","Togo","Tonga","Trinidad & Tobago","Tunisia","Turkey","Turkmenistan","Turks & Caicos","Tuvalu","Uganda","Ukraine","United Arab Emirates","United Kingdom","United States of America","Uruguay","Uzbekistan","Vanuatu","Vatican City","Venezuela","Vietnam","Virgin Islands (US)","Yemen","Zambia","Zimbabwe"];
+
+        function saveDescription (positionId) {
+            jQuery('#triggerDescriptionCartItemPositionRowSaveMessage-' + positionId).fadeIn(1000);
+            jQuery('#triggerDescriptionCartItemPositionRowSaveMessage-' + positionId).fadeOut(2000);
+
+            var descriptionTextContent = jQuery('#triggerDescriptionCartItemPositionRowTextInput-' + positionId).val();
+            var ajaxUrl = '<?php echo Mage::helper('schrackcore/url')->getUrlWithCurrentProtocol('sd/AjaxDispatcher/setGetData'); ?>';
+
+            // Store unique autocomplete items to localstorage:
+            storeSavedAutocompleteItemToLocalstorage(descriptionTextContent);
+
+            // Move to success from AJAX Call:
+            console.log('checkUserActionOnChangeAndSave -> ' + positionId);
+
+            // Send AJAX Call to Backend for save the text at cart item:
+            var setCartItemDescriptionText = {'setCartItemDescription': {'data': {'item_id': positionId, 'descriptionText': descriptionTextContent}}};
+
+            jQuery.ajax(ajaxUrl, {
+                'dataType': 'json',
+                'type': 'POST',
+                'data': setCartItemDescriptionText,
+                'success': function (data) {
+                    // TODO : Saving and saved
+                }
+            });
+        }
+
+        // initiate the autocomplete function on the "myInput" element, and pass along the countries array as possible autocomplete values:
+        var index = 0;
+        jQuery('.triggerDescriptionCartItemPositionRowTextInput').each(function () {
+            var positionIdButton = jQuery(this).prop("id");
+            var positionId = positionIdButton.replace('triggerDescriptionCartItemPositionRowTextInput-', '');
+            jQuery('#triggerDescriptionCartItemPositionRowTextInput-' + positionId).on('focus', function (){
+                jQuery('#descriptionHeadCartItemPositionTextBlocker-' + positionId).val('active');
+            });
+            jQuery('#triggerDescriptionCartItemPositionRowTextInput-' + positionId).on('blur', function (){
+                if (blurBlocker == 'inactive') {
+                    jQuery('#' + positionId).removeClass("fa-minus-square-o");
+                    jQuery('#' + positionId).addClass("fa-plus-square-o");
+                    jQuery('#descriptionHeadCartItemPositionText-' + positionId).hide();
+                    if (jQuery('#triggerDescriptionCartItemPositionRowTextInput-' + positionId).val() == '') {
+                        jQuery('#headlineAddCartPositionDescription-' + positionId).text(jQuery('#standardTextEnterDescriptionForCartPosition').val());
+                        console.log('Text not present  ' + positionId + ' -> BLUR-Action');
+                    } else {
+                        console.log('Text found  ' + positionId + ' -> BLUR-Action : ' + jQuery('#triggerDescriptionCartItemPositionRowTextInput-' + positionId).val());
+                        jQuery('#headlineAddCartPositionDescription-' + positionId).text(jQuery('#triggerDescriptionCartItemPositionRowTextInput-' + positionId).val());
+                    }
+                    // Write the current value of the line into hidden field:
+                    jQuery('#editFieldAfter-' + positionId).val(jQuery('#triggerDescriptionCartItemPositionRowTextInput-' + positionId).val());
+                    // Check, if user changed something:
+                    checkUserActionOnChangeAndSave(positionId);
+                    console.log('Close Comment No  ' + positionId + ' -> BLUR-Action');
+                    // Set timeout function : after 1 second, the blocker should be deactivated!!!
+                    setTimeout(function(){ jQuery('#descriptionHeadCartItemPositionTextBlocker-' + positionId).val('inactive'); }, 1000);
+                }
+            });
+
+            allCartPositionIds[index] = positionId;
+            setAllAutompleteItems(jQuery(this).prop("id"));
+            index++;
+        });
+
+        jQuery('.triggerDescriptionCartItemPositionRow').on('click', function() {
+            console.log('Line clicked');
+            jQuery('.triggerDescriptionCartItemPositionRow').css("pointer-events", "none");
+            var positionId = jQuery(this).find(">:first-child").prop("id");
+            if (jQuery('#descriptionHeadCartItemPositionTextBlocker-' + positionId).val() == 'inactive') {
+                if (jQuery(this).find(">:first-child").hasClass('fa-plus-square-o')) {
+                    jQuery(this).find(">:first-child").removeClass("fa-plus-square-o");
+                    jQuery(this).find(">:first-child").addClass("fa-minus-square-o");
+                    jQuery('#descriptionHeadCartItemPositionText-' + positionId).show();
+                    jQuery('#editFieldBefore-' + positionId).val(jQuery('#triggerDescriptionCartItemPositionRowTextInput-' + positionId).val());
+                    jQuery('#triggerDescriptionCartItemPositionRowTextInput-' + positionId).focus();
+                    jQuery('#descriptionHeadCartItemPositionTextBlocker-' + positionId).val('active');
+                    console.log('Open Comment No  ' + positionId);
+                } else {
+                    jQuery(this).removeClass("fa-minus-square-o");
+                    jQuery(this).addClass("fa-plus-square-o");
+                    jQuery('#descriptionHeadCartItemPositionText-' + positionId).hide();
+                    if (jQuery('#triggerDescriptionCartItemPositionRowTextInput-' + positionId).val() == '') {
+                        jQuery('#headlineAddCartPositionDescription-' + positionId).text(jQuery('#standardTextEnterDescriptionForCartPosition').val());
+                        console.log('Text not present  ' + positionId + ' -> BLUR-Action');
+                    } else {
+                        console.log('Text found  ' + positionId + ' -> BLUR-Action : ' + jQuery('#triggerDescriptionCartItemPositionRowTextInput-' + positionId).val());
+                        jQuery('#headlineAddCartPositionDescription-' + positionId).text(jQuery('#triggerDescriptionCartItemPositionRowTextInput-' + positionId).val());
+                    }
+                    // Write the current value of the line into hidden field:
+                    jQuery('#editFieldAfter-' + positionId).val(jQuery('#triggerDescriptionCartItemPositionRowTextInput-' + positionId).val());
+                    // Check, if user changed something:
+                    checkUserActionOnChangeAndSave(positionId);
+                    jQuery('#descriptionHeadCartItemPositionTextBlocker-' + positionId).val('inactive');
+                    console.log('Close Comment No  ' + positionId);
+                }
+             } else {
+                jQuery('#descriptionHeadCartItemPositionTextBlocker-' + positionId).val('inactive');
+             }
+
+            setTimeout(function() { jQuery('.triggerDescriptionCartItemPositionRow').css("pointer-events", "auto"); }, 1000);
+        });
+
+<?php if (Mage::helper('sapoci')->isSapociCheckout()) : ?>
+        var countIndex = 1;
+        jQuery('.general_current_price').each(function() {
+            var currentItemPrice = jQuery(this).text();
+            jQuery('[name="NEW_ITEM-PRICE[' + countIndex + ']"]').val(currentItemPrice.replace(',', '.'));
+            countIndex++;
+        });
+<?php endif; ?>
+
+        jQuery('.quantityUpdateAction').on('change', function(){
+            var dataId  = jQuery(this).attr('data-id');
+            var dataSku = jQuery(this).attr('data-sku');
+            var ajaxDispatcherURL = '<?php echo Mage::helper('schrackcore/url')->getUrlWithCurrentProtocol('sd/AjaxDispatcher/setGetData'); ?>';
+
+            var changedQuantity = jQuery('#cart_' + dataId).val();
+            if (changedQuantity == 0) {
+                singleRemoveFromCartTracking(dataId + '_' + dataSku);
+            }
+
+            cartUpdate(ajaxDispatcherURL, dataId, dataSku, 'false');
+        });
+
+        jQuery(".track_product_link_in_cart").each(function() {
+                jQuery(this).on("click", function() {
+                    var sku = jQuery(this).attr("data-sku");
+
+                    var trackingData                 = new Object();
+                    trackingData.trackingEnabled     = globalTRACKING_ENABLED;
+                    trackingData.pageType            = 'cart view';
+                    trackingData.affectedSku         = sku;
+                    //trackingData.price             = dataProductPrice;
+                    trackingData.currencyCode        = globalCURRENCY_CODE;
+                    trackingData.trackingSource      = 'cart';
+                    trackingData.typoUrl             = globalTYPO_URL;
+                    trackingData.shopCategoryAjaxUrl = globalSHOP_CATEGORY_AJAX_URL;
+                    trackingData.formKey             = globalFORM_KEY;
+                    trackingData.crmUserId           = globalCRM_USER_ID;
+                    trackingData.customerType        = globalCUSTOMER_TYPE;
+                    trackingData.accountCrmId        = globalACCOUNT_CRM_ID;
+                    trackingData.position            = 1;
+
+                    trackProductClick(trackingData);
+                });
+        });
+
+        jQuery('.replaceExternalWKSArticle').on('click', function() {
+            var pos = jQuery(this).attr('data-pos');
+            var oldSku = jQuery('#old_sku-' + pos).val();
+            var newSku = jQuery('#search-totalpos-' + pos).val();
+
+            var ajaxUrl = '<?php echo Mage::helper('schrackcore/url')->getUrlWithCurrentProtocol('ids/punchin/replaceexternalproduct'); ?>';
+            jQuery.ajax(ajaxUrl, {
+                'dataType': 'json',
+                'type': 'POST',
+                'data': {
+                    'form_key': '<?php echo Mage::getSingleton('core/session')->getFormKey(); ?>',
+                    'old_sku': oldSku,
+                    'new_sku': newSku
+                },
+                'success': function (datax) {
+                    if (datax.msg == 'success') {
+                        window.location.reload();
+                    }
+                },
+                'error': function () {
+                }
+            });
+        });
+
+        jQuery('.replaceWKSArticleSku').on('keyup', function() {
+            var pos = jQuery(this).attr('data-pos');
+            if (jQuery(this).val().length > 3) {
+                getReplaceSkuList(jQuery(this), pos);
+            } else {
+                var autosuggest = jQuery('#autocomplete-' + pos);
+                autosuggest.html('');
+                jQuery('#button-' + pos).removeClass('replace_button_active');
+                jQuery('#button-' + pos).addClass('replace_button_inactive');
+                jQuery('#button-' + pos).attr( "disabled", "disabled" );
+            }
+        });
+
+        function getReplaceSkuList(element, pos) {
+            var search = element.val();
+            var ajaxUrl = '<?php echo Mage::helper('schrackcore/url')->getUrlWithCurrentProtocol('ids/punchin/getskureplacements'); ?>';
+            var autosuggest = jQuery('#autocomplete-' + pos);
+
+            autosuggest.html('');
+            jQuery('#button-' + pos).removeClass('replace_button_active');
+            jQuery('#button-' + pos).addClass('replace_button_inactive');
+            jQuery('#button-' + pos).attr( "disabled", "disabled" );
+
+            if (search) {
+                jQuery.ajax(ajaxUrl, {
+                    'dataType': 'json',
+                    'type': 'POST',
+                    'data': {
+                        'form_key': '<?php echo Mage::getSingleton('core/session')->getFormKey(); ?>',
+                        'search_string': search
+                    },
+                    'success': function (datax) {
+                        if (datax.msg == 'success') {
+                            var html = '';
+                            var sku;
+                            for (var index = 0; index < datax.skulist.length; index++) {
+                                sku = datax.skulist[index];
+                                html += '<li class="wks_sku_list" data-pos="' + pos + '" data-sku="' + sku + '">' + sku + '</li>';
+                            }
+                            autosuggest.html(html);
+
+                            jQuery('.wks_sku_list').on('click', function() {
+                                var sku = jQuery(this).attr('data-sku');
+                                var pos = jQuery(this).attr('data-pos');
+
+                                jQuery('#search-' + pos).val(sku);
+                                var autosuggest = jQuery('#autocomplete-' + pos);
+                                autosuggest.html('');
+
+                                jQuery('#button-' + pos).removeClass('replace_button_inactive');
+                                jQuery('#button-' + pos).addClass('replace_button_active');
+                                jQuery('#button-' + pos).attr("disabled", false);
+                            });
+                        }
+                    },
+                    'error': function () {
+                        // Just show error:
+                        alert('error');
+                    }
+                });
+            }
+        }
+
+    });
+
+
+    confirmRemoveAllItemsFromCart = function(ajaxUrl, callback) {
+        console.log('okay2');
+        var message = '<?php echo $this->__("Are you sure you would like to remove all products from your cart?") ?>';
+
+        if(jQuery("#bootstrap-confirm-box-modal-remove-all").length == 0) {
+            console.log('okay3');
+            jQuery("body").append('<div id="bootstrap-confirm-box-modal-remove-all" class="modal fade">\
+                <div class="modal-dialog" style="margin-top: 100px;">\
+                    <div class="modal-content">\
+                        <div class="modal-header" style="min-height:40px;">\
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>\
+                            <h4 class="modal-title"></h4>\
+                        </div>\
+                        <div class="modal-body"><p style="text-align: center; font-weight: bold;"></p></div>\
+                        <div class="modal-footer">\
+                            <button href="#" style="margin-left: 22px !important;" data-dismiss="modal" class="bttn-md yes-no-button"><?php echo $this->__('Cancel'); ?></a>\
+                            <button href="#" style="float: right; margin-right: 40px;" class="bttn-md confirm_yes yes-no-button">' + '<?php echo $this->__('Yes'); ?>' + '</a>\
+                        </div>\
+                    </div>\
+                </div>\
+            </div>');
+            jQuery("#bootstrap-confirm-box-modal-remove-all .modal-footer .confirm_yes").on('click', function () {
+                jQuery("#bootstrap-confirm-box-modal-remove-all").modal('hide');
+                setCartEmptyConfirmed(ajaxUrl);
+                return false;
+            });
+            jQuery("#bootstrap-confirm-box-modal-remove-all").on('hide.bs.modal', function () {
+                if(callback) callback(jQuery("#bootstrap-confirm-box-modal-remove-all").data('confirm-yes'));
+            });
+        }
+
+        jQuery("#bootstrap-confirm-box-modal-remove-all .modal-body p").text(message || "");
+        jQuery("#bootstrap-confirm-box-modal-remove-all").modal('show');
+    };
+
+    function setCartEmpty(ajaxUrl) {
+        confirmRemoveAllItemsFromCart(ajaxUrl);
+    }
+
+    function setCartEmptyConfirmed(ajaxUrl) {
+        setCartEmpty = {'setCartEmpty': {'data': {}}};
+        setOverlayLoader();
+        jQuery.ajax(ajaxUrl, {
+            'dataType': 'json',
+            'type': 'POST',
+            'data': {
+                'form_key': '<?php echo Mage::getSingleton('core/session')->getFormKey(); ?>',
+                'setCartEmpty': ''
+            },
+            'success': function (data) {
+                setTimeout(function () {
+                    unsetOverlayLoader();
+                });
+                var parsedData = data;
+                var result = parsedData.setCartEmpty.result;
+                jQuery('.MyCart .cartNoBx').html('0');
+                var messageArray = [result.result];
+                jQuery('ul.messages').empty();
+                jQuery('ul.errors').empty();
+                if (result.result.indexOf("SUCCESS") == -1) {
+                    appendMessageUl(messageArray, 'errors', 'error-msg');
+                    console.log('appendMessageUl #18');
+                } else {
+                    // Get all data from HTML and track the removed items:
+                    var eventTrackingData             = new Object();
+                    eventTrackingData.cartItems       = new Array();
+                    eventTrackingData.trackingEnabled = '<?php echo $trackingEnabled; ?>';
+                    eventTrackingData.currencyCode    = '<?php echo Mage::app()->getStore()->getCurrentCurrencyCode() ?>';
+                    jQuery('.singleRemoveFromCartTrackingButton').each(function() {
+                        var removedProductFromCartData         = new Object();
+                        removedProductFromCartData.dimension8  = 'cart';
+                        removedProductFromCartData.dimension9  = jQuery(this).attr('data-category');
+                        removedProductFromCartData.dimension14 = 'Standard'; // -> modification-source
+                        removedProductFromCartData.dimension15 = jQuery(this).attr('data-sku'); // -> product-id
+                        removedProductFromCartData.quantity    = jQuery(this).attr('data-quantity');
+                        removedProductFromCartData.id          = jQuery(this).attr('data-sku');
+                        removedProductFromCartData.name        = jQuery(this).attr('data-name');
+                        //removedProductFromCartData.price       = jQuery(this).attr('data-price');
+                        removedProductFromCartData.category    = jQuery(this).attr('data-category');
+
+                        eventTrackingData.cartItems.push(removedProductFromCartData);
+                    });
+
+                    removeFromCartTracking(eventTrackingData);
+
+                    appendMessageUl(messageArray, 'messages', 'success-msg');
+                    console.log('appendMessageUl #19');
+                    jQuery('.cartSubTotal').remove();
+                    jQuery('#crtSubTtlHead').remove();
+                    jQuery('#crtRtAction').remove();
+                    jQuery('#crtRtMobAction').remove();
+                    jQuery('#content').html(  '<div class="large-12 columns" style="margin-top: 10px;"><h1><span><?php echo $this->__('Shopping Cart is Empty'); ?></span></h1>'
+                        + '<p><?php echo $this->__('You have no items in your shopping cart.'); ?></p>'
+                        + '<p><?php echo $this->__('Please <a href="%s">continue shopping</a>.', Mage::getStoreConfig('schrack/typo3/typo3url')); ?></p>'
+                        + '<div class="row info-box three-d"><div class="large-12 columns"></div></div></div>'
+                    );
+                }
+                jQuery("html, body").animate({scrollTop: 0}, "slow");
+                console.log('ScrollTop #56')
+            },
+            'error': function (data) {
+                var parsedData = data;
+                setTimeout(function () {
+                    unsetOverlayLoader();
+                });
+            }
+        });
+    }
+//]]>
+</script>
+<!-- app/design/frontend/schrack/schrackresponsive/template/checkout/cart.phtml (end) -->

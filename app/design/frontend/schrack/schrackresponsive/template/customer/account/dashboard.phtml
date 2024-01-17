@@ -1,0 +1,309 @@
+<!-- app/design/frontend/schrack/schrackresponsive/template/customer/account/dashboard.phtml (start) -->
+<?php
+	$_session = Mage::getSingleton('customer/session');
+	$showMenuLineBecauseImNotAProspect = true;
+	//$customerType = $_session->getCustomer()->getSchrackCustomerType(); // ProspectTypes: 'light-prospect' / 'full-prospect'
+	// Prospect Light / Full
+	$_customer = $this->getCustomer();
+
+$aclroleClass = '';
+        $aclrole = $_customer->getSchrackAclRole();
+        if($aclrole == 'staff' || $aclrole == 'projectant' || $aclrole == 'customer'|| $aclrole == 'list_price_customer'){
+            $aclroleClass = 'hide';
+        }
+	$customerType = $_customer->getSchrackCustomerType(); // ProspectTypes: 'light-prospect' / 'full-prospect'
+	$_schrackWwsCustomerId = null;
+	$_customerAccountName = null;
+	$_warehouseName = null;
+	if (in_array($customerType, array('light-prospect', 'full-prospect'))) {
+		$showMenuLineBecauseImNotAProspect = false;
+	}
+	if ($_customer) {
+		$_customerAccount = $_customer->getAccount();    
+		$_schrackWwsCustomerId = $_customer->getSchrackWwsCustomerId();
+		if ($_customerAccount)
+			$_customerAccountName = $_customerAccount->getName();
+		$_pickup = $_customer->getSchrackPickup();
+		if ($_pickup) {
+			$_warehouse = $this->helper('schrackshipping/pickup')->getWarehouse($_pickup);
+			if ($_warehouse)
+				$_warehouseName = $_warehouse->getName();
+		}
+	}
+?>
+
+<style>
+    #toTop {
+        z-index: 100 !important;
+    }
+    .initialHideToTopSymbol {
+        display: none !important;
+    }
+    .myAccountProfileBx {
+        margin-bottom: 0 !important;
+    }
+    #dash_doc_srch_frm {
+        margin-top: 20px;
+    }
+    #dashMobSrch {
+        height: 37px !important;
+        width: 9.7% !important;
+        background: #00589d !important;
+        color: white !important;
+        cursor: pointer;
+        border: 0;
+    }
+    #detailSrcTxt {
+        height: 37px !important;
+        width: 100% !important;
+    }
+    #detailSearchLabelButton {
+        height: 37px !important;
+        width: 30% !important;
+    }
+    .customerSearchLabelButtonBig {
+        float: left;
+        width: 33%;
+        background: #00589d !important;
+        color: #fff;
+        height: 37px;
+        padding: 6px 12px;
+        font-size: 16px;
+        font-weight: 400;
+        text-align: center;
+    }
+    @media (min-width: 60px) and (max-width: 320px) {
+        .yes_no_button {
+            height: 30px !important;
+        }
+        .document_search_container_headline {
+            font-size: 16px !important;
+        }
+        #detailSearchLabelButton {
+            width: 56% !important;
+            font-size: 12px;
+        }
+    }
+    @media (min-width: 321px) and (max-width: 377px) {
+        .yes_no_button {
+            height: 30px !important;
+        }
+        .document_search_container_headline {
+            font-size: 16px !important;
+        }
+    }
+    @media (min-width: 378px) and (max-width: 480px) {
+        .yes_no_button {
+            height: 30px !important;
+        }
+        .document_search_container_headline {
+            font-size: 16px !important;
+        }
+    }
+    @media (min-width: 481px) and (max-width: 767px) {
+        .yes_no_button {
+            height: 30px !important;
+        }
+        .document_search_container_headline {
+            font-size: 16px !important;
+        }
+        #detailSearchLabelButton {
+            width: 56% !important;
+        }
+    }
+    .dashboard_warn_message {
+        width: 100% !important;
+        color: #d1222b !important;
+        background: #ffdcdd !important;
+        border: 2px solid #d1222b !important;
+        padding: 10px;
+        text-align: center;
+        font-weight: bold;
+        font-size: 16px;
+    }
+    .newFeatureMsgWrapper{
+        margin-top:25px;
+    }
+</style>
+
+<?php
+    $warnMessage = Mage::getStoreConfig('schrack/customer/warn_message_on_dashboard');
+    if ( $warnMessage && $warnMessage > ' ' ):
+        echo '<div class="dashboard_warn_message">'. $warnMessage . '</div>';
+    endif;
+?>
+<div class="myAccountProfileBx">
+    <div class="clearfix">
+        <div class="col-xs-12 col-sm-7 col-md-7 left">
+            <div class="imgBx"><img src="<?php $pUrl = $this->getCustomer()->getPhotoUrl(); echo empty($pUrl) ? $this->getSkinUrl('schrackdesign/Public/Images/dmmuuserImg.png') : $pUrl; ?>" width="100%" alt="" /></div>
+            <div class="rightInrSec">
+                <h2 id="dashCustName"><?php echo $this->getCustomer()->getName(); ?>!</h2>
+				<?php if (isset($_customerAccountName) && strlen($_customerAccountName)):?>
+					<?php if (!in_array($customerType, array('light-prospect'))) echo $this->htmlEscape($_customerAccountName); ?>
+				<?php endif; ?>
+            </div>
+        </div>
+        <div class="col-sm-5 col-md-5 right hidden-xs hidden-sm">
+            <?php echo $this->__('Email- ID'); ?>: <a href="mailto:<?php echo $this->getCustomer()->getEmail(); ?>" class="blue"><?php echo $this->getCustomer()->getEmail(); ?></a>
+			<?php //if (!in_array($customerType, array('light-prospect', 'full-prospect'))): ?>
+			<br />
+            <?php echo $this->__('Customer ID'); ?>:  <span class="blueTxt" id="dashCusID"><?php echo $_schrackWwsCustomerId; ?></span>
+			<?php //endif; ?>
+        </div>
+    </div>
+</div>
+
+<?php
+    echo '<div class="">'.
+            '<ul class="message">' .
+                '<li class="infoBoxDelayMessage">'.
+                    '<span class="glyphicon glyphicon-info-sign"></span> ' .
+                    '<span>'.$this->__("Deliveries May Currently Be Delayed").'</span>'.
+                '</li>'.
+            '</ul>'.
+        '</div>';
+ ?>
+
+<form action="<?php echo Mage::getUrl('customer/account/documentsDetailsearch', array('_secure' => true)); ?>"
+      method="post"
+      id="dash_doc_srch_frm">
+    <div class="row">
+        <div class="col-xs-12 marginB15">
+            <div class="input-group serchIcon" style="height: 37px !important; width: 100%;">
+                <span id="detailSearchLabelButton" class="input-group-addon myAcccountSearchAddon"><?php echo $this->__('Detail Search') ?></span>
+                <input id="detailSrcTxt" class="form-control borderR0 detailSearchFieldSmall" name="detailSrcTxt" type="text"/>
+                <span id="dashMobSrch" class="input-group-addon"><span class="glyphicon glyphicon-search"></span></span>
+             </div>
+        </div>
+    </div>
+</form>
+
+<div class="dashboard-frame">
+    <?php echo $this->getChildHtml('documents_newdocuments') ?>
+
+
+    <div class="row my-data hidden-xs hidden-sm">
+        <?php if (!Mage::helper('sapoci')->isSapociCheckout()) : ?>
+            <?php if ($showMenuLineBecauseImNotAProspect == true) : ?>
+                <?php //Customer Group ID = 12 (Prospect Light) ID = 11 (Full Register Prospect) ?>
+                <?php if (!in_array($customerType, array('light-prospect')) ||  $aclroleClass == '') : ?>
+                    <br>
+                    <div class="col-xs-12"><h1><?php echo $this->__('Company Setting') ?></h1></div>
+                    <?php if (!in_array($customerType, array('full-prospect'))) : ?>
+                        <div class="col-xs-12 col-sm-12">
+                            <div class="info-box">
+                                <?php echo $this->getChildHtml('persons') ?>
+                            </div>
+                        </div>
+                    <?php endif; ?>
+                    <br>
+                    <div class="col-xs-12 col-sm-12">
+                        <div class="info-box">
+                            <?php echo $this->getChildHtml('address') ?>
+                        </div>
+                    </div>
+                <?php endif; ?>
+            <?php endif; ?>
+        <?php endif; ?>
+
+        <?php if (!Mage::helper('sapoci')->isSapociCheckout()) : ?>
+            <br>
+            <div class="col-xs-12"><h1><?php echo $this->__('Personal Setting') ?></h1></div>
+            <div class="col-xs-12 col-sm-12">
+                <div class="info-box">
+                    <?php echo $this->getChildHtml('info') ?>
+                </div>
+            </div>
+        <?php endif; ?>
+    </div>
+
+</div>
+
+
+<script type="text/javascript">//<![CDATA[
+
+    jQuery(document).ready(function () {
+        // restoreOrderSearchQueryOnBrowserBackForElement('#detailSrcTxt');
+        var viewportWidth = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
+
+        jQuery('#kab_slider').flexslider({
+            animation: "slide"
+        });
+
+        /* Back to Top */
+        jQuery('body').append('<div id="toTop" class="btn btn-info print-hide-imp initialHideToTopSymbol"><span class="glyphicon glyphicon-chevron-up"></span> <?php echo $this->__('Back to Top'); ?></div>');
+        jQuery(window).scroll(function () {
+            if (jQuery(this).scrollTop() != 0) {
+                jQuery('#toTop').fadeIn();
+            } else {
+                jQuery('#toTop').fadeOut();
+            }
+        });
+        jQuery('#toTop').click(function(){
+            jQuery("html, body").animate({ scrollTop: 0 }, 600);
+            console.log('ScrollTop #73');
+            return false;
+        });
+        jQuery('#toTop').removeClass('initialHideToTopSymbol');
+        /* Back to Top */
+
+        var docsearchDefaultText = '<?php echo $this->__('Order/Offer Data, Names, Addresses, Article IDs'); ?>';
+        var docsearchBox = jQuery("#detailSrcTxt");
+        //default text after load
+        if(docsearchBox.val() == ''){
+            docsearchBox.css('color', '#888');
+            docsearchBox.val(docsearchDefaultText);
+        }
+        //on focus behaviour
+        docsearchBox.on('focus', function() {
+            if (docsearchBox.val() == docsearchDefaultText) {//clear text field
+                docsearchBox.css('color', '#000');
+                docsearchBox.val('');
+            }
+            if (viewportWidth < 767) {
+                jQuery('#detailSearchLabelButton').hide();
+            }
+        });
+        //on blur behaviour
+        docsearchBox.on('blur', function() {
+            if (docsearchBox.val() == "") {//restore default text
+                docsearchBox.css('color', '#888');
+                docsearchBox.val(docsearchDefaultText);
+            }
+            if (viewportWidth < 767) {
+                jQuery('#detailSearchLabelButton').show();
+            }
+        });
+
+
+        jQuery(window).on('orientationchange', function() {
+            window.location.reload();
+        });
+
+        jQuery('#detailSrcTxt').keypress(function (e) {
+            if (e.which == 13) {
+                localStorage.orderTextSearchTerm = jQuery('#detailSrcTxt').val();
+                jQuery('#dash_doc_srch_frm').submit();
+            }
+        });
+
+        jQuery('#dashMobSrch').on('click', function () {
+            localStorage.orderTextSearchTerm = jQuery('#detailSrcTxt').val();
+            jQuery('#dash_doc_srch_frm').submit();
+        });
+
+        jQuery('#dash_doc_srch_frm').on('submit', function() {
+            var searchtextContent = jQuery('#detailSrcTxt').val();
+            var defaultSearchText = '<?php echo $this->__('Order/Offer Data, Names, Addresses, Article IDs'); ?>';
+            if (searchtextContent == '' || searchtextContent == defaultSearchText) {
+                // Do not track !
+            } else {
+                trackUserDetailDocumentSearch(searchtextContent);
+            }
+        });
+
+    });
+
+    //]]>
+</script>
+<!-- app/design/frontend/schrack/schrackresponsive/template/customer/account/documents/dashboard.phtml (end) -->

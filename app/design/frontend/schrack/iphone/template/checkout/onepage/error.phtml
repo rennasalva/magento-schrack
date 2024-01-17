@@ -1,0 +1,9 @@
+<div class="in-page">
+    <div class="page-head">
+        <h3><?php echo $this->__('An error occurred in the checkout process') ?></h3>
+    </div>
+    <div id="messages"><?php echo $this->getMessagesBlock()->getGroupedHtml() ?></div>
+    <div class="button-set">
+        <button type="button" class="form-button" onclick="window.location='SchrackLiveApp:CheckoutDone:0'"><span><?php echo Mage::helper('core')->quoteEscape($this->__('Continue Shopping')) ?></span></button>
+    </div>
+</div>

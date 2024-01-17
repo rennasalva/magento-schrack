@@ -1,0 +1,1404 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Magento
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Academic Free License (AFL 3.0)
+ * that is bundled with this package in the file LICENSE_AFL.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/afl-3.0.php
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@magentocommerce.com so we can send you a copy immediately.
+ *
+ * DISCLAIMER
+ *
+ * Do not edit or add to this file if you wish to upgrade Magento to newer
+ * versions in the future. If you wish to customize Magento for your
+ * needs please refer to http://www.magentocommerce.com for more information.
+ *
+ * @category    design
+ * @package     base_default
+ * @copyright   Copyright (c) 2010 Magento Inc. (http://www.magentocommerce.com)
+ * @license     http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
+ */
+
+Supported layout update handles (action):
+- customer_account_index
+- customer_address_index
+- customer_address_view
+- customer_account_login
+- customer_account_logoutsuccess
+- customer_account_create
+- customer_account_forgotpassword
+- customer_account_confirmation
+- customer_account_edit
+
+Supported layout update handles (special):
+- default
+
+-->
+<layout version="0.1.0">
+
+    <!--
+    Default layout, loads most of the pages
+    -->
+
+    <default>
+        <reference name="head">
+            <action method="addCss">
+                <stylesheet>schrackdesign/Public/Stylesheets/rwd/datatables.css</stylesheet>
+            </action>
+        </reference>
+        <reference name="root">
+            <action method="setTemplate">
+                <template>page/2columns-left.phtml</template>
+            </action>
+        </reference>
+        <!-- Mage_Customer -->
+        <reference name="top.links">
+            <action method="addLink" translate="label title" module="customer">
+                <label>My Account</label>
+                <url helper="customer/getAccountUrl"/>
+                <title>My Account</title>
+                <prepare/>
+                <urlParams/>
+                <position>10</position>
+                <liParams/>
+                <aParams>
+                    <id>link-account-overview</id>
+                </aParams>
+                <beforeText/>
+                <afterText/>
+                <inMenu>true</inMenu>
+            </action>
+        </reference>
+    </default>
+
+    <!--
+    Load this update on every page when customer is logged in
+    -->
+
+    <customer_logged_in>
+        <reference name="top.links">
+            <action method="addLink" translate="label title" module="customer">
+                <label>Log Out</label>
+                <url helper="customer/getLogoutUrl"/>
+                <title>Log Out</title>
+                <prepare/>
+                <urlParams/>
+                <position>100</position>
+                <liParams/>
+                <aParams>
+                    <class>logout-link</class>
+                </aParams>
+                <beforeText/>
+                <afterText/>
+            </action>
+        </reference>
+    </customer_logged_in>
+
+    <!--
+    Load this update on every page when customer is logged out
+    -->
+
+    <customer_logged_out>
+        <!---<reference name="right">
+            <block type="customer/form_login" name="customer_form_mini_login" before="-" template="customer/form/mini.login.phtml"/>
+        </reference>-->
+        <reference name="top.links">
+            <action method="addLink" translate="label title" module="customer">
+                <label>Log In</label>
+                <url helper="customer/getLoginUrl"/>
+                <title>Log In</title>
+                <prepare/>
+                <urlParams/>
+                <position>100</position>                
+                <liParams/>
+                <aParams>
+                    <class>login-link</class>
+                </aParams>
+                <inMenu/>
+            </action>
+        </reference>
+        <remove name="wishlist_sidebar"></remove>
+        <remove name="reorder"></remove>
+    </customer_logged_out>
+
+    <!--
+    Layout for customer login page
+    -->
+
+    <customer_account_login translate="label">
+        <label>Customer Account Login Form</label>
+        <!-- Mage_Customer -->
+        <reference name="root">
+            <action method="setTemplate">
+                <template>page/1column.phtml</template>
+            </action>
+        </reference>
+        <remove name="catalog.vertnav"/>
+
+        <reference name="content">
+            <block type="core/template" name="customer_account_login" template="persistent/customer/form/login.phtml">
+            </block>            
+        </reference>
+    </customer_account_login>
+
+
+    <customer_account_loginpopup translate="label">
+        <label>Customer Account Login Form</label>
+        <!-- Mage_Customer -->
+
+        <reference name="root">
+            <action method="setTemplate">
+                <template>customer/form/login.phtml</template>
+            </action>
+        </reference>
+    </customer_account_loginpopup>
+
+
+    <!--
+    Layout for customer log out page
+    -->
+
+    <customer_account_logoutsuccess translate="label">
+        <label>Customer Account Logout Success</label>
+        <!-- Mage_Customer -->
+
+        <reference name="root">
+            <action method="setTemplate">
+                <template>page/2columns-right.phtml</template>
+            </action>
+        </reference>
+        <reference name="content">
+            <block type="core/template" name="customer_logout" template="customer/logout.phtml"/>
+        </reference>
+    </customer_account_logoutsuccess>
+
+    <!--
+    New customer registration
+    -->
+
+    <customer_account_create translate="label">
+        <label>Customer Account Registration Form</label>
+        <!-- Mage_Customer -->
+        <update handle="customer_account" />
+        <reference name="root">
+            <action method="setTemplate">
+                <template>page/1column.phtml</template>
+            </action>
+        </reference>
+        
+        <remove name="wishlist_sidebar"></remove>
+        <remove name="reorder"></remove>
+        <remove name="catalog.compare.sidebar"></remove>
+        <remove name="sale.reorder.sidebar"></remove>
+        <reference name="content">
+            <block type="customer/form_register" name="customer_form_register" template="customer/form/register.phtml">
+                <block type="page/html_wrapper" name="customer.form.register.fields.before" as="form_fields_before" translate="label">
+                    <label>Form Fields Before</label>
+                </block>
+                <block type="checkout/agreements" name="customer.form.register.agreements" as="agreements" template="customer/form/agreements.phtml"/>
+            </block>
+        </reference>
+    </customer_account_create>
+
+    <customer_account_forgotpassword translate="label">
+        <label>Customer Forgot Password Form</label>
+
+        <reference name="root">
+            <action method="setTemplate">
+                <template>page/1column.phtml</template>
+            </action>
+            <action method="setHeaderTitle" translate="title" module="customer">
+                <title>Password forgotten</title>
+            </action>
+        </reference>
+        <reference name="content">
+            <!--<block type="core/template" name="forgotPassword" template="customer/form/forgotpassword.phtml"/>-->
+            <block type="customer/account_forgotpassword" name="forgotPassword" template="customer/form/forgotpassword.phtml"/>
+        </reference>
+    </customer_account_forgotpassword>
+
+    <customer_account_confirmation>
+
+        <reference name="root">
+            <action method="setTemplate">
+                <template>page/1column.phtml</template>
+            </action>
+            <action method="setHeaderTitle" translate="title" module="customer">
+                <title>Send confirmation link</title>
+            </action>
+        </reference>
+        <reference name="content">
+            <block type="core/template" name="accountConfirmation" template="customer/form/confirmation.phtml"/>
+        </reference>
+    </customer_account_confirmation>
+
+    <customer_account_edit translate="label">
+        <label>Customer Account Edit Form</label>
+        <update handle="customer_account"/>        
+        <reference name="head">
+        </reference>
+        <reference name="root">
+            <action method="setTemplate">
+                <template>page/2columns-left.phtml</template>
+            </action>
+            <action method="setHeaderTitle" translate="title" module="customer">
+                <title>Edit Account Info</title>
+            </action>
+        </reference>
+        <reference name="my.account.wrapper">
+            <block type="customer/form_edit" name="customer_edit" template="customer/form/edit.phtml"/>
+        </reference>
+        <reference name="breadcrumbs">            
+            <action method="addCrumb">
+                <crumbName>my_account</crumbName>
+                <crumbInfo>
+                    <label>My Account</label>
+                    <title>My Account</title>
+                    <link>/shop/customer/account</link>
+                </crumbInfo>
+            </action>
+            <action method="addCrumb">
+                <crumbName>manage_account</crumbName>
+                <crumbInfo>
+                    <label>Manage Account</label>
+                    <title>Manage Account</title>
+                    <link>/shop/account/account/index/</link>
+                </crumbInfo>
+            </action>
+            <action method="addCrumb">
+                <crumbName>My Data</crumbName>
+                <crumbInfo>
+                    <label>My Data</label>
+                    <title>My Data</title>
+                </crumbInfo>
+            </action>
+        </reference>
+        <reference name="left">
+            <action method="unsetChild">
+                <name>left.permanent.callout</name>
+            </action>
+        </reference>
+    </customer_account_edit>
+
+
+    <customer_account_confirmandsetpassword translate="label">
+        <label>Customer Account Edit Form</label>
+        <update handle="customer_account"/>
+        <reference name="head">
+        </reference>
+        <reference name="root">
+            <action method="setTemplate">
+                <template>page/2columns-left.phtml</template>
+            </action>
+            <action method="setHeaderTitle" translate="title" module="customer">
+                <title>Edit Account Info</title>
+            </action>
+        </reference>
+        <reference name="my.account.wrapper">
+            <block type="customer/form_edit" name="customer_confirm_setpw" template="customer/form/confirm.and.set.password.phtml"/>
+        </reference>
+        <reference name="left">
+            <action method="unsetChild">
+                <name>left.permanent.callout</name>
+            </action>
+        </reference>
+    </customer_account_confirmandsetpassword>
+
+
+    <customer_account_changeforgottenpasswordlink translate="label">
+        <label>Customer Account Edit Form</label>
+        <update handle="customer_account"/>
+        <reference name="head">
+        </reference>
+        <reference name="root">
+            <action method="setTemplate">
+                <template>page/2columns-left.phtml</template>
+            </action>
+            <action method="setHeaderTitle" translate="title" module="customer">
+                <title>Edit Account Info</title>
+            </action>
+        </reference>
+        <reference name="my.account.wrapper">
+            <block type="customer/form_edit" name="customer_confirm_setpw" template="customer/form/confirm.and.set.password.phtml"/>
+        </reference>
+        <reference name="left">
+            <action method="unsetChild">
+                <name>left.permanent.callout</name>
+            </action>
+        </reference>
+    </customer_account_changeforgottenpasswordlink>
+
+    <customer_account_editpassword translate="label">
+        <label>Customer Account Edit Form</label>
+        <update handle="customer_account"/>        
+        <reference name="head">
+        </reference>
+        <reference name="root">
+            <action method="setTemplate">
+                <template>page/2columns-left.phtml</template>
+            </action>
+            <action method="setHeaderTitle" translate="title" module="customer">
+                <title>Edit Account Info</title>
+            </action>
+        </reference>
+        <reference name="my.account.wrapper">
+            <block type="customer/form_edit" name="customer_edit" template="customer/form/edit.password.phtml"/>
+        </reference>
+        <reference name="breadcrumbs">            
+            <action method="addCrumb">
+                <crumbName>my_account</crumbName>
+                <crumbInfo>
+                    <label>My Account</label>
+                    <title>My Account</title>
+                    <link>/shop/customer/account</link>
+                </crumbInfo>
+            </action>
+            <action method="addCrumb">
+                <crumbName>manage_account</crumbName>
+                <crumbInfo>
+                    <label>Manage Account</label>
+                    <title>Manage Account</title>
+                    <link>/shop/account/account/index/</link>
+                </crumbInfo>
+            </action>
+            <action method="addCrumb">
+                <crumbName>Change Password</crumbName>
+                <crumbInfo>
+                    <label>Change Password</label>
+                    <title>Change Password</title>
+                </crumbInfo>
+            </action>
+        </reference>
+        <reference name="left">
+            <action method="unsetChild">
+                <name>left.permanent.callout</name>
+            </action>
+        </reference>
+    </customer_account_editpassword>
+    <customer_account_editpayment translate="label">
+        <label>Customer Account Edit Form</label>
+        <update handle="customer_account"/>        
+        <reference name="head">
+        </reference>
+        <reference name="root">
+            <action method="setTemplate">
+                <template>page/2columns-left.phtml</template>
+            </action>
+            <action method="setHeaderTitle" translate="title" module="customer">
+                <title>Edit Account Info</title>
+            </action>
+        </reference>
+        <reference name="my.account.wrapper">
+            <block type="customer/form_edit" name="customer_edit" template="customer/form/edit.payment.phtml"/>
+        </reference>
+        <reference name="breadcrumbs">            
+            <action method="addCrumb">
+                <crumbName>my_account</crumbName>
+                <crumbInfo>
+                    <label>My Account</label>
+                    <title>My Account</title>
+                    <link>/shop/customer/account</link>
+                </crumbInfo>
+            </action>
+            <action method="addCrumb">
+                <crumbName>manage_account</crumbName>
+                <crumbInfo>
+                    <label>Manage Account</label>
+                    <title>Manage Account</title>
+                    <link>/shop/account/account/index/</link>
+                </crumbInfo>
+            </action>
+            <action method="addCrumb">
+                <crumbName>My Default Payment</crumbName>
+                <crumbInfo>
+                    <label>My Default Payment</label>
+                    <title>My Default Payment</title>
+                </crumbInfo>
+            </action>
+        </reference>
+        <reference name="left">
+            <action method="unsetChild">
+                <name>left.permanent.callout</name>
+            </action>
+        </reference>
+    </customer_account_editpayment>
+    <customer_account_editpickup translate="label">
+        <label>Customer Account Edit Form</label>
+        <update handle="customer_account"/>        
+        <reference name="head">
+        </reference>
+        <reference name="root">
+            <action method="setTemplate">
+                <template>page/2columns-left.phtml</template>
+            </action>
+            <action method="setHeaderTitle" translate="title" module="customer">
+                <title>Edit Account Info</title>
+            </action>
+        </reference>
+        <reference name="my.account.wrapper">
+            <block type="customer/form_edit" name="customer_edit" template="customer/form/edit.pickup.phtml"/>
+        </reference>
+        <reference name="breadcrumbs">            
+            <action method="addCrumb">
+                <crumbName>my_account</crumbName>
+                <crumbInfo>
+                    <label>My Account</label>
+                    <title>My Account</title>
+                    <link>/shop/customer/account</link>
+                </crumbInfo>
+            </action>
+            <action method="addCrumb">
+                <crumbName>manage_account</crumbName>
+                <crumbInfo>
+                    <label>Manage Account</label>
+                    <title>Manage Account</title>
+                    <link>/shop/account/account/index/</link>
+                </crumbInfo>
+            </action>
+            <action method="addCrumb">
+                <crumbName>My Default Store</crumbName>
+                <crumbInfo>
+                    <label>My Default Store</label>
+                    <title>My Default Store</title>
+                </crumbInfo>
+            </action>
+        </reference>
+        <reference name="left">
+            <action method="unsetChild">
+                <name>left.permanent.callout</name>
+            </action>
+        </reference>
+    </customer_account_editpickup>
+
+    <customer_account_editotheradvisors translate="label">
+        <label>Customer Account Edit Form</label>
+        <update handle="customer_account"/>
+        <reference name="head">
+        </reference>
+        <reference name="root">
+            <action method="setTemplate">
+                <template>page/2columns-left.phtml</template>
+            </action>
+            <action method="setHeaderTitle" translate="title" module="customer">
+                <title>Edit Account Info</title>
+            </action>
+        </reference>
+        <reference name="my.account.wrapper">
+            <block type="customer/form_edit" name="customer_edit" template="customer/form/edit.otheradvisors.phtml"/>
+        </reference>
+        <reference name="breadcrumbs">
+            <action method="addCrumb">
+                <crumbName>my_account</crumbName>
+                <crumbInfo>
+                    <label>My Account</label>
+                    <title>My Account</title>
+                    <link>/shop/customer/account</link>
+                </crumbInfo>
+            </action>
+            <action method="addCrumb">
+                <crumbName>manage_account</crumbName>
+                <crumbInfo>
+                    <label>Manage Account</label>
+                    <title>Manage Account</title>
+                    <link>/shop/account/account/index/</link>
+                </crumbInfo>
+            </action>
+            <action method="addCrumb">
+                <crumbName>Show Advisors</crumbName>
+                <crumbInfo>
+                    <label>Show Advisors</label>
+                    <title>Show Advisors</title>
+                </crumbInfo>
+            </action>
+        </reference>
+        <reference name="left">
+            <action method="unsetChild">
+                <name>left.permanent.callout</name>
+            </action>
+        </reference>
+    </customer_account_editotheradvisors>
+    
+    <!--
+    Customer account pages, rendered for all tabs in dashboard
+    -->
+
+    <customer_account translate="label">
+        <label>Customer My Account (All Pages)</label>
+        <!--remove name="catalog.compare.sidebar"/>
+        <remove name="sale.reorder.sidebar"/-->
+        <!-- Mage_Customer -->
+        <reference name="root">
+            <action method="setTemplate">
+                <template>page/2columns-left.phtml</template>
+            </action>
+        </reference>
+
+        <reference name="content">
+            <block type="page/html_wrapper" name="my.account.wrapper" translate="label">
+                <label>My Account Wrapper</label>
+                <action method="setElementClass">
+                    <value>my-account</value>
+                </action>
+            </block>
+        </reference>
+
+        <reference name="right">            
+            <remove name="tags_popular"/>
+            <remove name="right.permanent.rubric" />
+        </reference>
+    </customer_account>
+
+    <!--
+    Customer account home dashboard layout
+    -->
+
+    <customer_account_index translate="label">
+        <label>Customer My Account Dashboard</label>
+        <update handle="customer_account"/>
+        <!-- Mage_Customer -->
+        <reference name="root">
+            <action method="setTemplate">
+                <template>page/2columns-left.phtml</template>
+            </action>
+        </reference>
+        <reference name="breadcrumbs">
+            <action method="addCrumb">
+                <crumbName>Home</crumbName>
+                <crumbInfo>
+                    <label>Home</label>
+                    <title>Home</title>
+                    <link>/</link>
+                </crumbInfo>
+            </action>
+            <action method="addCrumb">
+                <crumbname>my_account</crumbname>
+                <crumbinfo>
+                    <label>My Account</label>
+                    <title>My Account</title>
+                </crumbinfo>
+            </action>
+        </reference>
+        <reference name="content">
+            <block type="customer/account_dashboard" name="customer_account_dashboard" template="customer/account/dashboard_ajax.phtml"/>
+        </reference>
+
+    </customer_account_index>
+
+
+<customer_account_dash translate="label">
+        <block type="customer/account_dashboard" name="customer_account_dashboard" template="customer/account/dashboard.phtml" output="toHtml" >
+                <block type="customer/account_dashboard_hello" name="customer_account_dashboard_hello" as="hello" template="customer/account/dashboard/hello.phtml"/>
+                <block type="customer/account_documents_newdocuments" name="customer_account_documents_newdocuments" as="documents_newdocuments" template="customer/account/documents/mobile_myaccount.phtml">
+                    <block type="customer/account_documents_latestorders" name="customer_account_documents_latestorders" as="documents_latestorders" template="customer/account/documents/latestorders.phtml">
+                        <block type="customer/account_documents_results_latestorders" name="customer_account_documents_results_table" as="documents_results_table" template="customer/account/documents/dashboard_orders.phtml" />
+                         <block type="customer/account_documents_results_latestorders" name="customer_account_documents_results_table_bottom" as="documents_results_table_bottom" template="customer/account/documents/results_table_bottom_js.phtml" />
+                    </block>
+                    <block type="customer/account_documents_latestoffers" name="customer_account_documents_latestoffers" as="documents_latestoffers" template="customer/account/documents/latestoffers.phtml">
+                        <block type="customer/account_documents_results_latestoffers" name="customer_account_documents_results_table" as="documents_results_table" template="customer/account/documents/dashboard_offers.phtml" />
+                        <block type="customer/account_documents_results_latestoffers" name="customer_account_documents_results_table" as="documents_results_table_latest_purchase" template="customer/account/documents/latest_purchase.phtml" />
+                        <block type="customer/account_documents_results_latestoffers" name="customer_account_documents_results_table_bottom" as="documents_results_table_bottom" template="customer/account/documents/results_table_bottom.phtml" />
+                    </block>
+                </block>
+                <block type="core/template" name="customer_account_dashboard_top" as="top" />
+                <block type="customer/account_dashboard_info" name="customer_account_dashboard_info" as="info" template="customer/account/dashboard/info.phtml"/>
+                <block type="schrackcustomer/account_administration" name="customer_account_dashboard_persons" as="persons" template="customer/account/dashboard/persons.phtml"/>
+                <block type="customer/account_dashboard_newsletter" name="customer_account_dashboard_newsletter" as="newsletter" template="customer/account/dashboard/newsletter.phtml"/>
+                <block type="customer/account_dashboard_address" name="customer_account_dashboard_address" as="address" template="customer/account/dashboard/address.phtml">
+                    <block type="customer/account_dashboard_mycompany" name="customer_account_dashboard_mycompany" as="mycompany" template="customer/account/dashboard/mycompany.phtml"/>
+                </block>
+                
+            </block>
+    </customer_account_dash>
+    <!--
+    Customer account address book
+    -->
+
+    <customer_address_index translate="label">
+        <label>Customer My Account Address Book</label>
+        <!-- Mage_Customer -->
+        <update handle="customer_account"/>
+        <reference name="root">
+            <action method="setTemplate">
+                <template>page/2columns-left.phtml</template>
+            </action>
+        </reference>
+        <reference name="head">
+        </reference>
+        <reference name="my.account.wrapper">
+            <block type="customer/address_book" name="address_book" template="customer/address/book.phtml"/>
+        </reference>
+        <reference name="breadcrumbs">            
+            <action method="addCrumb">
+                <crumbName>my_account</crumbName>
+                <crumbInfo>
+                    <label>My Account</label>
+                    <title>My Account</title>
+                    <link>/shop/customer/account</link>
+                </crumbInfo>
+            </action>
+            <action method="addCrumb">
+                <crumbName>manage_account</crumbName>
+                <crumbInfo>
+                    <label>Manage Account</label>
+                    <title>Manage Account</title>
+                    <link>/shop/account/account/index/</link>
+                </crumbInfo>
+            </action>
+            <action method="addCrumb">
+                <crumbname>Address Book</crumbname>
+                <crumbinfo>
+                    <label>Address Book</label>
+                    <title>Address Book</title>
+                </crumbinfo>
+            </action>
+        </reference>        
+    </customer_address_index>
+
+    <!--
+    Customer account address edit page
+    -->
+
+    <customer_address_form translate="label">
+        <label>Customer My Account Address Edit Form</label>
+        <!-- Mage_Customer -->
+        <update handle="customer_account"/>
+        <reference name="root">
+            <action method="setTemplate">
+                <template>page/2columns-left.phtml</template>
+            </action>
+        </reference>
+        <reference name="head">
+        </reference>
+        <reference name="my.account.wrapper">
+            <block type="customer/address_edit" name="customer_address_edit" template="customer/address/edit.phtml"/>
+        </reference>
+        <reference name="breadcrumbs">            
+            <action method="addCrumb">
+                <crumbName>my_account</crumbName>
+                <crumbInfo>
+                    <label>My Account</label>
+                    <title>My Account</title>
+                    <link>/shop/customer/account</link>
+                </crumbInfo>
+            </action>
+            <action method="addCrumb">
+                <crumbName>manage_account</crumbName>
+                <crumbInfo>
+                    <label>Manage Account</label>
+                    <title>Manage Account</title>
+                    <link>/shop/account/account/index/</link>
+                </crumbInfo>
+            </action>
+            <action method="addCrumb">
+                <crumbname>Address Book</crumbname>
+                <crumbinfo>
+                    <label>Address Book</label>
+                    <title>Address Book</title>
+                    <link>/shop/customer/address/</link>
+                </crumbinfo>
+            </action>
+            <action method="addCrumb">
+                <crumbname>Address</crumbname>
+                <crumbinfo>
+                    <label>Address</label>
+                    <title>Address</title>
+                </crumbinfo>
+            </action>
+        </reference>
+        <reference name="right">
+            <action method="unsetChild">
+                <name>catalog.compare.sidebar</name>
+            </action>
+            <action method="unsetChild">
+                <name>reorder</name>
+            </action>
+            
+        </reference>
+        <remove name="wishlist_sidebar"></remove>
+        <remove name="reorder"></remove>
+    </customer_address_form>
+
+    <customer_accountadministration_index translate="label">
+        <label>Customer Administration</label>
+        <update handle="customer_account"/>
+        <reference name="root">
+            <action method="setTemplate">
+                <template>page/2columns-left.phtml</template>
+            </action>
+        </reference>
+        <reference name="my.account.wrapper">
+            <block type="schrackcustomer/account_administration" name="customer_account_administration" template="customer/accountadministration/overview.phtml"/>
+        </reference>
+        <reference name="breadcrumbs">            
+            <action method="addCrumb">
+                <crumbName>my_account</crumbName>
+                <crumbInfo>
+                    <label>My Account</label>
+                    <title>My Account</title>
+                    <link>/shop/customer/account</link>
+                </crumbInfo>
+            </action>
+            <action method="addCrumb">
+                <crumbName>manage_account</crumbName>
+                <crumbInfo>
+                    <label>Manage Account</label>
+                    <title>Manage Account</title>
+                    <link>/shop/account/account/index/</link>
+                </crumbInfo>
+            </action>
+            <action method="addCrumb">
+                <crumbname>User Accounts</crumbname>
+                <crumbinfo>
+                    <label>User Accounts</label>
+                    <title>User Accounts</title>
+                </crumbinfo>
+            </action>
+        </reference>
+        <remove name="wishlist_sidebar"></remove>
+        <remove name="reorder"></remove>
+        <remove name="catalog.compare.sidebar"></remove>
+        <remove name="sale.reorder.sidebar"></remove>
+    </customer_accountadministration_index>
+
+    <customer_accountadministration_edit translate="label">
+        <label>Customer Administration</label>
+        <update handle="customer_account"/>
+        <reference name="root">
+            <action method="setTemplate">
+                <template>page/2columns-left.phtml</template>
+            </action>
+        </reference>
+        <reference name="my.account.wrapper">
+            <block type="schrackcustomer/account_administration" name="customer_account_administration" template="customer/accountadministration/edit.phtml"/>
+        </reference>
+        <reference name="breadcrumbs">            
+            <action method="addCrumb">
+                <crumbName>my_account</crumbName>
+                <crumbInfo>
+                    <label>My Account</label>
+                    <title>My Account</title>
+                    <link>/shop/customer/account</link>
+                </crumbInfo>
+            </action>
+            <action method="addCrumb">
+                <crumbName>manage_account</crumbName>
+                <crumbInfo>
+                    <label>Manage Account</label>
+                    <title>Manage Account</title>
+                    <link>/shop/account/account/index/</link>
+                </crumbInfo>
+            </action>
+            <action method="addCrumb">
+                <crumbname>User Accounts</crumbname>
+                <crumbinfo>
+                    <label>User Accounts</label>
+                    <title>User Accounts</title>
+                    <link>/shop/customer/accountadministration/</link>
+                </crumbinfo>
+            </action>
+            <action method="addCrumb">
+                <crumbname>Edit Account</crumbname>
+                <crumbinfo>
+                    <label>Edit Account</label>
+                    <title>Edit Account</title>
+                </crumbinfo>
+            </action>
+        </reference>
+        <remove name="wishlist_sidebar"></remove>
+        <remove name="reorder"></remove>
+        <remove name="catalog.compare.sidebar"></remove>
+        <remove name="sale.reorder.sidebar"></remove>
+    </customer_accountadministration_edit>
+
+
+    <customer_accountadministration_new translate="label">
+        <label>Customer Administration</label>
+        <update handle="customer_account"/>
+        <reference name="root">
+            <action method="setTemplate">
+                <template>page/2columns-left.phtml</template>
+            </action>
+        </reference>
+        <reference name="my.account.wrapper">
+            <block type="schrackcustomer/account_administration" name="customer_account_administration" template="customer/accountadministration/new.phtml"/>
+        </reference>
+        <reference name="breadcrumbs">            
+            <action method="addCrumb">
+                <crumbName>my_account</crumbName>
+                <crumbInfo>
+                    <label>My Account</label>
+                    <title>My Account</title>
+                    <link>/shop/customer/account</link>
+                </crumbInfo>
+            </action>
+            <action method="addCrumb">
+                <crumbName>manage_account</crumbName>
+                <crumbInfo>
+                    <label>Manage Account</label>
+                    <title>Manage Account</title>
+                    <link>/shop/account/account/index/</link>
+                </crumbInfo>
+            </action>
+            <action method="addCrumb">
+                <crumbname>User Account</crumbname>
+                <crumbinfo>
+                    <label>User Account</label>
+                    <title>User Account</title>
+                    <link>/shop/customer/accountadministration/</link>
+                </crumbinfo>
+            </action>
+            <action method="addCrumb">
+                <crumbname>Add Account</crumbname>
+                <crumbinfo>
+                    <label>Add Account</label>
+                    <title>Add Account</title>
+                </crumbinfo>
+            </action>
+        </reference>
+        <remove name="wishlist_sidebar"></remove>
+        <remove name="reorder"></remove>
+        <remove name="catalog.compare.sidebar"></remove>
+        <remove name="sale.reorder.sidebar"></remove>
+    </customer_accountadministration_new>
+
+    <!--
+        offer, invoice etc. stuff
+    -->
+    <customer_account_offers translate="label">
+        <label>Customer My Account Offers</label>
+        <reference name="head">
+            <action method="setTitle" translate="title">               
+                <title>My Offers</title>            
+            </action>
+        </reference>
+        <update handle="customer_account"/>
+        <!-- Mage_Customer -->
+        <reference name="root">
+            <action method="setTemplate">
+                <template>page/2columns-left.phtml</template>
+            </action>
+        </reference>
+        <reference name="my.account.wrapper">                           
+            <block type="customer/account_documents_offers" name="customer_account_documents_offers" template="customer/account/documents/offers.phtml">
+                <block type="customer/account_documents_filter" name="customer_account_documents_filter" as="documents_filter" template="customer/account/documents/filters.phtml"/>
+                <block type="customer/account_documents_results_offers" name="customer_account_documents_results_offers" as="documents_results" template="customer/account/documents/results.phtml">
+                    <block type="customer/account_documents_results_offers" name="customer_account_documents_results_table_top" as="documents_results_table_top" template="customer/account/documents/results_table_top.phtml">
+                        <block type="customer/account_documents_pager" name="html_pager" as="html_pager" template="page/html/pager.phtml" />
+                    </block>
+                    <block type="customer/account_documents_results_offers" name="customer_account_documents_results_table" as="documents_results_table" template="customer/account/documents/results_offers.phtml">
+                        <block type="customer/account_documents_results_orders" name="datatablefunctions" as="datatablefunctions" template="customer/account/documents/datatable_functions.phtml" />
+                    </block>
+                    <block type="customer/account_documents_results_offers" name="customer_account_documents_results_table_bottom" as="documents_results_table_bottom" template="customer/account/documents/results_table_bottom.phtml">
+                        <block type="customer/account_documents_pager" name="html_pager2" as="html_pager2" template="page/html/pager.phtml" />
+                    </block>
+                </block>                    
+            </block>
+        </reference>
+        <reference name="breadcrumbs">
+            <action method="addCrumb">
+                <crumbName>Home</crumbName>
+                <crumbInfo>
+                    <label>Home</label>
+                    <title>Home</title>
+                    <link>/</link>
+                </crumbInfo>
+            </action>
+            <action method="addCrumb">
+                <crumbName>my_account</crumbName>
+                <crumbInfo>
+                    <label>My Account</label>
+                    <title>My Account</title>
+                    <link>/shop/customer/account</link>
+                </crumbInfo>
+            </action>
+            <action method="addCrumb">
+                <crumbname>Offers</crumbname>
+                <crumbinfo>
+                    <label>Offers</label>
+                    <title>Offers</title>
+                </crumbinfo>
+            </action>
+        </reference>
+    </customer_account_offers>
+
+    <customer_account_orders translate="label">
+        <label>Customer My Account Orders</label>
+        <reference name="head">
+            <action method="setTitle" translate="title">               
+                <title>My Orders</title>
+            </action>
+        </reference>
+        <update handle="customer_account"/>
+        <!-- Mage_Customer -->
+        <reference name="root">
+            <action method="setTemplate">
+                <template>page/2columns-left.phtml</template>
+            </action>
+        </reference>      
+        <reference name="my.account.wrapper">                           
+            <block type="customer/account_documents_orders" name="customer_account_documents_orders" template="customer/account/documents/orders.phtml">
+                <block type="customer/account_documents_filter" name="customer_account_documents_filter" as="documents_filter" template="customer/account/documents/filters.phtml"/>
+                <block type="customer/account_documents_results_orders" name="customer_account_documents_results_orders" as="documents_results" template="customer/account/documents/results.phtml">
+                    <!-- <block type="customer/account_documents_results_orders" name="customer_account_documents_results_table_top" as="documents_results_table_top" template="customer/account/documents/results_table_top.phtml">
+                        <block type="customer/account_documents_pager" name="html_pager" as="html_pager" template="page/html/pager.phtml" />
+                    </block>-->
+                    <!-- <block type="customer/account_documents_results_orders" name="customer_account_documents_results_table" as="documents_results_table" template="customer/account/documents/results_datatable.phtml" />
+                    <block type="customer/account_documents_results_orders" name="customer_account_documents_results_table" as="documents_results_table" template="customer/account/documents/results_datatable.phtml">-->
+					<block type="customer/account_documents_results_orders" name="customer_account_documents_results_table" as="documents_results_table" template="customer/account/documents/results_ordertable.phtml">
+                        <!-- <block type="customer/account_documents_results_orders" name="datatablefunctions" as="datatablefunctions" template="customer/account/documents/datatable_functions.phtml" /> -->
+                    </block>
+                    <!-- <block type="customer/account_documents_results_orders" name="customer_account_documents_results_table_bottom" as="documents_results_table_bottom" template="customer/account/documents/results_table_bottom.phtml">
+                        <block type="customer/account_documents_pager" name="html_pager2" as="html_pager2" template="page/html/pager.phtml" />
+                    </block>-->
+                </block>
+            </block>
+        </reference>
+        <reference name="breadcrumbs">
+            <action method="addCrumb">
+                <crumbName>Home</crumbName>
+                <crumbInfo>
+                    <label>Home</label>
+                    <title>Home</title>
+                    <link>/</link>
+                </crumbInfo>
+            </action>
+            <action method="addCrumb">
+                <crumbName>my_account</crumbName>
+                <crumbInfo>
+                    <label>My Account</label>
+                    <title>My Account</title>
+                    <link>/shop/customer/account</link>
+                </crumbInfo>
+            </action>
+            <action method="addCrumb">
+                <crumbname>Orders</crumbname>
+                <crumbinfo>
+                    <label>Orders</label>
+                    <title>Orders</title>
+                </crumbinfo>
+            </action>
+        </reference>
+    </customer_account_orders>
+
+    <customer_account_invoices translate="label">
+        <label>Customer My Account Invoices</label>
+        <reference name="head">
+            <action method="setTitle" translate="title">               
+                <title>My Invoices</title>
+            </action>
+        </reference>
+        <update handle="customer_account"/>
+        <!-- Mage_Customer -->
+        <reference name="root">
+            <action method="setTemplate">
+                <template>page/2columns-left.phtml</template>
+            </action>
+        </reference>
+        <reference name="my.account.wrapper">                           
+            <block type="customer/account_documents_invoices" name="customer_account_documents_invoices" template="customer/account/documents/invoices.phtml">
+                <block type="customer/account_documents_filter" name="customer_account_documents_filter" as="documents_filter" template="customer/account/documents/filters.phtml"/>
+                <block type="customer/account_documents_results_invoices" name="customer_account_documents_results_invoices" as="documents_results" template="customer/account/documents/results.phtml">
+                    <block type="customer/account_documents_results_invoices" name="customer_account_documents_results_table_top" as="documents_results_table_top" template="customer/account/documents/results_table_top.phtml">
+                        <block type="customer/account_documents_pager" name="html_pager" as="html_pager" template="page/html/pager.phtml" />
+                    </block>
+                    <block type="customer/account_documents_results_invoices" name="customer_account_documents_results_table" as="documents_results_table" template="customer/account/documents/results_invoice.phtml">
+                        <block type="customer/account_documents_results_orders" name="datatablefunctions" as="datatablefunctions" template="customer/account/documents/datatable_functions.phtml" />
+                    </block>
+                    <block type="customer/account_documents_results_invoices" name="customer_account_documents_results_table_bottom" as="documents_results_table_bottom" template="customer/account/documents/results_table_bottom.phtml">
+                        <block type="customer/account_documents_pager" name="html_pager2" as="html_pager2" template="page/html/pager.phtml" />
+                    </block>
+                </block>                    
+            </block>
+        </reference>
+        <reference name="breadcrumbs">
+            <action method="addCrumb">
+                <crumbName>Home</crumbName>
+                <crumbInfo>
+                    <label>Home</label>
+                    <title>Home</title>
+                    <link>/</link>
+                </crumbInfo>
+            </action>
+            <action method="addCrumb">
+                <crumbName>my_account</crumbName>
+                <crumbInfo>
+                    <label>My Account</label>
+                    <title>My Account</title>
+                    <link>/shop/customer/account</link>
+                </crumbInfo>
+            </action>
+            <action method="addCrumb">
+                <crumbname>Invoices</crumbname>
+                <crumbinfo>
+                    <label>Invoices</label>
+                    <title>Invoices</title>
+                </crumbinfo>
+            </action>
+        </reference>
+    </customer_account_invoices>
+
+    <customer_account_creditmemos translate="label">
+        <label>Customer My Account Creditmemos</label>
+        <reference name="head">
+            <action method="setTitle" translate="title">               
+                <title>My Creditmemos</title>            
+            </action>
+        </reference>
+        <update handle="customer_account"/>
+        <!-- Mage_Customer -->
+        <reference name="root">
+            <action method="setTemplate">
+                <template>page/2columns-left.phtml</template>
+            </action>
+        </reference>
+        <reference name="my.account.wrapper">                           
+            <block type="customer/account_documents_creditmemos" name="customer_account_documents_creditmemos" template="customer/account/documents/creditmemos.phtml">
+                <block type="customer/account_documents_filter" name="customer_account_documents_filter" as="documents_filter" template="customer/account/documents/filters.phtml"/>
+                <block type="customer/account_documents_results_creditmemos" name="customer_account_documents_results_creditmemos" as="documents_results" template="customer/account/documents/results.phtml">
+                    <block type="customer/account_documents_results_creditmemos" name="customer_account_documents_results_table_top" as="documents_results_table_top" template="customer/account/documents/results_table_top.phtml">
+                        <block type="customer/account_documents_pager" name="html_pager" as="html_pager" template="page/html/pager.phtml" />
+                    </block>
+                    <block type="customer/account_documents_results_creditmemos" name="customer_account_documents_results_table" as="documents_results_table" template="customer/account/documents/results_creditmemo.phtml">
+                        <block type="customer/account_documents_results_orders" name="datatablefunctions" as="datatablefunctions" template="customer/account/documents/datatable_functions.phtml" />
+                    </block>
+                    <block type="customer/account_documents_results_creditmemos" name="customer_account_documents_results_table_bottom" as="documents_results_table_bottom" template="customer/account/documents/results_table_bottom.phtml">
+                        <block type="customer/account_documents_pager" name="html_pager2" as="html_pager2" template="page/html/pager.phtml" />
+                    </block>
+                </block>                    
+            </block>
+        </reference>
+        <reference name="breadcrumbs">
+            <action method="addCrumb">
+                <crumbName>Home</crumbName>
+                <crumbInfo>
+                    <label>Home</label>
+                    <title>Home</title>
+                    <link>/</link>
+                </crumbInfo>
+            </action>
+            <action method="addCrumb">
+                <crumbName>my_account</crumbName>
+                <crumbInfo>
+                    <label>My Account</label>
+                    <title>My Account</title>
+                    <link>/shop/customer/account</link>
+                </crumbInfo>
+            </action>
+            <action method="addCrumb">
+                <crumbname>Creditmemos</crumbname>
+                <crumbinfo>
+                    <label>Creditmemos</label>
+                    <title>Creditmemos</title>
+                </crumbinfo>
+            </action>
+        </reference>
+    </customer_account_creditmemos>
+
+    <customer_account_shipments translate="label">
+        <label>Customer My Account Shipments</label>
+        <reference name="head">
+            <action method="setTitle" translate="title">               
+                <title>My Shipments</title>            
+            </action>
+        </reference>
+        <update handle="customer_account"/>
+        <!-- Mage_Customer -->
+        <reference name="root">
+            <action method="setTemplate">
+                <template>page/2columns-left.phtml</template>
+            </action>
+        </reference>
+        <reference name="my.account.wrapper">                           
+            <block type="customer/account_documents_shipments" name="customer_account_documents_shipments" template="customer/account/documents/shipments.phtml">
+                <block type="customer/account_documents_filter" name="customer_account_documents_filter" as="documents_filter" template="customer/account/documents/filters.phtml"/>
+                <block type="customer/account_documents_results" name="customer_account_documents_results" as="documents_results" template="customer/account/documents/results.phtml">
+                    <block type="customer/account_documents_results_shipments" name="customer_account_documents_results_table_top" as="documents_results_table_top" template="customer/account/documents/results_table_top.phtml">
+                        <block type="customer/account_documents_pager" name="html_pager" as="html_pager" template="page/html/pager.phtml" />
+                    </block>
+                    <block type="customer/account_documents_results_shipments" name="customer_account_documents_results_table" as="documents_results_table" template="customer/account/documents/results_shipment.phtml">
+                        <block type="customer/account_documents_results_orders" name="datatablefunctions" as="datatablefunctions" template="customer/account/documents/datatable_functions.phtml" />
+                    </block>
+                    <block type="customer/account_documents_results_shipments" name="customer_account_documents_results_table_bottom" as="documents_results_table_bottom" template="customer/account/documents/results_table_bottom.phtml">
+                        <block type="customer/account_documents_pager" name="html_pager2" as="html_pager2" template="page/html/pager.phtml" />
+                    </block>
+                </block>
+            </block>
+        </reference>
+        <reference name="breadcrumbs">
+            <action method="addCrumb">
+                <crumbName>Home</crumbName>
+                <crumbInfo>
+                    <label>Home</label>
+                    <title>Home</title>
+                    <link>/</link>
+                </crumbInfo>
+            </action>
+            <action method="addCrumb">
+                <crumbName>my_account</crumbName>
+                <crumbInfo>
+                    <label>My Account</label>
+                    <title>My Account</title>
+                    <link>/shop/customer/account</link>
+                </crumbInfo>
+            </action>
+            <action method="addCrumb">
+                <crumbname>Shipments</crumbname>
+                <crumbinfo>
+                    <label>Shipments</label>
+                    <title>Shipments</title>
+                </crumbinfo>
+            </action>
+        </reference>
+    </customer_account_shipments>
+
+    <customer_account_backorders translate="label">
+        <label>Customer My Account Shipments</label>
+        <reference name="head">
+            <action method="setTitle" translate="title">
+                <title>My Backorders</title>
+            </action>
+        </reference>
+        <update handle="customer_account"/>
+        <!-- Mage_Customer -->
+        <reference name="root">
+            <action method="setTemplate">
+                <template>page/2columns-left.phtml</template>
+            </action>
+        </reference>
+        <reference name="my.account.wrapper">
+
+            <!-- block type="customer/account_documents_shipments" name="customer_account_documents_shipments" template="customer/account/documents/shipments.phtml" -->
+            <block type="customer/account_documents_backorders" name="customer_account_documents_backorders" template="customer/account/documents/backorderqty.phtml">
+                <block type="customer/account_documents_filter" name="customer_account_documents_filter" as="documents_filter" template="customer/account/documents/filters.phtml"/>
+                <block type="customer/account_documents_results" name="customer_account_documents_results" as="documents_results" template="customer/account/documents/results.phtml">
+                    <block type="customer/account_documents_results_shipments" name="customer_account_documents_results_table_top" as="documents_results_table_top" template="customer/account/documents/results_table_top.phtml">
+                        <block type="customer/account_documents_pager" name="html_pager" as="html_pager" template="page/html/pager.phtml" />
+                    </block>
+                    <block type="customer/account_documents_results_shipments" name="customer_account_documents_results_table" as="documents_results_table" template="customer/account/documents/results_backorder.phtml">
+                        <block type="customer/account_documents_results_orders" name="datatablefunctions" as="datatablefunctions" template="customer/account/documents/datatable_functions.phtml" />
+                    </block>
+                    <block type="customer/account_documents_results_shipments" name="customer_account_documents_results_table_bottom" as="documents_results_table_bottom" template="customer/account/documents/results_table_bottom.phtml">
+                        <block type="customer/account_documents_pager" name="html_pager2" as="html_pager2" template="page/html/pager.phtml" />
+                    </block>
+                </block>
+            </block>
+        </reference>
+        <reference name="breadcrumbs">
+            <action method="addCrumb">
+                <crumbName>Home</crumbName>
+                <crumbInfo>
+                    <label>Home</label>
+                    <title>Home</title>
+                    <link>/</link>
+                </crumbInfo>
+            </action>
+            <action method="addCrumb">
+                <crumbName>my_account</crumbName>
+                <crumbInfo>
+                    <label>My Account</label>
+                    <title>My Account</title>
+                    <link>/shop/customer/account</link>
+                </crumbInfo>
+            </action>
+            <action method="addCrumb">
+                <crumbname>Backorders</crumbname>
+                <crumbinfo>
+                    <label>Backorders</label>
+                    <title>Backorders</title>
+                </crumbinfo>
+            </action>
+        </reference>
+    </customer_account_backorders>
+
+    <customer_account_documentsdetailsearch translate="label">
+        <label>Customer My Account Documents Detailsearch</label>
+        <reference name="head">
+            <action method="setTitle" translate="title">               
+                <title>Detail Search</title>            
+            </action>
+        </reference>
+        <update handle="customer_account"/>
+        <!-- Mage_Customer -->
+        <reference name="root">
+            <action method="setTemplate">
+                <template>page/2columns-left.phtml</template>
+            </action>
+        </reference>
+        <reference name="my.account.wrapper">                           
+            <block type="customer/account_documents_detailsearch" name="customer_account_documents_detailsearch" template="customer/account/documents/detailsearch.phtml">
+                <block type="customer/account_documents_filter" name="customer_account_documents_filter" as="documents_filter" template="customer/account/documents/filters.phtml"/>
+                <block type="customer/account_documents_results_detailsearch" name="customer_account_documents_results_detailsearch" as="documents_results" template="customer/account/documents/results.phtml">
+                    <block type="customer/account_documents_results_detailsearch" name="customer_account_documents_results_table_top" as="documents_results_table_top" template="customer/account/documents/results_table_top.phtml">
+                        <block type="customer/account_documents_pager" name="html_pager" as="html_pager" template="page/html/pager.phtml" />
+                    </block>
+                    <block type="customer/account_documents_results_detailsearch" name="customer_account_documents_results_table" as="documents_results_table" template="customer/account/documents/results_documentsdetailsearch.phtml">
+                        <block type="customer/account_documents_results_orders" name="datatablefunctions" as="datatablefunctions" template="customer/account/documents/datatable_functions.phtml" />
+                    </block>
+                    <block type="customer/account_documents_results_detailsearch" name="customer_account_documents_results_table_bottom" as="documents_results_table_bottom" template="customer/account/documents/results_table_bottom.phtml">
+                        <block type="customer/account_documents_pager" name="html_pager2" as="html_pager2" template="page/html/pager.phtml" />
+                    </block>
+                </block>                    
+            </block>
+        </reference>
+        <reference name="breadcrumbs">
+            <action method="addCrumb">
+                <crumbName>Home</crumbName>
+                <crumbInfo>
+                    <label>Home</label>
+                    <title>Home</title>
+                    <link>/</link>
+                </crumbInfo>
+            </action>
+            <action method="addCrumb">
+                <crumbName>my_account</crumbName>
+                <crumbInfo>
+                    <label>My Account</label>
+                    <title>My Account</title>
+                    <link>/shop/customer/account</link>
+                </crumbInfo>
+            </action>
+            <action method="addCrumb">
+                <crumbname>Detail Search</crumbname>
+                <crumbinfo>
+                    <label>Detail Search</label>
+                    <title>Detail Search</title>
+                </crumbinfo>
+            </action>
+        </reference>
+    </customer_account_documentsdetailsearch>
+    
+    
+    <customer_account_documentsdetailview translate="label">
+        <label>Customer My Account Documents Detailview</label>
+        <update handle="customer_account"/>
+        
+        <reference name="head">
+            <action method="setTitle" translate="title">               
+                <title>Detail View</title>
+            </action>
+        </reference>
+        
+        <reference name="root">
+            <action method="setTemplate">
+                <template>page/2columns-left.phtml</template>
+            </action>
+        </reference>
+
+        <reference name="my.account.wrapper">                           
+            <block type="customer/account_documents_detailview" name="customer_account_documents_detailview" template="customer/account/documents/detailview.phtml">
+                <block type="page/html_pager" name="html_pager" as="html_pager" template="page/html/pager.phtml" />
+                <block type="page/html_pager" name="html_pager2" as="html_pager2" template="page/html/pager.phtml" />
+            </block>
+        </reference>
+    </customer_account_documentsdetailview>
+
+    <customer_account_actasuser translate="label">
+        <label>Customer Act As User</label>
+        <update handle="customer_account"/>
+
+        <reference name="head">
+            <action method="setTitle" translate="title">
+                <title>Act As User</title>
+            </action>
+        </reference>
+
+        <reference name="root">
+            <action method="setTemplate">
+                <template>page/2columns-left.phtml</template>
+            </action>
+        </reference>
+
+        <reference name="my.account.wrapper">
+            <block type="core/template" name="act_as_user" template="customer/account/act_as_user.phtml"/>
+        </reference>
+    </customer_account_actasuser>
+
+    <customer_datanorm_massupload>        
+        <reference name="head">
+            <action method="setTitle" translate="title">               
+                <title>Datanorm Massupload</title>            
+            </action>
+        </reference>
+        
+        <reference name="root">
+            <action method="setTemplate">
+                <template>page/2columns-left.phtml</template>
+            </action>
+        </reference>  
+        <reference name="content">             
+            <block type="schrackcustomer/datanorm" name="datanorm_massupload" template="customer/datanorm/massupload.phtml"/>         
+        </reference>     
+    </customer_datanorm_massupload>        
+    <customer_datanorm_post>
+        <reference name="head">
+            <action method="setTitle" translate="title">               
+                <title>Datanorm Massupload</title>            
+            </action>
+        </reference>
+        
+        <reference name="root">
+            <action method="setTemplate">
+                <template>page/2columns-left.phtml</template>
+            </action>
+        </reference>  
+		        
+        <reference name="content">             
+            <block type="schrackcustomer/datanorm" name="datanorm_massupload_post" template="customer/datanorm/massupload_post.phtml"/>         
+        </reference>
+    </customer_datanorm_post>
+
+    <customer_account_customskus translate="label">
+        <label>Individual Article Numbers</label>
+        <update handle="customer_account"/>
+        <reference name="head">
+        </reference>
+        <reference name="root">
+            <action method="setTemplate">
+                <template>page/2columns-left.phtml</template>
+            </action>
+            <action method="setHeaderTitle" translate="title" module="customer">
+                <title>Individual Article Numbers</title>
+            </action>
+        </reference>
+        <reference name="my.account.wrapper">
+            <block type="customer/form_edit" name="custom_skus" template="customer/form/custom_skus.phtml"/>
+        </reference>
+        <reference name="breadcrumbs">
+            <action method="addCrumb">
+                <crumbName>my_account</crumbName>
+                <crumbInfo>
+                    <label>My Account</label>
+                    <title>My Account</title>
+                    <link>/shop/customer/account</link>
+                </crumbInfo>
+            </action>
+            <action method="addCrumb">
+                <crumbName>manage_account</crumbName>
+                <crumbInfo>
+                    <label>Manage Account</label>
+                    <title>Manage Account</title>
+                    <link>/shop/account/account/index/</link>
+                </crumbInfo>
+            </action>
+            <action method="addCrumb">
+                <crumbName>Individual Article Numbers</crumbName>
+                <crumbInfo>
+                    <label>Individual Article Numbers</label>
+                    <title>Individual Article Numbers</title>
+                </crumbInfo>
+            </action>
+        </reference>
+        <reference name="left">
+            <action method="unsetChild">
+                <name>left.permanent.callout</name>
+            </action>
+        </reference>
+    </customer_account_customskus>
+
+</layout>

@@ -1,0 +1,466 @@
+<!-- app/design/frontend/schrack/schrackresponsive/template/customer/form/edit.otheradvisors.phtml (start) -->
+
+<?php
+    $_helper = $this->helper('schrackcustomer');
+    $customer = $this->getCustomer();
+
+    if (is_object($customer) && !$customer->getId() > 0) {
+        $customer = Mage::getSingleton('customer/session')->getCustomer();
+    }
+    if (!is_object($customer)) {
+        $customer = Mage::getSingleton('customer/session')->getCustomer();
+    }
+    $showBecauseImNotAProspect = true;
+    $customerType = $customer->getSchrackCustomerType(); // ProspectTypes: 'light-prospect' / 'full-prospect'
+    // Prospect Light / Full
+    if (in_array($customerType, array('light-prospect', 'full-prospect'))) {
+        $showBecauseImNotAProspect = false;
+    }
+    $currentUrl = Mage::helper('core/url')->getCurrentUrl();
+
+    $wwsCustomerID = $customer->getSchrackWwsCustomerId();
+    $advisorsData = json_decode($_helper->getAccountOtherAdvisors(), true);
+    //var_dump($advisorsData); die();
+    $mainAdvisorData   = $advisorsData['main_advisor_data'];
+    $otherAdvisorsData = $advisorsData['other_advisors_data'];
+    $vcardDowloadIcon = $this->getSkinUrl('schrackdesign/Public/Images/rwd/downloadIcon.png');
+?>
+
+<style>
+.advisorVcard {
+    float: left;
+}
+.advisorsFrameSection {
+    margin-top: 32px;
+}
+.bluetextColor {
+    color: #00589d;
+}
+.standardFontSize {
+    font-size: 14px;
+}
+.advisorsFrameHeadline {
+    font-size: 20px;
+    font-family: robotoregular,Helvetica,Arial,Sans-Serif;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+.advisorsFrameSectionTitle {
+    font-family: robotoregular,Helvetica,Arial,Sans-Serif;
+    font-weight: bold;
+}
+.advisorCard {
+    float: left;
+    width: 50%;
+    margin-top: 20px;
+}
+.advisorImageFrame {
+    float: left;
+    width: 20%;
+}
+.advisorImage {
+    height: 160px;
+}
+.advisorData {
+    float: left;
+    padding-left: 20px;
+    width: 80%;
+    padding-bottom: 10px;
+    padding-right: 3px;
+}
+.advisorFullname {
+    font-size: 18px;
+    font-family: robotoregular,Helvetica,Arial,Sans-Serif;
+    font-weight: bold;
+}
+.advisorTitle {
+    font-family: robotoregular,Helvetica,Arial,Sans-Serif;
+    word-break: break-word;
+}
+.advisorEmail {
+    font-family: robotoregular,Helvetica,Arial,Sans-Serif;
+    margin-top: 20px;
+}
+.advisorPhone {
+    font-family: robotoregular,Helvetica,Arial,Sans-Serif;
+}
+.advisorFax {
+    font-family: robotoregular,Helvetica,Arial,Sans-Serif;
+}
+.advisorMobile {
+    font-family: robotoregular,Helvetica,Arial,Sans-Serif;
+}
+.phoneLabel {
+    float: left;
+    width: 31%;
+}
+.advisorPhonenumber {
+    float: left;
+    width: 48%;
+}
+.faxLabel {
+    float: left;
+    width: 31%;
+}
+.mobileLabel {
+    float: left;
+    width: 31%;
+}
+.advisorFaxnumber {
+    float: left;
+    width: 48%;
+}
+.advisorMobilenumber {
+    float: left;
+    width: 48%;
+}
+.vcardText {
+    float: left;
+    margin-left: 7px;
+}
+.vcardIcon {
+    float: left;
+}
+.placeFiller {
+    height: 11px;
+}
+.clearBoth {
+    clear: both;
+}
+
+@media (min-width: 1px) and (max-width: 320px) {
+    .advisorCard {
+        width: 100%;
+    }
+    .standardFontSize {
+        font-size: 14px;
+    }
+    .advisorImageFrame {
+        width: 38%;
+    }
+    .advisorData {
+        padding-left: 2px;
+        width: 62%;
+    }
+    .advisorEmail {
+        margin-top: 9px;
+    }
+    .placeFiller {
+        height: 30px;
+    }
+}
+
+@media (min-width: 321px) and (max-width: 360px) {
+    .advisorCard {
+        width: 100%;
+    }
+    .standardFontSize {
+        font-size: 14px;
+    }
+    .advisorImageFrame {
+        width: 38%;
+    }
+    .advisorData {
+        padding-left: 2px;
+        width: 62%;
+    }
+    .advisorEmail {
+        margin-top: 9px;
+    }
+    .placeFiller {
+        height: 30px;
+    }
+}
+
+@media (min-width: 361px) and (max-width: 410px) {
+    .advisorCard {
+        width: 100%;
+    }
+    .standardFontSize {
+        font-size: 15px;
+    }
+    .advisorImageFrame {
+        width: 38%;
+    }
+    .advisorData {
+        padding-left: 2px;
+        width: 62%;
+    }
+    .advisorEmail {
+        margin-top: 7px;
+    }
+    .placeFiller {
+        height: 27px;
+    }
+}
+
+@media (min-width: 411px) and (max-width: 460px) {
+    .advisorCard {
+        width: 100%;
+    }
+    .standardFontSize {
+        font-size: 16px;
+    }
+    .advisorImageFrame {
+        width: 38%;
+    }
+    .advisorData {
+        padding-left: 2px;
+        width: 62%;
+    }
+    .advisorEmail {
+        margin-top: 17px;
+    }
+    .placeFiller {
+        height: 16px;
+    }
+}
+
+@media (min-width: 461px) and (max-width: 480px) {
+    .advisorCard {
+        width: 100%;
+    }
+    .standardFontSize {
+        font-size: 16px;
+    }
+    .advisorImageFrame {
+        width: 38%;
+    }
+    .advisorData {
+        padding-left: 2px;
+        width: 62%;
+    }
+    .advisorEmail {
+        margin-top: 17px;
+    }
+    .placeFiller {
+        height: 16px;
+    }
+}
+
+@media (min-width: 481px) and (max-width: 560px) {
+    .advisorCard {
+        width: 100%;
+    }
+    .standardFontSize {
+        font-size: 14px;
+    }
+    .advisorImageFrame {
+        width: 38%;
+    }
+    .advisorData {
+        padding-left: 2px;
+        width: 62%;
+    }
+    .advisorEmail {
+        margin-top: 17px;
+    }
+    .placeFiller {
+        height: 16px;
+    }
+}
+
+@media (min-width: 561px) and (max-width: 1220px) {
+    .advisorCard {
+        width: 100%;
+    }
+}
+
+</style>
+
+
+<div class="allAdvisorsFrame">
+    <div class="advisorsFrameHeadline bluetextColor"><?php echo $this->__('My Advisors Team') ?></div>
+    <div class="advisorsFrame">
+        <div class="advisorsFrameSection">
+            <div class="advisorsFrameSectionTitle bluetextColor standardFontSize"><?php echo $this->__('My Main Advisor') ?></div>
+            <div class="advisorCard">
+                <div class="advisorImageFrame">
+                    <img src="<?php echo $mainAdvisorData['foto']; ?>" class="advisorImage">
+                </div>
+                <div class="advisorData">
+                    <div class="advisorFullname bluetextColor"><?php echo $mainAdvisorData['fullname']; ?></div>
+                    <div class="advisorTitle bluetextColor standardFontSize"><?php echo $mainAdvisorData['schrack_title']; ?></div>
+                    <div class="placeFiller"></div>
+                    <div class="advisorEmail bluetextColor standardFontSize"><?php echo $mainAdvisorData['email']; ?></div>
+                    <div class="advisorPhone bluetextColor standardFontSize">
+                        <div class="phoneLabel"><?php echo $this->__('Phone'); ?></div>
+                        <div class="advisorPhonenumber"><?php echo ' : ' . $mainAdvisorData['phone']; ?></div>
+                    </div>
+                    <?php if ($mainAdvisorData['mobile']) : ?>
+                        <div class="advisorMobile bluetextColor standardFontSize">
+                            <div class="mobileLabel"><?php echo $this->__('Mobile'); ?></div>
+                            <div class="advisorMobilenumber standardFontSize"><?php echo ' : ' . $mainAdvisorData['mobile']; ?></div>
+                        </div>
+                    <?php endif; ?>
+                    <?php if ($mainAdvisorData['fax']) : ?>
+                        <div class="advisorFax bluetextColor standardFontSize">
+                            <div class="faxLabel"><?php echo $this->__('Telefax'); ?></div>
+                            <div class="advisorFaxnumber standardFontSize"><?php echo ' : ' . $mainAdvisorData['fax']; ?></div>
+                        </div>
+                    <?php endif; ?>
+                    <?php
+                        $vardLink = Mage::getUrl('customer/account/vcard') . ' ?email=' . $mainAdvisorData['email'];
+                    ?>
+                    <div class="advisorVcard">
+                        <a type="button" style="width:265px; margin-top: 10px"
+                           id="vcard" href="<?php echo $vardLink; ?> ">
+                            <img src="<?php echo $vcardDowloadIcon; ?>"
+                                 alt=""
+                                 class="vcardIcon" />
+                            <div class="vcardText"><?php echo $this->__('Save Contact'); ?></div>
+                            <div class="clearBoth"></div>
+                        </a>
+                    </div>
+                </div>
+                <div class="clearBoth"></div>
+            </div>
+            <div class="clearBoth"></div>
+        </div>
+    </div>
+
+    <?php if (is_array($otherAdvisorsData) && !empty($otherAdvisorsData)) : ?>
+        <div class="advisorsFrame">
+            <div class="advisorsFrameSection">
+                <div class="advisorsFrameSectionTitle bluetextColor standardFontSize"><?php echo $this->__('My Other Advisors') ?></div>
+                <?php foreach($otherAdvisorsData as $index => $advisorsRow) : ?>
+                    <div class="advisorCard">
+                        <div class="advisorImageFrame">
+                            <img src="<?php echo $advisorsRow['foto']; ?>" class="advisorImage">
+                        </div>
+                        <div class="advisorData">
+                            <div class="advisorFullname bluetextColor"><?php echo $advisorsRow['fullname']; ?></div>
+                            <div class="advisorTitle bluetextColor standardFontSize"><?php echo $advisorsRow['schrack_title']; ?></div>
+                            <div class="placeFiller"></div>
+                            <div class="advisorEmail bluetextColor standardFontSize"><?php echo $advisorsRow['email']; ?></div>
+                            <div class="advisorPhone bluetextColor standardFontSize">
+                                <div class="phoneLabel"><?php echo $this->__('Phone'); ?></div>
+                                <div class="advisorPhonenumber"><?php echo ' : ' . $advisorsRow['phone']; ?></div>
+                            </div>
+                            <?php if ($advisorsRow['mobile']) : ?>
+                                <div class="advisorMobile bluetextColor standardFontSize">
+                                    <div class="mobileLabel"><?php echo $this->__('Mobile'); ?></div>
+                                    <div class="advisorMobilenumber"><?php echo ' : ' . $advisorsRow['mobile']; ?></div>
+                                </div>
+                            <?php endif; ?>
+                            <?php if ($advisorsRow['fax']) : ?>
+                                <div class="advisorFax bluetextColor standardFontSize">
+                                    <div class="faxLabel"><?php echo $this->__('Telefax'); ?></div>
+                                    <div class="advisorFaxnumber"><?php echo ' : ' . $advisorsRow['fax']; ?></div>
+                                </div>
+                            <?php endif; ?>
+                            <?php
+                                $vardLink = Mage::getUrl('customer/account/vcard') . ' ?email=' . $advisorsRow['email'];
+                            ?>
+                            <div class="advisorVcard">
+                                <a type="button" style="width:265px; margin-top: 10px"
+                                   id="vcard" href="<?php echo $vardLink; ?> ">
+                                    <img src="<?php echo $vcardDowloadIcon; ?>"
+                                         alt=""
+                                         class="vcardIcon" />
+                                    <div class="vcardText"><?php echo $this->__('Save Contact'); ?></div>
+                                    <div class="clearBoth"></div>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="clearBoth"></div>
+                    </div>
+                <?php endforeach; ?>
+                <div class="clearBoth"></div>
+            </div>
+        </div>
+    <?php endif; ?>
+
+</div>
+
+<!------------ Advisor PDF download button ------------------------>
+<div class="csvFormat box open" content="application/pdf">
+    <?php
+        #  ----------schrack_s4y_id is from db custerm_entity table --------------
+        $aac_s4y_ID = "";
+        $aac_group_ID = "";
+
+        $wwsID = $customer->_data['schrack_wws_customer_id'];
+        $groupID = $customer->_data['group_id'];
+        $s4y_ID = $customer->_data['schrack_s4y_id'];
+
+        $email = $customer->_data['email'];
+        $pattern = '/schrack/i';
+
+        // check if employee/account email
+        $check = preg_match($pattern, $email);
+
+        if($check) {
+            $resource = Mage::getSingleton('core/resource');
+            $readConnection = $resource->getConnection('core_read');
+            $_tableName = $resource->getTableName('customer_entity');
+
+            $contact_data = "SELECT group_id, schrack_wws_customer_id, schrack_s4y_id, email FROM $_tableName WHERE schrack_wws_customer_id = '$wwsID ' AND group_id = 5";
+            $query_2 = $readConnection->fetchAll($contact_data);
+            $customer_data = $query_2[0];
+
+            #var_dump($query_2[0]);
+
+            foreach ($customer_data as $key => $item) {
+                #echo "$key: $item <br />";
+                if($key == 'group_id'){
+                    $aac_group_ID = $item;
+                    $groupID = $item;
+                }
+                if($key == 'schrack_s4y_id') {
+                    $s4y_ID = $item;
+                }
+            }
+        }
+
+//    echo     "<br />
+//                 aac_s4y_ID: " . $aac_s4y_ID . "<br />" .
+//                "acc_group_ID " . $aac_group_ID . "<br />" .
+//                "<br />" .
+//                "S4Y: " . $s4y_ID . "<br />" .
+//                "groupID: " . $groupID . "<br />" .
+//                "email: " . $email . "<br />" .
+//                "wwsID: " . $wwsID . "<br />";
+
+
+        if (($s4y_ID || $aac_s4y_ID) && ($aac_group_ID == 5 || $groupID == 5)) {
+            echo "<br><br>
+                <div>
+                    <button
+                        id='pdfDownloadButton'
+                        class='bttn bttn-md'
+                        title='PDF Download'
+                        href='javascript: return false'
+                    >
+                    PDF Download
+                    </button>
+                </div>";
+        }
+    ?>
+</div>
+
+
+<script type="text/javascript">
+    //<![CDATA[
+    jQuery(document).ready(function() {
+        //  Advisor PDF download action -> calls DownloadController
+        var customer = '<?php echo $s4y_ID; ?>';
+        jQuery('#pdfDownloadButton').on('click', function(){
+            window.open('<?php echo str_replace('downloadPdf/', 'downloadPdf?', Mage::helper('schrackcore/url')->getUrlWithCurrentProtocol('catalog/download/downloadPdf/customer'))?>' + 'customer=' + customer, '_self');
+            return false; //this is critical to stop the click event which will trigger a normal file download
+        });
+
+        jQuery('.advisorTitle').each(function(){
+            var el= jQuery(this);
+            var textLength = el.html().length;
+            if (textLength > 40) {
+                el.css('font-size', '0.9em');
+                el.next().remove();
+            }
+        });
+    });
+
+    //]]>
+</script>
+
+<!-- app/design/frontend/schrack/schrackresponsive/template/customer/form/edit.otheradvisors.phtml (end) -->

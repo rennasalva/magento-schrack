@@ -1,0 +1,163 @@
+<!-- app/design/frontend/schrack/schrackresponsive/template/checkout/onepage/payment.phtml (start) -->
+
+<div class="box-content">
+<script type="text/javascript">
+//<![CDATA[
+    var payment = new Payment('co-payment-form', '<?php echo $this->getUrl('checkout/onepage/savePayment') ?>');
+//]]>
+</script>
+
+<style>
+    #payment-buttons-container {
+        width: 100% !important;
+    }
+
+    .checkout_savePaymentButton {
+         width: 139px !important;
+         margin-left: auto !important;
+         margin-right: 5% !important;
+         margin-bottom: 2% !important;
+    }
+</style>
+
+<div id="opc-payment-container">
+    <form action="" id="co-payment-form">
+        <?php echo $this->getBlockHtml('formkey'); ?>
+        <fieldset>
+            <?php echo $this->getChildHtml('methods') ?>
+        </fieldset>
+        <div style="max-width: 94%; margin-bottom: 10px; margin-left: 4%;">
+            <div>
+                <span style="font-weight: bold;
+                             float: left;
+                             max-width: 332px;"><?php echo $this->__('Purchase Order Number'); ?>:</span>
+                <span style="float: right;
+                      max-width: 350px;
+                      color: #005B9F;"><?php echo $this->__('Max Characters'); ?>: 20</span>
+                <div style="clear: both;"></div>
+            </div>
+            <?php
+                $readonly = '';
+                $externalOrderNumber = '';
+                if (Mage::helper('ids')->isIdsSession() && Mage::helper('ids')->getExternalOrderNumber()) {
+                    $externalOrderNumber = Mage::helper('ids')->getExternalOrderNumber();
+                    $readonly = 'readonly="readonly"';
+                }
+            ?>
+            <div>
+                <input type="text"
+                       style="width: 100%"
+                       id="payment-schrack-custom-order-number"
+                       name="payment[schrack_custom_order_number]"
+                       maxlength="20"
+                       <?php echo $readonly; ?>
+                       value="<?php echo $externalOrderNumber; ?>" />
+            </div>
+        </div>
+
+        <?php if ( intval(Mage::getStoreConfigFlag('schrack/shop/enable_custom_project_info_in_checkout')) == 1 ) : ?>
+            <div style="max-width: 94%; margin-bottom: 10px; margin-left: 4%;">
+                <div>
+                    <span style="font-weight: bold; float: left;max-width: 332px;"><?php echo $this->__('Project order info'); ?>:</span>
+                    <span style="float: right; max-width: 350px; color: #005B9F;"><?php echo $this->__('Max Characters'); ?>: 50</span>
+                    <div style="clear: both;"></div>
+                </div>
+                <div>
+                    <input type="text" style="width: 100%" id="payment-schrack-custom-project-info" name="payment[schrack_custom_project_info]" maxlength="50" />
+                </div>
+            </div>
+        <?php endif; ?>
+
+    </form>
+    <div class="tool-tip" id="payment-tool-tip" style="display:none;">
+        <div class="btn-close"><a href="#" id="payment-tool-tip-close" title="<?php echo $this->__('Close') ?>"><?php echo $this->__('Close') ?></a></div>
+        <div class="tool-tip-content"><img src="<?php echo $this->getSkinUrl('images/cvv.gif') ?>" alt="<?php echo $this->__('Card Verification Number Visual Reference') ?>" title="<?php echo $this->__('Card Verification Number Visual Reference') ?>" /></div>
+    </div>
+    </div>
+    <div class="buttons-set" id="payment-buttons-container" style="width: 95.5%;">
+        <button type="button" class="bttn-lg checkout_savePaymentButton">
+            <span id="payment-please-wait" class="please-wait" style="display:none;float:left;padding-left:20px;text-align:left;background:url('<?php echo $this->getSkinUrl('images/opc-ajax-loader.gif') ?>') left center no-repeat;">&nbsp;</span>
+            <span id="checkout_savePaymentMethodButtonContinue"><?php echo $this->__('Continue') ?></span>
+        </button>
+    </div>
+</div>
+
+
+<script type="text/javascript">
+//<![CDATA[
+
+    jQuery(document).ready(function() {
+        // Prevent enter illegal character(s) by CHANGE or PASTE :
+        jQuery('#payment-schrack-custom-order-number').bind('keydown change paste',function(e) {
+            setTimeout(function(){
+                    jQuery('#payment-schrack-custom-order-number').val(jQuery('#payment-schrack-custom-order-number').val().replace(/["';\[\]<>\x00-\x09\x0B\x0C\x0E-\x1F\xE2\x7F\n\r]/g, ""));
+                }, 50
+            );
+        });
+
+        jQuery('#payment-schrack-custom-project-info').bind('keydown change paste',function(e) {
+            setTimeout(function(){
+                    jQuery('#payment-schrack-custom-project-info').val(jQuery('#payment-schrack-custom-project-info').val().replace(/["';\[\]<>\x00-\x09\x0B\x0C\x0E-\x1F\xE2\x7F\n\r]/g, ""));
+                }, 50
+            );
+        });
+        jQuery('#payment-schrack-custom-project-info').removeAttr('disabled');
+
+    });
+
+    function toggleToolTip(event){
+        if($('payment-tool-tip')){
+            $('payment-tool-tip').setStyle({
+                top: (Event.pointerY(event)-560)+'px'//,
+                //left: (Event.pointerX(event)+100)+'px'
+            })
+            $('payment-tool-tip').toggle();
+        }
+        Event.stop(event);
+    }
+
+    if($('payment-tool-tip-close')){
+        Event.observe($('payment-tool-tip-close'), 'click', toggleToolTip);
+    }
+    payment.currentMethod = "<?php echo $this->getChild('methods')->getSelectedMethodCode() ?>";
+
+
+    jQuery('.checkout_savePaymentButton').on('click', function() {
+
+        console.log('checkout_savePaymentButton Clicked');
+        console.log('Shipping Method Type = ' + localStorage.newCheckoutShippingMethod + ' -> ' + localStorage.newCheckoutPickupLocation + localStorage.newCheckoutDeliveryLocation);
+        jQuery('#checkout_savePaymentMethodButtonContinue').hide();
+        localStorage.newCheckoutProcessLastUpdateTime = Math.floor(Date.now() / 1000);
+        var shipping_method_type = '';
+        if (localStorage.newCheckoutShippingMethod == 'pickup') {
+            shipping_method_type = localStorage.newCheckoutPickupLocation;
+        } else if (localStorage.newCheckoutShippingMethod == 'delivery') {
+            shipping_method_type = localStorage.newCheckoutDeliveryLocation;
+        }
+
+
+        jQuery.ajax("<?php echo $this->getUrl('checkout/onepage/saveShippingMethod'); ?>", {
+            'type': 'POST',
+            'data': {
+                'saveShippingMethodByDirectAjax': true,
+                'shipping_method_customer_type': 'newProspect',
+                'shipping_method_type': shipping_method_type
+            },
+            'complete': function (data) {
+                var parsedData = data;
+                if (parsedData.error != -1) {
+                    payment.save();
+                } else {
+                    console.log(parsedData.message);
+                }
+
+            }
+        });
+
+        localStorage.newCheckoutMagicFlag2 = 1;
+    });
+
+//]]>
+</script>
+
+<!-- app/design/frontend/schrack/schrackresponsive/template/checkout/onepage/payment.phtml (end) -->

@@ -1,0 +1,25 @@
+<!-- app/design/frontend/schrack/schrackresponsive/template/mocalc/step04.phtml (end) -->
+<?php
+    $data = $this->getMoData();
+    $step = Mage::registry(Schracklive_MoCalc_Helper_Data::REGISTRY_STEP_KEY);
+
+    $props = $this->getPossibleProperties('pole_count');
+    $pl1 = count($props) == 1;
+    $current = isset($data['properties']['pole_count']['sel_value']) ? $data['properties']['pole_count']['sel_value'] : -1;
+?>
+
+    <?php foreach ( $props as $prop ) : ?>
+        <input type="radio" id="<?php echo $prop['sel_value'] ?>" name="input" value="<?php echo $prop['sel_value'] ?>" <?php echo $pl1 || $current == $prop['sel_value'] ? 'checked' : '' ?>/>
+        <label for="<?php echo $prop['sel_value'] ?>"><?php echo $prop['caption'] ?></label>
+        <br>
+    <?php endforeach; ?>
+
+<script type="text/javascript">
+    //<![CDATA[
+    jQuery(document).ready(function() {
+        jQuery('#step-header-chapter').text("<?php echo $this->__('Base unit') ?>: ");
+        jQuery('#step-header-page').text("<?php echo $this->__('Number of poles') ?>");
+    });
+    //]]>
+</script>
+<!-- app/design/frontend/schrack/schrackresponsive/template/mocalc/step04.phtml (end) -->

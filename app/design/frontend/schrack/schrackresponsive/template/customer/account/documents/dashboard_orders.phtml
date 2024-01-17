@@ -1,0 +1,172 @@
+<!-- app/design/frontend/schrack/schrackresponsive/template/customer/account/documents/dashboard_orders.phtml (start) -->
+<?php
+$_partslistHelper = Mage::helper('schrackwishlist/partslist');  // Get partlist object
+$_customer = $this->getCurrentCustomer();   // Get customer objects
+$_useMDoc = Mage::getStoreConfig('schrack/mdoc/use_mdoc');
+$sessionCustomerId = Mage::getSingleton('customer/session')->getCustomer()->getId();
+$aclRoleId = Mage::getModel('customer/customer')->load($sessionCustomerId)->getSchrackAclRoleId();
+$isProjectant = Mage::helper('schrack/acl')->isProjectantRoleId($aclRoleId);
+// Compose patlist li to avoid iteration of partlist compostion in each row
+$partListLiHtml = "";
+$partListLiHtml .= '<li onclick="checkLsChkBx(this);partslistFE.addCheckedItemsToNewList(\'' . $this->__("New Partlist") . '\', \'rowId' . $this->getClassId() . '\', \'documentId\', \'type\', \'' . Mage::getSingleton('core/session')->getFormKey() . '\', true, \'overview\');"><span class="glyphicon glyphicon-plus-sign plusIcon"></span>&nbsp;' . $this->__("Add to new partslist") . '</li>';
+if ($_partslistHelper->getPartslistCount() > 0):
+    $activePl = $_partslistHelper->getActiveOrFirstPartslist();
+    $partListLiHtml .= '<li onclick="dashAddToPartlistAjaxCall(' . $activePl->getId() . ', \'order\', this, \'' . Mage::getSingleton('core/session')->getFormKey() . '\', \'overview\');" title="' . $activePl->getDescription() . '">' . $this->__("Add to %s", $activePl->getDescription()) . '</li>';
+else:
+    $activePl = null;
+endif;
+foreach ($_partslistHelper->getPartslists() as $pl):
+    if ($activePl === null || $pl->getId() != $activePl->getId()):
+        $partListLiHtml .= '<li onclick="dashAddToPartlistAjaxCall(' . $pl->getId() . ', \'order\', this, \'' . Mage::getSingleton('core/session')->getFormKey() . '\', \'overview\');" title="' . $pl->getDescription() . '">' . $this->__("Add to %s", $pl->getDescription()) . '</li>';
+    endif;
+endforeach;
+$showOrderInfo = intval(Mage::getStoreConfigFlag('schrack/shop/enable_custom_project_info_in_checkout')) == 1;
+$_mayCheckout = Mage::helper('geoip')->mayPerformCheckout();
+?>
+
+<style>
+    .dataTables_filter{
+        display: none;
+    }
+</style>
+
+<div class="tableCont hidden-xs hidden-sm">
+    <table id="orders-datatable" class="table table-bordered" cellspacing="0" width="100%">
+        <thead>
+            <tr>
+                <?php if ( $showOrderInfo ) : ?>
+                    <th><?php echo $this->__('Order-/Project Reference'); ?></th>
+                <?php else : ?>
+                    <th><?php echo $this->__('Meine Bestellangabe'); ?></th>
+                <?php endif; ?>
+                <th><?php echo $this->__('Order #'); ?></th>
+                <th><?php echo $this->__('Date'); ?></th>
+                <th><?php echo $this->__('Status'); ?></th>
+                <th class="dashOrdActId">&nbsp;</th>                
+            </tr>
+        </thead>
+        <tbody>
+            <?php if (count($this->getDocuments()) == 0): ?>
+            <td colspan="5""><?php echo $this->__('There are no documents to display.') ?></td>
+        <?php else: ?>
+            <?php
+            $i = 0;
+            $j = 0;
+            $finalDocuments = array();
+            foreach ($this->getFinalDocuments() as $_document) {
+                $finalDocuments['number' . $j]['documentId']             = $this->getDocumentId($_document);
+                $finalDocuments['number' . $j]['docTypeShortName']       = $this->getDocTypeShortName($_document);
+                $finalDocuments['number' . $j]['orderEntityId']          = $_document->getData('OrderNumber');
+                $finalDocuments['number' . $j]['documentNumber']         = $this->getDocumentNumber($_document, 'offer');
+                $finalDocuments['number' . $j]['documentCustomerNumber'] = $this->getDocumentCustomerNumber($_document, 'order');
+                $finalDocuments['number' . $j]['documentDateTimeStamp']  = strtotime($_document->getDocumentDateTime());
+                $finalDocuments['number' . $j]['schrackWwsOrderNumber']  = $_document->getSchrackWwsOrderNumber();
+                $finalDocuments['number' . $j]['docTypeShortName']       = $this->getDocTypeShortName($_document);
+                $finalDocuments['number' . $j]['documentStatus']         = $this->getDocumentStatus($_document);
+                $sortColumn['number' . $j]                               = strtotime($_document->getDocumentDateTime());
+                $j++;
+            }
+
+            //arsort($sortColumn);
+            //var_dump($sortColumn);die();
+
+            foreach ($finalDocuments as $finalDocument):
+				if($i == 10) break;
+                ?>
+                <tr>
+                    <td>
+                        <input type="checkbox" class="rowId<?php echo $this->getClassId() ?>" id="rowId-<?php echo $this->getClassId() ?><?php echo $i ?>" style="display:none;" />
+                        <input type="hidden" id="documentId-<?php echo $this->getClassId() ?><?php echo $i ?>" value="<?php echo $finalDocument['documentId']; ?>" />
+                        <input type="hidden" id="type-<?php echo $this->getClassId() ?><?php echo $i ?>" value="<?php echo $finalDocument['docTypeShortName']; ?>" />
+                        <input type="hidden" id="orderId-<?php echo $this->getClassId() ?><?php echo $i ?>" value="<?php echo $finalDocument['orderEntityId']; ?>" />
+                        <input type="hidden" id="itemId-<?php echo $this->getClassId() ?><?php echo $i ?>" value="<?php echo $finalDocument['documentNumber']; ?>" />
+                        <?php echo $finalDocument['documentCustomerNumber']; ?></td>
+                    <td><a href="<?php echo Mage::getUrl('customer/account/documentsDetailView/id/' . $finalDocument['orderEntityId'] . '/type/' . $finalDocument['docTypeShortName'] . '/documentId/' . $finalDocument['documentId']); ?>"><?php echo $finalDocument['schrackWwsOrderNumber']; ?></a></td>
+                    <td data-order="<?php echo $finalDocument['documentDateTimeStamp']; ?>"><?php echo $this->getFormattedDate($finalDocument['documentDateTimeStamp']); ?></td>
+                    <td><?php echo $finalDocument['documentStatus']; ?></td>
+                    <td class="actionSec" style="width:28%">
+                        <div class="product-name posRel">
+                            <?php if (Mage::getSingleton('customer/session')->isLoggedIn()) : ?>
+                                <input type="hidden" id="documentId-<?php echo $finalDocument['documentId']; ?>" value="<?php echo $finalDocument['documentId']; ?>" />
+                                <input type="hidden" id="realtype-<?php echo $finalDocument['documentId']; ?>" value="order" />
+                                <span class="pin-icon partlistBlueIcon marginT5" id="parlistdropdownbtn-rowId<?php echo $finalDocument['schrackWwsOrderNumber']; ?>-<?php echo $i ?>" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></span>
+                                <ul class="dropdown-list dropdown-menu src_dashboard_orders" aria-labelledby="parlistdropdownbtn-rowId<?php echo $finalDocument['schrackWwsOrderNumber']; ?>-<?php echo $i ?>" doc-id="<?php echo $finalDocument['documentId']; ?>">
+                                    <?php echo $partListLiHtml; ?>
+                                </ul>
+                            <?php endif; ?>
+                            <?php if ($_useMDoc && !$isProjectant) : ?>
+                                <?php
+                                $orderDocDownloadAjaxUrl = Mage::getUrl('customer/account/documentsDownload/documentId/' . $finalDocument['documentId'] . '/type/order/id/' . $finalDocument['orderEntityId']);
+                                ?>
+                                <a href="javascript:void(0)" class="pdfIcon selection-print-button" onclick="documentDownloadAjaxCall('<?php echo $orderDocDownloadAjaxUrl; ?>', 'order')"></a>
+                            <?php endif; ?>
+                            <?php if ($_mayCheckout && $_customer->isAllowed('customerOrder', 'order') && !$this->isOfferList() && !$isProjectant): ?>
+                                <?php
+                                    $documentId = $finalDocument['documentId'];
+                                    $orderAddtoCartAjaxUrlBase = 'customer/account/batchAddDocumentsToCart/documents/';
+                                    $orderAddtoCartAjaxUrl = Mage::getUrl($orderAddtoCartAjaxUrlBase . $documentId . ':order');
+                                ?>
+                                <a data-addtocartajaxurl="<?php echo $orderAddtoCartAjaxUrl; ?>"
+                                   data-documentid="<?php echo $documentId; ?>"
+                                   data-type="order"
+                                   class="bttn-sm add_documents_to_cart_from_dashboard_orders">
+                                    <span class="addToCartWhite"></span>
+                                    <?php echo $this->__('Add to Cart') ?>
+                                </a>
+                            <?php endif; ?>
+                        </div>
+                    </td>
+                </tr>
+                <?php
+                ++$i;
+            endforeach;
+            ?>
+        <?php endif; ?>
+        </tbody>
+    </table>
+</div>
+
+<script type="text/javascript">//<![CDATA[
+    // Draw datatable and configure diffrent parameters
+    jQuery(document).ready(function () {
+<?php if (count($this->getDocuments()) > 0) : ?>
+        jQuery('#orders-datatable').DataTable({
+            lengthChange: false,
+            ordering: true,
+            paging: false,
+            info: false,
+			aoColumnDefs: [{
+				'bSortable': false,
+				'aTargets': ['dashOrdActId']
+			}]
+        });
+		// Sort array by lastest record date wise
+		jQuery('#orders-datatable').DataTable().column(2).order('desc').draw();
+<?php endif; ?>
+
+        function addToCartGTMEvent (orderId) {
+            var form_key = '<?php echo Mage::getSingleton('core/session')->getFormKey(); ?>';
+            dashGetProductslistAsSkulistByDocumentAjaxCall('order', orderId, form_key, 'cart');
+            return false;
+        }
+
+        jQuery('.add_documents_to_cart_from_dashboard_orders').on('click', function(){
+            var ajaxUrlAddToCart = jQuery(this).attr('data-addtocartajaxurl');
+            var documentId = jQuery(this).attr('data-documentid');
+<?php if (Mage::getStoreConfig('ec/config/active')) : ?>
+            addToCartGTMEvent(documentId);
+<?php endif; ?>
+            documentAddtoCartAjaxCall(ajaxUrlAddToCart);
+        });
+    });
+
+    // Check hidden checkboxes on partlist click
+    function checkLsChkBx(liItem)
+    {
+        jQuery('input:checkbox').attr('checked', false);
+        jQuery(liItem).closest('tr').find('input[type=checkbox]').prop('checked', true);
+    }
+
+    //]]>
+</script>
+<!-- app/design/frontend/schrack/schrackresponsive/template/customer/account/documents/dashboard_orders.phtml (end) -->

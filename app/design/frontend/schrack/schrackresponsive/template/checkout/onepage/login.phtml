@@ -1,0 +1,556 @@
+<!-- app/design/frontend/schrack/schrackresponsive/template/checkout/onepage/login.phtml (start) -->
+<?php
+    $customer = $this->getCustomer();
+    if ($customer) {
+        $customerType = $customer->getSchrackCustomerType(); // ProspectTypes: 'light-prospect' / 'full-prospect'
+    }
+
+    $prospectFull  = false;
+    $prospectLight = false;
+
+    if ($customerType == 'light-prospect') {
+        $prospectLight = true;
+    }
+
+    if ($customerType == 'full-prospect') {
+        $prospectFull = true;
+    }
+
+    $customerIsLoggedIn = $this->helper('customer')->isLoggedIn();
+
+    $quote = Mage::getSingleton('checkout/session')->getQuote();
+    $quoteItems = $quote->getItemsCollection();
+?>
+
+<style>
+    #advice-required-entry-login-email, #advice-required-entry-login-password {
+        float: left !important;
+        margin-left: -252px !important;
+        margin-top: 5px !important;
+    }
+
+    #advice-validate-email-login-email {
+        float: left !important;
+        margin-left: -252px !important;
+        margin-top: 28px !important;
+        width: 244px !important;
+    }
+</style>
+
+<div class="box-content">
+	<div id="alreadyRegisteredBlock">
+        <?php echo $this->getChildHtml('login_before') ?>
+        <input type="checkbox" id="loginAsExistingCustomer" style="float: left; margin-top: 13px; margin-left: 2px; margin-right: 5px" checked="checked">
+        <input type="hidden" name="loginAsExistingCustomerStatus" id="loginAsExistingCustomerStatus" value="1">
+        <div id="clickableHeaderExistingCustomerLogin" style="cursor: pointer; font-weight: bold;"><?php echo $this->__('Registered Customers') ?></div>
+        <form id="login-form-internal" action="<?php echo $this->getPostAction() ?>" method="post">
+            <?php /*Nagarro : Added form key */ ?>
+            <?php echo $this->getBlockHtml('formkey') ?>
+            <input type="hidden" name="stay" value="1"/>
+            <fieldset id="loginDataFieldset">
+                <p><?php echo $this->__('If you have an account with us, please log in.') ?></p>
+                <ul class="form-list" style="z-index: 1;">
+                    <li>
+                        <label for="login-email" style="color: #000; font-weight: bold;" class="required"><em>*</em> <?php echo $this->__('Email Address') ?></label>
+                        <div class="input-box" style="margin-top: 2px;">
+                            <input type="text" style="float: left; padding-left: 2px; width: 260px;" class="input-text required-entry validate-email" id="login-email" name="login[username]" value="<?php echo $this->htmlEscape($this->getUsername()) ?>" />
+                            <div style="float: left; width: 200px; margin-left: 20px; margin-top: 9px;">
+                                <input type="checkbox" name="rememberme" style="margin-top: 4px;" class="checkbox left" id="rememberme" title="<?php echo $this->__('Keep Me Logged In') ?>" <?php if (Mage::getStoreConfigFlag('customer/rememberme/checked')) echo 'checked="checked"'; ?>/>&nbsp;<?php echo $this->__('Keep Me Logged In') ?>
+                                <input type="hidden" name="remembermeStatus" id="remembermeStatus" value="<?php if (Mage::getStoreConfigFlag('customer/rememberme/checked')) echo '1'; ?>" />
+                            </div>
+                            <div style="clear: both;"></div>
+                        </div>
+                    </li>
+                    <li style="margin-top: 5px;">
+                        <label for="login-password" style="color: #000; font-weight: bold;" class="required"><em>*</em> <?php echo $this->__('Password') ?></label>
+                        <div class="input-box">
+                            <input type="password" style="float: left; width: 260px;" class="input-text required-entry" id="login-password" name="login[password]" />
+                            <div style="float: left; margin-left: 22px; margin-top: 8px;">
+                                <a href="<?php echo $this->getUrl('customer/account/forgotpassword') ?>"><?php echo $this->__('Forgot your password?') ?></a>
+                            </div>
+                            <button style="margin-left: 38.5%; margin-top: 6px;" id="logmein" type="submit" class="button-arrow small"><span><span><?php echo $this->__('Login') ?></span></span></button>
+                            <div style="clear: both;"></div>
+                        </div>
+                    </li>
+                </ul>
+                <p class="required" style="color: #000; margin-top: 6px;"><br><?php echo $this->__('* Required Fields') ?></p>
+            </fieldset>
+        </form>
+    </div>
+
+  <?php
+    $newSelfRegistrationOption = Mage::getStoreConfig('schrack/new_self_registration/new_self_registration_checkout_options');
+    if ($newSelfRegistrationOption === 'new_self_registration_checkout' || $newSelfRegistrationOption === 'self_registration_checkout_with_typo') :
+  ?>
+    <div id="newRegisterBlock">
+        <div>
+            <input type="checkbox" id="registerForNewCustomer" style="float: left; margin-top: 13px; margin-left: 2px; margin-right: 5px">
+            <input type="hidden" name="registerForNewCustomerStatus" id="registerForNewCustomerStatus" value="">
+            <div id="clickableHeaderNewCustomerRegistration" style="float: left; cursor: pointer; font-weight: bold;"><?php echo $this->__('New Customers') ?></div>
+            <div style="clear: both;"></div>
+        </div>
+
+        <?php if (Mage::getStoreConfig('schrack/new_self_registration/registerInTypo') === '1'):?>
+        <fieldset id="newCustomerInfoFieldset">
+            <p class="InfoTextnewCustomerInfoFieldset" style="z-index: 1;"><?php echo preg_replace('/%{(.*)}/', '<a href="'.Mage::getStoreConfig('schrack/typo3/typo3url').Mage::getStoreConfig('schrack/typo3/registerurl').'" >$1</a>', $this->__('If it\'s your first time at Schrack please %{register here}.')); ?></p>
+            <input type="hidden" id="registrationType" value="old_registration">
+        </fieldset>
+        <?php endif; ?>
+
+        <?php if (Mage::getStoreConfig('schrack/new_self_registration/registerInTypo') === '0' && Mage::getStoreConfig('schrack/new_self_registration/new_self_registration_checkout_options') == 'self_registration_checkout_with_typo') : ?>
+        <fieldset id="newCustomerInfoFieldset">
+            <p><?php echo preg_replace('/%{(.*)}/', '<a href="'.Mage::getUrl('customer/account/create').'" >$1</a>', $this->__('If it\'s your first time at Schrack please %{register here}.')); ?></p>
+            <p class="InfoTextnewCustomerInfoFieldset" style="z-index: 1;"><?php echo preg_replace('/%{(.*)}/', '<a href="'.Mage::getStoreConfig('schrack/typo3/typo3url') . Mage::getStoreConfig('schrack/typo3/registerurl').'" >$1</a>', $this->__('If you already bought at Schrack Technik, please %{request your shop login}.')); ?></p>                </form>
+            <input type="hidden" id="registrationType" value="old_registration">
+        </fieldset>
+        <?php endif; ?>
+
+        <?php if (Mage::getStoreConfig('schrack/new_self_registration/new_self_registration_checkout_options') === 'new_self_registration_checkout') : ?>
+            <fieldset id="newCustomerInfoFieldset">
+                <p class="InfoTextnewCustomerInfoFieldset" style="z-index: 1;">
+                    <?php echo $this->__('login.popup.registration-hint-only'); ?><br><br>
+                    <?php echo $this->__('If you already bought at Schrack Technik, please %{request your shop login}.'); ?>
+                </p>
+            </fieldset>
+            <button style="margin-left: 86.5%; margin-top: 10px; display: none;" id="nextRegisterForNewCustomer" type="submit" class="button-arrow small"><span><span><?php echo $this->__('Continue') ?></span></span></button>
+        <?php endif; ?>
+    </div>
+
+    <?php if (Mage::getStoreConfig('schrack/new_self_registration/triggerGuestOrderAvailable')) : ?>
+        <div id="buyNonRegisteredBlock">
+            <div>
+                <input type="checkbox" id="buyWithoutRegistration" style="float: left; margin-top: 13px; margin-left: 2px; margin-right: 5px">
+                <input type="hidden" name="buyWithoutRegistrationStatus" id="buyWithoutRegistrationStatus" value="">
+                <div id="clickableHeaderNonRegisteredCustomer" style="float: left; font-weight: bold; cursor: pointer; z-index: 3;"><?php echo $this->__('Buy As A Guest (Without Registration)') ?></div>
+                <div style="clear: both;"></div>
+            </div>
+            <fieldset id="guestCustomerInfoFieldset">
+                <p><?php echo $this->__('Information-Text for Non-Registered Customers'); ?></p>
+            </fieldset>
+            <button style="margin-left: 86.5%; margin-top: 10px; margin-bottom: 10px; display: none;" id="nextBuyWithoutRegistration" type="submit" class="button-arrow small"><span><span><?php echo $this->__('Continue') ?></span></span></button>
+        </div>
+    <?php endif; ?>
+  <?php endif; ?>
+
+</div>
+<input id="progressBlocker" type="hidden" value="2" />
+
+<script type="text/javascript">
+	//<![CDATA[
+    jQuery(document).ready(function() {
+
+        // Checking customer login status:
+        localStorage.customerNotLoggedIn = "0";
+        <?php
+            if (!$customerIsLoggedIn) {
+                echo '        localStorage.customerNotLoggedIn = "1";' . PHP_EOL;
+            } else {
+                echo 'localStorage.newCheckoutProcessCurrentRole = "login-user";';
+            }
+        ?>
+
+        localStorage.newCheckoutProcessCurrentStep = "opc-login";
+
+        // First load (entry point of checkout initialization):
+        if (!localStorage.newCheckoutProcessInitialTime) {
+            localStorage.newCheckoutProcessInitialTime = Math.floor(Date.now() / 1000);
+            localStorage.newCheckoutProcessInitialHumanReadableTime = formatTimestampIntoHumanReadableTime(localStorage.newCheckoutProcessInitialTime);
+            localStorage.newCheckoutProcessLastUpdateTime = Math.floor(Date.now() / 1000);
+            localStorage.newCheckoutProcessHumanReadableLastUpdateTime = formatTimestampIntoHumanReadableTime(localStorage.newCheckoutProcessLastUpdateTime);
+        }
+
+        // Remove expired local storage data:
+        if (localStorage.newCheckoutProcessCurrentRole) {
+            var minutesTimeout = 20;
+            var expiryTime = minutesTimeout * 60;
+            var nowTime = Math.floor(Date.now() / 1000);
+
+            if ((nowTime - localStorage.newCheckoutProcessLastUpdateTime) > expiryTime) {
+                // Delete old (expired) process:
+                localStorage.removeItem('newCheckoutProcessCurrentRole');
+                localStorage.newCheckoutProcessInitialTime = Math.floor(Date.now() / 1000);
+                localStorage.newCheckoutProcessInitialHumanReadableTime = formatTimestampIntoHumanReadableTime(localStorage.newCheckoutProcessInitialTime);
+                localStorage.newCheckoutProcessLastUpdateTime = Math.floor(Date.now() / 1000);
+                localStorage.newCheckoutProcessHumanReadableLastUpdateTime = formatTimestampIntoHumanReadableTime(localStorage.newCheckoutProcessLastUpdateTime);
+                // TODO Delete also further data, if stored for several features!
+            } else {
+                // Refresh running time:
+                localStorage.newCheckoutProcessLastUpdateTime = Math.floor(Date.now() / 1000);
+                localStorage.newCheckoutProcessHumanReadableLastUpdateTime = formatTimestampIntoHumanReadableTime(localStorage.newCheckoutProcessLastUpdateTime);
+            }
+        } else {
+            // Refresh running time:
+            //console.log('refresh last update time no. 2');
+            localStorage.newCheckoutProcessLastUpdateTime = Math.floor(Date.now() / 1000);
+            localStorage.newCheckoutProcessHumanReadableLastUpdateTime = formatTimestampIntoHumanReadableTime(localStorage.newCheckoutProcessLastUpdateTime);
+        }
+
+
+        jQuery(window).keydown(function(event){
+            if(event.keyCode == 13 && jQuery('#loginAsExistingCustomerStatus').val() != 1) {
+                event.preventDefault();
+                return false;
+            }
+        });
+
+        function bindLoginPost(e){
+            var loginForm = new VarienForm('login-form-internal');
+            var evt = e || window.event;
+            var keyID = (evt.charCode) ? evt.charCode : ((evt.which) ? evt.which : evt.keyCode);
+
+            // If sent "enter" key:
+            if (keyID == 13) {
+                loginForm.submit();
+                return false;
+            }
+        }
+
+        function onepageLogin(button) {
+            var loginForm = new VarienForm('login-form-internal');
+            if(loginForm.validator && loginForm.validator.validate()){
+                button.disabled = true;
+                if (jQuery('#loginAsExistingCustomerStatus').val() == 1) {
+                    loginForm.submit();
+                }
+                return false;
+            }
+        }
+
+        function removeInvalidFieldWarnings() {
+            jQuery('.validation-advice').remove();
+        }
+
+        function formatTimestampIntoHumanReadableTime (unix_timestamp) {
+            var date = new Date(unix_timestamp * 1000);
+            var hours = date.getHours();
+            var minutes = "0" + date.getMinutes();
+            var seconds = "0" + date.getSeconds();
+            var formattedTime = hours + ':' + minutes.substr(-2) + ':' + seconds.substr(-2);
+            return formattedTime;
+        }
+
+        // Simulate click event on checkbox:
+        jQuery('#clickableHeaderExistingCustomerLogin').on('click', function(e) {
+            jQuery('#loginAsExistingCustomer').trigger('click');
+        });
+        // Simulate click event on checkbox:
+        jQuery('#clickableHeaderNewCustomerRegistration').on('click', function(e) {
+            jQuery('#registerForNewCustomer').trigger('click');
+        });
+        // Simulate click event on checkbox:
+        jQuery('#clickableHeaderNonRegisteredCustomer').on('click', function(e) {
+            jQuery('#buyWithoutRegistration').trigger('click');
+        });
+
+        jQuery('#logmein').on('click', function() {
+            onepageLogin(jQuery(this));
+        });
+
+        jQuery('#login-email').on('keypress click', function(e) {
+            removeInvalidFieldWarnings();
+            bindLoginPost(e);
+        });
+
+        jQuery('#login-password').on('keypress click', function(e) {
+            removeInvalidFieldWarnings();
+            bindLoginPost(e);
+        });
+
+        jQuery('#rememberme').on('click', function() {
+            if ( jQuery('#rememberme').prop('checked')) {
+                jQuery('#remembermeStatus').val(1);
+            } else  {
+                jQuery('#remembermeStatus').val(0);
+            }
+        });
+
+        // Simply log in as existing customer:
+        jQuery('#loginAsExistingCustomer').on('click', function() {
+            localStorage.newCheckoutProcessCurrentRole = "login-user";
+            if (jQuery('#loginAsExistingCustomer').prop('checked')) {
+                // Set status:
+                jQuery('#loginAsExistingCustomerStatus').val(1);
+
+                // React on other element status:
+                jQuery('#registerForNewCustomerStatus').val(0);
+                jQuery('#registerForNewCustomer').prop('checked', false);
+                jQuery('#buyWithoutRegistrationStatus').val(0);
+                jQuery('#buyWithoutRegistration').prop('checked', false);
+
+                // Set styles:
+                jQuery('#logmein').show();
+                jQuery('#loginDataFieldset').animate({height: "100%"}, 300);
+                jQuery('#loginDataFieldset').animate({opacity: "1"});
+                jQuery('#newCustomerInfoFieldset').animate({opacity: "0"}, 200);
+                jQuery('#newCustomerInfoFieldset').animate({height: "0px"}, 300);
+                jQuery('#guestCustomerInfoFieldset').animate({opacity: "0"}, 200);
+                jQuery('#guestCustomerInfoFieldset').animate({height: "0px"}, 300);
+                jQuery('#nextRegisterForNewCustomer').show();
+                jQuery('#nextBuyWithoutRegistration').hide();
+                jQuery('#nextRegisterForNewCustomer').hide();
+                jQuery('#newRegisterBlock').css('opacity', '0.3');
+                jQuery('#alreadyRegisteredBlock').css('opacity', '1');
+                jQuery('#buyNonRegisteredBlock').css('opacity', '0.3');
+                jQuery('.form-list').show();
+                jQuery('#loginDataFieldset').show();
+            } else  {
+                // Set status:
+                jQuery('#loginAsExistingCustomerStatus').val(0);
+
+                // Set styles:
+                jQuery('#logmein').hide();
+                jQuery('#loginDataFieldset').animate({opacity: "0"}, 200);
+                jQuery('#loginDataFieldset').animate({height: "0px"}, 300);
+                jQuery('#loginDataFieldset').css('opacity', '0');
+                jQuery('#newRegisterBlock').css('opacity', '1');
+                jQuery('#alreadyRegisteredBlock').css('opacity', '1');
+                jQuery('#buyNonRegisteredBlock').css('opacity', '1');
+                jQuery('.form-list').hide();
+                jQuery('.InfoTextnewCustomerInfoFieldset').hide();
+                jQuery('#guestCustomerInfoFieldset').hide();
+            }
+        });
+
+        // Register as new customer:
+        jQuery('#registerForNewCustomer').on('click', function() {
+            localStorage.newCheckoutProcessCurrentRole = "prospect-user";
+            if (jQuery('#registerForNewCustomer').prop('checked')) {
+                // Set status:
+                jQuery('#registerForNewCustomerStatus').val(1);
+
+                // React on other element status:
+                jQuery('#loginAsExistingCustomerStatus').val(0);
+                jQuery('#loginAsExistingCustomer').prop('checked', false);
+                jQuery('#buyWithoutRegistrationStatus').val(0);
+                jQuery('#buyWithoutRegistration').prop('checked', false);
+
+                // Set styles:
+                jQuery('#logmein').hide();
+                jQuery('#newCustomerInfoFieldset').animate({height: "100%"}, 300);
+                jQuery('#newCustomerInfoFieldset').animate({opacity: "1"});
+                jQuery('#alreadyRegisteredBlock').css('opacity', '0.3');
+                jQuery('#loginDataFieldset').animate({opacity: "0"}, 200);
+                jQuery('#loginDataFieldset').animate({height: "0px"}, 300);
+                jQuery('#guestCustomerInfoFieldset').animate({opacity: "0"}, 200);
+                jQuery('#guestCustomerInfoFieldset').animate({height: "0px"}, 300);
+                jQuery('#nextRegisterForNewCustomer').show();
+                jQuery('#nextBuyWithoutRegistration').hide();
+                jQuery('#newRegisterBlock').css('opacity', '1');
+                jQuery('#buyNonRegisteredBlock').css('opacity', '0.3');
+                jQuery('.InfoTextnewCustomerInfoFieldset').show();
+
+                if(jQuery('#registrationType') && jQuery('#registrationType').val() == 'old_registration') {
+                    jQuery('#loginDataFieldset').hide();
+                }
+            } else  {
+                // Set status:
+                jQuery('#registerForNewCustomerStatus').val(0);
+
+                // Set styles:
+                jQuery('#newCustomerInfoFieldset').animate({opacity: "0"}, 200);
+                jQuery('#newCustomerInfoFieldset').animate({height: "0px"}, 300);
+                jQuery('#nextRegisterForNewCustomer').hide();
+                jQuery('#alreadyRegisteredBlock').css('opacity', '1');
+                jQuery('#buyNonRegisteredBlock').css('opacity', '1');
+                jQuery('.InfoTextnewCustomerInfoFieldset').hide();
+            }
+        });
+
+        // guest = non-registering-user
+        jQuery('#buyWithoutRegistration').on('click', function() {
+            localStorage.newCheckoutProcessCurrentRole = "guest";
+            if (jQuery('#buyWithoutRegistration').prop('checked')) {
+                // Set status:
+                jQuery('#buyWithoutRegistrationStatus').val(1);
+
+                // React on other element status:
+                jQuery('#loginAsExistingCustomerStatus').val(0);
+                jQuery('#loginAsExistingCustomer').prop('checked', false);
+                jQuery('#registerForNewCustomerStatus').val(0);
+                jQuery('#registerForNewCustomer').prop('checked', false);
+
+                // Set styles:
+                jQuery('#guestCustomerInfoFieldset').animate({height: "100%"}, 300);
+                jQuery('#guestCustomerInfoFieldset').animate({opacity: "1"});
+                jQuery('#logmein').hide();
+                jQuery('#nextBuyWithoutRegistration').show();
+                jQuery('#nextRegisterForNewCustomer').hide();
+                jQuery('#buyNonRegisteredBlock').css('opacity', '1');
+                jQuery('#alreadyRegisteredBlock').css('opacity', '0.3');
+                jQuery('#newCustomerInfoFieldset').animate({opacity: "0"}, 200);
+                jQuery('#newCustomerInfoFieldset').animate({height: "0px"}, 300);
+                jQuery('#loginDataFieldset').animate({opacity: "0"}, 200);
+                jQuery('#loginDataFieldset').animate({height: "0px"}, 300);
+                jQuery('#newRegisterBlock').css('opacity', '0.3');
+                jQuery('.InfoTextnewCustomerInfoFieldset').hide();
+                jQuery('.form-list').hide();
+                jQuery('#guestCustomerInfoFieldset').show();
+            } else  {
+                // Set status:
+                jQuery('#buyWithoutRegistrationStatus').val(0);
+
+                // Set styles:
+                jQuery('#guestCustomerInfoFieldset').animate({opacity: "0"}, 200);
+                jQuery('#guestCustomerInfoFieldset').animate({height: "0px"}, 300);
+                jQuery('#newCustomerInfoFieldset').animate({opacity: "0"}, 200);
+                jQuery('#newCustomerInfoFieldset').animate({height: "0px"}, 300);
+                jQuery('#nextBuyWithoutRegistration').hide();
+                jQuery('#alreadyRegisteredBlock').css('opacity', '1');
+                jQuery('#newRegisterBlock').css('opacity', '1');
+            }
+        });
+
+        // Start process for new customer registration:
+        jQuery('#nextRegisterForNewCustomer').on('click', function() {
+            console.log('login.phtml #1 -> Current Active Step = SHIPPING METHOD');
+
+            // Set classes for login banner () and progress slider:
+            jQuery('#checkout_login_header_tab').hide();
+            jQuery('#checkout_progress_bar_container').removeClass('checkout_hidden_field');
+            jQuery('#checkout_progress_bar_container').show();
+            console.log('Step Zero finished #2 (non-persistent)');
+
+<?php if (Mage::getStoreConfig('ec/config/active')) : ?>
+            if ((!localStorage.checkoutShippingStep || localStorage.checkoutShippingStep == 'one') && localStorage.trackingQuoteItems) {
+                console.log('Checkout Step 1 Tracked #002');
+                trackAnalyticsCheckoutStep('checkoutShipping', 'Shipping Method', 1, 'order_shipping_method', JSON.parse(localStorage.trackingQuoteItems));
+            }
+<?php endif ?>
+
+            console.log('#222222-2');
+            localStorage.checkoutShippingStep = 'one';
+
+            // Change tab styles:
+            jQuery('#checkout_tab_header_shipping_method').removeClass('checkout_step_inactive_tab');
+            jQuery('#checkout_tab_header_shipping_method').addClass('checkout_step_active_tab');
+
+            jQuery('#useBillingAddressForShipping').val('yes');
+            jQuery('.usebilling_address_for_shipping_yes').prop('checked', true);
+            jQuery('#progressBlocker').val(2);
+            counter = setInterval(timer, 1000);
+            jQuery('#opc-login').removeClass('allow');
+            jQuery('#opc-login').removeClass('active');
+            jQuery('#opc-billing').addClass('allow');
+            jQuery('#opc-billing').addClass('active');
+            jQuery('#companyUIDFieldset').removeClass('no-display');
+            jQuery('#companyDataFieldset').show();
+            jQuery('#billing-new-address-form').show();
+            jQuery('.form-list').show();
+            jQuery('#alternate-delivery-address-choser').hide();
+
+            // Save the selected step in local storage:
+            checkout.accordion.openSection('opc-billing');
+            localStorage.newCheckoutProcessLastUpdateTime = Math.floor(Date.now() / 1000);
+            localStorage.newCheckoutProcessHumanReadableLastUpdateTime = formatTimestampIntoHumanReadableTime(localStorage.newCheckoutProcessLastUpdateTime);
+            localStorage.newCheckoutProcessCurrentStep = 'opc-billing';
+            jQuery('.billing-gender').val(1);
+
+<?php if ($prospectFull == false) : ?>
+            localStorage.newCheckoutProcessSpecialAction = 'full-register-prospect-application';
+<?php else : ?>
+            localStorage.newCheckoutProcessSpecialAction = 'already-full-registered-prospect';
+<?php endif; ?>
+            return false;
+        });
+
+        // Start process for customer sale without registration:
+        jQuery('#nextBuyWithoutRegistration').on('click', function() {
+            console.log('login.phtml #2 -> Current Active Step = SHIPPING METHOD');
+
+            // Set classes for login banner () and progress slider:
+            jQuery('#checkout_login_header_tab').hide();
+            jQuery('#checkout_progress_bar_container').removeClass('checkout_hidden_field');
+            jQuery('#checkout_progress_bar_container').show();
+            console.log('Step Zero finished #3 (non-persistent)');
+
+<?php if (Mage::getStoreConfig('ec/config/active')) : ?>
+            if ((!localStorage.checkoutShippingStep || localStorage.checkoutShippingStep == 'one') && localStorage.trackingQuoteItems) {
+                console.log('Checkout Step 1 Tracked #003');
+                trackAnalyticsCheckoutStep('checkoutShipping', 'Shipping Method', 1, 'order_shipping_method', JSON.parse(localStorage.trackingQuoteItems));
+            }
+<?php endif ?>
+
+            console.log('#333333-2');
+            localStorage.checkoutShippingStep = 'one';
+
+            // Login header hide and show progress:
+            jQuery('#checkout_progress_bar_container').removeClass('checkout_hidden_field');
+            jQuery('#checkout_login_header_tab').hide();
+
+            jQuery('#useBillingAddressForShipping').val('yes');
+            jQuery('.usebilling_address_for_shipping_yes').prop('checked', true);
+            jQuery('#opc-login').removeClass('allow');
+            jQuery('#opc-login').removeClass('active');
+            jQuery('#opc-shipping_method').addClass('allow');
+            jQuery('#opc-shipping_method').addClass('active');
+            jQuery('#companyUIDFieldset').removeClass('no-display');
+            jQuery('.billing-companyuid').addClass('required-entry');
+            jQuery('.billing-companyregistrationnumber').addClass('required-entry');
+            jQuery('#companyDataFieldset').show();
+            jQuery('#billing-new-address-form').show();
+            jQuery('.form-list').show();
+            jQuery('#alternate-delivery-address-choser').hide();
+            //jQuery('#country-static-text').text(jQuery('#billing\\:country_id option:selected').text());
+
+            // guest = non-registering-user
+            if (localStorage.newCheckoutProcessCurrentRole == 'guest') {
+                jQuery('#register-customer-password').hide();
+                jQuery('.billing_customer_password').prop('class', 'input-text billing_customer_password');
+                jQuery('.billing_customer_password_confirm').prop('class','input-text billing_customer_password_confirm');
+            }
+
+            // Save the selected step in local storage:
+            checkout.accordion.openSection('opc-shipping_method');
+            localStorage.newCheckoutProcessLastUpdateTime = Math.floor(Date.now() / 1000);
+            localStorage.newCheckoutProcessHumanReadableLastUpdateTime = formatTimestampIntoHumanReadableTime(localStorage.newCheckoutProcessLastUpdateTime);
+            localStorage.newCheckoutProcessCurrentStep = 'opc-billing';
+            jQuery('.billing-gender').val(1);
+
+            if (localStorage.newCheckoutProspectRole == 'prospect-light') {
+                localStorage.newCheckoutProcessSpecialAction = 'full-register-prospect-application';
+            } else {
+                localStorage.newCheckoutProcessSpecialAction = 'none';
+            }
+            return false;
+        });
+
+        localStorage.newCheckoutProspectRole = 'none';
+
+<?php if ($customerIsLoggedIn) : ?>
+    localStorage.newCheckoutProcessCurrentRole = 'login-user';
+    localStorage.newCheckoutRunningProcess     = 'processCheckoutAsLoggedInUser';
+    localStorage.customerNotLoggedIn = "0";
+    <?php if ($prospectLight || $prospectFull) : ?>
+        localStorage.newCheckoutProcessCurrentRole = 'prospect-user';
+    <?php endif; ?>
+    <?php if ($prospectLight) : ?>
+        localStorage.newCheckoutProspectRole = 'prospect-light';
+        jQuery('#opc-billing').removeClass('allow');
+        jQuery('#opc-billing').removeClass('active');
+        jQuery('#new_address_button').click();
+        jQuery('#shipping-address-select').hide();
+        jQuery("#shipping-address-select option[value='']").remove();
+    <?php endif; ?>
+    <?php if ($prospectFull) : ?>
+        localStorage.newCheckoutProspectRole = 'prospect-full';
+        jQuery('#new_address_button').hide();
+        jQuery("#shipping-address-select option[value='']").remove();
+    <?php endif; ?>
+<?php else : ?>
+    localStorage.newCheckoutRunningProcess = 'processCheckoutAsNonLoggedInUser';
+    // guest = non-registering-user
+    //localStorage.newCheckoutProcessCurrentRole = 'guest';
+    localStorage.customerNotLoggedIn = "1";
+<?php endif; ?>
+
+        if (localStorage.newCheckoutProspectRole == 'prospect-light') {
+            localStorage.newCheckoutProcessSpecialAction = 'full-register-prospect-application';
+        } else {
+            if (localStorage.newCheckoutRunningProcess == 'processCheckoutAsNonLoggedInUser') {
+                localStorage.newCheckoutProcessSpecialAction = 'none';
+            }
+        }
+    });
+	//]]>
+</script>
+<!-- app/design/frontend/schrack/schrackresponsive/template/checkout/onepage/login.phtml (end) -->

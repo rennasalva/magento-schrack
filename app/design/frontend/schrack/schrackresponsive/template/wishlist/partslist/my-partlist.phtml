@@ -1,0 +1,109 @@
+<!-- app/design/frontend/schrack/schrackresponsive/template/wishlist/partslist/my-partlist.phtml (start) -->
+
+<style>
+    @media (min-width: 60px) and (max-width: 320px) {
+        .create_new_partslist_button {
+            height: 30px !important;
+            padding-top: 7px !important;
+        }
+    }
+    @media (min-width: 321px) and (max-width: 480px) {
+        .create_new_partslist_button {
+            height: 30px !important;
+            padding-top: 7px !important;
+        }
+    }
+    @media (min-width: 481px) and (max-width: 767px) {
+        .create_new_partslist_button {
+            height: 30px !important;
+            padding-top: 7px !important;
+        }
+    }
+    @media (min-width: 768px) and (max-width: 4000px) {
+        .create_new_partslist_button {
+            font-size: 0.8em !important;
+            padding-top: 2px !important;
+        }
+    }
+</style>
+
+<div class="row hidden-xs">
+    <div class="col-xs-9">
+        <h1>
+            <?php echo $this->
+            __('My Partslist');?>
+        </h1>
+    </div>
+    <div class="col-xs-3">
+        <a class="bttn-md create_new_partslist_button" onclick="createPartslist('<?php echo $this->__('Create partslist')?>', '<?php echo $this->__('Your partslist has been created.')?>');return false;">
+            <?php echo $this->__('Create New')?>
+        </a>
+    </div>
+</div>
+<div class="tableCont hidden-xs">
+    <table cellspacing="0" class="table table-bordered" id="my-partslist" width="100%">
+        <thead>
+            <tr>
+                <th width="60">
+                    <?php echo $this->
+                    __('Date'); ?>
+                </th>
+                <th>
+                    <?php echo $this->
+                    __('Description'); ?>
+                </th>
+                <th>
+                    <?php echo $this->
+                    __('Comment'); ?>
+                </th>
+                <th>
+                    <?php echo $this->
+                    __('Shared with'); ?>
+                </th>
+                <th>
+                    <?php echo $this->
+                    __('Articles'); ?>
+                </th>
+                <th id="partlistActionColumn">
+                    <?php echo $this->
+                    __(''); ?>
+                </th>
+            </tr>
+        </thead>
+		<tr align="center" id="myPartlistLoader">
+			<td colspan="6" align="center">
+				<img src="<?php echo $this->getSkinUrl('schrackdesign/Public/Images/download_ajax_loader.gif'); ?>" style="opacity: 0.4; z-index: 99999;" />
+			</td>
+		</tr>
+    </table>
+</div>
+<div class="hidden-sm hidden-md hidden-lg">
+    <div class="sharedPartListCont my-mobilebox tableCont">
+        <table cellspacing="0" class="table table-bordered mobileview" id="my-partslist-mobile" width="100%">
+            <thead>
+                <tr>
+                    <th class="col-xs-2 text-center">
+                        <a class="bttn-md create_new_partslist_button" onclick="createPartslist('<?php echo $this->__('Create partslist')?>', '<?php echo $this->__('Your partslist has been created.')?>');event.stopPropagation();return false;">
+                            <?php echo $this->__('Create New')?>
+                        </a>
+                    </th>
+                </tr>
+            </thead>
+			<tr align="center" id="myPartlistLoader">
+				<td align="center">
+					<img src="<?php echo $this->getSkinUrl('schrackdesign/Public/Images/download_ajax_loader.gif'); ?>" style="opacity: 0.4; z-index: 99999;" />
+				</td>
+			</tr>
+        </table>
+    </div>
+</div>
+
+
+<script type="text/javascript">
+    //<![CDATA[
+    jQuery(document).ready(function () {
+
+    });
+    //]]>
+</script>
+<!-- app/design/frontend/schrack/schrackresponsive/template/wishlist/partslist/my-partlist.phtml (end) -->

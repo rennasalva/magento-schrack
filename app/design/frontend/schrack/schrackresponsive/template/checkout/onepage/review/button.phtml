@@ -1,0 +1,134 @@
+<!-- app/design/frontend/schrack/schrackresponsive/template/checkout/onepage/review/button.phtml (start) -->
+<?php
+/**
+ * Magento
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Academic Free License (AFL 3.0)
+ * that is bundled with this package in the file LICENSE_AFL.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/afl-3.0.php
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@magentocommerce.com so we can send you a copy immediately.
+ *
+ * DISCLAIMER
+ *
+ * Do not edit or add to this file if you wish to upgrade Magento to newer
+ * versions in the future. If you wish to customize Magento for your
+ * needs please refer to http://www.magentocommerce.com for more information.
+ *
+ * @category    design
+ * @package     base_default
+ * @copyright   Copyright (c) 2010 Magento Inc. (http://www.magentocommerce.com)
+ * @license     http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
+ */
+?>
+<?php
+$_geoipHelper = Mage::helper('geoip');                
+if ($_geoipHelper->mayPerformCheckout()) {
+    $placeOrderText = $this->__('Place Order');
+} else {
+    $placeOrderText = $this->__('Send request');
+}
+?>
+
+<style>
+    .checkout_saveOrderButton {
+
+         width: 355px !important;
+         margin-left: auto !important;
+         margin-right: 5% !important;
+         margin-bottom: 2% !important;
+    }
+
+    #review-buttons-container {
+        width: 100% !important;
+        margin-top: -80px;
+    }
+
+    #review-please-wait {
+        margin-left: 12px;
+        float: left;
+        padding-left: 20px;
+        text-align: left;
+        background: url('<?php echo $this->getSkinUrl('images/opc-ajax-loader.gif') ?>') left center no-repeat;
+    }
+
+    @media (min-width: 1px) and (max-width: 420px) {
+        .checkout_saveOrderButton {
+            width: 90% !important;
+        }
+    }
+</style>
+
+<div class="buttons-set" id="review-buttons-container">
+    <button type="button" class="bttn-lg checkout_saveOrderButton">
+        <span id="review-please-wait" class="please-wait" style="display: none;" alt="<?php echo $placeOrderText ?>" title="<?php echo $placeOrderText ?>">&nbsp;</span><?php echo $placeOrderText ?>
+    </button>
+    <?php if(Mage::helper('ids')->isIdsSession()) : ?>
+        <div style="display: none">
+            <?php echo Mage::helper('ids')->getIdsForm(true); ?>
+        </div>
+        <br>
+        <br>
+        <div>
+            <button style="margin-top: -38px; margin-left: 65%;"
+             id="ids_cart_transfer_checkout"
+             type="button" class="bttn-md"><?php echo $this->__('Export IDS Cart'); ?></button>
+        </div>
+    <?php endif; ?>
+</div>
+
+<script type="text/javascript">
+//<![CDATA[
+
+    jQuery(document).ready(function() {
+
+        jQuery('.checkout_saveOrderButton').on('click', function() {
+            localStorage.newCheckoutProcessLastUpdateTime = Math.floor(Date.now() / 1000);
+            jQuery('#review-please-wait').show();
+            if (localStorage.newCheckoutProcessSpecialAction == 'full-register-prospect-application' &&
+                localStorage.newCheckoutProcessCurrentRole == 'prospect-user' &&
+                localStorage.customerNotLoggedIn == 1) {
+                localStorage.newCheckoutAnalyticsTrackingStatus = 'registerInCheckoutAsNewCustomer';
+            } else {
+                localStorage.newCheckoutAnalyticsTrackingStatus = '';
+            }
+            review.save();
+        });
+
+        jQuery("#IdsForm").on('submit', function(event){
+            localStorage.setItem('IDS_Transfer_Done', 'true');
+            var ajaxUrl = '<?php echo Mage::helper('schrackcore/url')->getUrlWithCurrentProtocol('sd/AjaxDispatcher/setGetData'); ?>';
+            setCartEmptyNow(ajaxUrl);
+        });
+
+        jQuery('#ids_cart_transfer_checkout').on('click', function(event) {
+            event.preventDefault();
+            jQuery('#IdsForm')[0].submit();
+        });
+
+        function setCartEmptyNow(ajaxUrl) {
+            jQuery.ajax(ajaxUrl, {
+                'dataType': 'json',
+                'type': 'POST',
+                'data': {
+                    'form_key': '<?php echo Mage::getSingleton('core/session')->getFormKey(); ?>',
+                    'setCartEmpty': ''
+                },
+                'success': function (data) {
+                },
+                'error': function (data) {
+                    var parsedData = data;
+                }
+            });
+        }
+
+    });
+
+//]]>
+</script>
+
+<!-- app/design/frontend/schrack/schrackresponsive/template/checkout/onepage/review/button.phtml (end) -->

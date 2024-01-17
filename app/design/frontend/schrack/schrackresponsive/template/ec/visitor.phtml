@@ -1,0 +1,105 @@
+<!-- app/design/frontend/schrack/schrackresponsive/template/ec/visitor.phtml (start) -->
+
+<?php if (Mage::getStoreConfig('ec/config/active')) : ?>
+    <?php
+        $currentURLSection = '';
+        $currentUrl = Mage::helper('core/url')->getCurrentUrl();
+        if (stristr($currentUrl, 'checkout/onepage/')) $currentURLSection = 'checkout';
+        $cidFromUrl = $this->getRequest()->getParam('cid');
+
+        if (Mage::helper('ids')->isIdsSession()) {
+            $idsSession = 'yes';
+        } else {
+            $idsSession = 'no';
+        }
+        if (Mage::helper('sapoci')->isSapociCheckout()) {
+            $sapOciSession = 'yes';
+        } else {
+            $sapOciSession = 'no';
+        }
+    ?>
+
+    <input type="hidden" id="visitor_phtml_uncached_timestamp" value="<?php echo date('Y-m-d H:i:s'); ?>"
+           xmlns="http://www.w3.org/1999/html">
+
+    <?php
+        $usercentricsID = Mage::getStoreConfig('ec/config/usercentrics-id');
+        $gtmID = Mage::getStoreConfig('ec/config/code_head');
+
+        if($usercentricsID) {
+            echo
+            //<!-- Google Tag Manager (noscript) -->
+                '<noscript>
+                    <iframe src="https://www.googletagmanager.com/ns.html?id='. $gtmID .'"
+                            height="0" width="0" style="display:none;visibility:hidden">
+                    </iframe>
+                </noscript>';
+            //<!-- End Google Tag Manager (noscript) -->
+        }
+    ?>
+
+    <script type="text/javascript">
+        <?php if (Mage::getSingleton('customer/session')->isLoggedIn()) : ?>
+            var visitorId    = '<?php echo $this->helper('ec')->getVisitorId(); ?>';
+            var crmId        = '<?php echo $this->helper('ec')->getCrmId(); // also known as 'ecommerce->dimension2' ?>';
+            var crmAccountId = '<?php echo $this->helper('ec')->getCrmAccountId(); // also known as 'ecommerce->dimension12' ?>';
+            var customerType = '<?php echo $this->helper('ec')->getSchrackCustomerType(); // also known as 'ecommerce->dimension11' ?>';
+            var actAsCustomerName = '';
+            // Fallback, if not logged in as customer
+            if (localStorage.actAsACustomerRealEmail == '') {
+                actAsCustomerName = 'n/a';
+            } else {
+                var temp = localStorage.actAsACustomerRealEmail;
+                actAsCustomerName = temp.split('@').slice(0, -1).join('@');
+            }
+        <?php else : ?>
+            var visitorId         = 'n/a';
+            var crmId             = 'n/a';
+            var crmAccountId      = 'n/a';
+            var customerType      = 'n/a'; // also known as 'ecommerce->dimension11'
+            var actAsCustomerName = 'n/a';// also known as 'ecommerce->dimension20'
+        <?php endif; ?>
+
+        var idsSession = '<?php echo $idsSession; ?>';
+        var sapOciSession = '<?php echo $sapOciSession; ?>';
+
+        var cidFromUrl = '<?php echo $cidFromUrl; ?>';
+        if (cidFromUrl != '') {
+            crmId = cidFromUrl;
+            localStorage.setItem('cidFromUrl', cidFromUrl);
+        } else {
+            if (localStorage.getItem("cidFromUrl") !== null) {
+                crmId = localStorage.getItem("cidFromUrl");
+            }
+        }
+
+        // <?php echo 'CurrentURL = ' . $currentUrl; ?>
+        // <?php echo ' + CurrentCidFromUrl = ' . $cidFromUrl; ?>
+
+        var visitor =
+        {
+            visitorLoginState : '<?php echo $this->helper('ec')->getVisitorLoginState(); ?>',
+            visitorType : '<?php echo $this->helper('ec')->getVisitorType(); ?>',
+            visitorLifetimeValue : <?php echo $this->helper('ec')->getVisitorLifetimeValue(); ?>,
+            visitorExistingCustomer : '<?php echo $this->helper('ec')->getVisitorExistingCustomer(); ?>',
+            visitorId : visitorId,
+            crmId : crmId,
+            crmAccountId : crmAccountId,
+            customerType : customerType,
+            actAsCustomerName : actAsCustomerName,
+            isIdsSession : idsSession,
+            isSapOciSession : sapOciSession
+        };
+
+        dataLayer.push(visitor);
+
+        <?php if (Mage::getSingleton('core/session')->getEventRegistration()) : ?>
+
+            dataLayer.push(<?php echo $this->helper('ec/datalayer')->getPushEventRegistration(Mage::getSingleton('customer/session')->getCustomer()) ?>);
+
+            <?php Mage::getSingleton('core/session')->unsetData('event_registration') ?>
+
+        <?php endif ?>
+    </script>
+<?php endif ?>
+<!-- app/design/frontend/schrack/schrackresponsive/template/ec/visitor.phtml (end) -->

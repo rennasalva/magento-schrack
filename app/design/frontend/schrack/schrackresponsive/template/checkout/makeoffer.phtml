@@ -1,0 +1,245 @@
+<?php
+$itemCnt = Mage::helper('checkout/cart')->getItemsCount();
+$session = Mage::getSingleton('customer/session');
+$customer = $session->getCustomer();
+$loggedInCustomer = $session->getLoggedInCustomer();
+if ( is_object($customer) && is_object($loggedInCustomer) && $loggedInCustomer->getId() != $customer->getId() ) {
+    $eMail = $loggedInCustomer->getEmail();
+} else {
+    $eMail = $customer->getEmail();
+}
+$customerNo = $this->getCustomerNo();
+$orderNo = $this->getOrderNo();
+$customerNoFormatted = '<span style="font-weight: bold;">' . $customerNo . '</span>';
+$orderNoFormatted = '<span style="font-weight: bold;">' . $orderNo . '</span>';
+$customerNoHintText = $this->__('Customer ID') . ' ' . $this->__('or') . ' ' . $this->__('Customer Search');
+?>
+
+<style>
+.result {
+    list-style:none;
+    width: 90% !important;
+}
+.result li {
+    padding:5px;
+    border:1px solid #d6d6d6;
+    border-top:0;
+    cursor: pointer;
+    color:#000;
+    margin-bottom: 0px !important;
+}
+.result li:hover {
+    background:#00589d;
+    color:#fff;
+}
+.dropdown {
+    position:absolute;
+    z-index: 100;
+    background: #ffffff;
+}
+#result_list_dropdown {
+    width: 100% !important;
+}
+#customer_name_label {
+    position: absolute;
+    left: 100%;
+    top: 43px;
+    width: 100%;
+}
+</style>
+
+<div class="shareshopingCartCont">
+
+	<div class="row">
+		<div class="col-xs-12">
+            <?php if ( ! $customerNo ) : ?>
+			    <h1 class="headline b1"><?php echo $this->__('Shopping Cart'); ?></h1>
+            <?php else : ?>
+			    <h1 class="headline b1"><?php echo $this->__('Offer has been created for customer %s in WWS.',$customerNoFormatted); ?></h1>
+			    <h1 class="headline b1"><?php echo $this->__('The order number is %s.',$orderNoFormatted); ?></h1>
+            <?php endif; ?>
+		</div>
+	</div>
+	<?php echo $this->getMessagesBlock()->getGroupedHtml() ?>
+
+	<?php if ($itemCnt > 0) : ?>
+		<form id="login-form" action="<?php echo Mage::helper('schrackcore/url')->getUrlWithCurrentProtocol('checkout/cart/requestoffer/'); ?>" method="post" >
+			<div class="row">
+				<div class="col-xs-12 col-md-12">
+					<div class="formContianer">
+						<div class="row">
+							<div class="col-xs-12 col-md-6">
+								<ul>
+                                    <?php if ( $customer->isEmployee() ) : ?>
+                                        <li>
+                                            <label for="customerNo" class="required"><?php echo $this->__('Customer ID') ?> <em>*</em></label>
+                                            <!-- div -->
+                                                <input type="checkbox" id="only_show_my_contacts_checkbox" style="margin-left: 20px;">
+                                                <label for="only_show_my_contacts_checkbox"><?php echo $this->__('Only Show My Contacts'); ?></label>
+                                            <!-- /div -->
+                                            <input type="text" name="customerNo" id="customerNo"
+                                                   class="input-text required-entry validate-not-negative-number form-control"
+                                                   placeholder="<?php echo $customerNoHintText; ?>"
+                                                   maxlength="24" autocomplete="off"/>
+                                            <span id="customer_name_label"></span>
+                                            <div id="result_list_dropdown" class="dropdown">
+                                                <ul id="result_list" class="result"></ul>
+                                            </div>
+                                        </li>
+                                    <?php endif; ?>
+									<li>
+										<label for="schrack-custom-order-number"><?php echo $this->__('Purchase Order Number (no special characters, max. 20 characters)') ?></label>
+										<input type="text" id="schrack-custom-order-number" name="schrack-custom-order-number" maxlength="20" size="20" class="input-text form-control" value="" />
+									</li>
+                                    <?php if ( $customer->isEmployee() || $customer->isSystemContact() ) : ?>
+                                        <li>
+                                            <input type="checkbox" name="printOffer" id="printOffer" value="yes" checked/><span>&nbsp;<?php echo $this->__('Print Offer (i.e. transfer to Webshop)') ?><br/></span>
+                                        </li>
+                                    <li>
+                                        <div style="color:red !important; font-weight: bold !important;">
+                                            <?php echo $this->__('Attention: Offers for internal customers cannot be printed!'); ?>
+                                        </div>
+                                    </li>
+                                    <?php else : ?>
+                                        <input type="hidden" name="printOffer" id="printOffer" value="yes" />
+                                    <?php endif; ?>
+            						<p id="email-text"><?php echo $this->__('Request an offer for your cart content. The offer will be send as eMail to the following address:'); ?></p>
+									<li>
+										<label id="email-label" for="email"><?php echo $this->__('Email Address (example: shop@schrack.at)') ?></label>
+										<input type="text" name="email" id="email" alt="email" class="input-text validate-email form-control" value="<?php echo $eMail ?>" />
+									</li>
+								</ul>
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-xs-8 col-sm-6"><button id="offer-cart-submit-button" class="bttn-md" type="submit" title="<?php echo $this->__('Request Offer Now') ?>" class="button"><?php echo $this->__('Request Offer Now') ?></button></div>
+							<div class="col-xs-4 col-sm-6 text-right small paddingT10"><a href="<?php echo Mage::getUrl('checkout/cart'); ?>" title="<?php echo $this->__('Back to Shopping Cart') ?>"><small>&laquo; </small><?php echo $this->__('Back') ?></a></div>
+						</div>
+					</div>
+
+				</div>
+			</div>
+		</form>
+	<?php elseif ( ! $orderNo ) : ?>
+        <div class="row">
+            <div class="col-xs-12 col-md-12">
+                <div class="formContianer"><?php echo $this->__('Please add item in your cart.'); ?></div>
+            </div>
+        </div>
+	<?php endif; ?>
+</div>
+
+<script type="text/javascript">
+//<![CDATA[
+
+    jQuery(document).ready(function() {
+        var myForm = new VarienForm('login-form', true);
+
+        <?php if ( ! $customer->isEmployee() ) : ?>
+            if ( localStorage.actAsACustomerSearchOnlyShowMyContacts == 'on' ) {
+                jQuery('#only_show_my_contacts_checkbox').prop('checked', true);
+            }
+            jQuery('#login-form').submit(function(e){
+                email =  jQuery('#email').val();
+                // regexp from validation.js
+                if ( email > '' && /^([a-z0-9,!\#\$%&'\*\+\/=\?\^_`\{\|\}~-]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])+(\.([a-z0-9,!\#\$%&'\*\+\/=\?\^_`\{\|\}~-]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])+)*@([a-z0-9-]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])+(\.([a-z0-9-]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])+)*\.(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]){2,})$/i.test(email) ) {
+                    jQuery("#offer-cart-submit-button").remove();
+                }
+            });
+        <?php endif; ?>
+
+        jQuery('#printOffer').click(function(){
+            if ( jQuery(this).prop("checked") == true ) {
+                jQuery("#email-text").show();
+                jQuery("#email-label").show();
+                jQuery("#email").show();
+                jQuery("#offer-cart-submit-button").html("<?php echo $this->__('Request Offer Now') ?>");
+            } else {
+                jQuery("#email-text").hide();
+                jQuery("#email-label").hide();
+                jQuery("#email").hide();
+                jQuery("#offer-cart-submit-button").html("<?php echo $this->__('Create offer in WWS') ?>");
+            }
+        });
+
+        var timeout = null;
+        jQuery('#customerNo').bind('keydown paste', function(evt) {
+            jQuery('#customerNo').css('color', 'black');
+            clearTimeout(timeout);
+            timeout = setTimeout(tryCustomerSearchRequest,500);
+        });
+
+        jQuery('#only_show_my_contacts_checkbox').on('change', function () {
+            tryCustomerSearchRequest();
+        });
+    });
+
+    function tryCustomerSearchRequest () {
+        var val = jQuery('#customerNo').val();
+        val = val.replace(/["';\[\]<>\x00-\x09\x0B\x0C\x0E-\x1F\xE2\x7F\n\r]/g, "");
+        jQuery('#customerNo').val();
+        if ( (isNaN(val) && val.length > 2) || val.length > 3 ) {
+            customerSearchRequest(val);
+        } else {
+            jQuery('#result_list').html('');
+            jQuery('#customer_name_label').html('');
+        }
+    }
+
+    function customerSearchRequest ( query ) {
+        var ajax_url = '<?php echo $this->getUrl('customer/account/getCustomerSearchResults'); ?>';
+        var onlyMyContacts = jQuery('#only_show_my_contacts_checkbox').is(':checked') ? 'on' : 'off';
+        jQuery.ajax(ajax_url,{
+            'dataType' : 'json',
+            'type': 'post',
+            'data': {
+                'form_key' : '<?php echo Mage::getSingleton('core/session')->getFormKey(); ?>',
+                'search_query' : query,
+                'search_query_limit' : 10,
+                'search_only_show_my_contacts' : onlyMyContacts
+            },
+            'success': function (data) {
+                if ( data.results >= 1 ) {
+                    var searchResultItems = '';
+                    var wws_id            = '';
+                    var wws_id_html       = '';
+
+                    if ( data.results == 1 ) {
+                        jQuery('#customer_name_label').html(data.list_description[0]);
+                        jQuery('#customerNo').val(data.list_wws_ids[0]);
+                        jQuery('#result_list').html('');
+                    } else {
+                        jQuery('#customer_name_label').html('');
+
+                        for ( var index = 0; index < data.results; index++ ) {
+                            if ( data.list_wws_ids[index] > 0 )
+                                wws_id_html = ', ' + data.list_wws_ids[index];
+                            else
+                                wws_id_html = '';
+                            searchResultItems += ('<li'
+                                + ' id="' + data.list_wws_ids[index] + '" '
+                                + ' ref="' + data.list_description[index] + '"'
+                                + ' class="customer_search_result_item">'
+                                + data.list_description[index] + wws_id_html + '</li>');
+                        }
+
+                        jQuery('#result_list').html(searchResultItems);
+
+                        jQuery('.customer_search_result_item').on('click', function () {
+                            var selectedWwsId = jQuery(this).attr('id');
+                            var selectedName = jQuery(this).attr('ref');
+                            jQuery('#customerNo').val(selectedWwsId);
+                            jQuery('#customer_name_label').html(selectedName);
+                            jQuery('#result_list').html('');
+                        });
+                    }
+                } else {
+                    jQuery('#result_list').html('');
+                    jQuery('#customer_name_label').html('');
+                }
+            }
+        });
+    }
+
+//]]>
+</script>

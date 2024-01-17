@@ -1,0 +1,47 @@
+<!-- app/design/frontend/schrack/schrackresponsive/template/tools/intercom_calculator.phtml (start) -->
+<?php
+    Mage::unregister('tools_unselect_disclosures');
+    Mage::register('tools_unselect_disclosures',false);
+    Mage::unregister('tools_hide_right_project_sum');
+    // Mage::register('tools_hide_right_project_sum',true);
+?>
+
+<h1 class="onlinetools"><?php echo $this->__('Intercom Calculator'); ?></h1>
+
+<?php echo $this->getChildHtml('disclosures') ?>
+<div id="intercom_embed_frame">
+    <?php /* echo $this->getChildHtml('selection') */ ?>
+    <?php echo $this->getChildHtml('one_family') ?>
+<!-- /div -->
+
+<script type="text/javascript">//<![CDATA[
+
+    function loadIntercomCalculatorPart ( templatePart ) {
+        abortAjax();
+        var params = { "template_name" : 'intercom_calculator_' + templatePart };
+        var url = "<?php echo Mage::getBaseUrl() . 'onlinetools/commonTools/renderBlock'; ?>";
+        var timeoutMS = isOverlayLoaderRunning() ? 3000 : 10;
+        setTimeout(function () {
+            setOverlayLoader();
+            jQuery.post(url,params,function(data,status) {
+                if ( status != 'success' ) {
+                    unsetOverlayLoader();
+                    alert('<?php echo $this->__("Error %d. Please try again later or contact your Schrack contact person.",
+                        4265) ?>');
+                    return;
+                }
+                jQuery('#intercom_embed_frame').html(data);
+                initData();
+                if ( templatePart == 'selection' ) {
+                    toggleGroup(jQuery('#group-typeselection-head'),'#group-typeselection');
+                }
+                unsetOverlayLoader();
+            });
+        },timeoutMS);
+    }
+
+//]]></script>
+
+
+
+<!-- app/design/frontend/schrack/schrackresponsive/template/tools/intercom_calculator.phtml (end) -->

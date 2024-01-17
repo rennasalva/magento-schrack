@@ -1,0 +1,130 @@
+<!-- app/design/frontend/schrack/schrackresponsive/template/page/1column.phtml (start) -->
+<?php
+/**
+ * Magento
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Academic Free License (AFL 3.0)
+ * that is bundled with this package in the file LICENSE_AFL.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/afl-3.0.php
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@magentocommerce.com so we can send you a copy immediately.
+ *
+ * DISCLAIMER
+ *
+ * Do not edit or add to this file if you wish to upgrade Magento to newer
+ * versions in the future. If you wish to customize Magento for your
+ * needs please refer to http://www.magentocommerce.com for more information.
+ *
+ * @category    design
+ * @package     base_default
+ * @copyright   Copyright (c) 2009 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @license     http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
+ */
+?>
+<?php
+/**
+ * Template for Mage_Page_Block_Html
+ */
+    $markerProductDetailBreadcrumb = '';
+    if ($this->getBodyClass() && stristr($this->getBodyClass(), 'catalog-product-view')) {
+        $markerProductDetailBreadcrumb = 'breadcrumb_product_detail';
+    }
+    if ($this->getBodyClass() && stristr($this->getBodyClass(), 'catalog-category-view')) {
+        $markerProductDetailBreadcrumb = 'breadcrumb_category_search';
+    }
+?>
+<!doctype html>
+<html>
+<head>
+<?php echo $this->getChildHtml('head') ?>
+</head>
+
+<!-- app/design/frontend/schrack/schrackresponsive/template/page/1column.phtml (Globalwrapper)  -->
+
+<body<?php echo $this->getBodyClass()?' class="'.$this->getBodyClass().'"':'' ?> id="tmpl-1column">
+<!-- 1column.phtml (start) -->
+<?php echo $this->getChildHtml('after_body_start') ?>
+<?php echo $this->getChildHtml('global_notices') ?>
+<?php echo $this->getChildHtml('header') ?>
+
+<style>
+    /* Mobile Mega Menu Redesign 2019 */
+    @media (min-width: 1px) and (max-width: 320px) {
+        #breadcrumbs {
+            padding-right: 0 !important;
+            padding-left: 0 !important;
+            width: 103% !important;
+            margin-left: -8px !important;
+        }
+    }
+
+
+    @media (min-width: 321px) and (max-width: 360px) {
+        #breadcrumbs {
+            padding-right: 0 !important;
+            padding-left: 0 !important;
+            width: 103% !important;
+            margin-left: 13px !important;
+        }
+    }
+
+
+    @media (min-width: 361px) and (max-width: 639px) {
+        #breadcrumbs {
+            padding-right: 0 !important;
+            padding-left: 0 !important;
+            width: 103% !important;
+            margin-left: 13px !important;
+        }
+    }
+
+
+    @media (min-width: 640px) and (max-width: 767px) {
+        #breadcrumbs {
+            padding-right: 0 !important;
+            padding-left: 0 !important;
+            width: 103% !important;
+            margin-left: -8px !important;
+        }
+    }
+
+
+    @media (min-width: 768px) and (max-width: 768px) {
+        #breadcrumbs {
+            padding-right: 0 !important;
+            padding-left: 0 !important;
+            width: 103% !important;
+            margin-left: -8px !important;
+        }
+    }
+
+
+    @media (min-width: 769px) and (max-width: 992px) {
+        #breadcrumbs {
+            padding-right: 0 !important;
+            padding-left: 0 !important;
+            width: 103% !important;
+            margin-left: -8px !important;
+        }
+    }
+</style>
+<div id="content-wrap" class="container">
+    <div class="row">
+        <div class="col-xs-12 <?php echo $markerProductDetailBreadcrumb; ?>" id="breadcrumbs">
+            <?php echo $this->getChildHtml('breadcrumbs'); ?>
+        </div>
+        <div id="content" class="col-xs-12 main-content lower_main_content">
+            <?php echo $this->getChildHtml('global_messages') ?>
+            <?php echo $this->getChildHtml('content') ?>
+        </div>
+    </div>
+</div>
+<?php echo $this->getChildHtml('footer') ?>
+<?php echo $this->getChildHtml('before_body_end') ?>
+</body>
+</html>
+<!-- app/design/frontend/schrack/schrackresponsive/template/page/1column.phtml (end) -->

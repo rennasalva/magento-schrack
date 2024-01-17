@@ -1,0 +1,12 @@
+<?php if (Mage::getStoreConfig('ec/config/active')): ?>
+<?php if ($data = $this->helper('ec/datalayer')->getPushSearch()):?>
+
+	<script type="text/javascript">
+	
+		dataLayer.push(<?php echo $data->data ?>);
+		window.google_tag_params.ecomm_category = '<?php echo $data->google_tag_params['ecomm_category'] ?>';
+		
+	</script>
+	
+<?php endif ?>
+<?php endif ?>

@@ -1,0 +1,31 @@
+<!-- app\design\frontend\schrack\schrackresponsive\template\catalog\product\view\download.phtml (start) -->
+<?php
+$product = Mage::registry('product');
+$imageBaseUrl = Mage::getStoreConfig('schrack/general/imageserver');
+$downloadAttachment = $product->getDownloadFile();
+$downLoadLink = $imageBaseUrl . $downloadAttachment->getUrl();
+$downloadFileType = $downloadAttachment->getHumanFiletype();
+$downloadFileSize = $downloadAttachment->getHumanFilesize();
+$onlineCatalogAttachment = $product->getOnlineCatalog();
+$onlineCatalogAttachmentUrl = $onlineCatalogAttachment ? $imageBaseUrl . $onlineCatalogAttachment->getUrl() : false;
+?>
+<div class="download clearfix">	
+    <div class="add-cart-btn hgt60">
+    <a class="cart-btn" href="<?php echo $downLoadLink; ?>" target="_blank">
+        <span class="pull-left cart-iconDwnld glyphicon glyphicon-download-alt"></span><span class="downld"><?php echo $this->__('Download') ?></span>
+    </a>
+    </div>	
+</div>
+<div class="clear"></div>
+<div class="after-addtocart marginT10">
+    <div class="font-small">
+        <div><spawn><?php echo $downloadFileType ?></spawn>,&nbsp;<spawn><?php echo $downloadFileSize ?></spawn></div>
+
+        <?php if ( $onlineCatalogAttachmentUrl ) : ?>
+            <div class="link-onlinecatalog">
+                <a href="<?php echo $onlineCatalogAttachmentUrl; ?>" target="_blank"><img src="<?php echo $this->getSkinUrl('schrackdesign/Public/Images/rwd/icon-online-catalog.png'); ?>" alt=""> <?php echo $this->__('Read Catalog Online'); ?></a>
+            </div>
+        <?php endif; ?>
+    </div>
+</div>
+<!-- app\design\frontend\schrack\schrackresponsive\template\catalog\product\view\download.phtml (end) -->

@@ -1,0 +1,1601 @@
+<!-- app/design/frontend/schrack/schrackresponsive/template/customer/account/documents/detailview.phtml (start) -->
+<?php
+    $_document = $this->getDocument();
+    $_currency = $_document->getCurrency();
+    $_docTypeShortName = $this->getDocTypeShortName($_document);
+    $_order = $this->getOrder();
+    $_sortOrder = $this->getRequest()->getParam('sort_order', 'schrack_position');
+    $_helper = Mage::helper('schracksales/order');
+    $_id = $this->getRequest()->getParam('id');
+    $_documentId = $this->getRequest()->getParam('documentId');
+    $_items = $this->getItems($_document);
+    // ??? $this->getLayout()->getBlock('html_pager')->setCollection($_items);
+    // ??? $this->getLayout()->getBlock('html_pager2')->setCollection($_items);
+    $_partslistHelper = Mage::helper('schrackwishlist/partslist'); // Get partlist object
+    $_useMDoc = Mage::getStoreConfig('schrack/mdoc/use_mdoc');
+    $_customer = $this->getCustomer();
+    $_isOffer = $this->isCurrentDocument($_document, 'offer', $_documentId);
+    $currentUrl = Mage::helper('core/url')->getCurrentUrl();
+    $sessionCustomerId = Mage::getSingleton('customer/session')->getCustomer()->getId();
+    $aclRoleId = Mage::getModel('customer/customer')->load($sessionCustomerId)->getSchrackAclRoleId();
+    $isProjectant = Mage::helper('schrack/acl')->isProjectantRoleId($aclRoleId);
+    $offerHasNoEndDate = false;
+
+    $cartOffer = '';
+    if ($_isOffer) {
+        $offerDateValidUntil = str_replace('T', ' ', $_order->getSchrackWwsOfferValidThru());
+        $offerDateValidUntil = str_replace('Z', '', $offerDateValidUntil);
+        $offerExpiryTime = strtotime($offerDateValidUntil) + 86399;
+        $currentTime = strtotime(date('Y-m-d H:i:s'));
+        $_offerIsValid = false;
+        if ($offerExpiryTime > $currentTime) {
+            $_offerIsValid = true;
+        }
+        // Very Special Case, where $_order->getSchrackWwsOfferValidThru() == null, from unknown reason:
+        if ($offerExpiryTime == 86399) {
+            $offerHasNoEndDate = true;
+            // $_offerIsValid = true; Necessary or Not ??
+            if (intval(Mage::getStoreConfig('schrack/shop/log_offer_details')) == 1) {
+                /*$country = strtoupper(Mage::getStoreConfig('schrack/general/country'));
+                $subject = "Offer Problem in " . $country . " -> Offer = " . $_documentId;
+                $validUntil = $_order->getSchrackWwsOfferValidThru();
+                $mailText = "validUntil / _order->getSchrackWwsOfferValidThru() = " . $validUntil;
+                $mailText .= " -> Formatted = " . $this->getFormattedDate($validUntil);
+                $mailText .= " -> offerDateValidUntil = " . $offerDateValidUntil;
+                $mail = new Zend_Mail('utf-8');
+                $mail->setFrom('detailview@schrack.com', 'Detailview Frontend Machine')
+                     ->setSubject($subject)
+                     ->setBodyHtml($mailText)
+                     ->addTo('j.wohlschlager@schrack.com')
+                     ->send();*/
+                Mage::log("------- Order-Object (start) -----", null, 'possible_offer_accepts.log');
+                Mage::log($_order, null, 'possible_offer_accepts.log');
+                Mage::log("------- Order-Object (end) -------- ", null, 'possible_offer_accepts.log');
+            }
+        }
+        $cartOffer = $this->getCartOfferNum();
+    }
+
+    $skus = $qtys = '';
+    foreach ( $_items as $item ) {
+        if ( $skus > '' ) {
+            $skus .= ';';
+            $qtys .= ';';
+        }
+        $skus .= $item->getSku();
+        $qtys .= $item->getQty() ? $item->getQty() : $item->getQtyOrdered();
+    }
+
+    // Investigating in which mode we are now:
+    $documentMode = '';
+    if (stristr($currentUrl, 'offer')) {
+        $documentMode = 'offer';
+    }
+    if (stristr($currentUrl, 'order')) {
+        $documentMode = 'order';
+    }
+    if (stristr($currentUrl, 'shipment')) {
+        $documentMode = 'shipment';
+    }
+    if (stristr($currentUrl, 'invoice')) {
+        $documentMode = 'invoice';
+    }
+    if (stristr($currentUrl, 'creditmemo')) {
+        $documentMode = 'creditmemo';
+    }
+
+    $skus = base64_encode($skus);
+    $qtys = base64_encode($qtys);
+    $fn = base64_encode($_docTypeShortName . '.csv');
+    $csvId = $_isOffer ? $_order->getSchrackWwsOrderNumber() : $_documentId;
+    $csvType = $_isOffer ? 'Order' : $documentMode;
+    $_csvUrl = $this->getUrl("sd/Csv/csvFromDocument/documentId/$csvId/type/$csvType/");
+
+    $_shipments = $_order->getShipmentsCollection();
+
+    // Added by to get detfault store currency
+    $defaultStoreCurreny = Mage::getStoreConfig('currency/options/default');
+
+    // Added for E-Rechnung link implemenation
+    $eRechnungLink = Mage::getStoreConfig('schrack/typo3/typo3ebill_url');
+    $eRechnungLinkDescription = Mage::getStoreConfig('schrack/typo3/typo3ebill_description');
+    if ( $eRechnungLink > '' &&  $eRechnungLinkDescription > '' ) {
+        $typoBaseUrl = Mage::getStoreConfig('schrack/typo3/typo3url');
+        $eRechnungLink = $typoBaseUrl . $eRechnungLink;
+    }  else {
+        $eRechnungLink = false;
+    }
+
+    $pageTitleNumber = $pageTitleDescription = $trackDelivery = $chkBxChkdSingleAll = "";
+    $chkBxChkdSingleAll = "checkOfferHdnChkBx();";
+    $_customer = $this->getCurrentCustomer();   // Get customer objects
+    $_useMDoc = Mage::getStoreConfig('schrack/mdoc/use_mdoc');
+    $sessionCustomerId = Mage::getSingleton('customer/session')->getCustomer()->getId();
+    $aclRoleId = Mage::getModel('customer/customer')->load($sessionCustomerId)->getSchrackAclRoleId();
+    $isProjectant = Mage::helper('schrack/acl')->isProjectantRoleId($aclRoleId);
+
+    $mayPayOnBill = Mage::getStoreConfig('payment/schrackpo/active');
+    $_geoipHelper = Mage::helper('geoip/data');
+    $mayCheckout = false;
+    $geoIPHelperMayPerformCheckout = 'NO';
+    if ($_geoipHelper->mayPerformCheckout()) {
+        $geoIPHelperMayPerformCheckout = "YES";
+        $mayCheckout = true;
+    }
+    $mayAcceptOffer = (bool) ($mayCheckout && $mayPayOnBill);
+    $mayAddOfferToCart = Mage::helper('sapoci')->isSapociCheckout() || Mage::helper('ids')->isIdsSession();
+?>
+
+<style>
+    .offer_already_ordered {
+        float: right;
+        font-weight: bold;
+        color: red;
+        text-align: right;
+    }
+
+    #textsearch {
+        font-size: 16px !important;
+    }
+    .quantityField {
+        font-size: 16px !important;
+    }
+
+    #showOfferModePanel {
+        float: left;
+        width: 100%;
+    }
+
+    #showOfferModePanel div {
+        float: right;
+        width: 100%;
+    }
+
+    #order-button{
+        margin-bottom: 14px;
+    }
+    #reorder-button{
+        margin-bottom: 14px;
+    }
+
+    #add-offer-to-cart-button {
+        margin-right: 24px;
+        margin-bottom: 14px;
+    }
+
+    @media (min-width: 1px) and (max-width: 992px) {
+        .my_account_detailview_content_wrapper {
+            margin-right: 16px !important;
+        }
+    }
+
+    @media (min-width: 60px) and (max-width: 320px) {
+        #order-button {
+            height: 30px !important;
+        }
+    }
+
+    @media (min-width: 321px) and (max-width: 480px) {
+        #order-button {
+            height: 30px !important;
+        }
+    }
+
+    @media (min-width: 481px) and (max-width: 767px) {
+        #order-button {
+            height: 30px !important;
+        }
+    }
+    @media (min-width: 60px) and (max-width: 320px) {
+        #reorder-button {
+            height: 30px !important;
+        }
+    }
+
+    @media (min-width: 321px) and (max-width: 480px) {
+        #reorder-button {
+            height: 30px !important;
+        }
+    }
+
+    @media (max-width: 767px) {
+        #reorder-button {
+            height: 30px;
+        }
+        #add-offer-to-cart-button {
+            height: 30px;
+        }
+
+    }
+</style>
+
+<script type="text/javascript">//<![CDATA[
+    var partslistDashDetail = new ListRequestManager.List('<?php echo $_partslistHelper->getBaseUrl() ?>', false);
+    var partslistFEDashDetail = new ListRequestManager.Frontend(partslistDashDetail, ListRequestManager.Product);
+
+    var cart = new ListRequestManager.List('<?php echo $this->getUrl('customer/account/') ?>', true);
+    <?php if ($_isOffer) : ?>
+        cart.setProductBatchAddUrl('<?php echo $this->getUrl('customer/account/batchAddOfferProductsToCart/offer/' . $_order->getSchrackWwsOrderNumber() . '/') ?>');
+    <?php else : ?>
+        cart.setProductBatchAddUrl('<?php echo $this->getUrl('customer/account/batchAddProductsToCart/') ?>');
+    <?php endif; ?>
+    var cartFE = new ListRequestManager.Frontend(cart, ListRequestManager.Product);
+
+    function setAllCheckboxes(className, el) {
+        jQuery('input[type="checkbox"].' + className).prop('checked', jQuery(el).is(':checked'));
+    }
+	var skuList = [];
+	//]]>
+</script>
+
+<div id="my_account_detailview_wrapper" class="my_account_detailview_content_wrapper">
+    <input type="hidden" id="selectedItemToPartslist" />
+    <input type="hidden" id="myAccountDocuments" />
+    <input type="hidden" id="cartOffer" value="<?php echo $cartOffer; ?>"/>
+    <?php $actionUrlParams = array(
+        'id' => $this->getRequest()->getParam('id'),
+        'type' => $this->getRequest()->getParam('type'),
+        'documentId' => $this->getRequest()->getParam('documentId'),
+        ); ?>
+    <?php $actionUrl = $this->getUrl('*/*/*', $actionUrlParams) ?>
+    <form name="documents_form" id="documents_form" action="<?php echo $actionUrl; ?>" method="get">
+        <input type="hidden" name="sort_order" value="<?php echo $_sortOrder ?>" />
+        <input type="hidden" name="direction" value="<?php echo $this->getDirection() ?>" />
+        <div class="row prodDtlCont">
+            <div class="col-xs-12 col-sm-8">
+                <h1>
+                    <?php echo $this->__(ucwords($_docTypeShortName)) ?>&nbsp;#:&nbsp;
+                        <span id="documentNumberContainer">
+                        <?php
+                            if ($_docTypeShortName === '' || $_docTypeShortName === 'order') {
+                                $pageTitleNumber = $_order->getSchrackWwsOrderNumber();
+                            }
+                        ?>
+                        </span>
+                        <?php if ($this->getDocumentCustomerNumber($_document)): ?>
+                            <br />
+                            <span class="small" id="documentDescription" style="display:none;">
+                            <?php
+                                echo $this->__('Meine Bestellangabe') . ':&nbsp';
+                                if ($_docTypeShortName === '' || $_docTypeShortName === 'offer') {
+                                    echo $pageTitleDescription = $this->getDocumentCustomerNumber($_document, 'offer');
+                                } else {
+                                    echo $pageTitleDescription = $this->getDocumentCustomerNumber($_document);
+                                }
+                            ?>
+                            </span>
+                        <?php endif; ?>
+                        <?php $storeConfingPath = 'schrack/shop/enable_custom_project_info_in_checkout'; ?>
+                        <?php $enableCustomProjectInfo = intval(Mage::getStoreConfigFlag($storeConfingPath)) ?>
+                        <?php if ($enableCustomProjectInfo  == 1 && $_document->getSchrackCustomerProjectInfo() > '' ) : ?>
+                            <br/>
+                            <?php $langString  = $this->__('Project Reference'); ?>
+                            <?php $langString .= ':&nbsp' . $_document->getSchrackCustomerProjectInfo(); ?>
+                            <span class="small" id="documentDescription"><?php echo $langString; ?></span>
+                        <?php endif; ?>
+                </h1>
+            </div>
+            <div class="col-xs-12 col-sm-4">
+                <div class="dateBx">
+                    <?php $dateAlreadyShown = false; ?>
+                    <?php $condition_1 = $_order->getSchrackWwsOfferNumber() !== null; ?>
+                    <?php $condition_2 = $_document instanceof Schracklive_SchrackSales_Model_Order; ?>
+                    <?php if ($condition_1 && $condition_2 && $_document->isOffer()) : ?>
+                        <?php $formattedDate = $this->getFormattedDate(strtotime($_order->getSchrackWwsOfferDate())); ?>
+                        <?php echo $this->__('Date') ?>:<?php echo $formattedDate; ?>
+                        <?php $dateAlreadyShown = true; ?>
+                        <?php $condition_3 = isset($_order->getData()['schrack_wws_offer_valid_thru']); ?>
+                        <?php if ($_docTypeShortName === 'offer' && $_document->isOffer() && $condition_3) : ?>
+                        <?php $formattedDate = $this->getFormattedDate($_order->getSchrackWwsOfferValidThru()); ?>
+                            | <?php echo $this->__('Offer valid until') ?>: <?php echo $formattedDate; ?>
+                        <?php endif; ?>
+                    <?php endif; ?>
+                    <?php $condition_2 = $_order->getSchrackWwsOrderNumber() !== null; ?>
+                    <?php $condition_3 = ($_docTypeShortName !== 'offer' || !$_document->isOffer()); ?>
+                    <?php if ( ! $dateAlreadyShown && $condition_2 && $condition_3): ?>
+                    <?php $formatedDate = $this->getFormattedDate(strtotime($_order->getSchrackWwsCreationDate())); ?>
+                        <?php echo $this->__('Date') ?>:&nbsp;<?php echo $formatedDate; ?>
+                    <?php endif; ?>
+                </div>
+            </div>
+            <div class="col-xs-12">
+                <div class="prodDtlBx">
+                    <ul>
+                        <?php
+                            $ccn = $this->getContactCustomerName($_order, $_document);
+                            if ($ccn && strlen($ccn) && $ccn !== ' ') :
+                        ?>
+                            <li>
+                                <div class="left"><?php echo $this->__('Customer') ?>:</div>
+                                <div class="right"><?php echo $ccn ?></div>
+                            </li>
+                        <?php endif; ?>
+                    <?php
+                        if ($_docTypeShortName === 'offer' && $_order->getSchrackWwsOfferNumber() !== null) {
+                            $pageTitleNumber = $_order->getSchrackWwsOfferNumber();
+                        }
+                    ?>
+                    <?php if ($_order->getSchrackWwsOrderNumber() !== null && $_docTypeShortName !== 'order') : ?>
+                        <li>
+                            <div class="left"><?php echo $this->__('Order') ?>&nbsp;#:</div>
+                            <div class="right">
+                                <?php if ($this->isCurrentDocument($_document, 'order', $_documentId)) : ?>
+                                    <?php echo $_order->getSchrackWwsOrderNumber() ?>
+                                <?php else: ?>
+                                    <?php $documentUrl = $this->getDocumentLinkUrl($_order, 'order'); ?>
+                                    <a href="<?php echo $documentUrl ?>"><?php echo $_order->getSchrackWwsOrderNumber() ?></a>
+                                <?php endif; ?>
+                                <?php if ($_order->getSchrackWwsCreationDate()): ?>
+                                    <?php $createDate = $_order->getSchrackWwsCreationDate(); ?>
+                                    <?php $formattedDate = $this->getFormattedDate(strtotime($createDate)); ?>
+                                    <?php echo $this->__('placed') . ' ' . $this->__('on') . ' ' . $formattedDate; ?>
+                                <?php endif; ?>
+                            </div>
+                        </li>
+                    <?php endif; ?>
+                    <?php
+                        $_invoices = $_order->getInvoiceCollection();
+                        if ($_invoices && count($_invoices) > 0) :
+                            $S = 1;
+                            foreach ($_invoices as $_invoice) :
+                    ?>
+                        <li>
+                            <div class="left"><?php echo $this->__('Invoice'); if($S > 1) { echo $S; } ?>&nbsp;#:</div>
+                            <div class="right">
+                                <?php if ($this->isCurrentDocument($_invoice, 'invoice', $_documentId)) : ?>
+                                    <?php $pageTitleNumber = $_invoice->getSchrackWwsInvoiceNumber(); ?>
+                                    <?php echo $_invoice->getSchrackWwsInvoiceNumber() ?>
+                                <?php else: ?>
+                                    <?php $linkUrl = $this->getDocumentLinkUrl($_invoice, 'invoice'); ?>
+                                    <a href="<?php echo $linkUrl; ?>"><?php echo $_invoice->getSchrackWwsInvoiceNumber() ?></a>
+                                <?php endif; ?>
+                                <?php if ($_invoice->getSchrackWwsDocumentDate()) : ?>
+                                <?php $invoiceDate = $_invoice->getSchrackWwsDocumentDate(); ?>
+                                <?php $formattedDate = $this->getFormattedDate(strtotime($invoiceDate));?>
+                                    <?php echo ' ' . $this->__('created') . ' ' . $this->__('on') . ' ' . $formattedDate  ?>
+                                <?php endif; ?>
+                            </div>
+                        </li>
+                        <?php
+                                ++$S;
+                            endforeach;
+                        ?>
+                        <?php endif; ?>
+                        <?php if ($_shipments && count($_shipments) > 0) : ?>
+                            <?php
+                                $S = 1;
+                                foreach ($_shipments as $_shipment):
+                            ?>
+                                    <li>
+                                        <div class="left">
+                                            <?php echo $this->__('Shipment'); if($S > 1) { echo $S; } ?>&nbsp;#:
+                                        </div>
+                                        <div class="right">
+                                            <?php if ($this->isCurrentDocument($_shipment, 'shipment', $_documentId)) : ?>
+                                                <?php $pageTitleNumber = $_shipment->getSchrackWwsShipmentNumber(); ?>
+                                                <?php echo $_shipment->getSchrackWwsShipmentNumber() ?>
+                                            <?php else: ?>
+                                                <a href="<?php echo $this->getDocumentLinkUrl($_shipment, 'shipment') ?>"><?php echo $_shipment->getSchrackWwsShipmentNumber() ?></a>
+                                            <?php endif; ?>
+                                            <?php if ($_shipment->getSchrackWwsDocumentDate()) : ?>
+                                    &nbsp;          <?php echo $this->__('shipped') . ' ' . $this->__('on') . ' ' . $this->getFormattedDate(strtotime($_shipment->getSchrackWwsDocumentDate())); ?>
+                                            <?php endif; ?>
+                                            <?php
+                                                $collos = $this->getTrackandtraceUrl($_shipment);
+                                                if (isset($collos)) :
+                                            ?>
+                                                    <b>&nbsp|&nbsp;</b>
+                                                    <a href="<?php echo $collos; ?>">
+                                                        <?php echo $this->__('Track Delivery');?>
+                                                    </a>
+                                                <?php endif; ?>
+                                        </div>
+                                    </li>
+                            <?php
+                                    ++$S;
+                                endforeach;
+                            ?>
+                        <?php endif; ?>
+                        <?php
+                            $_creditMemos = $_order->getCreditmemosCollection();
+                            if ($_creditMemos && count($_creditMemos) > 0) :
+                                foreach ($_creditMemos as $_creditmemo) :
+                        ?>
+                                    <li>
+                                        <div class="left"><?php echo $this->__('Creditmemo') ?>&nbsp;#:</div>
+                                        <div class="right">
+                                            <?php if ($this->isCurrentDocument($_creditmemo, 'creditmemo', $_documentId)) : ?>
+                                                <?php $pageTitleNumber = $_creditmemo->getSchrackWwsCreditmemoNumber(); ?>
+                                                <?php echo $_creditmemo->getSchrackWwsCreditmemoNumber() ?>
+                                            <?php else: ?>
+                                                <a href="<?php echo $this->getDocumentLinkUrl($_creditmemo, 'creditmemo') ?>">
+                                                    <?php echo $_creditmemo->getSchrackWwsCreditmemoNumber() ?>
+                                                </a>
+                                            <?php endif; ?>
+                                            <?php if ($_creditmemo->getSchrackWwsDocumentDate()): ?>
+                    &nbsp;                          <?php echo $this->__('on') . ' ' . $this->getFormattedDate(strtotime($_creditmemo->getSchrackWwsDocumentDate())) ?>
+                                            <?php endif; ?>
+                                        </div>
+                                    </li>
+                            <?php
+                                endforeach;
+                            ?>
+                            <?php endif; ?>
+                            <?php if (!$_isOffer && $_docTypeShortName !== 'invoice') : ?>
+                                    <li>
+                                        <div class="left"> <?php echo $this->__('Delivery Address') ?>: </div>
+                                        <div class="right">
+                                            <?php $_address = $_order->getShippingAddress(); ?>
+                                            <?php if ($_address) : ?>
+                                                <?php foreach (array($_address->getFirstname(), $_address->getStreet(), ($_address->getPostcode() . '&nbsp;' . $_address->getCity())) as $field) : ?>
+                                                    <?php if (isset($field) && strlen($field)) echo '<div>' . $field . '</div>'; ?>
+                                                <?php endforeach; ?>
+                                            <?php endif; ?>
+                                        </div>
+                                    </li>
+                                    <li>
+                                        <div class="left"> <?php echo $this->__('Billing Address') ?>: </div>
+                                        <div class="right">
+                                            <?php $_address = $_order->getBillingAddress(); ?>
+                                            <?php if ($_address) : ?>
+                                                <?php foreach (array($_address->getFirstname(), $_address->getStreet(), ($_address->getPostcode() . '&nbsp;' . $_address->getCity())) as $field): ?>
+                                                    <?php if (isset($field) && strlen($field)) echo '<div>' . $field . '</div>'; ?>
+                                                <?php endforeach; ?>
+                                            <?php endif; ?>
+                                        </div>
+                                    </li>
+                            <?php endif; ?>
+                    </ul>
+                </div>
+                <div class="input-group">
+                    <?php
+                        $req = $this->getRequest()->getParams();
+                        $_textDefault = $this->__('Article IDs, Article Texts');
+                        $_text = $this->_arrayHelper->arrayDefault($req, 'text', $_textDefault);
+                    ?>
+                    <input id="textsearch" type="text" name="text" value="<?php echo $_text ?>" class="form-control nodefault"  onClick="switchText(this, '<?php echo $_text ?>');" onBlur="switchText(this, '<?php echo $_text ?>');" >
+                    <span class="input-group-addon" id="srchFrmSbmt"><span class="glyphicon glyphicon-search"></span></span>
+                    <script type="text/javascript">//<![CDATA[
+                        jQuery(document).ready(function () {
+                            jQuery('#textsearch').keypress(function (e) {
+                                if (e.which == 13) {
+                                    trackSearch();
+                                    jQuery('#documents_form').submit();
+                                }
+                            });
+                            jQuery('#srchFrmSbmt').click(function () {
+                                trackSearch();
+                                jQuery('#documents_form').submit();
+                            });
+                        });
+                        //]]>
+                    </script>
+                </div>
+            </div>
+            <?php if (count($_items) > 0) : ?>
+                <div class="col-xs-12"><?php echo $this->__('Total %s articles',count($_items)); ?></div>
+            <?php endif; ?>
+            <div id="tabularRowsData" class="col-xs-12">
+            <?php if (count($_items) > 0) : ?>
+                <div class="tabularCont dtlCont">
+                    <div class="row-tbl">
+                        <div class="header hidden-xs hidden-sm">
+                            <div class="col-sm-4 colmn"><?php echo $this->__('Article'); ?>
+                                <a href="<?php echo $this->getUrl('*/*/*') ?>"
+                                    onClick="setOrderFields('documents_form', 'name'); return false;">
+                                    <span class="glyphicon glyphicon-triangle-bottom smlTxt"></span>
+                                </a>
+                            </div>
+                            <?php if ($_docTypeShortName === 'shipment' ) : ?>
+                                <div class="col-sm-6 colmn"><?php echo $this->__('Description'); ?>
+                                    <a href="<?php echo $this->getUrl('*/*/*') ?>"
+                                        onClick="setOrderFields('documents_form', 'description'); return false;">
+                                        <span class="glyphicon glyphicon-triangle-bottom smlTxt"></span>
+                                    </a>
+                                </div>
+                            <?php endif; ?>
+                            <div class="col-sm-2 colmn"><?php echo $this->__('Quantity') ?>
+                                <a href="<?php echo $this->getUrl('*/*/*') ?>"
+                                    onClick="setOrderFields('documents_form', 'qty');return false;">
+                                    <span class="glyphicon glyphicon-triangle-bottom smlTxt"></span>
+                                </a>
+                            </div>
+                            <?php if ($_docTypeShortName !== 'invoice' && $_docTypeShortName !== 'creditmemo' && $_docTypeShortName !== 'shipment') : ?>
+                                <div class="col-sm-2 colmn"><?php echo $this->__('Qty Backordered') ?>
+                                    <a href="<?php echo $this->getUrl('*/*/*') ?>"
+                                        onClick="setOrderFields('documents_form', 'qty_backordered'); return false;">
+                                        <span class="glyphicon glyphicon-triangle-bottom smlTxt"></span>
+                                    </a>
+                                </div>
+                            <?php endif; ?>
+                            <?php if ($_docTypeShortName !== 'shipment' ) : ?>
+                                <div class="col-sm-2 colmn"><?php echo $this->__('Price/pc') ?> </div>
+                                <?php if ($_docTypeShortName !== 'offer' && $_docTypeShortName !== 'order' && $_docTypeShortName !== 'invoice' && $_docTypeShortName !== 'creditmemo') : ?>
+                                    <div class="col-sm-2 colmn"><?php echo $this->__('Surcharge') ?> </div>
+                                <?php endif; ?>
+                                <div class="col-sm-2 colmn"><?php echo $this->__('Sum') ?> </div>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                    <div class="row-tbl" id="allCheckcBoxReq">
+                        <div class="body overFlowInhrt clearfix">
+                            <div class="col-xs-12 col-sm-12 colmn">
+                                <?php if (count($_items) > 0) : ?>
+                                    <div class="floatL">
+                                        <input type="checkbox" onClick="setAllCheckboxes('rowId', this);"/>
+                                    </div>
+                                <?php endif; ?>
+                                <?php echo $this->__('All Articles') ?>
+                            </div>
+                        </div>
+                    </div>
+                    <?php
+                        $skus = array();
+                        foreach ( $_items as $_item ) {
+                            $skus[] = $_item->getSku();
+                        }
+
+                        $_productCollection = Mage::getResourceModel('catalog/product_collection')
+                                                ->addAttributeToSelect(array())
+                                                ->addAttributeToFilter('sku', array('in' => $skus))
+                                                ->load();
+                        $_products = array();
+                        foreach ( $_productCollection as $_product ) {
+                            $_products[$_product->getSku()] = $_product;
+                        }
+
+                        $i = 0;
+                        $j = 0;
+                        $addableItems = 0;
+                        foreach ($_items as $_item) :
+                            try {
+                                $_product = $_products[$_item->getSku()];
+                                // $_product = Mage::getModel('catalog/product')->loadByAttribute('sku',$_item->getSku(),array());
+                                if ( ! $_currency ) {
+                                    if ( $_product ) {
+                                        $_currency = Mage::helper('schrackcatalog/price')->getCurrencyForCustomer($_product, $_customer);
+                                    } else {
+                                        $_currency = Mage::getStoreConfig('currency/options/default');
+                                    }
+                                }
+                            } catch (Schracklive_SchrackCatalog_Helper_Info_Exception $e) {
+                                if ($e->getCode() != Schracklive_SchrackCatalog_Helper_Info_Exception::PRICE_UNAVAILABLE) {
+                                    throw $e;
+                                }
+                            }
+                    ?>
+                            <div class="row-tbl">
+                                <div class="body overFlowInhrt clearfix">
+                                    <div class="mobilSecLft">
+                                        <div class="col-xs-12 col-sm-12 col-md-4 colmn">
+                                            <div class="responsiveHd widAuto">
+                                                <div class="floatL marginR5">
+                                                    <?php if ($this->canBeAddedToLists($_item)) : ?>
+                                                        <?php ++$addableItems; ?>
+                                                        <input type="checkbox" class="rowId product-checkbox marginT2"
+                                                        data-sku="<?php echo $_item->getSku() ?>"
+                                                        data-qty="<?php echo $this->getQty($_item); ?>"
+                                                        id="rowId-<?php echo $i ?>"
+                                                        />
+                                                    <?php endif; ?>
+                                                </div>
+                                                <div class="hidden-lg hidden-md floatL"> <?php echo $this->__('Article'); ?>&nbsp;#:</div>
+                                            </div>
+                                            <div class="floatL">
+                                                <?php
+                                                    $affectedSKU = $_item->getSku();
+                                                    $affectedQTY = $this->getQty($_item, false);
+                                                    if ($_product) {
+                                                        $affectedSchrackPriceUnit = $_product->getSchrackPriceunit();
+                                                        $setAllChkFlag = 1; // To check this in case all item sku's does not exist don't show all checkbox in this case
+                                                    } else {
+                                                        $affectedSchrackPriceUnit = '';
+                                                    }
+                                                    $surchargeAmountSimple = $_item->getData('schrack_surcharge');
+                                                ?>
+                                                <input type="hidden" id="sku-<?php echo $i ?>" value="<?php echo $affectedSKU ?>"/>
+                                                <input type="hidden" id="qty-<?php echo $i ?>" value="<?php echo $affectedQTY ?>"/>
+                                                <input type="hidden" id="name-<?php echo $i ?>" value="<?php echo $_item->getName(); ?>"/>
+                                                <input type="hidden" id="price-<?php echo $i ?>" value="<?php echo $_item->getPrice(); ?>"/>
+                                                <input type="hidden" id="positionnum-<?php echo $i ?>" value="<?php echo $_item->getData('PositionNumber'); ?>"/>
+                                                <?php if ( is_object($_product) ) : ?>
+                                                    <input type="hidden" id="category-<?php echo $i ?>" value="<?php echo $_product->getCategoryId4googleTagManager(); ?>"/>
+                                                <?php endif; ?>
+                                                <input type="hidden" id="pagetype-<?php echo $i ?>" value="<?php echo $_docTypeShortName; ?>"/>
+                                                <input type="hidden" id="currencyCode-<?php echo $i ?>" value="<?php echo Mage::app()->getStore()->getCurrentCurrencyCode(); ?>"/>
+                                                <input type="hidden" id="trackingEnabled-<?php echo $i ?>" value="<?php if (Mage::getStoreConfig('ec/config/active')) echo 'enabled'; else echo 'disabled'; ?>"/>
+                                                <input type="hidden" id="min-qty-<?php echo $i ?>" value="<?php echo $_product ? $_product->calculateMinimumQuantityPackageToDisplay() : 0; ?>"/>
+                                                <input type="hidden" id="price_unit-<?php echo $i ?>" value="<?php echo $affectedSchrackPriceUnit; ?>" />
+                                                <input type="hidden" id="surcharge_amount_simple-<?php echo $i ?>" value="<?php echo $surchargeAmountSimple; ?>" />
+                                                <?php
+                                                    $readOnly = '';
+                                                    $amountFieldCursorStyle = '';
+                                                    $itemSKU = $_item->getSku();
+                                                    if (stristr($itemSKU,'TRANSPORT')) {
+                                                        $readOnly = 'readonly="readonly"';
+                                                        $amountFieldCursorStyle = 'cursor: not-allowed;';
+                                                    }
+                                                    if (stristr($itemSKU,'MANIPULAT')) {
+                                                        $readOnly = 'readonly="readonly"';
+                                                        $amountFieldCursorStyle = 'cursor: not-allowed;';
+                                                    }
+                                                    if (stristr($itemSKU,'VERPACKUNG')) {
+                                                        $readOnly = 'readonly="readonly"';
+                                                        $amountFieldCursorStyle = 'cursor: not-allowed;';
+                                                    }
+                                                    if (stristr($itemSKU,'ARBEIT')) {
+                                                        $readOnly = 'readonly="readonly"';
+                                                        $amountFieldCursorStyle = 'cursor: not-allowed;';
+                                                    }
+                                                    echo $itemSKU;
+                                                ?>
+                                            </div>
+                                            <?php $_url = $_product ? $_product->getProductUrlWithChapterIfAvail() : false; ?>
+                                            <?php if ($_url) : //if ((!$_isOffer) && ($_url)): ?>
+                                                <div class="product-name posRel floatL">
+                                                    <?php if ( Mage::getSingleton('customer/session')->isLoggedIn() && $addableItems > 0 ) : ?>
+                                                        <span class="pin-icon partlistBlueIcon" id="parlistdropdownbtn-rowId<?php echo $_item->getSku(); ?>-<?php echo $i ?>" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></span>
+                                                        <ul class="dropdown-list dtlPin dropdown-menu src_detailview" data-productId="<?php echo $_item->getProductId(); ?>" product-sku="<?php echo $_item->getSku(); ?>" data-qty="<?php echo $this->getQty($_item) ?>" aria-labelledby="parlistdropdownbtn-rowId<?php echo $_item->getSku(); ?>-<?php echo $i ?>">
+                                                            <?php
+                                                                // Compose patlist li to avoid iteration of partlist compostion in each row
+                                                                $partListLiHtml = "";
+                                                                $featureSrc = $documentMode . ' detail view';
+                                                                $partListLiHtml .= '<li onClick="partslistFE.addItemToNewList(\'' . $this->__("New partslist") . '\', new ListRequestManager.Product(jQuery(this).parent().attr(\'data-productId\'), jQuery(this).parent().attr(\'data-qty\')), \'' . $featureSrc . '\');" data-brand="" data-click="" data-event="" data-id="' . $_item->getSku() . '"><span class="glyphicon glyphicon-plus-sign plusIcon"></span>&nbsp;' . $this->__("Add to new partslist") . '</li>';
+                                                                $activePl = null;
+                                                                if ($_partslistHelper->getPartslistCount() > 0) {
+                                                                    $activePl = $_partslistHelper->getActiveOrFirstPartslist();
+                                                                    $partListLiHtml .= '<li onclick="addSKUToPartlistAjaxCall(' . $activePl->getId() . ', 0, this, \'Document\', \'' . $_docTypeShortName . ' detail view' . '\');" title="' . $activePl->getDescription() . '" data-brand="" data-click="" data-event="" data-id="' . $_item->getSku() . '">' . $this->__("Add to %s", $activePl->getDescription()) . '</li>';
+                                                                }
+
+                                                                foreach ($_partslistHelper->getPartslists() as $pl) {
+                                                                    if ($activePl === null || $pl->getId() !== $activePl->getId()) {
+                                                                        $partListLiHtml .= '<li onclick="addSKUToPartlistAjaxCall(' . $pl->getId() . ', 0, this, \'Document\', \'' . $_docTypeShortName . ' detail view' . '\');" title="' . $pl->getDescription() . '" data-brand="" data-click="" data-event="" data-id="' . $_item->getSku() . '" >' . $this->__("Add to %s", $pl->getDescription()) . '</li>';
+                                                                    }
+                                                                }
+                                                            ?>
+                                                            <?php echo $partListLiHtml; ?>
+                                                        </ul>
+                                                    <?php endif; ?>
+                                                </div>
+                                            <?php endif; ?>
+                                            <?php if ($_docTypeShortName !== 'shipment' ) : ?>
+                                                <div class="clear"></div>
+                                                <div class="marginT10">
+                                                    <?php if ($_url) : ?>
+                                                        <a class="document-item-detail-link"
+                                                           data-sku="<?php echo $_item->getSku();?>"
+                                                           href="<?php echo $_url; ?>" rel="nofollow"><?php echo $_item->getName() ?></a>
+                                                        <script type="text/javascript">
+                                                            skuList.push('<?php echo $_item->getSku();?>');
+                                                        </script>
+                                                    <?php else: ?>
+                                                        <?php ++$j; ?>
+                                                        <?php echo $_item->getName(); ?>
+                                                    <?php endif; ?>
+                                                </div>
+                                            <?php endif; ?>
+                                        </div>
+                                        <?php if ($_docTypeShortName === 'shipment' ) : ?>
+                                            <div class="col-xs-18 col-sm-18 col-md-6 colmn">
+                                                <?php if ($_url) : ?>
+                                                    <a class="document-item-detail-link"
+                                                       data-sku="<?php echo $_item->getSku();?>"
+                                                       href="<?php echo $_url; ?>"
+                                                       rel="nofollow"><?php echo $_item->getName() ?></a>
+                                                    <script type="text/javascript">
+                                                        skuList.push('<?php echo $_item->getSku();?>');
+                                                    </script>
+                                                <?php else: ?>
+                                                    <?php ++$j; ?>
+                                                    <?php echo $_item->getName(); ?>
+                                                <?php endif; ?>
+                                            </div>
+                                        <?php endif; ?>
+                                        <div class="col-xs-6 col-sm-6 col-md-2 colmn">
+                                            <div class="responsiveHd  hidden-lg hidden-md"><?php echo $this->__('Quantity'); ?></div>
+                                            <input id="quantityFieldHidden-<?php echo $i ?>" type="hidden" value="<?php echo $_item->getData("Quantity"); ?>">
+                                            <?php if ($_isOffer) : ?>
+                                                <input id="quantityField-<?php echo $i ?>"
+                                                    class="quantityField form-control text-center"
+                                                    type="number" autocomplete="off"
+                                                    style="<?php echo $amountFieldCursorStyle; ?>"
+                                                    value="<?php echo $_item->getData("Quantity"); ?>"
+                                                    <?php echo $readOnly; ?>>
+                                            <?php else: ?>
+                                                <div id="editField-<?php echo $i ?>" class="quantityField" type="text"><?php echo $_item->getData("Quantity"); ?></div>
+                                            <?php endif; ?>
+                                        </div>
+                                        <?php if ($_docTypeShortName !== 'invoice' && $_docTypeShortName !== 'creditmemo' && $_docTypeShortName !== 'shipment') : ?>
+                                            <div class="col-xs-6 col-sm-6 col-md-2 colmn">
+                                                <div class="responsiveHd  hidden-lg hidden-md"><?php echo $this->__('Back Ordered'); ?>:</div>
+                                                <?php echo $this->getQtyBackordered($_item) ?>
+                                            </div>
+                                        <?php endif; ?>
+                                        <?php
+                                            if (stristr($currentUrl, 'www.schrack.ro') && $documentMode == 'invoice')
+                                                $_currency = "RON";
+                                            if ($isProjectant) {
+                                                $singlePriceOutput = '';
+                                                $surcharge = '';
+                                                $rowTotalPrice = '';
+                                            } else {
+                                                $singlePriceOutput = $_currency . ' <span>' . $this->helper('checkout')->formatPrice($_item->getPrice()) . '</span>';
+                                                $surcharge = $_item->getData('schrack_surcharge');
+                                                $surcharge = $surcharge === null || $surcharge <= 0 ? '0' : $_currency . ' <span>' . $this->helper('checkout')->formatPrice($surcharge) . '</span>';
+                                                $rowTotalPrice = $_currency . ' <span>' . $this->helper('checkout')->formatPrice($_item->getRowTotal()) . '</span>';
+                                            }
+                                        ?>
+                                        <?php if ($_docTypeShortName !== 'shipment') : ?>
+                                            <div class="col-xs-6 col-sm-6 col-md-2 colmn">
+                                                <div class="responsiveHd  hidden-lg hidden-md"><?php echo $this->__('Price/pc'); ?>:</div>
+                                                <span class="rowPrice" id="singlePrice-<?php echo $i ?>"><?php echo $singlePriceOutput; ?></span>
+                                            </div>
+                                            <?php if ($_docTypeShortName !== 'offer' && $_docTypeShortName !== 'order' && $_docTypeShortName !== 'invoice' && $_docTypeShortName !== 'creditmemo') : ?>
+                                                <div class="col-xs-6 col-sm-6 col-md-2 colmn">
+                                                    <div class="responsiveHd  hidden-lg hidden-md"><?php echo $this->__('Surcharge'); ?>:</div>
+                                                    <span class="rowSearch" id="surchargePrice-<?php echo $i ?>"><?php echo $surcharge; ?></span>
+                                                </div>
+                                            <?php endif; ?>
+                                            <div class="col-xs-6 col-sm-6 col-md-2 colmn sumRow">
+                                                <div class="responsiveHd  hidden-lg hidden-md"><?php echo $this->__('Sum'); ?>:</div>
+                                                <span class="rowTotal" id="rowTotalPrice-<?php echo $i ?>"><?php echo $rowTotalPrice; ?></span>
+                                            </div>
+                                        <?php endif; ?>
+                                    </div>
+                                </div>
+                            </div>
+                    <?php
+                        ++$i;
+                        endforeach;
+                    ?>
+                    <?php if ($_isOffer) : ?>
+                        <?php if ($_customer->isAllowed('customerOrder', 'order') && !$isProjectant) : ?>
+                            <div class="row-tbl">
+                                <div class="body">
+                                    <div class=" col-xs-8 col-sm-10 colmn text-right large-fine-<?php echo $this->getColumnNumber('row_total') ?> columns-fine numeric left">
+                                        <?php if (!$isProjectant) echo $this->__('Nettosum Without Agio'); ?>
+                                    </div>
+                                    <div id="rowColumnTotal" class="col-xs-3 col-sm-1 colmn bold large-fine-<?php echo $this->getColumnNumber('row_total') ?> columns-fine numeric left"></div>
+                                </div>
+                            </div>
+                        <?php endif; ?>
+                    <?php endif; ?>
+                    <?php if ( ! $_isOffer && $_docTypeShortName !== 'shipment' ) : ?>
+                        <div class="row-tbl">
+                            <div class="body overFlowInhrt clearfix">
+                                <?php if (Mage::getSingleton('customer/session')->isLoggedIn()) : ?>
+                                    <div class="col-xs-9 col-sm-11 colmn text-right large-fine-<?php echo $this->getColumnNumber('row_total') ?> columns-fine numeric left">
+                                        <?php if (!$isProjectant) echo $this->__('Nettosum Without Agio'); ?>
+                                    </div>
+                                    <div id="rowColumnTotal" class="col-xs-3 colmn bold col-sm-1 large-fine-<?php echo $this->getColumnNumber('row_total') ?> columns-fine numeric left"></div>
+                                <?php endif; ?>
+                            </div>
+                        </div>
+                    <?php endif; ?>
+                </div>
+                <div class="row marginTB10">
+                    <div class="col-xs-6 col-sm-6 col-md-6">
+                        <div class="otherActions">
+                            <div class="heading3"><?php echo $this->__('Other Actions'); ?></div>
+                        </div>
+                        <?php if (Mage::getSingleton('customer/session')->isLoggedIn() && ($i > $j) && $addableItems > 0 ) : //if(!$_isOffer): ?>
+                            <div class="product-name posRel">
+                                <span class="pin-icon partlistBlueIcon"
+                                    id="parlistdropdownbtn-rowId<?php echo $i; ?>"
+                                    data-toggle="dropdown"
+                                    aria-haspopup="true"
+                                    aria-expanded="false">
+                                </span>
+                                <span class="blueTxt info-icon"
+                                    id="parlistdropdownbtn-rowId<?php echo $i; ?>"
+                                    data-toggle="dropdown"
+                                    aria-haspopup="true"
+                                    aria-expanded="false">
+                                    <?php echo $this->__('Add products to partlist'); ?>
+                                </span>
+                                <ul class="dropdown-list left dropdown-menu src_detailview" aria-labelledby="parlistdropdownbtn-rowId<?php echo $i; ?>">
+                                    <li class="add-to-new-partslist no-auto-activate"
+                                        onClick="<?php if ($_isOffer) { echo $chkBxChkdSingleAll; } ?>partslistFEDashDetail.addCheckedItemsToNewList('<?php echo $this->__('New partslist') ?>', 'rowId', 'sku', 'qty', '<?php echo Mage::getSingleton('core/session')->getFormKey(); ?>', false, '<?php echo $_docTypeShortName . ' detail view'; ?>');">
+                                        <span class="glyphicon glyphicon-plus-sign plusIcon"></span>&nbsp;
+                                        <?php echo $this->__("Add to new partslist"); ?>
+                                    </li>
+                                        <?php if ($_partslistHelper->getPartslistCount() > 0): ?>
+                                            <?php $activePl = $_partslistHelper->getActiveOrFirstPartslist(); ?>
+                                            <li onClick="<?php if ($_isOffer) { echo $chkBxChkdSingleAll; } ?>addSKUToPartlistAjaxCall('<?php echo $activePl->getId(); ?>', 1, this, 'Document', '<?php echo $_docTypeShortName . ' detail view'; ?>');"
+                                                selected="selected" title="<?php echo $activePl->getDescription() ?>"><?php echo $this->__('Add to %s', $activePl->getDescription()) ?>
+                                            </li>
+                                        <?php else: ?>
+                                            <?php $activePl = null; ?>
+                                        <?php endif; ?>
+                                        <?php foreach ($_partslistHelper->getPartslists() as $pl) : ?>
+                                            <?php if ($activePl === null || $pl->getId() !== $activePl->getId()): ?>
+                                                <li onClick="<?php if ($_isOffer) { echo $chkBxChkdSingleAll; } ?>addSKUToPartlistAjaxCall('<?php echo $pl->getId(); ?>', 1, this, 'Document', '<?php echo $_docTypeShortName . ' detail view'; ?>');" title="<?php echo $pl->getDescription() ?>"><?php echo $this->__('Add to %s', $pl->getDescription()) ?></li>
+                                            <?php endif; ?>
+                                        <?php endforeach; ?>
+                                </ul>
+                            </div>
+                            <div class="clear paddingT10"></div>
+                        <?php endif; ?>
+                        <div>
+                            <a class="print_button_detailview_csv" href="javascript:void(0)">
+                                <img src="<?php echo $this->getSkinUrl('schrackdesign/Public/Images/rwd/downloadIconGray.png');?>" />
+                                <span class="marginL15">
+                                    <?php echo $this->__('Download CSV')?>
+                                </span>
+                            </a>
+                        </div>
+                        <div class="clear paddingT10"></div>
+                        <div>
+                            <?php if (!isset($activePl)) $activePl = null; ?>
+                            <a class="labelprint gtm-partlist-labelprint" data-id="<?php if ($activePl && is_object($activePl)) echo $activePl->getId();?>"  href="javascript:void(0)" />
+                                <img src="<?php echo $this->getSkinUrl('schrackdesign/Public/Images/rwd/labelprintingIcon.png');?>">
+                                <span class="marginL15">
+                                    <?php echo $this->__('Label Printing')?>
+                                </span>
+                            </a>
+                        </div>
+                        <div class="clear paddingT10"></div>
+                        <?php if ($_useMDoc && !$isProjectant) : ?>
+                            <a class="pdfIcon selection-print-button print_button_detailview_pdf" href="javascript: return false;">&nbsp;</a>
+                            <span class="paddingT10"><a class="print_button_detailview_pdf" href="javascript: return false;"><?php echo $this->__('Download PDF') ?></a></span>
+                            <br />
+                            <span class="paddingT10"><?php echo $this->__('View ' . $documentMode . ' details & conditions') ?></span>
+                        <?php endif; ?>
+                    </div>
+                    <div class="col-xs-6 col-sm-6 col-md-6 paddingR40">
+                        <?php if ($_isOffer) : ?>
+                        <?php
+                            if (intval(Mage::getStoreConfig('schrack/shop/log_offer_details')) == 1) {
+                                $customerEntityId = Mage::getSingleton('customer/session')->getCustomer()->getId();
+                                $docId = $_order->getSchrackWwsOrderNumber();
+                                if ($customerEntityId && $docId) {
+                                    $msg  = 'Customer-Entiy-Id = ' . $customerEntityId;
+                                    $msg .= ' currently opened detailview of WWS-Order = ' . $docId;
+                                    $msg .= ' (WWS-Offer = ' . $_documentId . ')';
+                                    Mage::log($msg, null, 'possible_offer_accepts.log');
+                                }
+                            }
+                        ?>
+                            <?php if ($_customer->isAllowed('customerOrder', 'order')
+                                    && $geoIPHelperMayPerformCheckout == "YES"
+                                    && !$isProjectant) :
+                            ?>
+                                <div id="showOfferModePanel">
+                                    <?php if ( $mayAcceptOffer ) : ?>
+                                        <?php
+                                            if (intval(Mage::getStoreConfig('schrack/shop/log_offer_details')) == 1) {
+                                                $customerEntityId = Mage::getSingleton('customer/session')->getCustomer()->getId();
+                                                $docId = $_order->getSchrackWwsOrderNumber();
+                                                if ($customerEntityId && $docId) {
+                                                    $msg  = 'Customer-Entiy-Id = ' . $customerEntityId;
+                                                    $msg .= ' should be able to accept WWS-Order = ' . $docId;
+                                                    $msg .= ' (WWS-Offer = ' . $_documentId . ')';
+                                                    $msg .= ' because the "Accept Offer Now" Button is available';
+                                                    Mage::log($msg, null, 'possible_offer_accepts.log');
+                                                }
+                                            }
+                                        ?>
+                                        <div>
+                                        <?php if ($_offerIsValid == true) : ?>
+                                            <button type="button"
+                                                    id="order-button"
+                                                    class="bttn-md pull-right addtocart left"
+                                                    title="<?php echo $this->getOrderButtonText($_document) ?>">
+                                                <img src="<?php echo $this->getSkinUrl('schrackdesign/Public/Images/rwd/cartIconWht.png'); ?>">
+                                                <?php echo $this->getOrderButtonText($_document) ?>
+                                            </button>
+                                        <?php else : ?>
+                                                <button type="button"
+                                                        id="reorder-button"
+                                                        class="bttn-md pull-right addtocart left"
+                                                    title="angebot_erneut_anfragen">
+                                                    <?php echo $this->__('Angebot erneut anfragen') ?>
+                                                </button>
+                                            <?php if ($offerHasNoEndDate == true) : ?>
+                                                <div class="offer_already_ordered">
+                                                    <?php echo $this->__('offer already ordered'); ?>
+                                                </div>
+                                            <?php endif; ?>
+                                        <?php endif; ?>
+                                        </div>
+                                    <?php endif; ?>
+
+                                    <?php if ( $mayAddOfferToCart ) : ?>
+                                        <div>
+                                            <button type="button"
+                                                    id="add-offer-to-cart-button"
+                                                    class="bttn-md pull-right addtocart right blue"
+                                                    title="<?php echo $this->__('Add to Cart') ?>">
+                                                <img src="<?php echo $this->getSkinUrl('schrackdesign/Public/Images/rwd/cartIconWht.png'); ?>">
+                                                <?php echo $this->__('Add to Cart') ?>
+                                            </button>
+                                        </div>
+                                    <?php endif; ?>
+
+                                    <input type="hidden" id="block-order" value="0">
+                                </div>
+                            <?php endif; ?>
+                        <?php else : ?>
+                            <?php if ( $mayCheckout && $_customer->isAllowed('customerOrder', 'order') && !$isProjectant && ($i > $j) && $addableItems > 0 ): ?>
+                                <button type="button" class="bttn-md pull-right addtocart generic" title="<?php echo $this->__('Add to Cart') ?>">
+                                    <img src="<?php echo $this->getSkinUrl('schrackdesign/Public/Images/rwd/cartIconWht.png'); ?>"> <?php echo $this->__('Add to Cart') ?>
+                                </button>
+                            <?php endif; ?>
+                        <?php endif; ?>
+                    </div>
+                </div>
+                <?php if ( $_docTypeShortName == 'invoice' && $eRechnungLink ) : ?>
+                    <div class="row marginTB10">
+                        <div class="col-xs-10 col-sm-10 col-md-10">
+                            <a href="<?php echo $eRechnungLink; ?>" class="eInvoiceIcon selection-print-button">&nbsp;</a>
+                                <span class="paddingT10"></span>
+                                <a href="<?php echo $eRechnungLink; ?>"><?php echo $this->__('Register for') . ' ' . $eRechnungLinkDescription ?>
+                            </a>
+                            <br>
+                            <span class="paddingT10"><?php echo $this->__('Save environment and printing cost') ?></span>
+                        </div>
+                    </div>
+                <?php endif; ?>
+            <?php else: ?>
+                <div> <?php echo $this->__('There are no items to display.') ?> </div>
+            <?php endif; ?>
+            </div>
+        </div>
+        <div id="ordernowpopup" class="modal fade" title="<?php //echo $this->__('Accept offer');   ?>" role="dialog" aria-labelledby="ordernowpopupLabel"></div>
+        <div id="ordernowpopupBtn" class="hide" title="" data-toggle="modal" data-target="#ordernowpopup" ></div>
+    </form>
+</div>
+
+<!-- print label start -->
+<div id="print-label" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+</div>
+
+
+<script type="text/javascript">//<![CDATA[
+
+    var isProjectant = false;
+
+<?php if ($isProjectant) : ?>
+        isProjectant = true;
+<?php endif; ?>
+
+    function setOrderFields(formName, fieldName) {
+        if (document.forms[formName].elements['sort_order'].value === fieldName) {
+            document.forms[formName].elements['direction'].value =
+                    document.forms[formName].elements['direction'].value === 'asc' ?
+                    'desc' : 'asc';
+        } else {
+            document.forms[formName].elements['sort_order'].value = fieldName;
+            document.forms[formName].elements['direction'].value = 'asc';
+        }
+        resetTextIfDefault();
+        document.forms[formName].submit();
+    }
+
+
+    function resetTextIfDefault() {
+        var el = jQuery('form#documents_form input[name="text"]');
+
+        if (el.val() === '<?php echo $_textDefault ?>')
+            el.val('');
+    }
+
+    function switchText(el, defaultText) {
+        if (el.value == defaultText)
+            el.value = '';
+        else if (el.value == '')
+            el.value = defaultText;
+    }
+
+
+    function openUrl(url, itemId) {
+        var request = jQuery.ajax(url,
+                {
+                    method: 'get',
+                    success: function (response) {
+                        window.location.href = url;
+                    }.bind(this),
+                    error: function (response) {
+                        // Info message that no item is selected for print action:
+                        var errorMessages = ['<?php echo $this->__('Can not retrieve document.') ?>'];
+                        appendMessageUl(errorMessages, 'messages', 'error-msg', 'glyphicon glyphicon-exclamation-sign');
+                        console.log('appendMessageUl #22');
+                        return;
+                    }
+                });
+        return false;
+    }
+
+    // Check hidden checkboxes in case offer page
+    function checkOfferHdnChkBx()
+    {
+        jQuery('input:checkbox').attr('checked', false);
+        jQuery('#tabularRowsData').find('input[type=checkbox]').prop('checked', true);
+    }
+
+    jQuery(document).ready(function () {
+        localStorage.mediaDownloadSource = '<?php print "$_docTypeShortName@detailview.html"; ?>';
+        localStorage.documentId = <?php print $csvId; ?>;
+
+<?php if ($documentMode == 'offer') : ?>
+    <?php if ( $mayAcceptOffer && $mayAddOfferToCart ) : ?>
+        <?php
+            if (intval(Mage::getStoreConfig('schrack/shop/log_offer_details')) == 1) {
+                $customerEntityId = Mage::getSingleton('customer/session')->getCustomer()->getId();
+                $docId = $_order->getSchrackWwsOrderNumber();
+                if ($customerEntityId && $docId) {
+                    $msg  = 'Customer-Entiy-Id = ' . $customerEntityId;
+                    $msg .= ' and WWS-Order = ' . $docId;
+                    $msg .= ' (WWS-Offer = ' . $_documentId . ')';
+                    $msg .= ' is in the WRONG MODE (SAP-OCI / IDS)';
+                    Mage::log($msg, null, 'possible_offer_accepts.log');
+                }
+            }
+        ?>
+
+        var gap = parseInt(jQuery('#add-offer-to-cart-button').css('marginRight'));
+        var redBtnWidth = jQuery('#order-button').width();
+        var blueBtnWidth = jQuery('#add-offer-to-cart-button').width();
+        var blueBtnWidthPlus =  blueBtnWidth + gap;
+        if ( redBtnWidth != blueBtnWidthPlus ) {
+            if ( redBtnWidth > blueBtnWidthPlus ) {
+                jQuery('#add-offer-to-cart-button').width(redBtnWidth - gap);
+            } else {
+                jQuery('#order-button').width(blueBtnWidthPlus);
+            }
+        }
+    <?php elseif ( $mayAddOfferToCart ) : ?>
+        jQuery('#add-offer-to-cart-button').css('marginRight','0')
+    <?php endif; ?>
+        localStorage.mediaDownloadSourceDetail = "My Account Offers";
+<?php endif; ?>
+
+<?php if ($documentMode == 'order') : ?>
+        localStorage.mediaDownloadSourceDetail = "My Account Orders";
+<?php endif; ?>
+
+<?php if ($documentMode == 'shipment') : ?>
+        localStorage.mediaDownloadSourceDetail = "My Account Shipments";
+<?php endif; ?>
+
+<?php if ($documentMode == 'invoice') : ?>
+        localStorage.mediaDownloadSourceDetail = "My Account Invoices";
+<?php endif; ?>
+<?php if ($documentMode == 'creditmemo') : ?>
+        localStorage.mediaDownloadSourceDetail = "My Account Creditmemos";
+<?php endif; ?>
+
+        var iplVal = '<?php echo $i; ?>';
+        var jplVal = '<?php echo $j; ?>';
+        if(iplVal == 1 && jplVal <= 1) {
+            jQuery('#allCheckcBoxReq').hide();
+        }
+
+        jQuery('#documentNumberContainer').text('<?php echo htmlentities($pageTitleNumber, ENT_QUOTES, "UTF-8");; ?>');
+        var docuemTitleNumberJs = "<?php echo htmlentities($pageTitleNumber, ENT_QUOTES, "UTF-8"); ?>";
+        var documentDescriptionJs = "<?php echo htmlentities($pageTitleDescription, ENT_QUOTES, "UTF-8"); ?>";
+        if(docuemTitleNumberJs != documentDescriptionJs) {
+            jQuery('#documentDescription').show();
+        }
+
+        jQuery('.print_button_detailview_pdf').on('click', function () {
+            var documentDownloadUrl = '<?php echo $this->getDownloadUrl() ?>';
+            var documentType = 'no document type found (documentDownloadUrl = ' + documentDownloadUrl + ')';
+
+            if (documentDownloadUrl.indexOf("offer") >= 0) documentType = 'offer (pdf)';
+            if (documentDownloadUrl.indexOf("order") >= 0) documentType = 'order (pdf)';
+            if (documentDownloadUrl.indexOf("invoice") >= 0) documentType = 'invoice (pdf)';
+            if (documentDownloadUrl.indexOf("shipment") >= 0) documentType = 'shipment (pdf)';
+            if (documentDownloadUrl.indexOf("creditmemo") >= 0) documentType = 'creditmemo (pdf)';
+
+            if (dataLayer) {
+                dataLayer.push({
+                    'event' : 'userDownloads',
+                    'eventCategory' : 'File Download',
+                    'eventAction' : 'Document Download',
+                    'eventLabel' : documentType
+                });
+            }
+
+            openUrl(documentDownloadUrl);
+            return false;
+        });
+
+        jQuery('.print_button_detailview_csv').on('click', function () {
+            var csvUrl = '<?php echo $_csvUrl; ?>';
+            var documentType = 'no document type found (csvUrl = ' + csvUrl + ')';
+
+            if (csvUrl.indexOf("offer") >= 0) documentType = 'offer (csv)';
+            if (csvUrl.indexOf("order") >= 0) documentType = 'order (csv)';
+            if (csvUrl.indexOf("invoice") >= 0) documentType = 'invoice (csv)';
+            if (csvUrl.indexOf("shipment") >= 0) documentType = 'shipment (csv)';
+            if (csvUrl.indexOf("creditmemo") >= 0) documentType = 'creditmemo (csv)';
+
+            if (dataLayer) {
+                dataLayer.push({
+                    'event' : 'userDownloads',
+                    'eventCategory' : 'File Download',
+                    'eventAction' : 'Document Download',
+                    'eventLabel' : documentType
+                });
+            }
+
+            window.open(csvUrl,'_blank');
+            return false;
+        });
+
+        jQuery('#add-offer-to-cart-button').on('click', function () {
+            if ( ! checkOfferInCart() ) {
+                return;
+            }
+            cartFE.addCheckedItemsToCart('rowId', 'sku', 'quantityFieldHidden');
+            return false;
+        });
+
+
+        function ignoreInvalidEntries(checkElement) {
+            var uncheckedValue = checkElement.val();
+            var checkedValue = '';
+            var allowedCharacters = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '.'];
+            var lineNumber = 0;
+            var triggerCleanedValue = false;
+            lineNumber = checkElement.attr('id').replace('quantityField-', '');
+
+            for (var i = 0; i < uncheckedValue.length; i++) {
+                if (jQuery.inArray(uncheckedValue[i], allowedCharacters) != -1) {
+                    checkedValue = checkedValue + uncheckedValue[i];
+                } else {
+                    triggerCleanedValue = true;
+                }
+            }
+
+            if (triggerCleanedValue == true) {
+                checkElement.val(checkedValue);
+            } else {
+                jQuery('#quantityFieldHidden-' + lineNumber).val(checkedValue);
+            }
+        }
+
+        // For price calculation on qty update
+        function calculatePrices(inputTextElement) {
+            var localCurrency = getLocaleCurrencyFromSinglePrice();
+            // Get affected row:
+            var lineNumber = inputTextElement.attr('id').replace('quantityField-', '');
+
+            // Get new (changed) quantity:
+            var newQuantity = inputTextElement.val();
+            var newQuantityCalculated = 1;
+            var schrackPriceUnit = parseInt(jQuery('#price_unit-' + lineNumber).val());
+            var surchargeAmount = jQuery('#surcharge_amount_simple-' + lineNumber).val();
+            var surchargeAmountCalculated = 0;
+            var oldQuantity = jQuery('#qty-' + lineNumber).val();
+
+            if ( isNaN(schrackPriceUnit) ) {
+                // must be DMAT or something
+                schrackPriceUnit = 1;
+            }
+
+            if (newQuantity != 1) {
+                newQuantityCalculated = newQuantity / schrackPriceUnit;
+            }
+
+            if (surchargeAmount > 0 && schrackPriceUnit > 0) {
+                surchargeAmountCalculated = newQuantity * (surchargeAmount / oldQuantity);
+            }
+
+            // Get singlePrice and multiply with new quantity:
+            var singlePriceMoneyString = jQuery('#singlePrice-' + lineNumber).text();
+            var realSinglePrice = getRealMoneyValueFromLocaleString(singlePriceMoneyString);
+
+            if (isProjectant) {
+                var newRowTotalSum = '';
+            } else {
+                var newRowTotalSum = (realSinglePrice * newQuantityCalculated) / 100 + surchargeAmountCalculated;
+                newRowTotalSum = DelocaleString(newRowTotalSum, '.', 3, 2);
+            }
+
+            // Set new value to row-total:
+            jQuery('#rowTotalPrice-' + lineNumber).text(localCurrency + ' ' + newRowTotalSum);
+
+            // Calculate all:
+            rowColumnTotal();
+        }
+
+
+        function getLocaleCurrencyFromSinglePrice() {
+            // Take first single price element as base currency:
+            var completeMoneyString = jQuery('#singlePrice-0').text();
+
+            // Overriding for speacal case: invoice romania:
+<?php if (stristr($currentUrl, 'www.schrack.ro') && $documentMode == 'invoice'): ?>
+            completeMoneyString = "RON";
+<?php endif; ?>
+            return completeMoneyString.substring(0, 3);
+        }
+
+
+        function getRealMoneyValueFromLocaleString(moneyStringInput) {
+            var moneyStringOutput = 0;
+            var localCurrency = getLocaleCurrencyFromSinglePrice();
+            moneyStringInput = moneyStringInput.replace(new RegExp(localCurrency, "gi"), "");
+            // Removes all useless chars:
+            moneyStringInput = moneyStringInput.replace(' ', '');
+            moneyStringInput = moneyStringInput.replace(' ', '');
+            moneyStringInput = moneyStringInput.replace(',', '');
+            moneyStringInput = moneyStringInput.replace('.', '');
+            moneyStringInput = moneyStringInput.replace('.', '');
+            moneyStringInput = moneyStringInput.replace('.', '');
+
+            moneyStringOutput = parseInt(moneyStringInput)
+
+            return moneyStringOutput;
+        }
+
+
+        function DelocaleString(x, sep, grp, dec) {
+            //add decimals
+            var y = x.toFixed(dec);
+            //strip decimals
+            var x_integer = y.split('.')[0];
+            var x_fraction = y.split('.')[1];
+            var x_fractionString = "";
+            if (dec > 0) {
+                x_fractionString = ',' + x_fraction;
+            }
+            var sx = ('' + x_integer).split('.'), s = '', i, j;
+            sep || (sep = ' '); // default seperator
+            grp || grp === 0 || (grp = 3); // default grouping
+            i = sx[0].length;
+            while (i > grp) {
+                j = i - grp;
+                s = sep + sx[0].slice(j, i) + s;
+                i = j;
+            }
+            s = sx[0].slice(0, i) + s;
+            sx[0] = s;
+            return sx.join('.') + x_fractionString
+        }
+
+
+        var rowColumnTotal = function () {
+            var moneyString = '';
+            var moneyStringTotal = 0;
+            var totalResult = '';
+            var localCurrency = getLocaleCurrencyFromSinglePrice();
+
+            if (isProjectant) {
+                totalResult = '';
+            } else {
+                jQuery('.rowTotal').each(function () {
+                    moneyString = jQuery(this).text();
+                    moneyString = getRealMoneyValueFromLocaleString(moneyString);
+                    moneyStringTotal += moneyString;
+                });
+
+                moneyString = moneyStringTotal / 100;
+                totalResult = DelocaleString(moneyString, '.', 3, 2);
+            }
+            jQuery('#rowColumnTotal').text(localCurrency + ' ' + totalResult);
+        }
+
+        var orderNow = function () {
+            var articleData = {};
+            var lineNumber = 0;
+            var sku = "";
+            var quantity = 0;
+            var positionNum = 0;
+            var i = 0;
+
+            jQuery('.quantityField').each(function () {
+                // Get affected row:
+                lineNumber = jQuery(this).attr('id').replace('quantityField-', '');
+                sku = jQuery("#sku-" + lineNumber).val();
+                quantity = jQuery("#quantityField-" + lineNumber).val();
+                positionNum = jQuery("#positionnum-" + lineNumber).val();
+                articleData[++i] = { "sku" : sku, "qty" : quantity, "positionNum": positionNum };
+            });
+console.log(articleData);
+
+            var jsonArticleData = JSON.stringify(articleData);
+
+            jQuery.ajax("<?php echo Mage::helper('schrackcore/url')->getUrlWithCurrentProtocol('customer/account/orderNow'); ?>", {
+                'success': function (data) {
+                    var datax = JSON.parse(data);
+                    if (datax.html) {
+                        jQuery('#ordernowpopup').html(datax.html);
+                        jQuery('#shipping-address-select').addClass('address-select form-control');
+                        jQuery('#pickup-address-select').addClass('address-select form-control');
+                        jQuery('#ordernowpopupBtn').click();
+                        return false;
+                    }
+                },
+                'type'          : 'POST',
+                'async'         : false,
+                // 'dataType'      : "json",
+                // 'contentType'   : "application/json; charset=utf-8",
+                'data'          : {
+                    'orderNo': '<?php echo $_order->getSchrackWwsOrderNumber() ?>',
+                    'articleData': jsonArticleData
+                }
+            });
+            return false;
+        };
+
+        // Call the calculation of row sum:
+        rowColumnTotal();
+
+        jQuery('#order-button').on('click', function () {
+            var cbCount = jQuery('.product-checkbox').length;
+            var cbUnchecked = jQuery('.product-checkbox:not(:checked)');
+            if ( cbCount != cbUnchecked.length && cbUnchecked.length > 0 ) {
+                cbUnchecked.each(function(i, e) {
+                    var id = jQuery(this).prop('id');
+                    var inputID = 'quantityField-' + id.split('-')[1];
+                    jQuery('#' + inputID).val(0);
+                });
+            }
+
+            jQuery("#order-button").css("pointer-events", "none");
+            jQuery('#order-button').addClass('grayscale');
+            if (jQuery('#block-order').val() == 0) {
+                checkOfferHdnChkBx();
+                orderNow();
+            } else {
+                jQuery("html, body").animate({scrollTop: 0}, "slow");
+                console.log('ScrollTop #60');
+            }
+            setTimeout( function() {
+                    jQuery("#order-button").css("pointer-events", "auto");
+                    jQuery('#order-button').removeClass('grayscale');
+                }, 1000
+            );
+            return false;
+        });
+
+        jQuery('#reorder-button').on('click', function () {
+            var cbCount = jQuery('.product-checkbox').length;
+            var cbUnchecked = jQuery('.product-checkbox:not(:checked)');
+            if ( cbCount != cbUnchecked.length && cbUnchecked.length > 0 ) {
+                cbUnchecked.each(function(i, e) {
+                    var id = jQuery(this).prop('id');
+                    var inputID = 'quantityField-' + id.split('-')[1];
+                    jQuery('#' + inputID).val(0);
+                });
+            }
+
+            jQuery("#reorder-button").css("pointer-events", "none");
+            jQuery('#reorder-button').addClass('grayscale');
+            if (jQuery('#block-order').val() == 0) {
+                checkOfferHdnChkBx();
+                orderNow();
+            } else {
+                jQuery("html, body").animate({scrollTop: 0}, "slow");
+                console.log('ScrollTop #60');
+            }
+            setTimeout( function() {
+                    jQuery("#reorder-button").css("pointer-events", "auto");
+                    jQuery('#reorder-button').removeClass('grayscale');
+                }, 1000
+            );
+            return false;
+        });
+
+        jQuery('#order-button').on('dblclick', function () {
+            console.log('Double Click is not good!');
+        });
+
+        jQuery('form#documents_form').submit(function () {
+            var el = jQuery('form#documents_form input[name="text"]');
+
+            if (el.val() === '<?php echo $_textDefault ?>')
+                el.val('');
+        });
+        jQuery('select.dropdown-menu').dropdown({activateOnClick: false});
+
+        jQuery('.quantityField').each(function () {
+
+            // Register event for change of amount:
+            jQuery(this).on('keyup change', function () {
+                ignoreInvalidEntries(jQuery(this));
+
+                // Get new (changed) quantity:
+                var lineNumber = jQuery(this).attr('id').replace('quantityField-', '');
+                var newQuantity = jQuery(this).val();
+                newQuantity = newQuantity.replace('.', '');
+
+                // Check first, if quantity is higher than minimum order quantity, in case of value higher than 0:
+                if (newQuantity > 0) {
+                    jQuery(this).prop("readonly", true);
+                    var sku = jQuery("#sku-" + lineNumber).val();
+
+                    // Check minimum sales unit:
+                    jQuery.ajax("<?php echo Mage::helper('schrackcore/url')->getUrlWithCurrentProtocol('catalog/product/checkQuantity'); ?>", {
+                        'type': 'POST',
+                        'data': {
+                            'sku': sku,
+                            'desiredQuantity': newQuantity
+                        },
+                        'success': function (data) {
+                            // if ( typeof data  == "string" && data.length > 1 ) {
+                            try {
+                                var datax = jQuery.parseJSON(data);
+
+                                if (datax.MessageText && datax.newQuantity) {
+                                    // Info message that desired quantity is not available in this proportion:
+                                    var errorMessages = [datax.MessageText];
+                                    appendMessageUl(errorMessages, 'messages', 'error-msg', 'glyphicon glyphicon-exclamation-sign');
+                                    console.log('appendMessageUl #23');
+
+                                    // Set new wrong value to the correct possible value:
+                                    jQuery('#block-order').val(jQuery('#block-order').val() + 1);
+                                    jQuery('#order-button').addClass('grayscale');
+
+                                    if (jQuery('#block-order').val() == 1) {
+                                        jQuery("html, body").animate({scrollTop: 0}, "slow");
+                                        console.log('ScrollTop #61');
+                                    }
+                                } else {
+                                    jQuery('#block-order').val(0);
+                                    jQuery('#order-button').removeClass('grayscale');
+                                }
+                            } catch ( e ) {
+                                console.log("catalog/product/checkQuantity returned invalid JSON");
+                            }
+                            jQuery('#quantityField-' + lineNumber).prop("readonly", false);
+                        }
+                    });
+                } else {
+                    jQuery('#block-order').val(0);
+                    jQuery('#order-button').removeClass('grayscale');
+                 }
+
+                    // Calculate all prices again, depending on new entry:
+                    calculatePrices(jQuery(this));
+                });
+
+                jQuery(this).on('keyup keypress change', function () {
+                    //jQuery('#notice-message-container').hide();
+                });
+            });
+
+            // For label printing dialog box
+            jQuery('.labelprint').on('click', function(){
+                var ajaxUrl = '<?php echo Mage::getUrl('catalog/download/getDownloadMediaDialog',array('_secure'=>true));?>';
+                var source = localStorage.mediaDownloadSource;
+<?php if (!isset($activePl)) $activePl = null; ?>
+            localStorage.partslistID = '<?php if ($activePl && is_object($activePl)) echo $activePl->getId(); ?>';
+            jQuery.ajax(ajaxUrl,  {
+                'type': 'POST',
+                'async': false,
+                'data': {
+                    'source': source,
+                    'affectedItems': skuList
+                },
+                'success': function (data) {
+                    var datax = JSON.parse(data);
+                    if (datax.html) {
+                        jQuery('#print-label').html(datax.html);
+                        jQuery('#print-label').modal();
+                    }
+                }
+            });
+        });
+
+        jQuery('.document-item-detail-link').on('click', function() {
+            var actionUrl = '<?php echo $actionUrl; ?>';
+            var documentArea = 'no document type for area found (actionUrl = ' + actionUrl + ')';
+            var sku = jQuery(this).attr('data-sku');
+
+            if (actionUrl.indexOf("offer") >= 0) documentArea = 'My Offers';
+            if (actionUrl.indexOf("order") >= 0) documentArea = 'My Orders';
+            if (actionUrl.indexOf("invoice") >= 0) documentArea = 'My Invoices';
+            if (actionUrl.indexOf("shipment") >= 0) documentArea = 'My Shipment';
+            if (actionUrl.indexOf("creditmemo") >= 0) documentArea = 'My Creditmemos';
+
+            var trackingData                 = new Object();
+            trackingData.trackingEnabled     = globalTRACKING_ENABLED;
+            trackingData.pageType            = 'my account detail view';
+            trackingData.affectedSku         = sku;
+            //trackingData.price             = dataProductPrice;
+            trackingData.currencyCode        = globalCURRENCY_CODE;
+            trackingData.trackingSource      = documentArea;
+            trackingData.typoUrl             = globalTYPO_URL;
+            trackingData.shopCategoryAjaxUrl = globalSHOP_CATEGORY_AJAX_URL;
+            trackingData.formKey             = globalFORM_KEY;
+            trackingData.crmUserId           = globalCRM_USER_ID;
+            trackingData.customerType        = globalCUSTOMER_TYPE;
+            trackingData.accountCrmId        = globalACCOUNT_CRM_ID;
+            trackingData.position            = 1;
+
+            trackProductClick(trackingData);
+        });
+
+        if (jQuery(window).width() < 993) {
+            jQuery('#breadcrumb_block').removeClass('breadcrumb_custom');
+            jQuery('#breadcrumb_block').addClass('breadcrumb_my_account');
+        }
+
+        console.log('Customer-Data: GEO IP (may perform checkout) = ' + '<?php echo $geoIPHelperMayPerformCheckout; ?>');
+    });
+
+<?php if ($_isOffer && $_offerIsValid == false) : ?>
+    <?php
+        if (intval(Mage::getStoreConfig('schrack/shop/log_offer_details')) == 1) {
+            $customerEntityId = Mage::getSingleton('customer/session')->getCustomer()->getId();
+            $docId = $_order->getSchrackWwsOrderNumber();
+            if ($customerEntityId && $docId) {
+                $msg  = 'Customer-Entiy-Id = ' . $customerEntityId;
+                $msg .= ' and WWS-Order = ' . $docId;
+                $msg .= ' (WWS-Offer = ' . $_documentId . ')';
+                $msg .= ' is calling an INVALID OFFER ->';
+                $msg .= ' OFFER EXPIRYTIME : ' . $offerExpiryTime;
+                $msg .= ' CURRENT TIME : ' . $currentTime;
+                Mage::log($msg, null, 'possible_offer_accepts.log');
+            }
+        }
+    ?>
+        jQuery('#order-button').remove();
+<?php else: ?>
+    <?php
+           if (intval(Mage::getStoreConfig('schrack/shop/log_offer_details')) == 1) {
+               $customerEntityId = Mage::getSingleton('customer/session')->getCustomer()->getId();
+               $docId = $_order->getSchrackWwsOrderNumber();
+               if ($customerEntityId && $docId) {
+                   $msg  = 'Customer-Entiy-Id = ' . $customerEntityId;
+                   $msg .= ' and WWS-Order = ' . $docId;
+                   $msg .= ' (WWS-Offer = ' . $_documentId . ')';
+                   $msg .= ' is calling an VALID OFFER ->';
+                   $msg .= ' OFFER EXPIRYTIME : ' . $offerExpiryTime;
+                   $msg .= ' CURRENT TIME : ' . $currentTime;
+                   Mage::log($msg, null, 'possible_offer_accepts.log');
+               }
+           }
+    ?>
+<?php endif; ?>
+
+    function trackSearch() {
+        var actionUrl = '<?php echo $actionUrl; ?>';
+        var documentArea = 'no document type for area found (actionUrl = ' + actionUrl + ')';
+        var searchText = jQuery('#textsearch').val();
+        var blindText = '<?php echo $_text ?>';
+
+        if (actionUrl.indexOf("offer") >= 0) documentArea = 'My Offers';
+        if (actionUrl.indexOf("order") >= 0) documentArea = 'My Orders';
+        if (actionUrl.indexOf("invoice") >= 0) documentArea = 'My Invoices';
+        if (actionUrl.indexOf("shipment") >= 0) documentArea = 'My Shipment';
+        if (actionUrl.indexOf("creditmemo") >= 0) documentArea = 'My Creditmemos';
+
+        if (dataLayer && (blindText != searchText) && searchText != '') {
+            dataLayer.push({
+                'event' : 'dashboardSearch',
+                'eventCategory' : documentArea,
+                'eventLabel' : searchText
+            });
+        }
+        return false;
+    }
+
+    function checkOfferInCart () {
+        var cartOfferNum = jQuery('#cartOffer').val();
+        if ( cartOfferNum > '' ) {
+            var offerNum = jQuery('#documentNumberContainer').text();
+            if ( offerNum != cartOfferNum ) {
+                var msg = "<?php echo $this->__('There is already another offer in your shopping cart!') ?>";
+                alert(msg);
+                return false;
+            }
+        }
+        return true;
+    }
+
+
+<?php if ($documentMode != 'offer') : ?>
+    jQuery('.bttn-md.pull-right.addtocart.generic').on('click', function () {
+        cartFE.addCheckedItemsToCart('rowId', 'sku', 'quantityFieldHidden');
+        return false;
+    });
+<?php endif; ?>
+
+
+//]]></script>
+<!-- app/design/frontend/schrack/schrackresponsive/template/customer/account/documents/detailview.phtml (end) -->

@@ -1,0 +1,22 @@
+<!-- app/design/frontend/schrack/schrackresponsive/template/page/html/startmenu.phtml (start) -->
+<div id="leftNavigationTop" class="row startmenu">
+    <div class="large-12 columns">
+        <div class="cart"><a href="<?php echo $this->getUrl('/')?>" title="<?php echo $this->__('Online Shop')?>"><?php echo $this->__('Online Shop')?></a></div>
+        <?php if ( !Mage::getSingleton('customer/session')->isLoggedIn() ):?>
+            <div class="login login-link"><a class="button-arrow large-center" href="<?php echo $this->getUrl('customer/account/login')?>"><div><img src="<?php echo $this->getSkinUrl('schrackdesign/Public/Images/button-arrow-large-arrow.png')?>"/><?php echo $this->__('Login')?></div></a></div>
+        <?php endif; ?>
+        <div class="account"><a href="<?php echo $this->getUrl('customer/account')?>"><?php echo $this->__('My Account')?></a></div>
+        <div class="quickadd"><a href="<?php echo $this->getUrl('checkout/cart')?>"><?php echo $this->__('Quickadd')?></a></div>
+        <div class="partslist"><a href="<?php echo $this->getUrl('wishlist/partslist/view')?>"><?php echo $this->__('Partslist')?></a></div>
+        <?php $country = Mage::getStoreConfig('schrack/general/country');
+            $urlPart = Mage::getStoreConfig('schrack/typo3/forgotpasswordurl');
+            $url = Mage::getStoreConfig('schrack/typo3/typo3url') . $urlPart;
+            if (isset($urlPart) && strlen($urlPart)):
+        ?>
+        <?php endif;?>
+        <?php if ( Mage::getSingleton('customer/session')->isLoggedIn() ):?>
+            <div class="logout"><a href="<?php echo $this->getUrl('customer/account/logout')?>"><?php echo $this->__('Logoff')?></a></div>
+        <?php endif;?>
+    </div>
+</div>
+<!-- app/design/frontend/schrack/schrackresponsive/template/page/html/startmenu.phtml (end) -->

@@ -1,0 +1,55 @@
+<!-- app/design/frontend/schrack/schrackresponsive/template/customer/account/documents/snippet/desktop.phtml (start) -->
+<?php
+    $ordersList = json_decode(json_encode(Mage::registry('ordersList')),TRUE);
+    $counter = 0;
+?>
+
+<?php
+if(count($ordersList) > 0) :
+    foreach ($ordersList as $order) :
+?>
+        <tr class="<?php echo (++$counter%2==0) ? "even": "odd" ?>">
+            <td><?php echo $order['nameProject']; ?></td>
+            <td><a class="order-number number_tracking_information" href="<?php echo $order['detailUrl']; ?>"><?php echo $order['documentNumber']; ?></a></td>
+            <td><?php echo $order['orderNumber']; ?></td>
+            <td><?php echo $order['creationDate']; ?></td>
+            <td><?php echo $order['status']; ?></td>
+            <td><?php echo $order['actions']; ?></td>
+        </tr>
+    <?php endforeach; ?>
+<?php endif; ?>
+
+<script type="text/javascript">
+//<![CDATA[
+
+    jQuery(document).ready(function() {
+
+        jQuery('.print_button_overview_csv').on('click', function () {
+            var documentDownloadUrl = jQuery(this).attr('href');
+            var documentType = 'no document type found';
+
+            if (documentDownloadUrl.indexOf("offer") >= 0) documentType = 'offer (csv)';
+            if (documentDownloadUrl.indexOf("order") >= 0) documentType = 'order (csv)';
+            if (documentDownloadUrl.indexOf("invoice") >= 0) documentType = 'invoice (csv)';
+            if (documentDownloadUrl.indexOf("shipment") >= 0) documentType = 'shipment (csv)';
+            if (documentDownloadUrl.indexOf("invoice") >= 0) documentType = 'invoice (csv)';
+            if (documentDownloadUrl.indexOf("creditmemo") >= 0) documentType = 'creditmemo (csv)';
+
+            if (dataLayer) {
+                dataLayer.push({
+                    'event' : 'userDownloads',
+                    'eventCategory' : 'File Download',
+                    'eventAction' : 'Document Download',
+                    'eventLabel' : documentType
+                });
+            }
+
+            window.location.href = documentDownloadUrl;
+            return false;
+        });
+
+    });
+
+//]]>
+</script>
+<!-- app/design/frontend/schrack/schrackresponsive/template/customer/account/documents/snippet/desktop.phtml (end) -->

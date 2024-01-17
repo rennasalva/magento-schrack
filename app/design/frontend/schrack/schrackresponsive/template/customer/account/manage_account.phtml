@@ -1,0 +1,85 @@
+<!-- app/design/frontend/schrack/schrackresponsive/template/customer/account/manage_account.phtml (start) -->
+<?php 
+$_customerMaySeePrices = false;
+$_session = Mage::getSingleton('customer/session');
+$aclroleClass = '';
+if ($_session->isLoggedIn()) {
+    $_customer = $_session->getCustomer();
+    $_customerMaySeePrices = $_customer->isAllowed('price', 'view');
+    $_geoipHelper = Mage::helper('geoip/data');
+    $_maySeePrices = $_geoipHelper->maySeePrices() && $_geoipHelper->mayPerformCheckout();
+    $aclrole = $_customer->getSchrackAclRole();
+    if($aclrole == 'staff' || $aclrole == 'projectant' || $aclrole == 'customer'|| $aclrole == 'list_price_customer'){
+        $aclroleClass = 'hide';
+    }
+} else {
+    $_customer = null;
+    $_customerMaySeePrices = false;
+    $_maySeePrices = false;
+}
+
+$showMenuLineBecauseImNotAProspect = true;
+$customerType = $_session->getCustomer()->getSchrackCustomerType(); // ProspectTypes: 'light-prospect' / 'full-prospect'
+// Prospect Light / Full
+if (in_array($customerType, array('light-prospect', 'full-prospect'))) {
+    $showMenuLineBecauseImNotAProspect = false;
+}
+
+$eRechnungLink = "";
+$eRechnungLinkDescription = "";
+
+// Hardcoded E-Rechnung Link (avilable also for outlogged users):
+if (stristr(Mage::getStoreConfig('schrack/general/country'), 'at')) {
+    $eRechnungLink = '//www.schrack.at/e-rechnung/';
+    $eRechnungLinkDescription = 'E-Rechnungen';
+}
+if (stristr(Mage::getStoreConfig('schrack/general/country'), 'de')) {
+    $eRechnungLink = '//www.schrack-technik.de/e-rechnungen/';
+    $eRechnungLinkDescription = 'E-Rechnungen';
+}
+
+$sessionCustomer  = $_session->getCustomer();
+
+$schrackWwsContactNumber = $sessionCustomer->getSchrackWwsContactNumber();
+if ($schrackWwsContactNumber == '-1') {
+    $actAsCustomerActivated = true;
+} else {
+    $actAsCustomerActivated = false;
+}
+?>
+<div class="row">
+    <?php if ($showMenuLineBecauseImNotAProspect == true || $actAsCustomerActivated == true) : ?>
+	<div class="col-xs-12 info-box">
+        <h1><?php echo $this->__('Manage Account') ?></h1>
+		<h2 class="headingBg"><?php echo $this->__('Company Settings') ?></h2>
+	</div>
+	<div class="col-xs-12 myAccount">
+		<ul class="leftNav shop_tracking_leftNav">
+			<?php if (($_customer && $_customer->isAllowed('accessRight', 'edit')) || $actAsCustomerActivated == true) : ?>
+				<li class="<?php if (stristr($currentUrl, 'accountadministration')) : ?>  active<?php endif; ?>"><a href="<?php echo $this->getUrl('customer/accountadministration/'); ?>"><span class="manageAccountIcon txtalgn"></span><br><?php echo $this->__('User Accounts'); ?> <span class="adddtnlTxt">(<?php $ob = new Schracklive_SchrackCustomer_Block_Account_Administration(); echo $ob->getVisibleContacts()->count()?>)</span></a></li>
+			<?php endif; ?>
+			<?php if ($showMenuLineBecauseImNotAProspect == true || $actAsCustomerActivated == true) : ?>
+				<li class=""><a href="<?php echo Mage::getUrl('customer/address') ?>"><span class="addressListIcon txtalgn"></span><br><?php echo $this->__('Address List') ?> <span class="adddtnlTxt">(<?php echo count($_customer->getAddresses())?>)</span></a></li>
+			<?php endif; ?>
+                        <?php if ($eRechnungLinkDescription) : ?>
+			<li><a href="<?php echo $eRechnungLink; ?>"><span class="eInvoiceIcon"></span><br><?php echo $eRechnungLinkDescription; ?></a></li>
+                        <?php endif; ?>
+                </ul>
+	</div>
+    <?php endif; ?>
+	<div class="col-xs-12 info-box">
+		<h2 class="headingBg"><?php echo $this->__('Personal Settings') ?></h2>
+	</div>
+	<div class="col-xs-12 myAccount">
+		<ul class="leftNav shop_tracking_leftNav">
+                    <?php if ($showMenuLineBecauseImNotAProspect == true || $actAsCustomerActivated == true) : ?>
+			<li class=""><a href="<?php echo Mage::getUrl('customer/account/edit') ?>"><span class="myDataIcon"></span><br><?php echo $this->__('My Data') ?></a></li>
+			<li class=""><a href="<?php echo $this->getUrl('customer/account/editpickup'); ?>"><span class="storeIcon txtalgn"></span><br><?php echo $this->__('My Default Store'); ?> <span class="adddtnlTxt">(<?php echo Mage::helper('schrackshipping/pickup')->getWarehouse($_customer->getSchrackPickup())->getName();?>)</span></a></li>
+			<li class="<?php echo $aclroleClass; ?>"><a href="<?php echo $this->getUrl('customer/account/editpayment'); ?>"><span class="myDefaultPaymentIcon txtalgn"></span><br><?php echo $this->__('My Default Payment Option'); ?> <span class="adddtnlTxt">(<?php echo $_customer->getSchrackDefaultPaymentPickup();?>)</span></a></li>
+                    <?php endif; ?>
+			<li class=""><a href="<?php echo Mage::getUrl('customer/account/editpassword') ?>"><span class="changePasswordIcon txtalgn"></span><br><?php echo $this->__('Change Password'); ?></a></li>
+			<li class=""><a href="<?php echo Mage::getUrl('customer/account/editotheradvisors') ?>"><span class="otherAdvisorsIcon txtalgn"></span><br><?php echo $this->__('Other Advisors'); ?></a></li>
+		</ul>
+	</div>
+</div>
+<!-- app/design/frontend/schrack/schrackresponsive/template/customer/account/manage_account.phtml (end) -->

@@ -1,0 +1,73 @@
+<!-- app/design/frontend/schrack/schrackresponsive/template/customer/account/documents/invoices.phtml (start) -->
+<?php $_sessionParams = Mage::getSingleton('customer/session')->getData('documentParams'); ?>
+
+<style>
+    #textsearch {
+        font-size: 16px !important;
+    }
+    #listingSearchIcon {
+        background: #00589d !important;
+        color: #fff !important;
+    }
+
+    @media (min-width: 1px) and (max-width: 992px) {
+        .my_account_invoices_content_wrapper {
+            margin-right: 16px !important;
+        }
+    }
+</style>
+
+<div id="my_account_invoices_wrapper" class="my_account_invoices_content_wrapper">
+    <h1><?php echo $this->__('My Invoices') ?></h1>
+    <form action="<?php echo $this->getUrl('*/*/*') ?>" method="get" id="documents_form">
+        <div class="row info-box three-d">
+            <div class="col-xs-12 posRel">
+                <div class="row fulltext-search">
+                    <div class="col-xs-12 columns">
+                        <div class="row hide-for-print">
+                            <div class="col-xs-8 col-sm-10 col-md-10">
+                                <div class="input-group serchIcon">
+                                    <?php
+                                    $_textDefault = $this->__('Order/Offer Data, Names, Addresses, Article IDs');
+                                    $_text = Mage::helper('schrackcore/array')->arrayDefault($_sessionParams, 'text', $_textDefault);
+                                    ?>
+                                    <input id="textsearch" class="form-control borderR0" type="text" name="text" data-func="invoiceAction" placeholder="<?php echo $this->__('search in invoices'); ?>" tabindex="1" >
+                                    <span class="input-group-addon" id="listingSearchIcon" tabindex="2"><span class="glyphicon glyphicon-search"></span></span> </div>
+                            </div>
+                            <div class="col-xs-4 col-sm-2 col-md-2 marginB10">
+                                <a href="javascript:void(0)" class="btn pull-right btn-default filter-btn marginT0" id="filterMenu"><?php echo $this->__('Filter') ?> <span class="filter-btn-icon"></span></a>
+                                <div id="dashFilterContainer" class="dropdown-menu filterPopup" tabindex="-5">
+                                    <?php echo $this->getChildHtml('documents_filter') ?>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <?php echo $this->getChildHtml('documents_results') ?>
+    </form>
+</div>
+
+
+<script type="text/javascript">
+//<![CDATA[
+
+    jQuery(document).ready(function () {
+        localStorage.mediaDownloadSourceDetail = "My Account Invoices";
+
+        if (jQuery(window).width() < 993) {
+            jQuery('#breadcrumb_block').removeClass('breadcrumb_custom');
+            jQuery('#breadcrumb_block').addClass('breadcrumb_my_account');
+        }
+    });
+
+    jQuery(function () {
+<?php $_locale = explode('_', Mage::app()->getLocale()->getLocaleCode()); ?>
+        jQuery(".date-picker").datepicker(jQuery.datepicker.regional['<?php echo $_locale[0]; ?>']);
+    });
+
+//]]>
+</script>
+<!-- app/design/frontend/schrack/schrackresponsive/template/customer/account/documents/invoices.phtml (end) -->

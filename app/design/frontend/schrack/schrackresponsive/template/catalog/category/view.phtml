@@ -1,0 +1,285 @@
+<!-- app\design\frontend\schrack\schrackresponsive\template\catalog\category\view.phtml (start) -->
+<?php
+    $_category = $this->getCurrentCategory();
+    Varien_Profiler::start('category/view.phtml->init');
+    $_helper = $this->helper('catalog/output');
+    $_category = $this->getCurrentCategory();
+    $currentTrackingCategoryId = $_category->getId4googleTagManager();
+    $currentCategory = $_category->getData('url_key');
+    $showContent = true;
+
+    $sessionCustomerId = Mage::getSingleton('customer/session')->getCustomer()->getId();
+    $aclRoleId = Mage::getModel('customer/customer')->load($sessionCustomerId)->getSchrackAclRoleId();
+    $isProjectant = Mage::helper('schrack/acl')->isProjectantRoleId($aclRoleId);
+
+    // Lock promotions for projectants:
+    if ($isProjectant && $currentCategory == 'promotions') {
+        $showContent = false;
+    }
+
+    $attachments = array_filter( $this->getCurrentCategory()->getAttachmentsCollection()->getItems(), function($att) { return $att->getFiletype() !== 'produktkataloge'; } );
+    Mage::register('current_category_attachments',$attachments);
+    Varien_Profiler::stop('category/view.phtml->init');
+
+    $checkSorting = Mage::app()->getRequest()->getServer('HTTP_REFERER');
+    $extractSorting = explode('=', $checkSorting);
+    $sortingDefault = end($extractSorting);
+?>
+<?php if ($showContent) : ?>
+    <?php Varien_Profiler::start('category/view.phtml->messageblock'); ?>
+
+    <?php echo $this->getMessagesBlock()->getGroupedHtml() ?>
+
+    <?php Varien_Profiler::stop('category/view.phtml->messageblock'); ?>
+    <?php Varien_Profiler::start('category/view.phtml->header'); ?>
+
+    <input type="hidden" id="category_id" value="<?php echo $_category->getId(); ?>" />
+    <?php if($_category->isCatalogCategory()) : ?>
+        <?php if(strlen(trim(strip_tags($this->getChildHtml('category.cms_content')))) > 0) : ?>
+            <div class="catalogBnrCont">
+                <?php //echo $this->getChildHtml('category.cms_content'); ?>
+            </div>
+        <?php endif; ?>
+        <input type="hidden" id="activeproductcontainer" name="activeproductcontainer" value="catalog" />
+        <input type="hidden" id="catalog_next" name="catalog_next" value="<?php echo (int)Mage::registry('productLimit')+(int)Mage::registry('productStart'); ?>" />
+        <input type="hidden" id="catalog_count" name="catalog_count" value="<?php echo Mage::registry('productCount'); ?>" />
+        <div class="row" id="solrsearch-container">
+            <?php //echo $this->getLayout()->createBlock('solrsearch/form_search')->setTemplate('solrsearch/catalogue_search.phtml')->toHtml(); ?>
+        </div>
+    <?php else : ?>
+        <div class="col-md-12 padLR0 marginB15 clearfix category-header">
+            <div class="col-md-9 col-sm-9 col-xs-9 padL0" id="category-header">
+                <div class="headline-container">
+                    <?php //echo $this->getChildHtml('category.headline'); ?>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-3 col-xs-3 padR0 hidden-lg">
+                <div id="solrsearch-container" class="posRel search-attributes-mob">
+                    <?php //echo $this->getChildHtml('schrack_search'); ?>
+                </div>
+            </div>
+        </div>
+    <?php endif; ?>
+
+    <?php Varien_Profiler::stop('category/view.phtml->header'); ?>
+    <?php Varien_Profiler::start('category/view.phtml->description'); ?>
+
+    <!--div class="description-container">
+        <?php //echo $this->getChildHtml('category.description'); ?>
+    </div-->
+
+    <?php Varien_Profiler::stop('category/view.phtml->description'); ?>
+    <?php Varien_Profiler::start('category/view.phtml->child-categories'); ?>
+
+    <div class="row">
+        <div class="col-md-3 col-sm-3 col-xs-3 padR0 hidden-xs hidden-sm  hidden-md desktop-view">
+            <div class="dropdown-menu filterPopup openedBx search-attributes-desktop1 "></div>
+            <div class="col-md-12 firstViewLoader">
+                <div class="prdouct-box">
+                    <div class="product-name">
+                        <div class="progress">
+                            <div class="progress-bar progress-bar-gray progress-bar-striped active" role="progressbar" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style="width:100%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-12 col-lg-9 subcats-container">
+            <?php echo $this->getChildHtml('category.subcats'); ?>
+        </div>
+    </div>
+    <?php Varien_Profiler::stop('category/view.phtml->child-categories'); ?>
+    <?php Varien_Profiler::start('category/view.phtml->attachments'); ?>
+
+    <!-- div class="attachments-container">
+        <?php //echo $this->getChildHtml('category.attachments'); ?>
+    </div -->
+
+    <?php Varien_Profiler::stop('category/view.phtml->attachments'); ?>
+    <?php Varien_Profiler::start('category/view.phtml->products'); ?>
+
+
+    <div id="product-list-block" class="row">
+        <?php if($this->isContentMode() ) : ?>
+        <?php elseif($this->isMixedMode()) : ?>
+            <?php echo $this->getCmsBlockHtml(); ?>
+        <?php elseif (true) : ?>
+            <?php if ($_category->isCatalogCategory()) : ?>
+                <?php //echo $this->getLayout()->createBlock('catalog/product_list')->setTemplate('catalog/product/list/catalogue_table.phtml')->toHtml(); ?>
+            <?php else : ?>
+                <div class="product-list-frame hide">
+                    <div id="solrlist-container">
+                        <input type="hidden" id="activeproductcontainer" name="activeproductcontainer" value="products" />
+                        <input type="hidden" id="products_next" name="products_next" value="<?php echo (int)Mage::registry('productLimit')+(int)Mage::registry('productStart'); ?>" />
+                        <input type="hidden" id="accessories_next" name="accessories_next" value="0" />
+                        <input type="hidden" id="products_count" name="products_count" value="<?php echo Mage::registry('productCount'); ?>" />
+                        <input type="hidden" id="accessories_count" name="accessories_count" value="0" />
+                        <div class="product-list product-list-expand pull-left col-xs-12" data-name="category_list">
+                            <?php if (empty($_changeQtyListIndex)) $_changeQtyListIndex = false; ?>
+                            <input type="hidden" id="change-qty-list-index" value="<?php echo $_changeQtyListIndex; ?>" />
+                            <ul class="nav nav-tabs" role="tablist">
+                                <li role="presentation"
+                                    class="active shop_specific shop_specific_height">
+                                    <a class="shop_specific shop_specific_height"
+                                       id="productsBtn"
+                                       href="#products-outer"
+                                       aria-controls="products-outer"
+                                       role="tab"
+                                       data-toggle="tab"
+                                       onclick="jQuery('#activeproductcontainer').val('products'); jQuery('#solrsearch-container').show();">
+                                        <?php echo $this->__('Products'); ?>
+                                        <span class="badge"><?php echo Mage::registry('productCount'); ?></span>
+                                    </a>
+                                </li>
+                                <!-- CheckCache -->
+                                <li role="presentation"
+                                    class="shop_specific shop_specific_height">
+                                    <a class="shop_specific shop_specific_height"
+                                       id="accessoriesBtn"
+                                       href="#accessories"
+                                       aria-controls="accessories"
+                                       role="tab"
+                                       data-toggle="tab"
+                                       onclick="jQuery('#activeproductcontainer').val('accessories'); jQuery('#solrsearch-container').hide(); getAccessory();">
+                                        <?php echo $this->__('Accessories'); ?>
+                                        <span class="badge"><?php echo $_category->getAccessoryCount(); ?></span>
+                                    </a>
+                                </li>
+                            </ul>
+                            <div class="tab-content pull-left products-tab">
+                                <div role="tabpanel" class="tab-pane active row" id="products-outer">
+                                    <div class="col-md-3 col-sm-3 col-xs-3 padR0 hidden-xs hidden-sm hidden-md desktop-view product-view">
+                                        <div class="dropdown-menu filterPopup openedBx search-attributes-desktop">
+                                            <?php //echo $this->getChildHtml('schrack_search'); ?>
+                                        </div>
+                                        <div class="col-md-12 firstViewLoader">
+                                            <div class="prdouct-box">
+                                                <div class="product-name">
+                                                    <div class="progress">
+                                                        <div class="progress-bar progress-bar-gray progress-bar-striped active" role="progressbar" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style="width:100%"></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12 col-lg-9" id="products"></div>
+                                    <?php //echo $this->getChildHtml('product_list_table')?>
+                                </div>
+                                <div role="tabpanel" class="tab-pane" id="accessories"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            <?php endif; ?>
+        <?php endif; ?>
+    </div>
+    <?php Varien_Profiler::stop('category/view.phtml->products'); ?>
+
+    <?php Varien_Profiler::start('category/view.phtml->script1'); ?>
+
+    <div class="row col-md-12 col-lg-9 mainContRightSec cms-container"></div>
+
+    <script type="text/javascript">//<![CDATA[
+        var sort ="";
+        if(getParameterByName('sort')){
+            sort = getParameterByName('sort')
+        }else{
+            sort = 'ranking';
+        }
+
+        var isSafari = /^((?!chrome).)*safari/i.test(navigator.userAgent);
+        var isMobile = /^((?!chrome).)*iPod|iPhone|iPad/i.test(navigator.userAgent);
+        var firstLoad = true;
+        function setQty(id,qty) {
+            jQuery('#qty-' + id).val(qty);
+            myvar = 'productAddToCartForm_' + id;
+            window[myvar].submit();
+        }
+        //for back button ajax request
+        jQuery(document).ready(function(){
+            // Tracking of current category:
+            var categoryTrackingId = '<?php echo $currentTrackingCategoryId; ?>';
+
+            if (dataLayer) {
+                dataLayer.push({
+                    'event' : 'categoryNavigation',
+                    'eventLabel' : categoryTrackingId,
+                    'category' : categoryTrackingId
+                });
+            }
+
+            jQuery(window).on('popstate', function (e) {
+                //hack for safari, in safari browser, popstate fire on page load instead back button click
+                if ((isSafari && firstLoad) || (isMobile && firstLoad)){
+                    firstLoad = false;
+                    return;
+                }
+                //ajaxUpdateSubcategory(window.location);
+                jQuery('#productsBtn').click();
+                url = window.location.href;
+                catId = getParameterByName('catId');
+                if(catId || url.indexOf('fq') >= 0 || url.indexOf('q') >= 0){
+                    if(catId == null || catId == ''){
+                        catId = <?php echo $_category->getId(); ?>;
+                    }
+                    if(catId){
+                        needToUpdateBreadcrumbs = true;
+                    }
+                    jQuery('#category_id').val(catId);
+                    checkFilterFromUrl();
+                    dataArray.getRenderedCategoryBlocks = {'data' : {'query': getParameterByName('q'), 'start': 0, 'limit': 50, 'accessory':0, 'category': catId, 'facets': filterArray, 'general_filters': generalFilterArray}};
+                    ajaxDispatcherCall();
+                }else{
+                    window.location = window.location.href;
+                }
+            });
+
+            jQuery('body').append('<div id="toTop" class="btn btn-info print-hide-imp"><span class="glyphicon glyphicon-chevron-up"></span> <?php echo $this->__('Back to Top'); ?></div>');
+            jQuery(window).scroll(function () {
+                if (jQuery(this).scrollTop() != 0) {
+                    jQuery('#toTop').fadeIn();
+                } else {
+                    jQuery('#toTop').fadeOut();
+                }
+            });
+            jQuery('#toTop').click(function(){
+                jQuery("html, body").animate({ scrollTop: 0 }, 600);
+                console.log('ScrollTop #67');
+                return false;
+            });
+            jQuery(window).scroll(function () {
+                if (jQuery(window).scrollTop() + jQuery(window).height() + 400 >= jQuery(document).height()) {
+                    if(firstLoadForLoadMore){
+                        return;
+                    }
+                    if (loading == false && (parseInt(jQuery('#' + jQuery('#activeproductcontainer').val() + '_next').val()) < parseInt(jQuery('#' + jQuery('#activeproductcontainer').val() + '_count').val()))) {
+                        loading = true;
+                        needToUpdateBreadcrumbs = false;
+                        checkFilterFromUrl();
+                        accessory = 0;
+                        if (jQuery('#activeproductcontainer').val() == 'accessories') {
+                            accessory = 1;
+                        }
+                        dataArray.getRenderedCategoryBlocks = {'data' : {'query': jQuery('#search-attr-full').val(), 'accessory': accessory, 'start': jQuery('#' + jQuery('#activeproductcontainer').val() + '_next').val(), 'limit': 50, 'category': jQuery('#category_id').val(), 'facets': filterArray, 'general_filters': generalFilterArray}};
+                        ajaxDispatcherCall();
+                    }
+                }
+            });
+            //for first loads ajax request
+            checkFilterFromUrl();
+            needToUpdateBreadcrumbs = true;
+            //dataArray.getRenderedCategoryBlocks = {'data' : {'query': getParameterByName('q'), 'sort' : sort, 'start': 0, 'limit': 21, 'saleLimit' : 7, 'pageLimit' : 20, 'category': getParameterByName('catId'), 'facets': filterArray, 'general_filters': generalFilterArray, 'filterChanged': true}};
+            dataArray.getRenderedCategoryBlocks = {'data' : {'query': getParameterByName('q'), 'start': 0, 'limit': 50, 'accessory':0, 'category': <?php echo $_category->getId(); ?>, 'facets': filterArray, 'general_filters': generalFilterArray}};
+
+            // Ugly style-fix for bootstrap-issue!!!! :
+            if (jQuery('.catalog-category-view.categorypath-kataloge-html.category-kataloge').length > 0) {
+                if (jQuery('.dropdown-menu.filterPopup.openedBx.search-attributes-desktop1').html() == "") {
+                    jQuery('.col-md-3.col-sm-3.col-xs-3.padR0.hidden-xs.hidden-sm.hidden-md.desktop-view').remove();
+                }
+            }
+        });
+
+        //]]></script>
+    <?php Varien_Profiler::stop('category/view.phtml->script1'); ?>
+<?php endif; ?>
+<!-- app\design\frontend\schrack\schrackresponsive\template\catalog\category\view.phtml (end) -->

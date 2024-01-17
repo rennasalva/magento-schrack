@@ -1,0 +1,92 @@
+<?xml version="1.0"?>
+<layout version="0.1.0">
+    <account_account_index translate="label">
+        <reference name="root">
+            <action method="setTemplate">
+                <template>page/1column.phtml</template>
+            </action>
+        </reference>
+        <label>Account Account Dashlet</label>
+        <update handle="customer_account" />
+        <reference name="my.account.wrapper">
+            <block type="customer/form_edit" name="customer_edit" template="customer/account/manage_account.phtml"/>
+        </reference>
+        <reference name="breadcrumbs">            
+            <action method="addCrumb">
+                <crumbName>my_account</crumbName>
+                <crumbInfo>
+                    <label>My Account</label>
+                    <title>My Account</title>
+                    <link>/shop/customer/account</link>
+                </crumbInfo>
+            </action>
+            <action method="addCrumb">
+                <crumbName>Manage Account</crumbName>
+                <crumbInfo>
+                    <label>Manage Account</label>
+                    <title>Manage Account</title>
+                </crumbInfo>
+            </action>
+        </reference>
+    </account_account_index>
+	<account_account_edit translate="label">
+		<label>Account Account Edit Form</label>
+		<update handle="customer_account" />
+		<reference name="root">
+                    <action method="setTemplate">
+                        <template>page/2columns-left.phtml</template>
+                    </action>
+			<action method="setHeaderTitle" translate="title" module="account">
+				<title>Edit My Account Info</title>
+			</action>
+		</reference>
+		<reference name="content">
+			<block type="account/account_edit" name="account_account_edit" template="account/account/edit.phtml" />				
+		</reference>
+        <reference name="breadcrumbs">            
+            <action method="addCrumb">
+                <crumbName>my_account</crumbName>
+                <crumbInfo>
+                    <label>My Account</label>
+                    <title>My Account</title>
+                    <link>/shop/customer/account</link>
+                </crumbInfo>
+            </action>
+            <action method="addCrumb">
+                <crumbName>manage_account</crumbName>
+                <crumbInfo>
+                    <label>Manage Account</label>
+                    <title>Manage Account</title>
+                    <link>/shop/customer/account/manageaccount/</link>
+                </crumbInfo>
+            </action>
+            <action method="addCrumb">
+                <crumbname>address_book</crumbname>
+                <crumbinfo>
+                    <label>Address Book</label>
+                    <title>Address Book</title>
+                    <link>/shop/customer/address/</link>
+                </crumbinfo>
+            </action>
+            <action method="addCrumb">
+                <crumbname>edit_company</crumbname>
+                <crumbinfo>
+                    <label>Edit Company</label>
+                    <title>Edit Company</title>
+                </crumbinfo>
+            </action>
+        </reference> 
+        <remove name="wishlist_sidebar"></remove>
+        <remove name="reorder"></remove>
+        <remove name="catalog.compare.sidebar"></remove>
+        <remove name="sale.reorder.sidebar"></remove>
+	</account_account_edit>
+	<account_address_index translate="label">
+		<label>Account Address Dashlet</label>
+		<update handle="customer_account" />
+	</account_address_index>
+	<account_address_edit translate="label">
+		<label>Account Address Edit Form</label>
+		<update handle="customer_account" />
+	</account_address_edit>
+</layout>

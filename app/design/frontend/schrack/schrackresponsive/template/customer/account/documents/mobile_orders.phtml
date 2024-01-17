@@ -1,0 +1,43 @@
+<!-- app/design/frontend/schrack/schrackresponsive/template/customer/account/documents/mobile_orders.phtml (start) -->
+<?php
+$order = $this->getData('blockdata');
+if ( intval(Mage::getStoreConfigFlag('schrack/shop/enable_custom_project_info_in_checkout')) == 1 ) {
+    $referenceTitle = $this->__('Order-/Project Reference');
+} else {
+    $referenceTitle = $this->__('Meine Bestellangabe');
+}
+?>
+<div class="tabularCont hidden-md hidden-lg">
+    <div class="row-tbl">
+        <div class="body">
+            <div class="mobilSecLft">
+                <div class="col-xs-12 col-sm-12 col-md-2 colmn docuemntDatetime3 large-fine-5 columns-fine">
+                    <div class="responsiveHd">
+                        <?php echo $referenceTitle ?>:
+                    </div>
+                    <?php echo $order->nameProject; ?>
+                </div>
+                <div class="col-xs-12 col-sm-12 col-md-3 colmn documentNumber3 large-fine-6 columns-fine">
+                    <div class="responsiveHd">
+                        <?php echo $this->__('Order #'); ?>:
+                    </div>
+                    <a href="<?php echo $order->detailUrl; ?>">
+                        <?php echo $order->orderNumber; ?>
+                    </a>	                
+                </div>
+                <div class="col-xs-12 col-sm-12 col-md-3 colmn documentReference large-fine-7 columns-fine">
+                    <div class="responsiveHd">
+                        <?php echo $this->__('Date'); ?>:
+                    </div>
+                    
+                        <?php echo $order->creationDate; ?>
+                   <!--<a href="#"> </a>-->
+                </div>                                
+            </div>
+            <div class="mobilSecRgt">
+                <?php echo $order->status; ?>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- app/design/frontend/schrack/schrackresponsive/template/customer/account/documents/mobile_orders.phtml (end) -->

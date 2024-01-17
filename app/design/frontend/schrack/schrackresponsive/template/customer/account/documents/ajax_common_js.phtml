@@ -1,0 +1,140 @@
+<!-- app/design/frontend/schrack/schrackresponsive/template/customer/account/documents/ajax_common_js.phtml (start) -->
+<script type="text/javascript">
+    if(getParameterByName('excludeAjaxCall') == null) { // Added by Nagarro for exclude AJAX call for performance testing
+        jQuery(document).ready(function () {
+            var loadMoreOrderRecord = true;
+            var listfuncname = jQuery('#textsearch').attr('data-func');
+            var textSearch = jQuery('#textsearch').val();
+
+            dataArray['form_key'] = formKey;
+            dataArray[listfuncname] =  {
+                'data' : {
+                    'filter' : {
+                        'text': textSearch,
+                    },
+                    'sort' : { 
+                        'field' : jQuery('#dashOrderActiveSortColumnName').val(),
+                        'ASC' : jQuery('#dashOrderActiveSortColumnStatus').val()
+                    },
+                    'pagination' : {
+                        'page_size' : dashboardDeskTabMobPageSize,
+                        'page' : jQuery('#dashOrderPageNumber').val()
+                    }
+                }
+            };
+            setOverlayLoader();
+
+            /* Search implementation */
+            jQuery('#textsearch').on('keyup',function(e) {
+                if(e.which == 13) {
+                    jQuery('#dynamicStatusRow').empty();	// Reset Filter Popup
+                    ajaxCall();
+                }
+            });
+
+            // Trigger Search on Enter on Text Box OR On Search Icon Click
+            jQuery('#listingSearchIcon').click(function(){
+                var searchtextContent = jQuery('#textsearch').val();
+                var defaultSearchText = '<?php echo $this->__('Order/Offer Data, Names, Addresses, Article IDs'); ?>';
+                if (searchtextContent == '' || searchtextContent == defaultSearchText) {
+                    // Do not track !
+                } else {
+                    console.log('Tracked From AJAX Common JS');
+                    trackUserDetailDocumentSearch(searchtextContent);
+                }
+                var e = jQuery.Event("keyup");
+                e.which = 13;
+                jQuery('#textsearch').trigger(e);
+            });
+
+            // Dashboard Status Filter Implementation			
+            jQuery(document).on('click', '.filterdata', function() {
+                ajaxCall();
+            });
+
+            // Dashboard Date Range Filter Implementation			
+            jQuery(document).on('click', 'input.time-span, #radio-range', function() {
+                var today = new Date();
+                var dateFrom = '';
+                var dateTo = '';
+                var $this = jQuery(this);
+                if ($this.val() != 'range') {
+                    var months = $this.val();
+                    dateTo = new Date(today).toISOString().slice(0, 10);
+                    today.setMonth(today.getMonth() - months);
+                    dateFrom = new Date(today).toISOString().slice(0, 10);
+                    jQuery('#from-date').val(dateFrom);
+                    jQuery('#to-date').val(dateTo);
+                }
+
+                ajaxCall();
+            });
+
+            // Dashboard Column Sorting Implementation 
+            jQuery(document).on('click', '.sorting', function() {
+                jQuery('#dashOrderActiveSortColumnName').val(jQuery(this).attr('sort-data-column'));	// Update current column name to hidden field
+                jQuery('#dashOrderActiveSortColumnStatus').val(jQuery(this).attr('aria-data-sort'));	// Update current column sorting direction to hidden field
+                jQuery('.sorting').attr('aria-data-sort', 'asc');	// Reset all column sort to default
+                jQuery('.sorting span').removeClass('glyphicon-sort-by-attributes glyphicon-sort-by-attributes-alt').addClass('glyphicon-sort');	// Reset span sorting icon
+
+                // Descending => 0, Ascending => 1
+                if(jQuery('#dashOrderActiveSortColumnStatus').val() == '0') {	// Descending
+                        var sortingClassName = 'glyphicon-sort-by-attributes-alt';
+                        jQuery('.sorting').attr('aria-data-sort', '1');
+                } else {	// Ascending
+                        var sortingClassName = 'glyphicon-sort-by-attributes';
+                        jQuery('.sorting').attr('aria-data-sort', '0');
+                }
+
+                ajaxCall();
+                jQuery(this).closest("th").find("span").removeClass('glyphicon-sort').addClass(sortingClassName);	// Remove add sorting class
+            });
+
+            // Dashboard Load More 
+            jQuery(window).scroll(function () {
+
+            if (jQuery('#ajax_in_progress').val() == 1 || jQuery('.no-documents').length > 0)
+                return;
+
+            if (jQuery(window).scrollTop() >= jQuery(document).height() - jQuery(window).height() - 1) {
+
+                var pageNumber = jQuery('#dashOrderPageNumber').val();
+                pageNumber++
+                jQuery('#dashOrderPageNumber').val(pageNumber);
+                jQuery('#ajax_in_progress').val(1);
+                ajaxCall();
+            }
+
+            });
+
+            // Reset filters
+            jQuery('.clear-filter').click(function(){
+                resetFilters();
+                ajaxCall();
+            });
+
+            // Dashboard Status Filter Implementation			
+            jQuery(document).on('click', '.reset-status-filter', function(event) {
+                if (this.checked) {
+                    jQuery('.filterdata').prop('checked', true);
+                } else {
+                    jQuery('.filterdata').prop('checked', false);
+                }
+                var checkboxOrdered = jQuery('input[name=column-4-ordered]');
+                if(checkboxOrdered.is(":checked")) {
+                    checkboxOrdered.prop('checked', false);
+                } else {
+                    checkboxOrdered.prop('checked', true);
+                }
+                checkboxOrdered.trigger('click');
+            });
+
+            // Toggle Filter Pop Up
+            jQuery('#filterMenu').click(function(){
+                console.log('filter click #1');
+                jQuery('.filterPopup').toggle();
+            });
+        });
+    }
+</script>
+<!-- app/design/frontend/schrack/schrackresponsive/template/customer/account/documents/ajax_common_js.phtml (end) -->

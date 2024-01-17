@@ -1,0 +1,3912 @@
+<!-- app/design/frontend/schrack/schrackresponsive/template/checkout/cart/quickadd.phtml (start) -->
+<?php
+    /**
+     * Quickadd template
+     *
+     * @see Schracklive_SchrackCheckout_Block_Cart_Quickadd
+     */
+
+    $_quickaddHelper = Mage::helper('schrackcheckout/quickadd');
+    $affectedId = '';
+    if ($this->getRequest()->getParam('id')) {
+        $affectedId = $this->getRequest()->getParam('id');
+    } else {
+        if ($_quickaddHelper->getModuleName() === 'wishlist' && $_quickaddHelper->getControllerName() === 'partslist') {
+            $partslist = Mage::helper('schrackwishlist/partslist')->getActiveOrFirstPartslist();
+            if (!empty($partslist))
+                $affectedId = $partslist->getId();
+        }
+    }
+    $_quote = Mage::registry('quote_tricky');
+    if (isset($_quote)) {
+        $_isPickup = $_quote->getIsPickup();
+    } else {
+        $_isPickup = false;
+    }
+
+    $showQuickaddContent = true;
+
+    $sessionCustomerId = Mage::getSingleton('customer/session')->getCustomer()->getId();
+    $aclRoleId = Mage::getModel('customer/customer')->load($sessionCustomerId)->getSchrackAclRoleId();
+    $isProjectant = Mage::helper('schrack/acl')->isProjectantRoleId($aclRoleId);
+    if ($isProjectant) {
+        $showQuickaddContent = false;
+    }
+
+    $warningStartDatetimestamp   = strtotime(Mage::getStoreConfig('schrack/messages/triggerTopLinkHeaderMessageStartDatetime'));
+    $warningEndDatetimestamp     = strtotime(Mage::getStoreConfig('schrack/messages/triggerTopLinkHeaderMessageEndDatetime'));
+    $warnigMessageActive         = false;
+    $currentDatetimestamp        = strtotime(date('Y-m-d H:i:s'));
+    $warningMessageOptionEnabled = Mage::getStoreConfig('schrack/messages/triggerTopLinkHeaderMessage');
+
+    if (Mage::getStoreConfig('schrack/messages/triggerTopLinkHeaderMessage')) {
+        if ($currentDatetimestamp > $warningStartDatetimestamp && $currentDatetimestamp < $warningEndDatetimestamp) {
+            $warnigMessageActive = true;
+        }
+    }
+
+    if (Mage::getStoreConfig('ec/config/active')) $trackingEnabled = 'enabled'; else $trackingEnabled = 'disabled';
+
+    if (Mage::getSingleton("customer/session")->isLoggedIn()) {
+        $crmUserId = Mage::getSingleton('customer/session')->getCustomer()->getSchrackS4yId();
+    } else {
+        $crmUserId = 0;
+    }
+
+    if (Mage::getSingleton("customer/session")->isLoggedIn()) {
+        $customerTypeGTM = 'normalCustomerType'; // = default
+
+        // If customer is logged in, must be light-prospect, full-prospect or normal-customer (= default) :
+        $customerTypeFromCustomer = Mage::getSingleton('customer/session')->getCustomer()->getSchrackCustomerType();
+        if($customerTypeFromCustomer == 'light-prospect') {
+            $customerTypeGTM = 'lightProspectCustomerType';
+        }
+        if($customerTypeFromCustomer == 'full-prospect') {
+            $customerTypeGTM = 'fullProspectCustomerType';
+        }
+    } else {
+        $customerTypeGTM = 'guestCustomerType';
+    }
+
+    if (Mage::getSingleton("customer/session")->isLoggedIn()) {
+        $wwsId = Mage::getSingleton('customer/session')->getCustomer()->getSchrackWwsCustomerId();
+        if (!$wwsId) {
+            $accountCrmId = 0;
+        } else {
+            $resource       = Mage::getSingleton('core/resource');
+            $readConnection = $resource->getConnection('core_read');
+
+            $queryFindAccountData = "SELECT schrack_s4y_id FROM account WHERE wws_customer_id LIKE '" . $wwsId . "' ";
+            $result = $readConnection->fetchAll($queryFindAccountData);
+
+            if (is_array($result) && !empty($result)) {
+                foreach ($result as $index => $recordset) {
+                    $accountCrmId = $recordset['schrack_s4y_id'];
+                }
+            }
+        }
+    } else {
+        $accountCrmId = 0;
+    }
+
+    $_session = Mage::getSingleton('customer/session');
+    $_customer = $_session->getCustomer();
+    $customerIsDSGVOConfirmed = false;
+    $customerEmail = '';
+
+    if ($_session->isLoggedIn()) {
+        $customerEmail = $_customer->getEmail();
+        if ($_customer) {
+            // Wenn ja, dann eine nächste Abfrage, ob die DSGVO bereits bestätigt wurde
+            $customerIsDSGVOConfirmed = $_customer->getSchrackConfirmedDsgvo();
+        }
+    }
+
+
+?>
+
+<style>
+    html, body {
+        max-width: 100% !important;
+        overflow-x: hidden !important;
+    }
+    #product_longtext {
+        margin-left: -232px;
+        color: black;
+        font-weight: bold;
+    }
+    .product_longtext_normalscale {
+        margin-left: 0 !important;
+    }
+    #quickaddpopup {
+        min-width: 300px;
+    }
+    #quickadd_sku {
+        font-size: 16px !important;
+    }
+    #quickadd-sku-div {
+        width: 47% !important;
+    }
+    #quickadd-qty-div {
+        width: 47% !important;
+    }
+    #quickadd_qty {
+        font-size: 16px !important;
+    }
+    #sku_found_okay {
+        float: left;
+        width: 3%;
+        font-size: 1.1em;
+        color: #00589d;
+        padding-top: 9px;
+        margin-left: -8px;
+        display: none;
+    }
+    #ean_equivalent {
+        height: 20px;
+        min-height: 20px;
+        float: left;
+        margin-left: 18px;
+        margin-top: -4px;
+        margin-bottom: 10px;
+    }
+    #wait_loader {
+        position: absolute;
+        width: 48px;
+        height: 22px;
+        z-index: 2;
+        margin-top: -1px;
+    }
+    .checkout_show_act_as_a_customer_email_field {
+        display: none;
+        width: auto;
+        z-index: 111;
+    }
+    #showActAsACustomerEmailField {
+        height: 32px;
+        margin-top: -13px;
+        margin-bottom: 17px !important;
+    }
+    .quickadd-autocomplete {
+        border: none;
+    }
+    #showActAsACustomerEmail {
+        color: #e32c2c !important;
+        font-weight: bold !important;
+        padding: 5px !important;
+        cursor: default !important;
+    }
+    .logout_act_as_customer {
+        padding-top: 3px;
+        padding-bottom: 3px;
+        padding-left: 7px;
+        padding-right: 7px;
+        background: #d1222b;
+        color: #fff!important;
+        font-size: 14px;
+        margin-right: 0;
+        border: none;
+    }
+    .quickadd_button_grey {
+        background: grey !important;
+    }
+    .quickadd_button_grey:after {
+        background: grey !important;
+    }
+    .quickadd_button_red {
+        background: #d1222b !important;
+    }
+    .quickadd_button_red:after {
+        background: #d1222b !important;
+    }
+    .html_sku_select_list_container {
+        position: absolute;
+        z-index: 1;
+        background: white;
+        margin-left: -1px;
+        color: #888;
+        margin-top: -11px;
+        border: 1px solid #efefef;
+    }
+    .html_sku_select_list_row {
+        height: 30px;
+        padding-top: 3px;
+        padding-left: 14px;
+    }
+    .html_sku_select_list_row:hover {
+        background: #00589d;
+        color: white;
+        cursor: pointer;
+    }
+    #empty_searchbar_sign {
+        position: absolute;
+        right: 58px;
+        margin-top: 7px;
+        z-index: 1000;
+        font-size: 2em;
+        cursor: pointer;
+        display: none;
+    }
+    .header_partslist_caption_icon_typo {
+        border: 1px solid #9f9f9f;
+        border-radius: 25px;
+        width: 42px;
+        height: 42px;
+        padding-top: 6px;
+        padding-left: 10px;
+        margin-top: 1px !important;
+        margin-right: -18px !important;
+    }
+    .logo_cont_typo {
+        margin-left: -8px !important;
+    }
+    .search-wrapper {
+        margin-bottom: 0 !important;
+    }
+
+    @media (min-width: 1px) and (max-width: 320px) {
+        #product_longtext {
+            margin-left: -240px !important;
+            font-size: 12px;
+        }
+        #quickadd_addproduct_button {
+            height: 30px !important;
+        }
+        .checkout_show_act_as_a_customer_email_field {
+            position: absolute !important;
+            left: 10px !important;
+            top: 0 !important;
+            font-size: 0.8em !important;
+        }
+        #showActAsACustomerEmail {
+            font-size: 10px !important;
+        }
+        .logout_act_as_customer {
+            display: inline-block !important;
+            height: 19px !important;
+            margin-top: -2px !important;
+        }
+        .html_sku_select_list_container {
+            width: 84%;
+        }
+        #empty_searchbar_sign {
+            margin-top: 1px !important;
+        }
+        .hamburgerMenuAlternateTypo {
+            display: block !important;
+            margin-top: -3px !important;
+            padding-bottom: 0 !important;
+            margin-left: 2px !important;
+            margin-right: 5px !important;
+        }
+        .megaMenuCaptionTxtTypo {
+            font-size: 10px !important;
+        }
+        .hamburgerMenuAlternateIosTypo {
+            display: block !important;
+            margin-top: -3px !important;
+            padding-bottom: 0 !important;
+            margin-right: -15px !important;
+            margin-left: -5px !important;
+        }
+        .hamburgerMenuAlternateButtonIosTypo {
+        }
+        .hamburgerMenuAlternateIphone5Typo {
+            display: block !important;
+            margin-top: -3px !important;
+            padding-bottom: 0 !important;
+            margin-left: -5px !important;
+            margin-right: 5px !important;
+        }
+        #page_layer_logo_default_typo {
+            margin-left: -11px !important;
+            margin-top: 0 !important;
+        }
+        #page_layer_logo_default_image_typo {
+            width: 73%;
+            margin-left: -21px;
+            margin-top: -4px;
+        }
+        .searchWrapperTypo {
+            padding-left: 0 !important;
+            padding-right: 0 !important;
+            margin-left: -15px !important;
+            height: 72px !important;
+            width: 110% !important;
+        }
+        .searchWrapperIphone5Typo {
+            padding-left: 0 !important;
+            padding-right: 0 !important;
+            margin-left: -16px !important;
+            height: 72px !important;
+            width: 112% !important;
+        }
+        .megaMenuCaptionTxtIphone5Typo {
+            padding-left: 15px !important;
+        }
+        .megaMenuCaptionTxtIosTypo {
+            text-align: center;
+            margin-left: -8px !important;
+        }
+        .id_scan_button_copy_typo {
+            display: block !important;
+            background: #f5f5f5 !important;
+        }
+        .scan_magnifier_barcode_ios_typo {
+            width: 38px !important;
+            height: 38px !important;
+            margin-top: -6px;
+        }
+        .scan_magnifier_barcode_typo {
+            width: 40px !important;
+            height: 40px !important;
+            margin-left: 7px;
+            margin-top: -6px;
+        }
+        .searchbox_container_typo {
+            width: 74% !important;
+        }
+        .searchbox_container_ios_typo {
+            margin-left: 10px !important;
+            margin-right: 7px !important;
+            width: 71% !important;
+        }
+        .search_autocomplete_typo {
+            width: 99.6% !important;
+        }
+        .customer_log_in_container_typo {
+            border-radius: 20px !important;
+            width: 40px !important;
+            height: 40px !important;
+        }
+        .agent_info_head_typo {
+            height: 40px !important;
+            width: 40px !important;
+            border-radius: 20px !important;
+        }
+        .header_menu_logo_container_left_typo {
+            padding-left: 0 !important;
+            width: 45% !important;
+        }
+        .header_menu_links_container_right_typo {
+            width: 54.333333% !important;
+        }
+        .cart_icon_header_typo {
+            width: 42px !important;
+            margin-top: 3px !important;
+        }
+        .header_links_typo {
+            margin-right: -25px !important;
+            width: 145% !important;
+        }
+        .header_plcaption_icon_typo {
+            margin-right: -1px !important;
+            width: 39px !important;
+            height: 39px !important;
+        }
+        .link_header_login_button_typo {
+            background: transparent !important;
+            height: 40px !important;
+            width: 40px !important;
+            border: 1px solid #9f9f9f !important;
+            border-radius: 20px !important;
+            overflow: hidden !important;
+            box-shadow: none !important;
+            padding-top: 0 !important;
+            padding-left: 0 !important;
+        }
+        .search_bar_boxIphone5Typo {
+            width: 84% !important;
+            margin-left: -9px !important;
+        }
+        .header_partslist_caption_icon_typo {
+            padding-top: 5px;
+            padding-left: 8px;
+        }
+    }
+    .headerActionsLayerContentRow1,
+    .headerActionsLayerContentRow2,
+    .headerActionsLayerContentRow3,
+    .headerActionsLayerContentRow4,
+    .headerActionsLayerContentRow5 {
+        float:left;
+        width: 100%;
+    }
+    .headerActionsLayerContentRow4 {
+        margin-bottom: 10px;
+        min-width: 285px;
+    }
+
+    .actAsCustomerListContainer ,.actAsCustomerSearchbarContainer{
+        float: left;
+        width: 100%;
+    }
+
+    .actAsCustomerListContainer{
+        margin-top:10px;
+    }
+
+    #actAsCustomerSearchbarResultContainer {
+        float: left;
+        width: calc(100% - 2px);
+        border: none;
+        max-height: 265px;
+        overflow: hidden;
+        overflow-y: scroll;
+    }
+
+    #actAsCustomerSearchbarResultList{
+        float:left;
+    }
+
+    #actAsCustomerSearchbarResultList.active {
+        border: solid 1px #cdcdcd;
+        padding: 5px;
+    }
+
+    #actAsCustomerSearchbarResultList li, #actAsCustomerFavouritesList li {
+        float: left;
+        width: 100%;
+        margin: 0;
+        list-style-type: none;
+        line-height: 12pt;
+        font-size: 12pt;
+        border-bottom: solid 1px #bbbbbb;
+        font-family: system-ui;
+    }
+    #actAsCustomerSearchbarResultList li:last-of-type, #actAsCustomerFavouritesList li:last-of-type {
+        border: none;
+    }
+
+    #actAsCustomerSearchbarResultList li:hover, #actAsCustomerFavouritesList li:hover ,
+    #actAsCustomerSearchbarResultList li:hover .customerName, #actAsCustomerFavouritesList li:hover .customerName ,
+    #actAsCustomerSearchbarResultList li:hover .customerNr, #actAsCustomerFavouritesList li:hover .customerNr {
+        cursor: pointer;
+        color: #00589d;
+        background-color: #ececec;
+    }
+
+    #actAsCustomerSearchbarResultList li .customerIcon, #actAsCustomerFavouritesList li .customerIcon {
+        float: left;
+        width: 13px; height: 16px;
+        margin: 0 3px;
+        background-image: url(<?php echo $this->getSkinUrl('schrackdesign/Public/Images/rwd/dmmuuserImg.png'); ?>);
+        background-repeat: no-repeat;
+        background-size: contain;
+        opacity: 0.2;
+    }
+
+    #actAsCustomerSearchbarResultList li .myCustomerIcon, #actAsCustomerFavouritesList li .myCustomerIcon {
+        float: left;
+        width: 13px; height: 16px;
+        margin: 0 3px;
+        background-image: url(<?php echo $this->getSkinUrl('schrackdesign/Public/Images/icon-myaccount.png'); ?>);
+        background-repeat: no-repeat;
+        background-size: contain;
+        opacity: 1.0;
+    }
+
+    #actAsCustomerSearchbarResultList li .addressIcon, #actAsCustomerFavouritesList li .addressIcon {
+        float: left;
+        width: 13px; height: 16px;
+        margin: 0 3px;
+        background-image: url(<?php echo $this->getSkinUrl('schrackdesign/Public/Images/aac-house.png'); ?>);
+        background-repeat: no-repeat;
+        background-size: contain;
+        opacity: 0.2;
+    }
+
+    #actAsCustomerSearchbarResultList li .customerNr, #actAsCustomerFavouritesList li .customerNr {
+        margin-right: 3px;
+        font-weight: bold;
+        font-size: 10pt;
+        float: left;
+        color: #bbbbbb;
+    }
+
+    #actAsCustomerSearchbarResultList li .customerName, #actAsCustomerFavouritesList li .customerName {
+        display: inline-block;
+        float: left;
+        width: 178px;
+        min-height:32px;
+        padding: 2px 5px;
+        color: #757575;
+        overflow: hidden;
+        font-weight: 500;
+    }
+
+    #actAsCustomerFavouritesList li .removeFavouriteCustomer {
+        float: left;
+        width: 10%;
+        min-height: 87px;
+        padding-right: 3px;
+        background-image: url(/shop/skin/frontend/schrack/default/schrackdesign/Public/Images/tools/Bin.png);
+        background-repeat: no-repeat;
+        background-size: 15px 22px;
+        opacity: 0.2;
+        background-color: #cdcdcd;
+        background-position: center center;
+    }
+
+    #actAsCustomerFavouritesList li .removeFavouriteCustomer:hover {
+        opacity: 1.0;
+    }
+
+    #actAsCustomerSearchbarResultList li .addFavouriteCustomer,
+    #actAsCustomerSearchbarResultList li .addFavouriteCustomerInactive {
+        color: #757575;
+        float: left;
+        width: 10%;
+        font-size: 20pt;
+        font-weight: bold;
+        display: block;
+        opacity: 0.2;
+        text-align: center;
+        line-height: 65pt;
+        background-color: #cdcdcd;
+        user-select: none;
+    }
+
+    #actAsCustomerSearchbarResultList li .addFavouriteCustomerInactive{
+        cursor:default;
+    }
+
+    #actAsCustomerSearchbarResultList li .addFavouriteCustomer:before {
+        content: '+';
+    }
+
+    #actAsCustomerSearchbarResultList li .addFavouriteCustomer:hover {
+        color:#00589d;
+        opacity: 1.0;
+    }
+
+    #actAsCustomerSearchbarResultList li #addAllFavouriteCustomer{
+        width: 100%;
+        font-size: 10pt;
+        line-height: 24pt;
+        border: solid 1px #5a5a5a;
+        margin: 5px 0;
+    }
+
+    #actAsCustomerSearchbar{
+        float: left;
+        width: calc(100% - 34px);
+        border:solid 1px #bdc1c2;
+        line-height: 34px;
+        padding: 0 6px;
+        font-size: 12pt;
+    }
+
+    #actAsCustomerSearchbar::placeholder{
+        font-size: 10pt;
+    }
+
+    #actAsCustomerSearchbar:focus-visible{
+        outline:none;
+        border-radius: 0;
+        line-height: 32px;
+        border:solid 2px #00589d;
+    }
+
+    #actAsCustomerSearchbar.loading{
+        /*border:solid 2px #01A3d9;*/
+        border:solid 2px #80151A;
+        /*border:solid 2px #e02307;*/
+    }
+
+    .aac_text_rows{
+        float: left;
+        width: 90%;
+        padding: 5px 0;
+    }
+
+    .aacfl_firstRow, .aacfl_secondRow, .aacfl_thirdRow{
+        float:left;
+        width: 100%;
+        margin-bottom: 3px;
+    }
+    .aacfl_firstRow{
+        margin-bottom: 5px;
+    }
+
+    .aacfl_secondRow, .aacfl_thirdRow{
+        font-size:10pt;
+        margin: 2px 0;
+        padding-left: 3px;
+    }
+
+    .aacfl_secondRow {
+        display:flex;
+    }
+    .aacfl_secondRow_c1, .aacfl_secondRow_c2 ,
+    .aacfl_thirdRow_c1, .aacfl_thirdRow_c2 {
+        float:left;
+    }
+    .aacfl_secondRow_c1, .aacfl_thirdRow_c1{
+        width:24px;
+    }
+
+    .aac_headline, .aac_headline_L2{
+        font-family: 'robotoregular';
+        font-size: 16pt;
+        margin-bottom: 10px;
+        display: block;
+        color: #00589d;
+        border-bottom: solid 1px #cdcdcd;
+        margin-top: 5px;
+    }
+    .aac_headline_L2{
+        font-size: 12pt;
+        margin-bottom: 2px;
+        border-bottom: solid 0px #cdcdcd;
+    }
+
+    .aac_favouriteListFilter, .aac_favouriteListFilterSearch{
+        float: left;
+        width: 100%;
+        border: solid 1px #cdcdcd;
+        border-bottom: none;
+        padding: 6px 0 4px 0;
+        margin-bottom: 0;
+        text-align: right;
+        background-color: #FFFFFF;
+        display: block;
+    }
+
+    .aac_favouriteListFilterLabel{
+        font-weight: normal;
+        user-select: none;
+        cursor: pointer;
+        font-size: 10pt;
+        margin: 0 5px;
+    }
+
+    .aac_favouriteListFilterSearch{
+        border: solid 1px #cdcdcd;
+        padding: 6px 0 4px 0;
+        border-bottom: none;
+    }
+
+    .ajaxSpinnerOverlayActAsCustomer, #aac_loadingSpinner{
+        width: 14px; height: 14px;
+        background-image: url(<?php echo $this->getSkinUrl('schrackdesign/Public/Images/download_ajax_loader.gif'); ?>);
+        background-repeat: no-repeat;
+        background-size: contain;
+    }
+
+    .actAsCustomerMagnifierButton{
+        text-align: center;
+        float: left;
+        color: #fff !important;
+        background: #00589d !important;
+        padding: 10px 10px 6px 10px;
+    }
+
+    .actAsCustomerMagnifierButton.loading{
+        /*background: #01A3d9 !important;*/
+        background: #80151A !important;
+        /*background: #e02307 !important;*/
+    }
+
+    .actAsCustomerList{
+        float: left;
+        width: 100%;
+        border:solid 1px #bdc1c2;
+        padding: 5px;
+        max-height: 510px;
+        overflow: hidden;
+        overflow-y: scroll;
+    }
+
+    .aac_listentry_content_wrapper, .aac_listentry_actions_wrapper{
+        float:left;
+        width: 100%;
+        padding: 5px 0;
+    }
+    .aac_listentry_actions_wrapper {
+        display: none;
+        row-gap: 5px;
+        flex-wrap: wrap;
+        /*opacity:0;*/
+        background-color: rgba(255,255,255,0.9);
+        transition: all 0.5s ease;
+    }
+
+    .aac_listentry_actions_wrapper.active {
+        display: flex;
+        transition: all 0.5s ease;
+        opacity:0;
+    }
+    .aac_listentry_actions_headline{
+        width: 100%;
+        text-align:center;
+        color: #757575;
+    }
+    .aac_listentry_actions_headline span{
+        color: #00589d;
+        display: inline-block;
+        padding: 5px 0;
+        text-decoration: none;
+        font-weight: bold;
+    }
+
+    .aac_login_abort, .aac_login{
+        display: inline-block;
+        text-align: center;
+        vertical-align: middle;
+        width: calc(50% - 1px);
+        line-height:30pt;
+    }
+
+    .aac_login_abort:hover {
+        background-color: rgba(157,0,0,0.2);
+        color: rgba(157,0,0,1);
+    }
+    .aac_login:hover {
+        background-color: rgba(0,88,157,0.2);
+        color: rgba(0,88,157,1);
+    }
+
+    .aac_login_btn_sapcer{
+        width:0px;
+        border-right:solid 1px #cdcdcd;
+    }
+
+    #actAsCustomerFavouritesList li.aac_no_fav_li{
+        font-size:10pt;
+        font-weight:bold;
+    }
+
+    #aac_clearSearchbarIcon {
+        display: none;
+        float: left;
+        margin-left: -23px;
+        font-size: 12pt;
+        font-weight: bold;
+        line-height: 27pt;
+        color: #cdcdcd;
+        cursor: pointer;
+    }
+
+    #aac_clearSearchbarIcon:hover {
+        color: #00589d;
+    }
+
+    #Aac_AddFavouritesMsgWrapper .messages .success-msg {
+        background: #d5ffcc;
+        color: #00940f;
+        border: 1px solid #00940f;
+    }
+
+    .show_ib{
+        display: inline-block;
+    }
+
+    .show_flex{
+        display: flex;
+    }
+
+    .show{
+        display: block;
+    }
+
+
+    .show_ib{
+        display: inline-block;
+    }
+
+    .show_flex{
+        display: flex;
+    }
+
+    .show{
+        display: block;
+    }
+    /*------------------------------------------------------------------------*/
+    @media (min-width: 1px) and (max-width: 320px) {
+        #product_longtext {
+            margin-left: -240px !important;
+            font-size: 12px;
+        }
+        #quickadd_addproduct_button {
+            height: 30px !important;
+        }
+        .checkout_show_act_as_a_customer_email_field {
+            position: absolute !important;
+            left: 10px !important;
+            top: 0 !important;
+            font-size: 0.8em !important;
+        }
+        #showActAsACustomerEmail {
+            font-size: 10px !important;
+        }
+        .logout_act_as_customer {
+            display: inline-block !important;
+            height: 19px !important;
+            margin-top: -2px !important;
+        }
+        .html_sku_select_list_container {
+            width: 84%;
+        }
+        #empty_searchbar_sign {
+            margin-top: 1px !important;
+        }
+        .hamburgerMenuAlternateTypo {
+            display: block !important;
+            margin-top: -3px !important;
+            padding-bottom: 0 !important;
+            margin-left: 2px !important;
+            margin-right: 5px !important;
+        }
+        .megaMenuCaptionTxtTypo {
+            font-size: 10px !important;
+        }
+        .hamburgerMenuAlternateIosTypo {
+            display: block !important;
+            margin-top: -3px !important;
+            padding-bottom: 0 !important;
+            margin-right: -15px !important;
+            margin-left: -5px !important;
+        }
+        .hamburgerMenuAlternateButtonIosTypo {
+        }
+        .hamburgerMenuAlternateIphone5Typo {
+            display: block !important;
+            margin-top: -3px !important;
+            padding-bottom: 0 !important;
+            margin-left: -5px !important;
+            margin-right: 5px !important;
+        }
+        #page_layer_logo_default_typo {
+            margin-left: -11px !important;
+            margin-top: 0 !important;
+        }
+        #page_layer_logo_default_image_typo {
+            width: 73%;
+            margin-left: -21px;
+            margin-top: -4px;
+        }
+        .searchWrapperTypo {
+            padding-left: 0 !important;
+            padding-right: 0 !important;
+            margin-left: -15px !important;
+            height: 72px !important;
+            width: 110% !important;
+        }
+        .searchWrapperIphone5Typo {
+            padding-left: 0 !important;
+            padding-right: 0 !important;
+            margin-left: -16px !important;
+            height: 72px !important;
+            width: 112% !important;
+        }
+        .megaMenuCaptionTxtIphone5Typo {
+            padding-left: 15px !important;
+        }
+        .megaMenuCaptionTxtIosTypo {
+            text-align: center;
+            margin-left: -8px !important;
+        }
+        .id_scan_button_copy_typo {
+            display: block !important;
+            background: #f5f5f5 !important;
+        }
+        .scan_magnifier_barcode_ios_typo {
+            width: 38px !important;
+            height: 38px !important;
+            margin-top: -6px;
+        }
+        .scan_magnifier_barcode_typo {
+            width: 40px !important;
+            height: 40px !important;
+            margin-left: 7px;
+            margin-top: -6px;
+        }
+        .searchbox_container_typo {
+            width: 74% !important;
+        }
+        .searchbox_container_ios_typo {
+            margin-left: 10px !important;
+            margin-right: 7px !important;
+            width: 71% !important;
+        }
+        .search_autocomplete_typo {
+            width: 99.6% !important;
+        }
+        .customer_log_in_container_typo {
+            border-radius: 20px !important;
+            width: 40px !important;
+            height: 40px !important;
+        }
+        .agent_info_head_typo {
+            height: 40px !important;
+            width: 40px !important;
+            border-radius: 20px !important;
+        }
+        .header_menu_logo_container_left_typo {
+            padding-left: 0 !important;
+            width: 45% !important;
+        }
+        .header_menu_links_container_right_typo {
+            width: 54.333333% !important;
+        }
+        .cart_icon_header_typo {
+            width: 42px !important;
+            margin-top: 3px !important;
+        }
+        .header_links_typo {
+            margin-right: -25px !important;
+            width: 145% !important;
+        }
+        .header_plcaption_icon_typo {
+            margin-right: -1px !important;
+            width: 39px !important;
+            height: 39px !important;
+        }
+        .link_header_login_button_typo {
+            background: transparent !important;
+            height: 40px !important;
+            width: 40px !important;
+            border: 1px solid #9f9f9f !important;
+            border-radius: 20px !important;
+            overflow: hidden !important;
+            box-shadow: none !important;
+            padding-top: 0 !important;
+            padding-left: 0 !important;
+        }
+        .search_bar_boxIphone5Typo {
+            width: 84% !important;
+            margin-left: -9px !important;
+        }
+        .header_partslist_caption_icon_typo {
+            padding-top: 5px;
+            padding-left: 8px;
+        }
+    }
+    @media (min-width: 321px) and (max-width: 360px) {
+        #product_longtext {
+            margin-left: -240px !important;
+            font-size: 12px;
+        }
+        #quickadd_addproduct_button {
+            height: 30px !important;
+        }
+        .checkout_show_act_as_a_customer_email_field {
+            position: absolute !important;
+            left: 10px !important;
+            top: 0 !important;
+            font-size: 0.8em !important;
+        }
+        #showActAsACustomerEmail {
+            font-size: 10px !important;
+        }
+        .logout_act_as_customer {
+            display: inline-block !important;
+            height: 19px !important;
+            margin-top: -2px !important;
+            font-size: 0.8em !important;
+        }
+        .html_sku_select_list_container {
+            width: 84%;
+        }
+        #wait_loader {
+            margin-left: 36%;
+        }
+        #empty_searchbar_sign {
+            margin-top: 7px !important;
+            font-size: 1.4em !important;
+        }
+        .hamburgerMenuAlternateTypo {
+            display: block !important;
+            margin-top: -3px !important;
+            padding-bottom: 0 !important;
+            margin-left: 2px !important;
+            margin-right: 5px !important;
+        }
+        .megaMenuCaptionTxtTypo {
+            font-size: 10px !important;
+        }
+        .hamburgerMenuAlternateIosTypo {
+            display: block !important;
+            margin-top: -3px !important;
+            padding-bottom: 0 !important;
+            margin-right: -15px !important;
+            margin-left: -5px !important;
+        }
+        .hamburgerMenuAlternateButtonIosTypo {
+        }
+        #page_layer_logo_default_typo {
+            margin-left: -11px !important;
+            margin-top: 4px !important;
+        }
+        #page_layer_logo_default_image_typo {
+            width: 73%;
+            margin-left: -18px;
+            margin-top: 0;
+        }
+        .searchWrapperTypo {
+            padding-left: 0 !important;
+            padding-right: 0 !important;
+            margin-left: -15px !important;
+            height: 72px !important;
+            width: 109% !important;
+        }
+        .id_scan_button_copy_typo {
+            display: block !important;
+            background: #f5f5f5 !important;
+        }
+        .scan_magnifier_barcode_typo {
+            width: 40px !important;
+            height: 40px !important;
+            margin-left: 7px;
+            margin-top: -6px;
+        }
+        .searchbox_container_typo {
+            width: 74% !important;
+        }
+        .search_autocomplete_typo {
+            width: 99.6% !important;
+        }
+        .customer_log_in_container_typo {
+            border-radius: 20px !important;
+            width: 40px !important;
+            height: 40px !important;
+        }
+        .agent_info_head_typo {
+            height: 40px !important;
+            width: 40px !important;
+            border-radius: 20px !important;
+        }
+        .header_menu_logo_container_left_typo {
+            padding-left: 0 !important;
+            width: 45% !important;
+        }
+        .header_menu_links_container_right_typo {
+            width: 54.333333% !important;
+            padding-left: 6px;
+        }
+        .cart_icon_header_typo {
+            width: 42px !important;
+            margin-top: 3px !important;
+        }
+        .header_links_typo {
+            margin-right: -25px !important;
+            width: 117% !important;
+        }
+        .header_plcaption_icon_typo {
+            margin-right: -1px !important;
+            width: 39px !important;
+            height: 39px !important;
+        }
+        .link_header_login_button_typo {
+            background: transparent !important;
+            height: 40px !important;
+            width: 40px !important;
+            border: 1px solid #9f9f9f !important;
+            border-radius: 20px !important;
+            overflow: hidden !important;
+            box-shadow: none !important;
+            padding-top: 0 !important;
+            padding-left: 0 !important;
+        }
+        .header_partslist_caption_icon_typo {
+            padding-top: 5px;
+            padding-left: 8px;
+        }
+    }
+
+    @media (min-width: 361px) and (max-width: 410px) {
+        #product_longtext {
+            margin-left: -240px !important;
+            font-size: 12px;
+        }
+        #quickadd_addproduct_button {
+            height: 30px !important;
+        }
+        .checkout_show_act_as_a_customer_email_field {
+            position: absolute !important;
+            left: 10px !important;
+            top: 0 !important;
+            font-size: 0.8em !important;
+        }
+        #showActAsACustomerEmail {
+            font-size: 10px !important;
+        }
+        .logout_act_as_customer {
+            display: inline-block !important;
+            height: 19px !important;
+            margin-top: -2px !important;
+            font-size: 0.8em !important;
+        }
+        .html_sku_select_list_container {
+            width: 84%;
+        }
+        #wait_loader {
+            margin-left: 36%;
+        }
+        #empty_searchbar_sign {
+            margin-top: 7px !important;
+            font-size: 1.4em !important;
+        }
+        .hamburgerMenuAlternateTypo {
+            display: block !important;
+            margin-top: -3px !important;
+            padding-bottom: 0 !important;
+            margin-left: 2px !important;
+            margin-right: 5px !important;
+        }
+        .megaMenuCaptionTxtTypo {
+            font-size: 10px !important;
+        }
+        .hamburgerMenuAlternateIosTypo {
+            display: block !important;
+            margin-top: -3px !important;
+            padding-bottom: 0 !important;
+            margin-right: -15px !important;
+            margin-left: -5px !important;
+        }
+        .hamburgerMenuAlternateButtonIosTypo {
+        }
+        #page_layer_logo_default_typo {
+            margin-left: -11px !important;
+            margin-top: 0 !important;
+        }
+        #page_layer_logo_default_image_typo {
+            width: 73%;
+            margin-left: -18px;
+            margin-top: 0;
+        }
+        .searchWrapperTypo {
+            padding-left: 0 !important;
+            padding-right: 0 !important;
+            margin-left: -15px !important;
+            height: 72px !important;
+            width: 109% !important;
+        }
+        .id_scan_button_copy_typo {
+            display: block !important;
+            background: #f5f5f5 !important;
+        }
+        .scan_magnifier_barcode_typo {
+            width: 40px !important;
+            height: 40px !important;
+            margin-left: 7px;
+            margin-top: -6px;
+        }
+        .scan_magnifier_barcode_ios_typo {
+            width: 38px !important;
+            height: 38px !important;
+            margin-top: -6px;
+        }
+        .searchbox_container_ios_typo {
+            margin-left: 10px !important;
+            margin-right: 7px !important;
+            width: 74% !important;
+        }
+        .megaMenuCaptionTxtIosTypo {
+            text-align: center;
+            margin-left: -7px !important;
+        }
+        .searchbox_container_typo {
+            width: 74% !important;
+        }
+        .search_autocomplete_typo {
+            width: 99.6% !important;
+        }
+        .customer_log_in_container_typo {
+            border-radius: 20px !important;
+            width: 40px !important;
+            height: 40px !important;
+        }
+        .agent_info_head_typo {
+            height: 40px !important;
+            width: 40px !important;
+            border-radius: 20px !important;
+        }
+        .header_menu_logo_container_left_typo {
+            padding-left: 0 !important;
+            width: 45% !important;
+        }
+        .header_menu_links_container_right_typo {
+            width: 54.333333% !important;
+        }
+        .cart_icon_header_typo {
+            width: 42px !important;
+            margin-top: 3px !important;
+        }
+        .header_links_typo {
+            margin-right: -25px !important;
+            width: 117% !important;
+        }
+        .header_plcaption_icon_typo {
+            margin-right: -1px !important;
+            width: 39px !important;
+            height: 39px !important;
+        }
+        .link_header_login_button_typo {
+            background: transparent !important;
+            height: 40px !important;
+            width: 40px !important;
+            border: 1px solid #9f9f9f !important;
+            border-radius: 20px !important;
+            overflow: hidden !important;
+            box-shadow: none !important;
+            padding-top: 0 !important;
+            padding-left: 0 !important;
+        }
+        .header_partslist_caption_icon_typo {
+            padding-top: 5px;
+            padding-left: 8px;
+        }
+    }
+
+    @media (min-width: 411px) and (max-width: 460px) {
+        #product_longtext {
+            margin-left: -240px !important;
+            font-size: 12px;
+        }
+        #quickadd_addproduct_button {
+            height: 30px !important;
+        }
+        .checkout_show_act_as_a_customer_email_field {
+            position: absolute !important;
+            left: 10px !important;
+            top: 0 !important;
+            font-size: 0.8em !important;
+        }
+        #showActAsACustomerEmail {
+            font-size: 11px !important;
+        }
+        .logout_act_as_customer {
+            display: inline-block !important;
+            height: 19px !important;
+            margin-top: -2px !important;
+            font-size: 0.8em !important;
+        }
+        .html_sku_select_list_container {
+            width: 84%;
+        }
+        #wait_loader {
+            margin-left: 36%;
+        }
+        #empty_searchbar_sign {
+            margin-top: 7px !important;
+            font-size: 1.4em !important;
+        }
+        .hamburgerMenuAlternateTypo {
+            display: block !important;
+            margin-top: -3px !important;
+            padding-bottom: 0 !important;
+            margin-left: 2px !important;
+            margin-right: 5px !important;
+        }
+        .megaMenuCaptionTxtTypo {
+            font-size: 10px !important;
+        }
+        .megaMenuCaptionTxtIosTypo {
+            margin-left: -7px !important;
+            text-align: center !important;
+        }
+        .hamburgerMenuAlternateIosTypo {
+            display: block !important;
+            margin-top: -3px !important;
+            padding-bottom: 0 !important;
+            margin-right: -15px !important;
+            margin-left: -5px !important;
+        }
+        .hamburgerMenuAlternateButtonIosTypo {
+        }
+        #page_layer_logo_default_typo {
+            margin-left: -11px !important;
+            margin-top: 3px !important;
+        }
+        #page_layer_logo_default_image_typo {
+            width: 73%;
+            margin-left: -18px;
+            margin-top: 0;
+        }
+        .searchWrapperTypo {
+            padding-left: 0 !important;
+            padding-right: 0 !important;
+            margin-left: -15px !important;
+            height: 72px !important;
+            width: 109% !important;
+        }
+        .id_scan_button_copy_typo {
+            display: block !important;
+            background: #f5f5f5 !important;
+        }
+        .scan_magnifier_barcode_typo {
+            width: 40px !important;
+            height: 40px !important;
+            margin-left: 8px;
+            margin-top: -6px;
+        }
+        .scan_magnifier_barcode_ios_typo {
+            width: 40px !important;
+            height: 40px !important;
+            margin-left: 8px;
+            margin-top: -6px;
+        }
+        .searchbox_container_typo {
+            width: 75% !important;
+        }
+        .searchbox_container_ios_typo {
+            margin-left: 10px !important;
+            width: 75% !important;
+        }
+        .search_autocomplete_typo {
+            width: 99.6% !important;
+        }
+        .customer_log_in_container_typo {
+            border-radius: 20px !important;
+            width: 40px !important;
+            height: 40px !important;
+        }
+        .agent_info_head_typo {
+            height: 40px !important;
+            width: 40px !important;
+            border-radius: 20px !important;
+        }
+        .header_menu_logo_container_left_typo {
+            padding-left: 0 !important;
+            width: 45% !important;
+        }
+        .header_menu_links_container_right_typo {
+            width: 54.333333% !important;
+        }
+        .cart_icon_header_typo {
+            width: 42px !important;
+            margin-top: 3px !important;
+        }
+        .header_links_typo {
+            margin-right: -51px !important;
+            width: 115% !important;
+        }
+        .header_plcaption_icon_typo {
+            margin-right: 0 !important;
+            width: 39px;
+            height: 39px;
+        }
+        .link_header_login_button_typo {
+            background: transparent !important;
+            height: 40px !important;
+            width: 40px !important;
+            border: 1px solid #9f9f9f !important;
+            border-radius: 20px !important;
+            overflow: hidden !important;
+            box-shadow: none !important;
+            padding-top: 0 !important;
+            padding-left: 0 !important;
+        }
+        .header_partslist_caption_icon_typo {
+            padding-top: 5px;
+            padding-left: 8px;
+        }
+    }
+
+    @media (min-width: 461px) and (max-width: 480px) {
+        #product_longtext {
+            margin-left: -240px !important;
+            font-size: 12px;
+        }
+        #quickadd_addproduct_button {
+            height: 30px !important;
+        }
+        .checkout_show_act_as_a_customer_email_field {
+            position: absolute !important;
+            left: 10px !important;
+            top: 0 !important;
+            font-size: 0.8em !important;
+        }
+        #showActAsACustomerEmail {
+            font-size: 11px !important;
+        }
+        .logout_act_as_customer {
+            display: inline-block !important;
+            height: 19px !important;
+            margin-top: -2px !important;
+            font-size: 0.8em !important;
+        }
+        .html_sku_select_list_container {
+            width: 84%;
+        }
+        #wait_loader {
+            margin-left: 36%;
+        }
+        #empty_searchbar_sign {
+            margin-top: 7px !important;
+            font-size: 1.4em !important;
+        }
+        .hamburgerMenuAlternateTypo {
+            display: block !important;
+            margin-top: -3px !important;
+            padding-bottom: 0 !important;
+            margin-left: 2px !important;
+            margin-right: 5px !important;
+        }
+        .megaMenuCaptionTxtTypo {
+            font-size: 10px !important;
+        }
+        .hamburgerMenuAlternateIosTypo {
+            display: block !important;
+            margin-top: -3px !important;
+            padding-bottom: 0 !important;
+            margin-right: -15px !important;
+            margin-left: -5px !important;
+        }
+        .hamburgerMenuAlternateButtonIosTypo {
+        }
+        #page_layer_logo_default_typo {
+            margin-left: -11px !important;
+            margin-top: 0 !important;
+        }
+        #page_layer_logo_default_image_typo {
+            width: 73%;
+            margin-left: -18px;
+            margin-top: 0;
+        }
+        .searchWrapperTypo {
+            padding-left: 0 !important;
+            padding-right: 0 !important;
+            margin-left: -15px !important;
+            height: 72px !important;
+            width: 109% !important;
+        }
+        .id_scan_button_copy_typo {
+            display: block !important;
+            background: #f5f5f5 !important;
+        }
+        .scan_magnifier_barcode_typo {
+            width: 40px !important;
+            height: 40px !important;
+            margin-left: 7px;
+            margin-top: -6px;
+        }
+        .searchbox_container_typo {
+            width: 74% !important;
+        }
+        .search_autocomplete_typo {
+            width: 99.6% !important;
+        }
+        .customer_log_in_container_typo {
+            border-radius: 20px !important;
+            width: 40px !important;
+            height: 40px !important;
+        }
+        .agent_info_head_typo {
+            height: 40px !important;
+            width: 40px !important;
+            border-radius: 20px !important;
+        }
+        .header_menu_logo_container_left_typo {
+            padding-left: 0 !important;
+            width: 45% !important;
+        }
+        .header_menu_links_container_right_typo {
+            width: 54.333333% !important;
+        }
+        .cart_icon_header_typo {
+            width: 42px !important;
+            margin-top: 3px !important;
+        }
+        .header_links_typo {
+            margin-right: -25px !important;
+            width: 115% !important;
+        }
+        .header_plcaption_icon_typo {
+            margin-right: 0 !important;
+            width: 39px;
+            height: 39px;
+        }
+        .link_header_login_button_typo {
+            background: transparent !important;
+            height: 40px !important;
+            width: 40px !important;
+            border: 1px solid #9f9f9f !important;
+            border-radius: 20px !important;
+            overflow: hidden !important;
+            box-shadow: none !important;
+            padding-top: 0 !important;
+            padding-left: 0 !important;
+        }
+        .header_partslist_caption_icon_typo {
+            padding-top: 5px;
+            padding-left: 8px;
+        }
+    }
+    /* cookie banner mobile view button adjustment */
+    @media (max-width: 500px){
+        .cookie-content .cookie-buttons { flex-wrap: wrap; }
+        .cc-cookies a.cc-cookie-accept, .cc-cookies a.cc-cookie-decline { width:100%; text-align: center; margin-right: 10px; }
+    }
+
+    @media (min-width: 481px) and (max-width: 560px) {
+        #product_longtext {
+            margin-left: -240px !important;
+            font-size: 12px;
+        }
+        #quickadd_addproduct_button {
+            height: 30px !important;
+        }
+        .checkout_show_act_as_a_customer_email_field {
+            position: absolute !important;
+            left: 10px !important;
+            top: 0 !important;
+            font-size: 1em !important;
+        }
+        #showActAsACustomerEmail {
+            font-size: 12px !important;
+        }
+        .logout_act_as_customer {
+            display: inline-block !important;
+            height: 19px !important;
+            margin-top: -2px !important;
+            font-size: 0.8em !important;
+        }
+        .html_sku_select_list_container {
+            width: 84%;
+        }
+        #wait_loader {
+            margin-left: 35%;
+        }
+        #empty_searchbar_sign {
+            margin-top: 7px !important;
+            font-size: 1.4em !important;
+        }
+        .hamburgerMenuAlternateTypo {
+            display: block !important;
+            margin-top: -3px !important;
+            padding-bottom: 0 !important;
+            margin-left: 2px !important;
+            margin-right: 5px !important;
+        }
+        .megaMenuCaptionTxtTypo {
+            font-size: 10px !important;
+        }
+        .hamburgerMenuAlternateIosTypo {
+            display: block !important;
+            margin-top: -3px !important;
+            padding-bottom: 0 !important;
+            margin-right: -15px !important;
+            margin-left: -5px !important;
+        }
+        .hamburgerMenuAlternateButtonIosTypo {
+        }
+        #page_layer_logo_default_typo {
+            margin-left: -11px !important;
+            margin-top: 0 !important;
+        }
+        #page_layer_logo_default_image_typo {
+            width: 73%;
+            margin-left: -18px;
+            margin-top: 0;
+        }
+        .searchWrapperTypo {
+            padding-left: 0 !important;
+            padding-right: 0 !important;
+            margin-left: -15px !important;
+            height: 72px !important;
+            width: 109% !important;
+        }
+        .id_scan_button_copy_typo {
+            display: block !important;
+            background: #f5f5f5 !important;
+        }
+        .scan_magnifier_barcode_typo {
+            width: 40px !important;
+            height: 40px !important;
+            margin-left: 7px;
+            margin-top: -6px;
+        }
+        .searchbox_container_typo {
+            width: 80% !important;
+        }
+        .search_autocomplete_typo {
+            width: 99.6% !important;
+        }
+        .customer_log_in_container_typo {
+            border-radius: 20px !important;
+            width: 40px !important;
+            height: 40px !important;
+        }
+        .agent_info_head_typo {
+            height: 40px !important;
+            width: 40px !important;
+            border-radius: 20px !important;
+        }
+        .header_menu_logo_container_left_typo {
+            padding-left: 0 !important;
+            width: 45% !important;
+        }
+        .header_menu_links_container_right_typo {
+            width: 54.333333% !important;
+        }
+        .cart_icon_header_typo {
+            width: 42px !important;
+            margin-top: 3px !important;
+        }
+        .header_links_typo {
+            margin-right: -139px !important;
+            width: 115% !important;
+        }
+        .header_plcaption_icon_typo {
+            margin-right: 0 !important;
+            width: 39px;
+            height: 39px;
+        }
+        .link_header_login_button_typo {
+            background: transparent !important;
+            height: 40px !important;
+            width: 40px !important;
+            border: 1px solid #9f9f9f !important;
+            border-radius: 20px !important;
+            overflow: hidden !important;
+            box-shadow: none !important;
+            padding-top: 0 !important;
+            padding-left: 0 !important;
+        }
+        .header_partslist_caption_icon_typo {
+            padding-top: 5px;
+            padding-left: 8px;
+        }
+    }
+
+    @media (min-width: 561px) and (max-width: 639px) {
+        #product_longtext {
+            margin-left: -236px !important;
+        }
+        #quickadd_addproduct_button {
+            height: 30px !important;
+        }
+        .checkout_show_act_as_a_customer_email_field {
+            position: absolute !important;
+            left: 10px !important;
+            top: 0 !important;
+            font-size: 1em !important;
+        }
+        #showActAsACustomerEmail {
+            font-size: 14px !important;
+        }
+        .logout_act_as_customer {
+            display: inline-block !important;
+            height: 19px !important;
+            margin-top: -2px !important;
+            font-size: 0.8em !important;
+        }
+        .html_sku_select_list_container {
+            width: 84%;
+        }
+        #wait_loader {
+            margin-left: 35%;
+        }
+        #empty_searchbar_sign {
+            margin-top: 7px !important;
+            font-size: 1.4em !important;
+        }
+        .hamburgerMenuAlternateTypo {
+            display: block !important;
+            margin-top: -3px !important;
+            padding-bottom: 0 !important;
+            margin-left: 2px !important;
+            margin-right: 5px !important;
+        }
+        .megaMenuCaptionTxtTypo {
+            font-size: 10px !important;
+        }
+        .megaMenuCaptionTxtIphone5Typo {
+            padding-left: 15px !important;
+        }
+        .hamburgerMenuAlternateIosTypo {
+            display: block !important;
+            margin-top: -3px !important;
+            padding-bottom: 0 !important;
+            margin-right: -15px !important;
+            margin-left: -5px !important;
+        }
+        .hamburgerMenuAlternateIphone5Typo {
+            display: block !important;
+            margin-top: -3px !important;
+            padding-bottom: 0 !important;
+            margin-left: -7px !important;
+            margin-right: -3px !important;
+        }
+        .hamburgerMenuAlternateButtonIosTypo {
+        }
+        #page_layer_logo_default_typo {
+            margin-left: -11px !important;
+            margin-top: 0 !important;
+        }
+        #page_layer_logo_default_image_typo {
+            width: 47% !important;
+            margin-left: -18px;
+            margin-top: 3px !important;
+        }
+        .searchWrapperTypo {
+            padding-left: 0 !important;
+            padding-right: 0 !important;
+            margin-left: -15px !important;
+            height: 72px !important;
+            width: 109% !important;
+        }
+        .searchWrapperIphone5Typo {
+            padding-left: 0 !important;
+            padding-right: 10px !important;
+            margin-left: -16px !important;
+            height: 72px !important;
+            width: 112% !important;
+        }
+        .id_scan_button_copy_typo {
+            display: block !important;
+            background: #f5f5f5 !important;
+        }
+        .scan_magnifier_barcode_typo {
+            width: 40px !important;
+            height: 40px !important;
+            margin-left: 7px;
+            margin-top: -6px;
+        }
+        .searchbox_container_typo {
+            width: 80% !important;
+        }
+        .search_bar_boxIphone5Typo {
+            width: 88% !important;
+            margin-left: -2px !important;
+        }
+        .search_autocomplete_typo {
+            width: 99.6% !important;
+        }
+        .customer_log_in_container_typo {
+            border-radius: 20px !important;
+            width: 40px !important;
+            height: 40px !important;
+        }
+        .agent_info_head_typo {
+            height: 40px !important;
+            width: 40px !important;
+            border-radius: 20px !important;
+        }
+        .header_menu_logo_container_left_typo {
+            padding-left: 0 !important;
+            width: 45% !important;
+        }
+        .header_menu_links_container_right_typo {
+            width: 54.333333% !important;
+        }
+        .cart_icon_header_typo {
+            width: 42px !important;
+            margin-top: 3px !important;
+        }
+        .header_links_typo {
+            margin-right: -152px !important;
+            width: 115% !important;
+        }
+        .header_plcaption_icon_typo {
+            margin-right: 0 !important;
+            width: 39px;
+            height: 39px;
+        }
+        .link_header_login_button_typo {
+            background: transparent !important;
+            height: 40px !important;
+            width: 40px !important;
+            border: 1px solid #9f9f9f !important;
+            border-radius: 20px !important;
+            overflow: hidden !important;
+            box-shadow: none !important;
+            padding-top: 0 !important;
+            padding-left: 0 !important;
+        }
+        .header_partslist_caption_icon_typo {
+            padding-top: 5px;
+            padding-left: 8px;
+        }
+    }
+
+    @media (min-width: 640px) and (max-width: 767px) {
+        #product_longtext {
+            margin-left: -236px !important;
+        }
+        #quickadd_addproduct_button {
+            height: 30px !important;
+        }
+        .checkout_show_act_as_a_customer_email_field {
+            position: absolute !important;
+            left: 10px !important;
+            top: 0 !important;
+            font-size: 1em !important;
+        }
+        #showActAsACustomerEmail {
+            font-size: 14px !important;
+        }
+        .logout_act_as_customer {
+            display: inline-block !important;
+            height: 19px !important;
+            margin-top: -2px !important;
+            font-size: 0.8em !important;
+        }
+        .html_sku_select_list_container {
+            width: 84%;
+        }
+        #wait_loader {
+            margin-left: 35%;
+        }
+        #empty_searchbar_sign {
+            margin-top: 7px !important;
+            font-size: 1.4em !important;
+        }
+        .hamburgerMenuAlternateTypo {
+            display: block !important;
+            margin-top: -3px !important;
+            padding-bottom: 0 !important;
+            margin-left: 2px !important;
+            margin-right: 5px !important;
+        }
+        .megaMenuCaptionTxtTypo {
+            font-size: 10px !important;
+            text-align: center;
+            margin-left: -6px !important;
+        }
+        .hamburgerMenuAlternateIosTypo {
+            display: block !important;
+            margin-top: -3px !important;
+            padding-bottom: 0 !important;
+            margin-right: -15px !important;
+            margin-left: -5px !important;
+        }
+        .hamburgerMenuAlternateButtonIosTypo {
+        }
+        .megaMenuCaptionTxtIosTypo {
+            margin-left: -7px !important;
+            text-align: center !important;
+        }
+        .hamburgerMenuAlternateIosTypo {
+            display: block !important;
+            margin-top: -3px !important;
+            padding-bottom: 0 !important;
+            margin-right: -15px !important;
+            margin-left: -5px !important;
+        }
+        .hamburgerMenuAlternateButtonIosTypo {
+        }
+        .scan_magnifier_barcode_ios_typo {
+            width: 39px !important;
+            height: 39px !important;
+            margin-left: 3px;
+            margin-top: -5px;
+        }
+        .searchbox_container_ios_typo {
+            margin-left: 10px !important;
+            width: 86% !important;
+        }
+        #page_layer_logo_default_typo {
+            margin-left: -11px !important;
+            margin-top: 0 !important;
+        }
+        #page_layer_logo_default_image_typo {
+            width: 47%;
+            margin-left: -18px;
+            margin-top: 2px;
+        }
+        .searchWrapperTypo {
+            padding-left: 0 !important;
+            padding-right: 0 !important;
+            margin-left: -15px !important;
+            height: 72px !important;
+            width: 105% !important;
+        }
+        .id_scan_button_copy_typo {
+            display: block !important;
+            background: #f5f5f5 !important;
+        }
+        .scan_magnifier_barcode_typo {
+            width: 40px !important;
+            height: 40px !important;
+            margin-left: 5px;
+            margin-top: -6px;
+        }
+        .searchbox_container_typo {
+            width: 85.5% !important;
+        }
+        .search_autocomplete_typo {
+            width: 99.6% !important;
+        }
+        .customer_log_in_container_typo {
+            border-radius: 20px !important;
+            width: 40px !important;
+            height: 40px !important;
+        }
+        .agent_info_head_typo {
+            height: 40px !important;
+            width: 40px !important;
+            border-radius: 20px !important;
+        }
+        .header_menu_logo_container_left_typo {
+            padding-left: 0 !important;
+            width: 45% !important;
+        }
+        .header_menu_links_container_right_typo {
+            width: 54.333333% !important;
+            padding-right: 39px;
+        }
+        .cart_icon_header_typo {
+            width: 42px !important;
+            margin-top: 3px !important;
+        }
+        .header_links_typo {
+            margin-right: -53% !important;
+            width: 100% !important;
+        }
+        .header_plcaption_icon_typo {
+            margin-right: 0 !important;
+            width: 39px;
+            height: 39px;
+        }
+        .link_header_login_button_typo {
+            background: transparent !important;
+            height: 40px !important;
+            width: 40px !important;
+            border: 1px solid #9f9f9f !important;
+            border-radius: 20px !important;
+            overflow: hidden !important;
+            box-shadow: none !important;
+            padding-top: 0 !important;
+            padding-left: 0 !important;
+        }
+        .logo_cont_typo {
+            width: 86%;
+        }
+        #page_layer_logo_default_image {
+            width: 80%;
+        }
+        .header_partslist_caption_icon_typo {
+            padding-top: 5px;
+            padding-left: 8px;
+        }
+    }
+
+    @media (min-width: 768px) and (max-width: 768px) {
+        #product_longtext {
+            margin-left: -236px !important;
+        }
+        .checkout_show_act_as_a_customer_email_field {
+            position: absolute !important;
+            left: 10px !important;
+            top: 0 !important;
+            font-size: 1em !important;
+        }
+        .logout_act_as_customer {
+            display: inline-block !important;
+            height: 23px !important;
+            margin-top: -2px !important;
+        }
+        .html_sku_select_list_container {
+            width: 89%;
+        }
+        #wait_loader {
+            margin-left: 35%;
+        }
+        .hamburgerMenuAlternateTypo {
+            display: block !important;
+            margin-top: -3px !important;
+            padding-bottom: 0 !important;
+            margin-left: 2px !important;
+            margin-right: 5px !important;
+        }
+        .megaMenuCaptionTxtTypo {
+            font-size: 10px !important;
+        }
+        .megaMenuCaptionTxtIosTypo {
+            margin-left: -7px !important;
+            text-align: center !important;
+        }
+        .hamburgerMenuAlternateIosTypo {
+            display: block !important;
+            margin-top: -3px !important;
+            padding-bottom: 0 !important;
+            margin-right: -15px !important;
+            margin-left: -5px !important;
+        }
+        .hamburgerMenuAlternateButtonIosTypo {
+        }
+        #page_layer_logo_default_typo {
+            margin-left: -11px !important;
+            margin-top: 0 !important;
+        }
+        #page_layer_logo_default_image_typo {
+            width: 94% !important;
+            margin-left: 13px;
+            margin-top: 0;
+        }
+        .searchWrapperTypo {
+            padding-left: 0 !important;
+            padding-right: 0 !important;
+            padding-top: 20px !important;
+            margin-left: -1px !important;
+            height: 92px !important;
+            width: 100% !important;
+        }
+        .id_scan_button_copy_typo {
+            display: block !important;
+            background: #f5f5f5 !important;
+        }
+        .scan_magnifier_barcode_typo {
+            width: 40px !important;
+            height: 40px !important;
+            margin-left: 7px;
+            margin-top: -6px;
+        }
+        .scan_magnifier_barcode_ios_typo {
+            width: 53px !important;
+            height: 53px !important;
+            margin-left: 7px;
+            margin-top: -5px;
+        }
+        .searchbox_container_typo {
+            width: 74% !important;
+        }
+        .searchbox_container_ios_typo {
+            margin-left: 10px !important;
+            width: 83.5% !important;
+        }
+        .search_autocomplete_typo {
+            width: 99.6% !important;
+        }
+        .customer_log_in_container_typo {
+            border-radius: 20px !important;
+            width: 40px !important;
+            height: 40px !important;
+        }
+        .agent_info_head_typo {
+            height: 40px !important;
+            width: 40px !important;
+            border-radius: 20px !important;
+        }
+        .header_menu_logo_container_left_typo {
+            padding-left: 0 !important;
+            width: 45% !important;
+        }
+        .header_menu_links_container_right_typo {
+            width: 54.333333% !important;
+        }
+        .cart_icon_header_typo {
+            width: 46px !important;
+            margin-top: 3px !important;
+        }
+        .header_links_typo {
+            margin-right: -222px !important;
+            width: 115% !important;
+        }
+        .header_plcaption_icon_typo {
+            margin-right: 7px !important;
+        }
+        .link_header_login_button_typo {
+            background: transparent !important;
+            height: 44px !important;
+            width: 44px !important;
+            border: 1px solid #9f9f9f !important;
+            border-radius: 20px !important;
+            overflow: hidden !important;
+            box-shadow: none !important;
+            padding-top: 0 !important;
+            padding-left: 0 !important;
+        }
+        .login_image_mobile_typo {
+            margin-left: 11px !important;
+            margin-top: 7px !important;
+        }
+        .header_partslist_caption_icon_typo {
+            padding-top: 6px;
+            padding-left: 11px;
+        }
+    }
+
+    @media (min-width: 769px) and (max-width: 992px) {
+        #product_longtext {
+            margin-left: -236px !important;
+        }
+        .checkout_show_act_as_a_customer_email_field {
+            position: absolute !important;
+            left: 10px !important;
+            top: 0 !important;
+            font-size: 1em !important;
+        }
+        .logout_act_as_customer {
+            display: inline-block !important;
+            height: 23px !important;
+            margin-top: -2px !important;
+        }
+        .html_sku_select_list_container {
+            width: 89%;
+        }
+        #wait_loader {
+            margin-left: 35%;
+        }
+        .hamburgerMenuAlternateTypo {
+            display: block !important;
+            margin-top: -3px !important;
+            padding-bottom: 0 !important;
+            margin-left: 2px !important;
+            margin-right: 5px !important;
+        }
+        .megaMenuCaptionTxtTypo {
+            font-size: 10px !important;
+            padding-left: 11px !important;
+        }
+        .megaMenuCaptionTxtIosTypo {
+            margin-left: -7px !important;
+            text-align: center !important;
+        }
+        .hamburgerMenuAlternateIosTypo {
+            display: block !important;
+            margin-top: -3px !important;
+            padding-bottom: 0 !important;
+            margin-right: -15px !important;
+            margin-left: -5px !important;
+        }
+        .hamburgerMenuAlternateButtonIosTypo {
+        }
+        .scan_magnifier_barcode_ios_typo {
+            width: 53px !important;
+            height: 53px !important;
+            margin-left: 8px;
+            margin-top: -5px;
+        }
+        .searchbox_container_ios_typo {
+            margin-left: 10px !important;
+            width: 83% !important;
+        }
+        #page_layer_logo_default_typo {
+            margin-left: -11px !important;
+            margin-top: 0 !important;
+        }
+        #page_layer_logo_default_image_typo {
+            width: 85% !important;
+            margin-left: 16px;
+            margin-top: 0;
+        }
+        .searchWrapperTypo {
+            padding-left: 0 !important;
+            padding-right: 0 !important;
+            margin-left: 0 !important;
+            height: 86px !important;
+            width: 100% !important;
+            padding-top: 17px !important;
+        }
+        .id_scan_button_copy_typo {
+            display: block !important;
+            background: #f5f5f5 !important;
+        }
+        .scan_magnifier_barcode_typo {
+            width: 54px !important;
+            height: 54px !important;
+            margin-left: 4px;
+            margin-top: -5px;
+        }
+        .searchbox_container_typo {
+            width: 83.5% !important;
+        }
+        .search_autocomplete_typo {
+            width: 99.6% !important;
+        }
+        .customer_log_in_container_typo {
+            border-radius: 20px !important;
+            width: 40px !important;
+            height: 40px !important;
+        }
+        .agent_info_head_typo {
+            height: 40px !important;
+            width: 40px !important;
+            border-radius: 20px !important;
+        }
+        .header_menu_logo_container_left_typo {
+            padding-left: 0 !important;
+            width: 45% !important;
+        }
+        .header_menu_links_container_right_typo {
+            width: 54.333333% !important;
+        }
+        .cart_icon_header_typo {
+            width: 42px !important;
+            margin-top: 3px !important;
+        }
+        .header_links_typo {
+            margin-right: -221px !important;
+            width: 115% !important;
+        }
+        .header_plcaption_icon_typo {
+            margin-right: 2px !important;
+        }
+        .link_header_login_button_typo {
+            background: transparent !important;
+            height: 44px !important;
+            width: 44px !important;
+            border: 1px solid #9f9f9f !important;
+            border-radius: 25px !important;
+            overflow: hidden !important;
+            box-shadow: none !important;
+            padding-top: 2px !important;
+            padding-left: 2px !important;
+        }
+        .header_partslist_caption_icon_typo {
+            padding-top: 7px;
+            padding-left: 10px;
+        }
+    }
+
+    @media (min-width: 993px) and (max-width: 4000px) {
+        #product_longtext {
+            margin-left: -232px;
+        }
+        #showActAsACustomerEmailField {
+            height: 32px;
+            margin-top: -16px;
+            margin-bottom: 17px !important;
+            position: absolute;
+            font-size: 12px !important;
+        }
+        .checkout_show_act_as_a_customer_email_field {
+            position: absolute !important;
+            left: 10px !important;
+            top: 0 !important;
+            font-size: 1em !important;
+        }
+        .logout_act_as_customer {
+            display: inline-block !important;
+            height: 23px !important;
+            margin-top: -2px !important;
+        }
+        .html_sku_select_list_container {
+            width: 89%;
+        }
+        #wait_loader {
+            margin-left: 35%;
+        }
+        #empty_searchbar_sign {
+            margin-top: 7px !important;
+            font-size: 1.6em !important;
+        }
+    }
+
+    @media screen and (orientation: landscape) {
+        #quickadd-barcode-picker {
+            width: 50% !important;
+            height: auto;
+        }
+    }
+    @media screen and (orientation: portrait) {
+        #quickadd-barcode-picker {
+            width: 75% !important;
+            height: auto;
+        }
+    }
+
+</style>
+
+<input type="hidden" id="quickadd_phtml_uncached_timestamp" value="<?php echo date('Y-m-d H:i:s'); ?>">
+<?php if ($showQuickaddContent) : ?>
+    <div tabindex="-1" role="dialog" aria-labelledby="quickaddLabel" id="quickaddpopup" class="quickadd modal fade" title="<?php //echo $this->__('Quick Add'); ?>">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" <?php if($_quickaddHelper->getModuleName() === 'checkout' && $_quickaddHelper->getControllerName() === 'cart') { ?> id="cartQuickAddClose" <?php }  ?> data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title"><?php echo $this->__('Quick Add'); ?></h4>
+                </div>
+                <div class="loginCont">
+                    <div class="quickadd row">
+                        <div class="col-xs-12">
+                            <!-- <div id="quickadd_message"></div> -->
+                            <div id="editArea" class="row add-product">
+                                <form action="<?php echo Mage::helper('schrackcore/url')->getUrlWithCurrentProtocol('checkout/cart/quickadd') ?>" method="post" id="product_quickadd_form">
+                                    <input type="hidden" name="target" value="cart" />
+                                    <input type="hidden" name="id" value="<?php echo $affectedId; ?>" />
+                                    <input type="hidden" name="quickadd-drum" id="quickadd-drum" value="" />
+                                    <div class="col-xs-12">
+                                        <h3><?php echo $this->__('Quickadd') ?></h3>
+                                    </div>
+                                    <!-- div id="quickadd-sku-div" class="col-xs-12 col-sm-5" style="padding-left:0" -->
+                                    <div id="wait_loader">
+                                        <img id="wait_loader_inline_gif" style="width: 20px; height: 20px; float: right; display: none;" src="<?php echo $this->getSkinUrl('schrackdesign/Public/Images/download_ajax_loader.gif'); ?>">
+                                    </div>
+                                    <div id="quickadd-sku-div" class="col-xs-12 col-sm-6">
+                                        <input type="hidden" name="url" value="<?php echo $_quickaddHelper->getResultUrl(); ?>" id="url"/>
+                                        <input type="text" name="<?php echo $_quickaddHelper->getQueryParamName(); ?>" id="quickadd_sku" maxlength="13" placeholder="<?php echo $this->__('Article Number'); ?>" title="<?php echo $this->__('Article Number'); ?>" class="form-control quickadd-sku required-entry" autocomplete="off" autofocus />
+                                        <div id="quickadd_autocomplete" class="quickadd-autocomplete"></div>
+                                    </div>
+                                    <div id="sku_found_okay"><i class="fa fa-check" aria-hidden="true"></i></div>
+                                    <div id="quickadd-qty-div" class="col-xs-12 col-sm-6">
+                                        <input type="number" name="qty" onkeypress="return isNumberKey(event)" id="quickadd_qty" maxlength="12" placeholder="<?php echo $this->__('Qty'); ?>" title="<?php echo $this->__('Qty'); ?>" class="form-control quickadd-qty" autocomplete="off" />
+                                    </div>
+                                    <div style="clear: both;"></div>
+                                    <div style="height: 20px; width: 100%;">
+                                        <span id="ean_equivalent"></span>
+                                    </div>
+                                    <div style="height: 30px; width: 100%;">
+                                        <span id="product_longtext"></span>
+                                    </div>
+                                    <div class="col-xs-12 col-sm-12">
+                                        <?php if ($_quickaddHelper->getModuleName() === 'wishlist' && $_quickaddHelper->getControllerName() === 'partslist') : ?>
+                                            <button type="button" id="quickadd_addproduct_button" data-id="" data-name="" data-type="quickadd" title="<?php echo $this->__('Add to Cart'); ?>" class="bttn-md">
+                                                <?php echo $this->__('Add to Cart'); ?>
+                                            </button>
+                                            <!-- @todo patch for now; no partslist functionality required on this -->
+                                            <!-- <button type="button" id="quickadd_addproduct_partslist_button" title="<?php //echo $this->__('Add to partslist'); ?>" class="button-red gray small fixed-width">
+                                                <?php echo $this->__('Add to partslist'); ?>
+                                            </button> -->
+                                        <?php else: ?>
+                                            <button type="button" id="quickadd_addproduct_button" data-id="" data-name="" data-type="quickadd" title="<?php echo $this->__('Add to Cart'); ?>" class="bttn-md">
+                                                <?php echo $this->__('Add to Cart'); ?>
+                                            </button>
+                                        <?php endif; ?>
+                                        <span id="id-scan-button-quickadd" class="form-control" style="color:#ffffff; background:#00589d; font-size:14px; float: right; width:40px; vertical-align:middle; text-align:center; padding:6px; display:none;" onclick="switchToScanMode()"><span style="vertical-align:middle;" class="glyphicon glyphicon-barcode"></span></span>
+                                    </div>
+                                </form>
+                                <input type="hidden" id="memo" value="0">
+                            </div>
+
+                            <div class="row">
+                                <div class="col-xs-12 col-sm-12" id="quickadd-barcode-group" style="margin-top:10px; text-align: center; display:none">
+                                    <div class="scanner" id="quickadd-barcode-picker" style="display: inline-block;">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div id="csvArea" class="row csv hidden-xs hidden-sm">
+								<div class="col-xs-12"><hr></div>
+                                <form method="post" onsubmit="submitFormAndTrackGaEvent(this.form, 'cart', 'quick_add_upload', 'csv')" action="<?php echo Mage::helper('schrackcore/url')->getUrlWithCurrentProtocol('checkout/cart/addCsv'); ?>" enctype="multipart/form-data" id="cart-addcsv-form">
+                                    <div class="col-xs-12">
+                                        <h3><?php echo $this->__('Upload CSV') ?> <a href="<?php echo Mage::getStoreConfig('schrack/typo3/typo3url') . Mage::getStoreConfig('schrack/typo3/uploadcsvtext_url'); ?>">[?]</a></h3>
+                                    </div>
+                                    <div class="upload col-xs-12">
+                                        <input type="file" title="<?php echo $this->__('CSV File'); ?>" name="csv" id="quickadd-csv-upload-button" accept=".csv" />
+                                    </div>
+                                    <div class="add_product col-xs-6"><div class="right-align-container">
+                                            <button type="button" id="quickadd-button" title="<?php echo $this->__('Add Products') ?>" class="bttn-md quickadd_button_grey"><?php echo $this->__('Add Products') ?></button>
+                                            <input id="verifyUploadFile" type="hidden" value="">
+                                        </div></div>
+                                </form>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal"><?php echo $this->__('Close'); ?></button>
+                </div>
+            </div>
+        </div>
+    </div>
+<?php endif; ?>
+
+<input type="hidden" id="page_id_quickadd" value="<?php echo Mage::getSingleton('core/session')->getFormKey(); ?>">
+
+<section id="typo_world_base_element"></section>
+
+<script type="text/javascript">//<![CDATA[
+    var globalTRACKING_ENABLED       = '<?php echo $trackingEnabled; ?>';
+    var globalCURRENCY_CODE           = '<?php echo Mage::app()->getStore()->getCurrentCurrencyCode() ?>';
+    var globalTYPO_URL               = '<?php echo Mage::getStoreConfig('schrack/typo3/typo3url') ?>';
+    var globalSHOP_CATEGORY_AJAX_URL = '<?php echo Mage::getUrl("catalog/product/getCategoryId4googleTagManager"); ?>';
+    var globalFORM_KEY               = '<?php echo Mage::getSingleton('core/session')->getFormKey(); ?>';
+    var globalCRM_USER_ID            = '<?php echo $crmUserId; ?>';
+    var globalCUSTOMER_TYPE          = '<?php echo $customerTypeGTM; ?>';
+    var globalACCOUNT_CRM_ID         = '<?php echo $accountCrmId; ?>';
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    //-------------- init empty json object for "Act as customer" favourite list
+    var aac_favouriteList = {"customers":[]};
+    var aac_searchResultList = {"customers":[]};
+    localStorage.actAsACustomerAllowed = 0;
+    if (localStorage.getItem("actAsCustomerFavouritesMyCustomersOnly") === null) {
+        localStorage.actAsCustomerFavouritesMyCustomersOnly = 'on';
+    }
+    if (localStorage.getItem("actAsCustomerSearchMyCustomersOnly") === null) {
+        localStorage.actAsCustomerSearchMyCustomersOnly = 'on';
+    }
+    //============================================== actAsCustomerResultListItem
+    function actAsCustomerResultListItem(customer, vis){
+        //==========================================================================
+        /***********************************************************************
+         customer:object = {
+                aac_id: Customer Nr. (WWS-ID),
+                aac_name: Customer Name,
+                aac_adress: Customer Address,
+                aac_employeeName: Customer Sales Representant,
+                aac_employeeId: Customer Sales Representant ID
+            }
+         --------------------------------------------------------------------
+         vis:string = 'search' or ''
+         Changes action button depending if item will be shown
+         in search result or favourites list
+         ***********************************************************************/
+        var actionIconClass = vis == 'search'
+            ? 'addFavouriteCustomer'
+            : 'removeFavouriteCustomer';
+        //----------------------------------------------------------------------
+        var customerEmail = '<?php echo $customerEmail; ?>';
+        var tmp = customerEmail.split('@');
+        var name = tmp[0];
+        //----------------------------------------------------------------------
+        var customerIconClass = customer.aac_employeeId == name
+            ? 'myCustomerIcon'
+            : 'customerIcon';
+        //----------------------------------------------------------------------
+        var entryClassifier = customer.aac_employeeId == name
+            ? 'myCustomer'
+            : 'defaultCustomer';
+        //------------------------------------------------ customer advisor name
+        var customerEmployeeName = customer.aac_employeeName.split(' ');
+        if(customer.aac_employeeName == actAsCustomerNotSupervisedTxt){
+            customerEmployeeName =  ['',customer.aac_employeeName];
+        }
+        //----------------------------------------------------------------------
+        var ret =
+            '<li class="aac_listEntry '+entryClassifier+'">' +
+            '<div class="aac_listentry_content_wrapper">' +
+            '<div class="aac_text_rows">' +
+            '<div class="aacfl_firstRow" >' +
+            '<span class="customerName">'+ customer.aac_name+'</span>' + //
+            '<span class="customerNr">'+ customer.aac_id+'</span>' +
+            '</div>' +
+            '<div class="aacfl_secondRow">' +
+            '<div class="aacfl_secondRow_c1">' +
+            '<div class="addressIcon"  title="Customer adress"/>' +
+            '</div>' +
+            '<div class="aacfl_secondRow_c2">' +
+            customer.aac_adress +
+            '</div>' +
+            '</div>' +
+            '<div class="aacfl_thirdRow">' +
+            '<div class="aacfl_thirdRow_c1">' +
+            '<div class="' + customerIconClass + '"  title="Sales representative"/>'+
+            '</div>' +
+            '<div class="aacfl_thirdRow_c2">' +
+            customerEmployeeName[0] + ' ' + // First name
+            '<b>' + customerEmployeeName[1] + '</b>' + // Last name
+            '</div>' +
+            '</div>' +
+            '</div>' +
+            // pass object to add/remove customer to/from favourite list
+            "<div class='" + actionIconClass + "' data-aac-favobject='"+JSON.stringify(customer)+"'/>" +
+            '</div>'+
+            '<div class="aac_listentry_actions_wrapper">'+
+            '<span class="aac_listentry_actions_headline">' +
+            '<span>' +customer.aac_name + '</span><br>' +
+            actAsCustomerLoginWithUserTxt +
+            '</span>' +
+            '<span class="aac_login_abort">' +
+            actAsCustomerBtnCancelTxt +
+            '</span>' +
+            '<span class="aac_login_btn_sapcer" />' +
+            //---------------------------- passing customer-id for login
+            '<span class="aac_login" data-aac-customerid="'+customer.aac_id+'">' +
+            actAsCustomerBtnLoginTxt +
+            '</span>' +
+            '</div>'+
+            '</li>';
+
+        return ret;
+
+    } //================================== actAsCustomerResultListItem ***END***
+
+
+    //=============================================== actAsCustomerSearchRequest
+    function actAsCustomerSearchRequest() {
+        //==========================================================================
+        //---------------------------------------------------------- search term
+        var query = jQuery('#actAsCustomerSearchbar').val();
+        //---------------------------------------- show pending search indicator
+        jQuery('#aac_searchMagnifierImg, #aac_loadingSpinner').toggleClass('show_ib hide');
+        jQuery('.actAsCustomerMagnifierButton, #actAsCustomerSearchbar').toggleClass('loading');
+        //------------------------------------------------------------ ajax call
+        var ajax_url = '<?php echo $this->getUrl('customer/account/getCustomerSearchResults'); ?>';
+        jQuery.ajax(ajax_url,{
+            'dataType' : 'json',
+            'type': 'post',
+            'data': {
+                'form_key' : '<?php echo Mage::getSingleton('core/session')->getFormKey(); ?>',
+                'search_query' : query,
+                'search_query_limit' : 0,
+                'search_only_show_my_contacts' : localStorage.actAsCustomerSearchMyCustomersOnly
+            },
+            'success': function (data) {
+                //----------------------------------- clear aac_searchResultList
+                aac_searchResultList = {"customers":[]};
+                //--------------------- if fetched result has at least one entry
+                if (data.results >= 1) {
+                    //---------- ok message when item is added to favourite list
+                    var searchResultItems = '<li>' +
+                        '<div id="Aac_InfoMsgWrapper" class="hide">' +
+                        '<ul class="messages">'  +
+                        '<li class="success-msg">' +
+                        '<span class="success-msg-txt">' + actAsCustomerNoListAddableToFavouritesMsgTxt + '</span>' +
+                        '</li>' +
+                        '</ul>' +
+                        '</div>' +
+                        '<div id="Aac_AddFavouritesMsgWrapper" class="hide">' +
+                        '<ul class="messages">'  +
+                        '<li class="success-msg">' +
+                        '<span class="glyphicon glyphicon-ok-sign"></span> '  +
+                        '<span class="success-msg-txt">' + actAsCustomerAddToFavouritesOkMsgTxt + '</span>' +
+                        '</li>' +
+                        '</ul>' +
+                        '</div>' +
+                        '</li>';
+                    //----------------- loop through result set and build object
+                    for (var index = 0; index < data.results; index++) {
+                        var aac_data = {
+                            aac_id: data.list_wws_ids[index],
+                            //--------------------------------- convert " into “
+                            aac_name: data.list_description[index].replaceAll('&quot;', "&#8220;"),
+                            aac_adress: data.aac_adress[index],
+                            aac_employeeName: data.aac_employee_real_name[index],
+                            aac_employeeId: data.list_emplyee[index]
+                        };
+                        //-- fill full object for add all Customers to Fav. List
+                        if(data.results > 1 && data.results <= 25){
+                            if (index == 0){
+                                searchResultItems +=
+                                    '<li>'+
+                                    "<div class='addFavouriteCustomer' id='addAllFavouriteCustomer' >" +
+                                    actAsCustomerAddAllToFavouritListTxt +
+                                    "</div>" +
+                                    '</li>';
+                            }
+                            aac_searchResultList.customers.push(aac_data);
+                        }
+                        //----------------------------- build visual result list
+                        searchResultItems += actAsCustomerResultListItem(aac_data, 'search');
+                    }
+                    //-- show result list container and append result list items
+                    jQuery('#actAsCustomerSearchbarResultList').addClass('active').html(searchResultItems);
+                    if(data.results > 25){
+                        //----------------------------- more than 25 entries msg txt
+                        jQuery("#actAsCustomerSearchbarResultContainer").animate({scrollTop: 0});
+                        jQuery('#Aac_InfoMsgWrapper .messages .success-msg .success-msg-txt').text(actAsCustomerNoListAddableToFavouritesMsgTxt);
+                        //--------------------- display and auto hide action msg
+                        jQuery('#Aac_InfoMsgWrapper').removeAttr("style").removeClass('hide');
+                        actAsCustomerActionMsgInterval = setTimeout(function(){ jQuery('#Aac_InfoMsgWrapper').fadeOut(1000).addClass('hide'); },7000);
+                    }
+
+                } else {
+                    //-- hide result list container and delete result list items
+                    jQuery('#actAsCustomerSearchbarResultList').removeClass('active').html('');
+                }
+                //-------------------------------- hide pending search indicator
+                jQuery('#aac_searchMagnifierImg, #aac_loadingSpinner').toggleClass('show_ib hide');
+                jQuery('.actAsCustomerMagnifierButton, #actAsCustomerSearchbar').toggleClass('loading');
+                //-------------- update formkey to keep synchronicity in MAGENTO
+                jQuery('#aac_form_key').val(data.aac_formkey);
+            }
+        });
+    } //=================================== actAsCustomerSearchRequest ***END***
+
+
+    //==================================================== jQuery DOCUMENT READY
+    jQuery(document).ready(function () {
+        //==========================================================================
+
+        //-------------------------------------------- initialisation in commonJs.js
+        aac_AddFavouriteUrl = '<?php echo $this->getUrl('customer/account/setActAsCustomerFavouriteList'); ?>';
+        //-------- update json object for "Act as customer" favourite list if exists
+        <?php
+        if($_customer !== null && $_customer->getSchrackCustomerFavoriteList()):
+            echo 'aac_favouriteList = ' .$_customer->getSchrackCustomerFavoriteList().';';
+        endif;
+        ?>
+        //---------------------------- Visual "Act as customer" favourite list items
+        if(typeof aac_favouriteList.customers !== 'undefined' && aac_favouriteList.customers.length > 0) {
+            if(aac_FavListItems.length > 0 && aac_FavListItems.indexOf('aac_no_fav_li') > 0){
+                jQuery('#actAsCustomerFavouritesList').empty();
+                aac_FavListItems = '';
+            }
+            for (var index = 0; index < aac_favouriteList.customers.length; index++) {
+                aac_FavListItems += actAsCustomerResultListItem(aac_favouriteList.customers[index], '');
+            }
+            jQuery('#actAsCustomerFavouritesList').append(aac_FavListItems);
+        }
+        if(localStorage.actAsCustomerFavouritesMyCustomersOnly == 'on'){
+            jQuery("#actAsCustomerFavouritesList .defaultCustomer").hide();
+        }
+        //------------------------------ "Act as customer" form which will be ajax'd
+        //------------------------------------------ will be appended in commonJs.js
+        actAsCustomerLoginForm =
+            '<form id="aac_act_as_a_customer_form" method="post" action="<?php echo Mage::getUrl('customer/account/actAsUserPost'); ?>" >' +
+            '<input type="hidden" name="form_key" id="aac_form_key" value="<?php echo Mage::getSingleton('core/session')->getFormKey(); ?>" />' +
+            '<input type="hidden" name="aac_customer_id" id="aac_customer_id" />' +
+            '</form>';
+        //---------------------------------------------- Actual session user's email
+        aac_realEmail = '<?php echo Mage::getSingleton('customer/session')->getCustomer()->getEmail(); ?>';
+        //------------------------------ check if user is allowed to act as customer
+        //----------------------- if not, "Act as customer" feature will be disabled
+        <?php
+        if( $_customer && $_customer->isActAsUserPossibleDashboard($_customer) ):
+            echo "localStorage.actAsACustomerAllowed = 1;";
+        endif;
+        ?>
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    if (typeof isTypo3Page === 'boolean' && isTypo3Page) {
+        if (jQuery(window).width() < 993) {
+            jQuery('.glyphicon-barcode').remove();
+            jQuery('.menuBar').addClass('sandwichMenuQuadrant');
+            jQuery('.sandwichMenuQuadrant').removeClass('menuBar');
+            jQuery('.sandwichMenuQuadrant').attr("id", "hamburgerMenuAlternateTypo");
+            jQuery('#hamburgerMenuAlternateTypo > button').attr("id", "hamburgerMenuAlternateButtonTypo");
+            jQuery('#quick_add_button').remove();
+            jQuery('.logoCont').attr("id", "page_layer_logo_default_typo");
+            jQuery('#page_layer_logo_default_typo > a > img').attr("id", "page_layer_logo_default_image_typo");
+            jQuery('.searchContiner').addClass('searchWrapperTypo');
+            jQuery('.tx-solr-searchbox').attr("id", "searchbox_container_typo");
+            jQuery('#searchbox_container_typo').addClass('searchbox_container_typo');
+            jQuery('#search_autocomplete').addClass('search_autocomplete_typo');
+        }
+    }
+
+    jQuery(window).on('orientationchange', function() {
+        location.reload();
+    });
+
+
+        if (typeof isTypo3Page === 'boolean' && isTypo3Page) {
+            if (jQuery(window).width() < 993) {
+                setTimeout(function(){
+                    jQuery('#hamburgerMenuAlternateTypo').insertAfter('#showActAsACustomerEmailField');
+                    jQuery('#hamburgerMenuAlternateTypo').addClass("hamburgerMenuAlternateTypo");
+                    jQuery('#id-scan-button').insertAfter('#searchbox_container_typo');
+                    jQuery('#id-scan-button').addClass('id_scan_button_copy_typo');
+                    jQuery('<img id="scan_magnifier_barcode_typo">').appendTo('.id_scan_button_copy_typo');
+                    <?php $main_scan_image_path = 'schrackdesign/Public/Images/rwd/scan_magnifier_barcode.png'; ?>
+                    var mainScanImgPath = '<?php echo $this->getSkinUrl($main_scan_image_path) ?>';
+                    jQuery('#scan_magnifier_barcode_typo').attr("src", mainScanImgPath);
+                    jQuery('#scan_magnifier_barcode_typo').addClass('scan_magnifier_barcode_typo');
+                    jQuery('#customerLogInContainer').addClass('customer_log_in_container_typo');
+                    jQuery('#agentInfoHead').addClass('agent_info_head_typo');
+                    jQuery('.header_menu_logo_container_left').addClass('header_menu_logo_container_left_typo');
+                    jQuery('.header_menu_links_container_right').addClass('header_menu_links_container_right_typo');
+                    jQuery('.MyCart > img').addClass('cart_icon_header_typo');
+                    jQuery('#headerLinks').addClass('header_links_typo');
+                    jQuery('#headerPLCaptionIcon').addClass('header_plcaption_icon_typo');
+                    jQuery('#link_header_login_button').addClass('link_header_login_button_typo');
+                    jQuery('#login_image_mobile').addClass('login_image_mobile_typo');
+                    jQuery('#megaMenuCaptionTxt').addClass('megaMenuCaptionTxtTypo');
+
+                    var iOSPhone = /iPhone|iPad/.test(navigator.userAgent) && !window.MSStream;
+                    if (iOSPhone == true ) {
+                        jQuery('#hamburgerMenuAlternateTypo').removeClass('hamburgerMenuAlternateTypo');
+                        jQuery('#hamburgerMenuAlternateTypo').addClass('hamburgerMenuAlternateIosTypo');
+                        jQuery('#hamburgerMenuAlternateButtonTypo').addClass('hamburgerMenuAlternateButtonIosTypo');
+                        jQuery('#searchbox_container_typo').removeClass('searchbox_container_typo');
+                        jQuery('#searchbox_container_typo').addClass('searchbox_container_ios_typo');
+                        jQuery('#scan_magnifier_barcode_typo').removeClass('scan_magnifier_barcode_typo');
+                        jQuery('#scan_magnifier_barcode_typo').addClass('scan_magnifier_barcode_ios_typo');
+                        jQuery('#megaMenuCaptionTxt').addClass('megaMenuCaptionTxtIosTypo');
+                        console.log('iPhone or iPad detected');
+                        console.log(jQuery(window).width());
+                    } else {
+                        console.log('Android detected');
+                    }
+
+                    if (isIphone5() == true) {
+                        jQuery('.id_scan_button_copy_typo').remove();
+                        jQuery('#megaMenuCaptionTxt').removeClass('megaMenuCaptionTxtIosTypo');
+                        jQuery('#megaMenuCaptionTxt').addClass('megaMenuCaptionTxtIphone5Typo');
+                        jQuery('.searchWrapperTypo').addClass('searchWrapperIphone5Typo');
+                        jQuery('.searchWrapperTypo').removeClass('searchWrapperTypo');
+                        jQuery('#searchbox_container_typo').addClass('search_bar_boxIphone5Typo');
+                        jQuery('#hamburgerMenuAlternateTypo').removeClass('hamburgerMenuAlternateIosTypo');
+                        jQuery('#hamburgerMenuAlternateTypo').addClass('hamburgerMenuAlternateIphone5Typo');
+                        console.log('iPhone 5 detected');
+                    }
+
+                    jQuery('body > header > .container').fadeIn(400);
+                    jQuery('.searchContiner').fadeIn(400);
+                }, 100);
+            }
+        } else {
+            if (jQuery(window).width() < 993) {
+                jQuery('.searchContiner').show();
+            }
+        }
+    });
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    var quickaddForm = new VarienForm('product_quickadd_form');
+    var formKey = '<?php echo Mage::getSingleton('core/session')->getFormKey(); ?>';
+    var ajaxUrl = '<?php echo Mage::helper('schrackcore/url')->getUrlWithCurrentProtocol('sd/AjaxDispatcher/setGetData'); ?>';
+    var drumId = ''; //jQuery('#select-drum').val();
+
+    var inputQuantityObject =  jQuery('#quickadd_qty');
+	/*if (inputQuantityObject.val() == '' || inputQuantityObject.val() == 0) {
+		var inputQtyQAVal = 1;
+	} else {
+		var inputQtyQAVal = inputQuantityObject.val();
+	}*/
+    var inputSkuObject =  jQuery('#quickadd_sku');
+    var previousSku = '';
+    quickaddForm.submit = function(){
+        if (quickaddForm.validator.validate()) {
+            availabilityCheck4quickadd(true);
+        }
+    }.bind(quickaddForm);
+    var availabilityCheck4quickadd = function ( setFocusToSkuField ) {
+        setOverlayLoader();
+        removeMessages();
+		if (inputQuantityObject.val() == '' || inputQuantityObject.val() == 0) {
+			var inputQtyQAVal = 1;
+		} else {
+			var inputQtyQAVal = inputQuantityObject.val();
+		}
+        drumId = jQuery('#quickadd-drum').val();
+        if ( drumId == null ) {
+                drumId = '';
+        }
+        jQuery('ul.messages').empty();
+        jQuery('ul.errors').empty();
+        jQuery.ajax(ajaxUrl, {
+           'dataType' : 'json',
+           'type': 'POST',
+           'data': {
+                'form_key' : '<?php echo Mage::getSingleton('core/session')->getFormKey(); ?>',
+                'setAddToCart' : {'data' : {'sku' : jQuery('#quickadd_sku').val(), 'quantity' : inputQtyQAVal, 'drum' : drumId, 'forceAdd' : 1 }}
+            },
+           'success': function (data) {
+                //jQuery('#ajax-loader').hide();
+                unsetOverlayLoader();
+                //jQuery("#quickViewPopup .close").click();
+                var parsedData = data;
+                var result = parsedData.setAddToCart.result;
+                if(result.showPopup == true) {	// Open Inquiry Popup
+                    jQuery('#quantitywarningpopup').html(result.popupHtml);
+                    jQuery('#quantitywarningpopupBtn').click();
+                } else {
+                        jQuery("html, body").animate({ scrollTop: 0 }, "slow");
+                        console.log('ScrollTop #57');
+                        if(result.numberOfDifferentItemsInCart){
+                                jQuery('.MyCart').append('<div id="cartNoBxItemCount" class="cartNoBx">'+result.numberOfDifferentItemsInCart+'</div>');
+                        }
+                        if (result.data.newQty && result.data.newQty > 0) {
+                             inputQuantityObject.val(result.data.newQty);
+                        }
+                        if (result.data.newDrum && result.data.newDrum.length > 0) {
+                            drumId = result.data.newDrum;
+                            jQuery('#quickadd-drum').val(drumId);
+                        }
+                        var messageArray = result.data.messages;
+                        for(var i=0; i < messageArray.length; i++) {
+                         messageArray[i] = messageArray[i].replace('setQty', 'setQtyQuickView');
+                        }
+                        if (result.result.indexOf("SUCCESS") == -1) {
+                            jQuery('#scanner_popup_alternate').removeClass('scanner_popup_alternate');
+                            jQuery('#scanner_popup_alternate').addClass('scanner_popup_alternate_message_open');
+                            jQuery('#scanpopup_scandit_alternate').removeClass('scanpopup_scandit_alternate');
+                            jQuery('#scanpopup_scandit_alternate').addClass('scanpopup_scandit_alternate_message_open');
+                            jQuery('#quickadd_message').html('<ul class="messages"><li class="error-msg"><span class="glyphicon glyphicon-exclamation-sign"></span> <span>' + messageArray.join(', ') + '</span></li></ul>');
+                        } else {
+                            previousSku = jQuery('#quickadd_sku').val();
+                            document.getElementById("product_quickadd_form").reset();
+                            if ( setFocusToSkuField ) {
+                                jQuery('#quickadd_sku').focus();
+                            }
+                            jQuery('#scanner_popup_alternate').removeClass('scanner_popup_alternate');
+                            jQuery('#scanner_popup_alternate').addClass('scanner_popup_alternate_message_open');
+                            jQuery('#scanpopup_scandit_alternate').removeClass('scanpopup_scandit_alternate');
+                            jQuery('#scanpopup_scandit_alternate').addClass('scanpopup_scandit_alternate_message_open');
+                            //jQuery('#quickadd_message').html('<ul class="messages"><li class="success-msg"><span class="glyphicon glyphicon-ok"></span> <span>' + messageArray.join(', ') + '</span></li></ul>');
+                            appendMessageUl(messageArray, 'messages_hidden', 'success-msg')
+                            console.log('appendMessageUl #42');
+                        }
+                        if (localStorage.quickAddEditMode == 'on') {
+                            var currentURL = window.location.href;
+                            if(currentURL.match(/checkout\/cart/)) {
+                                if (jQuery(window).width() <= 992) {
+                                    window.setTimeout(location.reload(), 2000);
+                                }
+                            }
+                        }
+                        //document.getElementById("product_quickadd_form").reset();
+                        /* if (window.location.href.indexOf("cart") > -1) {
+                            location.reload();
+                        } */
+                        //jQuery('.messages').delay(5000).fadeOut(1000);
+                }
+           },
+           'error': function (data) {
+               var parsedData = data;
+           }
+        });
+
+    };
+    //jQuery('#quickadd_addproduct_button').focus();
+
+    function removeMessages() {
+        // Both are messages but not shown in unique manner:
+        jQuery('.messages').hide();
+        jQuery('.messages').remove();
+
+        jQuery('.errors').hide();
+        jQuery('.errors').remove();
+    }
+    function setQtyQuickView(id,qty) {
+        if (jQuery('#quickadd_qty').length) {
+            var inputQuantityObject = jQuery('#quickadd_qty');
+        }
+        jQuery('#quickadd_sku').val(previousSku);
+        inputQuantityObject.val(qty);
+        availabilityCheck4quickadd(true);
+    }
+
+    jQuery("#quickadd-csv-upload-button").change(function() {
+        var files = jQuery("#quickadd-csv-upload-button")[0].files;
+        var fileSelected = false;
+        var fileName = '';
+
+        for (var i = 0; i < files.length; i++)
+        {
+            fileSelected = true;
+            var fileInput = document.getElementById('quickadd-csv-upload-button');
+            fileName = fileInput.value.split(/(\\|\/)/g).pop();
+        }
+
+        if (fileSelected == true && fileName.match(/.+csv$/i)) {
+            jQuery('#verifyUploadFile').val('true');
+            jQuery('#quickadd-button').removeClass('quickadd_button_grey');
+            jQuery('#quickadd-button').addClass('quickadd_button_red');
+        } else {
+            jQuery('#verifyUploadFile').val('');
+            jQuery('#quickadd-button').removeClass('quickadd_button_red');
+            jQuery('#quickadd-button').addClass('quickadd_button_grey');
+        }
+    });
+    //------------------------------------------- buttons for adding csv to cart
+    jQuery('#quickadd-button').on('click', function(){
+        uploadCSVFromQuickAdd();
+    });
+
+    //-------------- These buttons are used multiple: e.g. partslist, cart, etc:
+    function uploadCSVFromQuickAdd() {
+        if (jQuery('#verifyUploadFile').val() == 'true') {
+            removeMessages();
+            setOverlayLoader();
+            submitFormAndTrackGaEvent(jQuery('#cart-addcsv-form').get()[0], 'cart', 'quick_add_upload', 'csv');
+        }
+    }
+
+    function quickaddScanResultHandler ( scanResult ) {
+        scanResult.barcodes.reduce(function(string, barcode) {
+            var product = '';
+            var cnt = '';
+            var data = barcode.data;
+            var p = data.indexOf("?a=");
+            if ( p > -1 ) {
+                product = data.substring(p + 3, p + 13);
+            } else if ( (p = data.indexOf("?ah=")) > -1 || (p = data.indexOf("?al=")) > -1 ) {
+                product = data.substring(p + 4, p + 14);
+            } else {
+                // 0123456789012345678901234567890
+                // XC01010101:12
+                // p = 10
+                p = data.indexOf(":");
+                if ( p == -1 ) {
+                    p = data.indexOf(";");
+                }
+                if ( p > -1 ) {
+                    cnt = parseInt(data.substring(p + 1),10);
+                    product = data.substring(0,p);
+                } else {
+                    product = data;
+                }
+            }
+             //     0123456789012345678901234567890
+            // EAN: 9004840618464
+            if ( product.length == 10 || (product.length == 13 &&  ! isNaN(parseInt(product,13))) ) {
+                jQuery('#quickadd_sku').val(product);
+                if ( ! isNaN(cnt) && cnt > 0 ) {
+                    jQuery('#quickadd_qty').val(cnt);
+                }
+                var res = string + ScanditSDK.Barcode.Symbology.toHumanizedName(barcode.symbology) + ": " + data + "<br>";
+                console.log(res);
+                availabilityCheck4quickadd(false);
+                pauseScan();
+                setTimeout(resumeScan,2000); // freeze and sleep for 2 seconds
+            } else {
+                var msg = null;
+                if ( data.indexOf('schrack') > -1 && data.indexOf('?k=') > -1 ) {
+                    msg = "<?php echo $this->__('Please don\'t scan categories in quick add. For category scan use the scan in the search bar.'); ?>";
+                } else {
+                    msg = "<?php echo $this->__('Please make sure you have scanned a Schrack Code.'); ?>";
+                }
+                jQuery('#scanner_popup_alternate').removeClass('scanner_popup_alternate');
+                jQuery('#scanner_popup_alternate').addClass('scanner_popup_alternate_message_open');
+                jQuery('#scanpopup_scandit_alternate').removeClass('scanpopup_scandit_alternate');
+                jQuery('#scanpopup_scandit_alternate').addClass('scanpopup_scandit_alternate_message_open');
+                jQuery('#quickadd_message').html('<ul class="messages"><li class="error-msg"><span class="glyphicon glyphicon-exclamation-sign"></span> <span>' + msg + '</span></li></ul>');
+            }
+        }, "");
+    }
+
+    var csvAreaVisible = null;
+    var xIsAdded = false;
+
+    function switchToScanMode () {
+        jQuery('#quickadd-barcode-group').show();
+        jQuery('#editArea').hide();
+        csvAreaVisible = jQuery('#csvArea').is(":visible");
+        if ( csvAreaVisible ) {
+            jQuery('#csvArea').hide();
+        }
+        showAndStartScan(quickaddScanResultHandler);
+        if ( ! xIsAdded ) {
+            jQuery('<div id="ScanModeX" style="position: absolute; right: 2%; top: 2%; z-index: 3000; color:#FFFFFF; cursor:default; font-size: large" onclick="switchToEditMode()">X</div>').insertAfter('.scandit-logo');
+            xIsAdded = true;
+        }
+    }
+
+    function switchToEditMode () {
+        stopScan();
+        jQuery('#quickadd-barcode-group').hide();
+        jQuery('#editArea').show();
+        jQuery('#ScanModeX').remove();
+        xIsAdded = false;
+        if ( csvAreaVisible ) {
+            jQuery('#csvArea').show();
+        }
+    }
+
+jQuery(document).ready(function () {
+
+    if (typeof isTypo3Page === 'boolean' && isTypo3Page) {
+        console.log('--------------------- This is a TYPO Page ------------------------------');
+    } else {
+        console.log('--------------------- This is NOT a TYPO Page ------------------------------');
+    }
+
+    function fetchMegaMenuForTypo() {
+        var menuTime = localStorage.refreshMegaMenuForceTimeLastChange;
+        if (!menuTime || !localStorage.megamenuContentResponsive) {
+            menuTime = 0;
+        }
+        localStorage.refreshMegaMenuForceTimeCurrent = MEGA_MENU_LATEST_REFRESH_TIMESTAMP;
+        jQuery.ajax({
+            url: '<?php echo Mage::helper('schrackcore/url')->getUrlWithCurrentProtocol('sd/menu/getMegaMenuRefreshService'); ?>',
+            type: 'post',
+            data: {
+                'refreshMegaMenuForceTimeLastChange' : menuTime
+            },
+            success: function (data) {
+                var datax = JSON.parse(data);
+                console.log('>>> Filling localstorage from AJAX data (quickadd.phtml) [TYPO]');
+                if (data && datax.latestMegaMenuTimestamp) {
+                    localStorage.refreshMegaMenuForceTimeLastChange = datax.latestMegaMenuTimestamp;
+                    if (datax.state && datax.state === 'changed') {
+                        localStorage.megamenuContentResponsive = datax.completeMegaMenu;
+                    }
+                    console.log('>>> localstorage.megamenuContentResponsive success (quickadd.phtml) [TYPO]');
+                } else {
+                    console.log('>>> data --> empty content for RESPONSIVE menu (quickadd.phtml) [TYPO]');
+                }
+            },
+            error: function (data) {
+                console.log(data);
+                console.log('Mega Menu not successfully fetched (quickadd.phtml) [TYPO]');
+            },
+            complete: function () {
+                if (localStorage.megamenuContentResponsive) {
+                    loadCachedMegaMenu();
+                    var desktopWindow = jQuery(window);
+                    placeEventsForTypo();
+                } else {
+                    console.log('>>> localStorage.megamenuContentResponsive unexpectedly empty [TYPO]');
+                }
+            }
+        });
+    }
+
+    function placeEventsForTypo() {
+        var viewportWidth = window.innerWidth; // jQuery(window).width()
+        var viewportHeight1 = window.innerHeight; // jQuery(window).height()
+        var viewportHeight2 = jQuery(window).height(); // jQuery(window).height()
+
+        console.log('javascript for menu actions ready to process (quickadd.phtml) [TYPO]');
+
+        function createMobileBackgroundOverlay() {
+            if( jQuery('.mobile_overlay').length == 0 ){
+                jQuery('body').append('<div class="mobile_overlay"></div>');
+            }
+            jQuery('body').css('height', '100px');
+            jQuery('.mobile_overlay').show();
+        }
+
+
+        function removeMobileBackgroundOverlay() {
+            console.log('removeMobileBackgroundOverlay');
+            jQuery('.mobile_overlay').remove();
+            console.log('Reset body to normal size #1 (TYPO)');
+            jQuery('body').css('height', 'auto');
+        }
+
+
+        function menuTracking(trackingCat) {
+            if (dataLayer && trackingCat) {
+                dataLayer.push({
+                    'event': 'allNavigation',
+                    'eventAction' : 'Mega Menu Navigation',
+                    'eventLabel' : trackingCat
+                });
+            }
+        }
+
+
+        // Just wait and observe, until the menu has loaded finally:
+        var ajaxCallMenuLoadedFinished = false;
+        var counter = 0;
+        var maxCount = 20;
+        var checkMenuAjaxResponse = setInterval( function() {
+            if (jQuery('#navigationEnvelope').length ){
+                ajaxCallMenuLoadedFinished = true;
+            }
+
+            if(ajaxCallMenuLoadedFinished == true) {
+                // After menu-HTML is inside the DOM, we can define events:
+                console_info_green('#navigationEnvelope FOUND -> LOADING events (quickadd.phtml) [TYPO]');
+                setEventsAfterMenuLoadedByAjax();
+                clearInterval(checkMenuAjaxResponse);
+            } else {
+                if (counter < maxCount) {
+                    console_info_red('#navigationEnvelope NOT FOUND (quickadd.phtml) [TYPO]');
+                    counter++;
+                } else {
+                    console_info_red('#navigationEnvelope Search FAILED (quickadd.phtml) [TYPO]');
+                    clearInterval(checkMenuAjaxResponse);
+                }
+            }
+        }, 500);
+
+        function console_info_red(message) {
+            console.log("%c menu %c " + message, "color: white; background: red;", "");
+        }
+
+        function console_info_green(message) {
+            console.log("%c menu %c " + message, "color: white; background: #638F4C;", "");
+        }
+
+        function resetAllSublayers() {
+            if (viewportWidth <= 992) {
+                jQuery('.main-categories_panel').css('left', '2000px');
+                jQuery('.sub-categories_panel').css('left', '2000px');
+                jQuery('.top_navigation').removeClass('active');
+                jQuery('.top_navigation_item').css('color', '#00589d');
+                console.log('Reset body to normal size #2 (TYPO)');
+                jQuery('body').css('height', 'auto');
+                console.log('Reset All Sublayers (quickadd.phtml) [TYPO]');
+            }
+        }
+
+        function setEventsAfterMenuLoadedByAjax() {
+            // Define all Events only here for the menu
+            // ...
+            console.log('Placing related events for menu (quickadd.phtml) [TYPO]');
+
+            //---------------------- Act as customer form appending to container
+            if(!jQuery("#aac_act_as_a_customer_form").length){
+                jQuery(actAsCustomerLoginForm).appendTo('#customerProfileLink');
+            }
+
+            jQuery('.top_navigation').on('click', function() {
+                var mainCatTargetPanel = jQuery(this).attr('data-target');
+                jQuery('.main-categories_panel').hide();
+                jQuery('.sub-categories_panel').hide();
+                jQuery('div[data-source="' + mainCatTargetPanel + '"]').show();
+                if (viewportWidth <= 992) {
+                    jQuery('div[data-source="' + mainCatTargetPanel + '"]').animate({'left':0}, "slow");
+                    jQuery('div[data-source="' + mainCatTargetPanel + '"]').animate(
+                        {'right':(jQuery('body').innerWidth() - jQuery('div[data-source="' + mainCatTargetPanel + '"]').width())},
+                        'slow');
+                    jQuery('.top_navigation').removeClass('active');
+                    jQuery('.top_navigation_item').css('color', '#00589d');
+                    //jQuery(this).addClass('active');
+                    //jQuery(this).children('.top_navigation_item').css('color', 'white');
+                    //jQuery(this).children('.top_navigation_item').css('background', 'transparent');
+                    console.log('.top_navigation Clicked on mobile device (menu.js) [TYPO]');
+                } else {
+                    jQuery('.top_navigation_item').removeClass('active');
+                    jQuery(this).children('.top_navigation_item').addClass('active');
+                    console.log('.top_navigation Clicked on desktop device (menu.js) [TYPO]');
+                }
+            });
+
+            jQuery('.main_catInner_shop').on('click', function() {
+                var subCatTargetPanel = jQuery(this).attr('data-target-subpanel');
+                var manCatSource      = jQuery(this).attr('data-source');
+                if (viewportWidth <= 992) {
+                    jQuery('div[data-source="' + subCatTargetPanel + '"]').show();
+                    jQuery('div[data-source="' + subCatTargetPanel + '"]').animate({'left':0}, "slow");
+                    jQuery('div[data-source="' + subCatTargetPanel + '"]').animate(
+                        {'right':(jQuery('body').innerWidth() - jQuery('div[data-source="' + subCatTargetPanel + '"]').width())},
+                        'slow');
+                    console.log('.main_catInner_shop Clicked on mobile device (quickadd.phtml) [TYPO]');
+                } else {
+                    console.log('.main_catInner_shop Clicked on desktop device (quickadd.phtml) [TYPO]');
+                    jQuery('div[data-source="' + manCatSource + '"]').hide();
+                    jQuery('div[data-source="' + subCatTargetPanel + '"]').show();
+                }
+                if (jQuery(this).attr('data-tracking-cat')) {
+                    var trackingCat = jQuery(this).children('div').children('div').children('div').text();
+                    menuTracking(trackingCat);
+                }
+            });
+
+            jQuery('.nav_back_to_top_cats').on('click', function() {
+                if (viewportWidth <= 992) {
+                    jQuery('.main-categories_panel').hide();
+                    jQuery('.top_navigation_item').removeClass('active');
+                    jQuery('.main-categories_panel').css('left', '2000px');
+                    console.log('.nav_back_to_top_cats Clicked on mobile device (quickadd.phtml) [TYPO]');
+                } else {
+                    console.log('.nav_back_to_top_cats Clicked on desktop device (quickadd.phtml) [TYPO]');
+                }
+            });
+
+            jQuery('.subNav_back').on('click', function() {
+                var targetShowPanel = jQuery(this).attr('data-target-show');
+                var targetHidePanel = jQuery(this).attr('data-target-hide');
+                jQuery('div[data-source="' + targetHidePanel + '"]').hide();
+                jQuery('div[data-source="' + targetShowPanel + '"]').show();
+                if (viewportWidth <= 992) {
+                    jQuery('.sub-categories_panel').css('left', '2000px');
+                    console.log('.subNav_back Clicked on mobile device (quickadd.phtml) [TYPO]');
+                } else {
+                    console.log('.subNav_back Clicked on desktop device (quickadd.phtml) [TYPO]');
+                }
+            });
+
+            jQuery('.main_nav_closing').on('click', function() {
+                jQuery('.nav-panel').hide();
+                if (viewportWidth <= 992) {
+                    jQuery('.top-navigation-container').hide();
+                    removeMobileBackgroundOverlay();
+                    resetAllSublayers();
+                    console.log('.main_nav_closing Clicked on mobile device (quickadd.phtml) [TYPO]');
+                } else {
+                    console.log('.main_nav_closing Clicked on desktop device (quickadd.phtml) [TYPO]');
+                }
+                jQuery('.top_navigation_item.active').removeClass('active');
+            });
+
+            jQuery('.sub_nav_closing').on('click', function() {
+                jQuery('.nav-panel').hide();
+                if (viewportWidth <= 992) {
+                    jQuery('.top-navigation-container').hide();
+                    removeMobileBackgroundOverlay();
+                    resetAllSublayers();
+                    console.log('.sub_nav_closing Clicked on mobile device (quickadd.phtml) [TYPO]');
+                } else {
+                    console.log('.sub_nav_closing Clicked on desktop device (quickadd.phtml) [TYPO]');
+                }
+                jQuery('.top_navigation_item.active').removeClass('active');
+            });
+
+            jQuery('.sub_catInner').on('click', function() {
+                console.log('.sub_catInner Clicked on mobile device quickadd.phtml) [TYPO]');
+                var targetUrl = jQuery(this).attr('data-target-url');
+                var trackingCat = jQuery(this).children('div').children('div').children('div').text();
+                menuTracking(trackingCat);
+                window.location = targetUrl;
+            });
+
+            jQuery('.main_catInner_typo').on('click', function() {
+                console.log('.main_catInner_typo Clicked on mobile device (quickadd.phtml) [TYPO]');
+                var targetUrl = jQuery(this).attr('data-target-url');
+                window.location = targetUrl;
+            });
+
+            jQuery('#hamburgerMenuAlternateButton').on('click', function() {
+                console.log('#hamburgerMenuAlternateButton Clicked on mobile device (quickadd.phtml) [TYPO]');
+                createMobileBackgroundOverlay()
+                jQuery('.top-navigation-container').show();
+            });
+
+            jQuery('#hamburgerMenuAlternateButtonTypo').on('click', function() {
+                console.log('#hamburgerMenuAlternateButtonTypo Clicked on mobile device (quickadd.phtml) [TYPO]');
+                if (typeof isTypo3Page === 'boolean' && isTypo3Page) {
+                    console.log('Changed some CSS classes for TYPO specific content structure');
+                    jQuery('.main_nav_closing').removeClass('main_nav_closing_typo');
+                    jQuery('.sub_nav_closing').removeClass('main_nav_closing_typo');
+                    jQuery('#closeMobileMainLayer').removeClass('closeMobileMainLayer_typo');
+                    jQuery('.main_navigation_header_frame').removeClass('main_navigation_header_frame_typo');
+                    jQuery('.sub_navigation_header_frame').removeClass('sub_navigation_header_frame_typo');
+                    jQuery('.main_nav_closing').addClass('main_nav_closing_typo');
+                    jQuery('.sub_nav_closing').addClass('sub_nav_closing_typo');
+                    jQuery('#closeMobileMainLayer').addClass('closeMobileMainLayer_typo');
+                    jQuery('.main_navigation_header_frame').addClass('main_navigation_header_frame_typo');
+                    jQuery('.sub_navigation_header_frame').addClass('sub_navigation_header_frame_typo');
+                }
+                createMobileBackgroundOverlay()
+                jQuery('.top-navigation-container').show();
+            });
+
+            jQuery('.closeMobileMainLayer').on('click', function() {
+                console.log('#closeMobileMainLayer Clicked on mobile device (quickadd.phtml) [TYPO]');
+                removeMobileBackgroundOverlay();
+                jQuery('.top-navigation-container').hide();
+                jQuery('.top_navigation').removeClass('active');
+                jQuery('.top_navigation_item').css('color', '#00589d');
+            });
+
+            jQuery(document).on('click', function (event) {
+                if (!jQuery(event.target).closest('.nav-panel').length
+                    && !jQuery(event.target).closest('.top_navigation').length
+                    && !jQuery(event.target).closest('.top_navigation_item').length
+                    && !jQuery(event.target).closest('.hamburgerMenuAlternateButtonIos').length
+                    && !jQuery(event.target).closest('.hamburgerMenuAlternateIosTypo').length
+                    && !jQuery(event.target).closest('.hamburgerMenuAlternateButtonIosTypo').length
+                    && !jQuery(event.target).closest('#hamburgerMenuAlternateButton').length
+                    && !jQuery(event.target).closest('#hamburgerMenuAlternateButtonTypo').length
+                    && !jQuery(event.target).closest('#usercentrics-root').length) {
+                    console.log(jQuery(window).width());
+                    if (jQuery(window).width() > 992) {
+                        console.log('Menu Closing');
+                        jQuery('.main_nav_closing')[0].click();
+                    }
+                }
+            });
+
+        }
+    }
+
+    function reFormatHeaderForTypoMenu() {
+        jQuery('.userLoginLbl').remove();
+        jQuery('#headerPLCaptionText').remove();
+        jQuery('#headerPLCaptionIcon').addClass('header_partslist_caption_icon_typo');
+        jQuery('.logoCont').addClass('logo_cont_typo');
+
+        fetchMegaMenuForTypo();
+    }
+
+    if (typeof isTypo3Page === 'boolean' && isTypo3Page) {
+        reFormatHeaderForTypoMenu();
+    }
+
+    function isInt(value) {
+        return !isNaN(value) &&
+            parseInt(Number(value)) == value &&
+            !isNaN(parseInt(value, 10));
+    }
+
+    localStorage.quickaddFound1 = 0;
+
+    var maxFocus = 0;
+    var currentFocus = 0;
+    var itemNumber = 0;
+
+    jQuery('#quickadd_sku').on('input' , function (e) {
+        currentFocus = 0;
+        var query = jQuery('#quickadd_sku').val();
+
+        if (query.length > 2) {
+            jQuery('#wait_loader_inline_gif').show();
+            jQuery.ajax('/?eID=schrack_suggest&q=' + encodeURIComponent(query), {
+                'dataType': 'json',
+                'type': 'GET',
+                'success': function (data) {
+                    if (data.products.length > 0) {
+                        var skuString = '';
+                        var isEAN = false;
+                        var description = '';
+
+                        if (isInt(query)) {
+                            isEAN = true;
+                        }
+                        var html_sku_select_list = '<ul class="html_sku_select_list_container">';
+                        var index = 0;
+                        itemNumber = 0;
+
+                        for (index; index < data.products.length; index++) {
+                            // CHECK for return value: span, then SKU is real SKU, and derived from input:
+                            skuString = data.products[index].sku;
+                            description = data.products[index].description;
+                            var realSKU = skuString.replace('<span class="results-highlight">', '');
+                            realSKU = realSKU.replace('</span>', '');
+                            var count = (skuString.match(/results-highlight/g) || []).length;
+                            if (count > 0) {
+                                maxFocus++;
+                                itemNumber++;
+                                html_sku_select_list += '<li data-info="' + description + '" class="html_sku_select_list_row listItemNumber' + itemNumber + '">' + realSKU + '</li>';
+                            }
+
+                            if (isEAN) {
+                                maxFocus++;
+                                itemNumber++;
+                                html_sku_select_list += '<li data-info="' + description + '" class="html_sku_select_list_row listItemNumber' + itemNumber + '">' + realSKU + '</li>';
+                            }
+                        }
+                        html_sku_select_list += '</ul>';
+                        if (index == 1) {
+                            if (isEAN) {
+                                jQuery('#quickadd_sku').val(realSKU);
+                                jQuery('#ean_equivalent').text('= ' + query + ' (<?php echo $this->__('EAN'); ?>)');
+                                jQuery('#quickadd_qty').focus();
+                                jQuery('#product_longtext').removeClass('product_longtext_normalscale');
+                                jQuery('#product_longtext').text(description);
+                            } else {
+                                jQuery('#quickadd_sku').val(realSKU);
+                                jQuery('#quickadd_qty').focus();
+                            }
+                            jQuery('#quickadd_autocomplete').html('');
+                            jQuery('#sku_found_okay').show();
+                            console.log('Found only one #2');
+                            jQuery('#product_longtext').addClass('product_longtext_normalscale');
+                            jQuery('#product_longtext').text(description);
+                            localStorage.quickaddFound1 = 1;
+                        } else {
+                            jQuery('#quickadd_autocomplete').html(html_sku_select_list);
+
+                            jQuery('.html_sku_select_list_row').on('click', function () {
+                                jQuery('#quickadd_sku').val(jQuery(this).html());
+                                jQuery('#sku_found_okay').show();
+                                console.log('Found only one #3');
+                                localStorage.quickaddFound1 = 1;
+                                jQuery('#quickadd_autocomplete').html('');
+                                jQuery('#quickadd_qty').focus();
+                                currentFocus = 0;
+                                maxFocus = 0;
+                                itemNumber = 0;
+                                jQuery('#product_longtext').addClass('product_longtext_normalscale');
+                                jQuery('#product_longtext').text(jQuery(this).attr('data-info'));
+                            });
+                        }
+                    } else {
+                        jQuery('#quickadd_autocomplete').html('');
+                    }
+                    jQuery('#wait_loader_inline_gif').hide();
+                },
+                'error': function (data) {
+                }
+            });
+        } else {
+            jQuery('#quickadd_autocomplete').html('');
+            jQuery('#wait_loader_inline_gif').hide();
+        }
+    });
+
+    jQuery('#quickadd_sku').on('focus' , function (e) {
+        if (localStorage.quickaddFound1 == 1) {
+            jQuery('#quickadd_sku').val('');
+            console.log('Found only one #4');
+            localStorage.quickaddFound1 = 0;
+            jQuery('#sku_found_okay').hide();
+            jQuery('#ean_equivalent').text('');
+            jQuery('#product_longtext').text('');
+            currentFocus = 0;
+            maxFocus = 0;
+            itemNumber = 0;
+        }
+    });
+
+    jQuery('#quickadd_sku').on('keyup', function (event) {
+        if (event.keyCode == 40) {
+            if (currentFocus >= 0 && currentFocus < maxFocus) {
+                // If the arrow DOWN key is pressed, increase the currentFocus variable:
+                currentFocus++;
+                // and and make the current item more visible:
+                if (currentFocus > 1) {
+                    jQuery('.listItemNumber' + (currentFocus - 1)).css('color', '#888');
+                    jQuery('.listItemNumber' + (currentFocus - 1)).css('background', 'white');
+                }
+                jQuery('.listItemNumber' + currentFocus).css('color', 'white');
+                jQuery('.listItemNumber' + currentFocus).css('background', '#00589d');
+            }
+        }
+
+        if (event.keyCode == 38) {
+            // If the arrow UP key is pressed, decrease the currentFocus variable:
+            if (currentFocus > 1) {
+                currentFocus--;
+
+                jQuery('.listItemNumber' + (currentFocus + 1)).css('color', '#888');
+                jQuery('.listItemNumber' + (currentFocus + 1)).css('background', 'white');
+
+                jQuery('.listItemNumber' + currentFocus).css('color', 'white');
+                jQuery('.listItemNumber' + currentFocus).css('background', '#00589d');
+            }
+        }
+
+        if (event.keyCode == 13 && currentFocus > 0) {
+            jQuery('#quickadd_sku').val(jQuery('.listItemNumber' + currentFocus).text());
+            var description = jQuery('.listItemNumber' + currentFocus).attr('data-info');
+            jQuery('#product_longtext').addClass('product_longtext_normalscale');
+            jQuery('#product_longtext').text(description);
+            jQuery('#sku_found_okay').show();
+            console.log('Found only one #1');
+            localStorage.quickaddFound1 = 1;
+            jQuery('#quickadd_autocomplete').html('');
+            jQuery('#quickadd_qty').focus();
+        }
+    });
+
+    if (jQuery('#showActAsACustomerEmailField').length == 0) {
+        var actAsCustomerLogoutField = '';
+
+        actAsCustomerLogoutField  = '<div id="showActAsACustomerEmailField">';
+        actAsCustomerLogoutField += '<span id="showActAsACustomerEmail"></span>';
+        actAsCustomerLogoutField += '</div>';
+
+        jQuery('.searchContiner').prepend(actAsCustomerLogoutField);
+
+        var realLoggedInUser = localStorage.customerLoggedInEmail;
+
+        if ( localStorage.actAsACustomer == 1 || (typeof realLoggedInUser == 'string' && realLoggedInUser.match(/live.schrack.com/i)) ) {
+            var systemContactMail = localStorage.customerLoggedInEmail;
+            var wwsCustomerIdArr = systemContactMail.match(/\d+/g).map(Number);
+            var wwsCustomerId = wwsCustomerIdArr[0];
+            var actAsCustomerCompanyName = '';
+            if (localStorage.customerLoggedInCompanyName) {
+                actAsCustomerCompanyName = ' ' + localStorage.customerLoggedInCompanyName;
+            }
+            var loggedInAsACustomerSuffix = "<?php echo $this->__('Is Logged In As Customer'); ?>" + actAsCustomerCompanyName + ' (' + wwsCustomerId + ') ';
+            var loggedInAsACustomerSuffixButton = '<a href="<?php echo $this->getUrl('customer/account/unactAsuser'); ?>" class="logout_act_as_customer">' + '<?php echo $this->__('Logout As A Customer'); ?>' + '</a>';
+            validateActAsACustomer (localStorage.actAsACustomerRealEmail, localStorage.customerLoggedInEmail, loggedInAsACustomerSuffix, loggedInAsACustomerSuffixButton);
+        } else {
+            console.log('Act-As-Customer not available #02');
+            jQuery('#showActAsACustomerEmailField').hide();
+            jQuery('#showActAsACustomerEmail').html('');
+        }
+
+        jQuery('.logout_act_as_customer').on('click', function() {
+            localStorage.actAsACustomer = 0;
+            localStorage.actAsACustomerRealEmail = '';
+            localStorage.customerLoggedInEmail = '';
+        });
+    }
+
+    jQuery(document).keypress(function(ev) {
+        if ( jQuery(ev.target).attr('id') === 'quickadd_qty' && ev.which == 13 ) {
+            ev.preventDefault();
+            quickaddForm.submit();
+        }
+    });
+    if ( mayScan() ) {
+        jQuery("#id-scan-button-quickadd").show();
+    }
+    jQuery('#quickaddpopup').on('shown.bs.modal', function () {
+        removeMessages();
+        document.getElementById("product_quickadd_form").reset();
+        jQuery('#quickadd_sku').focus();
+        pushScannerOriginElement('quickadd-barcode-picker');
+    });
+    jQuery('#quickaddpopup').on('hide.bs.modal', function () {
+        switchToEditMode();
+        popScannerOriginElement();
+    });
+
+
+    jQuery('#downloadButton1').on('click', function () {
+        removeMessages();
+        setOverlayLoader();
+        window.location.href = '<?php echo $this->getUrl('wishlist/partslist/downloadCsv') ?>';
+        setTimeout(function () {
+            unsetOverlayLoader();
+        }, 2000);
+        return true;
+    });
+
+    jQuery('#downloadButton2').on('click', function () {
+        removeMessages();
+        setOverlayLoader();
+        window.location.href = '<?php echo $this->getUrl('checkout/cart/downloadCsv') ?>';
+        setTimeout(function () {
+            unsetOverlayLoader();
+        }, 2000);
+
+        if (dataLayer) {
+            dataLayer.push({
+                'event' : 'userDownloads',
+                'eventCategory' : 'File Download',
+                'eventAction' : 'Document Download',
+                'eventLabel' : 'cart (csv)'
+            });
+        }
+
+        return true;
+    });
+
+    jQuery('#quickadd_addproduct_partslist_button').on('click', function () {
+        removeMessages();
+        setOverlayLoader();
+        this.form.elements['target'].value = '<?php echo $_quickaddHelper->getPartslistButtonTarget() ?>';
+        submitFormAndTrackGaEvent(jQuery('#product_quickadd_form').get()[0], '<?php echo $_quickaddHelper->getModuleName(); ?>', 'quick_add_single', this.form.elements['<?php echo $_quickaddHelper->getQueryParamName(); ?>'].value);
+        return false;
+    });
+
+
+    jQuery('#quickadd_addproduct_button').click(function () {
+
+<?php if (Mage::getStoreConfig('ec/config/active')): ?>
+        /* GTM addition */
+
+        var category = '';
+        var sku = jQuery('#quickadd_sku').val();
+
+        var ajaxUrl = '<?php echo Mage::getUrl("catalog/product/getCategoryId4googleTagManager"); ?>';
+
+        jQuery.ajax(ajaxUrl, {
+            'dataType' : 'json',
+            'type': 'POST',
+            'data': {
+                'form_key' : '<?php echo Mage::getSingleton('core/session')->getFormKey(); ?>',
+                'sku' : sku
+            },
+
+            'success': function (data) {
+                var parsedData = data;
+                category = parsedData.result;
+
+                jQuery.ajax('<?php echo Mage::getStoreConfig('schrack/typo3/typo3url') ?>' + '?eID=schrack_suggest&q=' + encodeURIComponent(sku) + '&cat=', {
+                    'dataType': 'json',
+                    'type': 'GET',
+                    'success': function (data) {
+                        var parsedData = data;
+                        if (!parsedData || parsedData.hasOwnProperty('error')) {
+                            console.log('SOLR Request not successful');
+
+                            availabilityCheck(function () {
+                                window.location = '<?php echo $this->getUrl('checkout/onepage') ?>';
+                            });
+                        } else {
+                            var quantity = 0;
+
+                            if (jQuery('#quickadd_qty') > 0) {
+                                quantity = jQuery('#quickadd_qty').val();
+                            } else {
+                                quantity = 1;
+                            }
+                            localStorage.quickAddEditMode = 'on';
+                            if (dataLayer) {
+                                dataLayer.push({
+                                    'event' : 'quickAddModal',
+                                    'eventLabel' : sku,
+                                    'ecommerce' : {
+                                        'currencyCode' : '<?php echo Mage::app()->getStore()->getBaseCurrencyCode(); ?>',
+                                        'add' : {
+                                            'products' : [{
+                                                'name' : parsedData.products[0].description,
+                                                'id' : sku,
+                                                //'price' : dataProductPrice,
+                                                'quantity' : quantity,
+                                                'category' : category,
+                                                'dimension8' : 'Quick Add',
+                                                'dimension9' : category,
+                                                'dimension14' : 'Quick Add Modal',
+                                                'dimension15' : sku
+                                            }]
+                                        }
+                                    }
+                                });
+                            }
+                        }
+                    },
+                    'error': function (data) {
+                        var parsedData = data;
+                        console.log('Tracking ERROR from cart.phtml -> ' + sku);
+                        console.log("<?php echo Mage::getStoreConfig('schrack/typo3/typo3url') ?>" + "?eID=schrack_suggest&q=" + encodeURIComponent(sku) + "&cat=");
+                        console.log(parsedData);
+                    }
+                });
+            },
+        });
+
+<?php endif ?>
+
+        quickaddForm.submit();
+        return false;
+    });
+
+    jQuery('#product_quickadd_form').submit(function (event) {
+        event.preventDefault();
+        quickaddForm.submit();
+    });
+<?php if (Mage::getStoreConfig('ec/config/active')): ?>
+    /* additional changes for GTM */
+    jQuery('.quickadd-sku,.quickadd-qty').on('change',function(){
+        var name = jQuery('.quickadd-qty').val();
+        var articleid = jQuery('.quickadd-sku').val();
+        jQuery('#quickadd_addproduct_button').attr('data-id',articleid);
+        jQuery('#quickadd_addproduct_button').attr('data-name',name);
+    });
+<?php endif ?>
+    jQuery('#cartQuickAddClose').on('click', function () {
+            location.reload();	// SCHRAC-759
+    });
+
+    jQuery('.internal-link.pr-30').on('click', function() {
+        var newsTopic = jQuery(this).parent().parent().find('.articleTitle').first().text();
+        newsTopic = newsTopic.replace(/(\r\n|\n|\r)/gm, "");
+        newsTopic = newsTopic.trim();
+
+        if (dataLayer) {
+            dataLayer.push({
+                'eventLabel' : newsTopic
+            });
+        }
+    });
+
+    jQuery('.button-big-slider.bttn.bttn-lg').on('click', function() {
+        jQuery('.slider-text>h1').addClass('banner_item_headline');
+        jQuery('.slider-text>h2').addClass('banner_item_headline');
+        var headBannerTopic = jQuery(this).parent().parent().find('.slider-text').find('.banner_item_headline').text();
+        headBannerTopic = headBannerTopic.replace(/(\r\n|\n|\r)/gm, "");
+        headBannerTopic = headBannerTopic.trim();
+
+        if (dataLayer) {
+            dataLayer.push({
+                'event' : 'fetchBannerDescription',
+                'eventLabel' : headBannerTopic
+            });
+        }
+    });
+
+    var version = detectIE();
+    var isIEorEdge;
+
+    if (version === false) {
+        isIEorEdge = false;
+    } else if (version >= 12) {
+        isIEorEdge = true;
+    } else {
+        isIEorEdge = true;
+    }
+
+
+    jQuery('#search').after('<div id="empty_searchbar_sign">&#x2716;</div>');
+
+    jQuery('#empty_searchbar_sign').on('click', function(){
+        jQuery('#search').val('');
+        jQuery('#empty_searchbar_sign').hide();
+        jQuery('#search').focus();
+    });
+
+    jQuery('#search').keyup(function() {
+        if(jQuery('#search').val().length > 0 && isIEorEdge == false){
+            jQuery('#empty_searchbar_sign').show();
+        } else {
+            jQuery('#empty_searchbar_sign').hide();
+        }
+    });
+
+    jQuery('#search').on('paste', function() {
+        if(jQuery('#search').val().length > 0 && isIEorEdge == false){
+            jQuery('#empty_searchbar_sign').show();
+        } else {
+            jQuery('#empty_searchbar_sign').hide();
+        }
+    });
+
+    searchDefaultText = Translator.translate('Search in:') +' '+ Translator.translate('All Categories');
+
+    if (jQuery('#search').val() && jQuery('#search').val().length > 0){
+        if (jQuery('#search').val() == searchDefaultText) {
+            jQuery('#empty_searchbar_sign').hide();
+        } else {
+            if (isIEorEdge == false) {
+                jQuery('#empty_searchbar_sign').show();
+            }
+        }
+    } else {
+        jQuery('#empty_searchbar_sign').hide();
+    }
+
+    /**
+     * detect IE
+     * returns version of IE or false, if browser is not Internet Explorer
+     */
+    function detectIE() {
+        var ua = window.navigator.userAgent;
+
+        // Test values; Uncomment to check result …
+        // IE 10
+        // ua = 'Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.2; Trident/6.0)';
+        // IE 11
+        // ua = 'Mozilla/5.0 (Windows NT 6.3; Trident/7.0; rv:11.0) like Gecko';
+        // Edge 12 (Spartan)
+        // ua = 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.71 Safari/537.36 Edge/12.0';
+        // Edge 13
+        // ua = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/46.0.2486.0 Safari/537.36 Edge/13.10586';
+
+        var msie = ua.indexOf('MSIE ');
+        if (msie > 0) {
+            // IE 10 or older => return version number
+            return parseInt(ua.substring(msie + 5, ua.indexOf('.', msie)), 10);
+        }
+
+        var trident = ua.indexOf('Trident/');
+        if (trident > 0) {
+            // IE 11 => return version number
+            var rv = ua.indexOf('rv:');
+            return parseInt(ua.substring(rv + 3, ua.indexOf('.', rv)), 10);
+        }
+
+        var edge = ua.indexOf('Edge/');
+        if (edge > 0) {
+            // Edge (IE 12+) => return version number
+            return parseInt(ua.substring(edge + 5, ua.indexOf('.', edge)), 10);
+        }
+
+        // other browser
+        return false;
+    }
+
+    var pageTitle = jQuery('title').text();
+    // .bodytext = RTE paragraph, [data-track="button"] = Image CEs
+    if (typeof (isTypo3Page) !== 'undefined' && isTypo3Page == true) {
+        jQuery('.bodytext a, [data-track="button"] a').each(function () {
+            var lnk = jQuery(this).attr('href');
+            if (lnk.indexOf('image.schrack.com') || lnk.indexOf('customer/link/fetch')) {
+                jQuery(this).attr('data-type', 'file');
+            }
+            jQuery(this).on('click', function () {
+                var trackingLabel = jQuery(this).attr('href');
+                if (dataLayer) {
+                    dataLayer.push({
+                        'event': 'typo3ButtonClick',
+                        'eventAction': pageTitle,
+                        'eventLabel': trackingLabel
+                    });
+                }
+            });
+        });
+
+        jQuery('.leftNavSec .leftNav li a').on('click', function () {
+            if (dataLayer && jQuery(this).text()) {
+                dataLayer.push({
+                    'event': 'allNavigation',
+                    'eventAction': 'TYPO3 Left Navigation',
+                    'eventLabel': jQuery(this).text()
+                });
+            }
+        });
+    }
+
+    function trackSliderProducts(clickedSku, sliderContext) {
+        console.log(sliderContext);
+        var clickedSliderContext = '';
+        if (sliderContext == 'promotionSliderCon') {
+            clickedSliderContext = 'typo promotions products slider';
+        }
+        if (sliderContext == 'featureSliderCon') {
+            clickedSliderContext = 'typo last viewed products slider ';
+        }
+
+        var trackingData                 = new Object();
+        trackingData.trackingEnabled     = '<?php echo $trackingEnabled; ?>';
+        trackingData.pageType            = 'home page';
+        trackingData.affectedSku         = clickedSku;
+        //trackingData.price             = dataProductPrice;
+        trackingData.currencyCode        = '<?php echo Mage::app()->getStore()->getCurrentCurrencyCode() ?>';
+        trackingData.trackingSource      = clickedSliderContext;
+        trackingData.typoUrl             = '<?php echo Mage::getStoreConfig('schrack/typo3/typo3url') ?>';
+        trackingData.shopCategoryAjaxUrl = '<?php echo Mage::getUrl("catalog/product/getCategoryId4googleTagManager"); ?>';
+        trackingData.formKey             = '<?php echo Mage::getSingleton('core/session')->getFormKey(); ?>';
+        trackingData.crmUserId           = '<?php echo $crmUserId; ?>';
+        trackingData.customerType        = '<?php echo $customerTypeGTM; ?>';
+        trackingData.accountCrmId        = '<?php echo $accountCrmId; ?>';
+        trackingData.position            = 1;
+
+        trackProductClick(trackingData);
+    }
+
+    jQuery('.previewImageHover').on('click', function() {
+        console.log('Product In Slider Clicked (Image-Link)');
+        var skuEcommerceProductClick = jQuery(this).parent().first().children().first().text();
+        var sliderContext = jQuery(this).parent().parent().parent().parent().parent().parent().attr('id');
+        if (sliderContext == 'promotionSliderCon' || sliderContext == 'featureSliderCon') {
+            trackSliderProducts(skuEcommerceProductClick, sliderContext);
+        } else {
+            sliderContext = jQuery(this).parent().parent().parent().attr('class');
+            if (sliderContext == 'productSlider solrProdCont') {
+                trackSliderProducts(skuEcommerceProductClick, sliderContext);
+            }
+        }
+    });
+
+    jQuery('.productName').on('click', function() {
+        console.log('Product In Slider Clicked (Text-Link)');
+        var skuEcommerceProductClick = jQuery(this).parent().first().children().first().children().first().text();
+        var sliderContext = jQuery(this).parent().parent().parent().parent().parent().attr('id');
+        if (sliderContext == 'promotionSliderCon' || sliderContext == 'featureSliderCon') {
+            trackSliderProducts(skuEcommerceProductClick, sliderContext);
+        } else {
+            sliderContext = jQuery(this).parent().parent().attr('class');
+            if (sliderContext == 'productSlider solrProdCont') {
+                trackSliderProducts(skuEcommerceProductClick, sliderContext);
+            }
+        }
+    });
+
+    var counter = 0;
+    var checkExist = setInterval(function() {
+        if (jQuery('.inner.solrSlider').length) {
+            function trackSliderProductsExtended(clickedSku, sliderContext) {
+                console.log(sliderContext);
+                var clickedSliderContext = '';
+                if (sliderContext == 'productSlider solrProdCont') {
+                    clickedSliderContext = 'typo content products slider';
+                }
+
+                var trackingData                 = new Object();
+                trackingData.trackingEnabled     = '<?php echo $trackingEnabled; ?>';
+                trackingData.pageType            = 'typo content page';
+                trackingData.affectedSku         = clickedSku;
+                //trackingData.price             = dataProductPrice;
+                trackingData.currencyCode        = '<?php echo Mage::app()->getStore()->getCurrentCurrencyCode() ?>';
+                trackingData.trackingSource      = clickedSliderContext;
+                trackingData.typoUrl             = '<?php echo Mage::getStoreConfig('schrack/typo3/typo3url') ?>';
+                trackingData.shopCategoryAjaxUrl = '<?php echo Mage::getUrl("catalog/product/getCategoryId4googleTagManager"); ?>';
+                trackingData.formKey             = '<?php echo Mage::getSingleton('core/session')->getFormKey(); ?>';
+                trackingData.crmUserId           = '<?php echo $crmUserId; ?>';
+                trackingData.customerType        = '<?php echo $customerTypeGTM; ?>';
+                trackingData.accountCrmId        = '<?php echo $accountCrmId; ?>';
+                trackingData.position            = 1;
+
+                trackProductClick(trackingData);
+            }
+
+            jQuery('.previewImageHover').on('click', function() {
+                console.log('Product In Slider Clicked (Image-Link)');
+                var skuEcommerceProductClick = jQuery(this).parent().first().children().first().text();
+                var sliderContext = jQuery(this).parent().parent().parent().attr('class');
+                if (sliderContext == 'productSlider solrProdCont') {
+                    trackSliderProductsExtended(skuEcommerceProductClick, sliderContext);
+                }
+            });
+
+            jQuery('.productName').on('click', function() {
+                console.log('Product In Slider Clicked (Text-Link)');
+                var skuEcommerceProductClick = jQuery(this).parent().first().children().first().children().first().text();
+                var sliderContext = jQuery(this).parent().parent().attr('class');
+                if (sliderContext == 'productSlider solrProdCont') {
+                    trackSliderProductsExtended(skuEcommerceProductClick, sliderContext);
+                }
+            });
+            clearInterval(checkExist);
+        } else {
+            if (counter == 100) {
+                clearInterval(checkExist);
+            }
+            //console.log("Google Tracking Status : Waiting for Element with class = 'inner solrSlider'");
+        }
+        counter++;
+    }, 100);
+
+    setTimeout(function () {
+        jQuery('.logoCont').fadeIn(300);
+    }, 1);
+
+    // Quickhack for download schrack design (tracking)
+    if (jQuery('body').attr('id') == 'page-17437') {
+        var count = 0;
+        jQuery('.button-medium').each(function() {
+            if(count < 2) {
+                jQuery(this).addClass('download_schrackdesign_button');
+            }
+            count++;
+        });
+    }
+
+    jQuery('.download_schrackdesign_button').on('click', function() {
+        if (dataLayer) {
+            dataLayer.push({
+                'event' : 'conversionDownloadSchrackDesign'
+            });
+        }
+    });
+
+});
+
+    jQuery('#customerProfileLink').removeClass('hidden-xs');
+
+    //]]>
+</script>
+<!-- shop/app/design/frontend/schrack/schrackresponsive/template/checkout/cart/quickadd.phtml (end) -->

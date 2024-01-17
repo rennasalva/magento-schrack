@@ -1,0 +1,78 @@
+<!-- app/design/frontend/schrack/schrackresponsive/template/tools/disclosures.phtml (start) -->
+<?php
+    $unselectDisclosures = Mage::registry('tools_unselect_disclosures');
+?>
+<h2 id="group-disclosures-head"
+<?php if ( ! $unselectDisclosures ) : ?>
+    data-selected="1" class="onlinetools-active"
+<?php else : ?>
+    data-selected="0" class="onlinetools-inactive"
+<?php endif; ?>
+    ><?php echo $this->__('Project Disclosures'); ?></h2>
+<div id="group-disclosures"
+<?php if ( $unselectDisclosures ) : ?>
+    style="display: none"
+<?php endif; ?>
+>
+
+    <div>
+        <div class="onlinetools-input-cell-div">
+            <label for="input_project_name"
+                   class="onlinetools-input-label"><?php echo $this->__('Project Name'); ?></label>
+            <input type="text" id="input_project_name" class="onlinetools-input"/>
+        </div>
+        <div class="onlinetools-input-cell-div">
+            <label for="input_street" class="onlinetools-input-label"><?php echo $this->__('Street'); ?></label>
+            <input type="text" id="input_street" class="onlinetools-input"/>
+        </div>
+    </div>
+
+    <div>
+        <div class="onlinetools-input-cell-div">
+            <label for="input_zip" class="onlinetools-input-label"><?php echo $this->__('ZIP/Postal Code'); ?></label>
+            <input type="text" id="input_zip" class="onlinetools-input"/>
+        </div>
+        <div class="onlinetools-input-cell-div">
+            <label for="input_city" class="onlinetools-input-label"><?php echo $this->__('City'); ?></label>
+            <input type="text" id="input_city" class="onlinetools-input"/>
+        </div>
+    </div>
+
+    <div>
+        <div class="onlinetools-input-cell-div">
+            <label for="input_contact_person"
+                   class="onlinetools-input-label"><?php echo $this->__('Contact Person'); ?></label>
+            <input type="text" id="input_contact_person" class="onlinetools-input"/>
+        </div>
+        <div class="onlinetools-input-cell-div">
+            <label for="input_contact_phone"
+                   class="onlinetools-input-label"><?php echo $this->__('Contact Person Phone Number'); ?></label>
+            <div style="display: flex">
+                <span class="onlinetools-phone-plus">+</span>
+                <input type="tel" id="input_contact_phone" class="onlinetools-input"/>
+            </div>
+        </div>
+    </div>
+
+    <div>
+        <div class="onlinetools-input-cell-div">
+            <label for="input_project_description"
+                   class="onlinetools-input-label"><?php echo $this->__('Description'); ?></label>
+            <textarea id="input_project_description" class="onlinetools-input"></textarea>
+        </div>
+        <div class="onlinetools-input-cell-div">
+            <label for="input_note" class="onlinetools-input-label"><?php echo $this->__('Note'); ?></label>
+            <textarea id="input_note" class="onlinetools-input"></textarea>
+        </div>
+    </div>
+
+</div>
+
+<script type="text/javascript">//<![CDATA[
+    jQuery(document).ready(function () {
+        jQuery('#group-disclosures-head').on('click', function () {
+            toggleGroup(jQuery(this),'#group-disclosures');
+        });
+    });
+//]]></script>
+<!-- app/design/frontend/schrack/schrackresponsive/template/tools/disclosures.phtml (end) -->

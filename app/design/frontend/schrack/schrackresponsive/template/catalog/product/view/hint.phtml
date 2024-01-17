@@ -1,0 +1,36 @@
+<!-- app\design\frontend\schrack\schrackresponsive\template\catalog\product\view\hint.phtml (start) -->
+<?php
+$_product = Mage::registry('product');
+$customerSession = Mage::getSingleton('customer/session');
+$showHint = Mage::getSingleton("core/session", array("name"=>"frontend"))->getData('login_for_custom_prices_hint',true);
+if ( $showHint == '1' && ! $customerSession->isLoggedIn() ) {
+    $referer = Mage::helper('core')->urlEncode($_product->getProductUrl());
+    $referrerLink = Mage::getUrl('customer/account/login',array('referer' => $referer));
+} else {
+    $referrerLink = null;
+}
+?>
+
+<style>
+
+.hint-msg {
+    background: #EBF8FC;
+    color: #01A3D9;
+    border: 1px solid #01A3D9;
+    padding: 11px 14px 11px;
+}
+</style>
+
+<?php if ( $referrerLink ) : ?>
+    <ul class="messages">
+        <li class="hint-msg">
+            <ul>
+                <li>
+                    <span><?php echo $this->__('Personal benefit rates are shown after you log in to the online store!'); ?></span>
+                    <a href="<?php echo $referrerLink; ?>"><?php echo $this->__('Login now'); ?></a>
+                </li>
+            </ul>
+        </li>
+    </ul>
+<?php endif; ?>
+<!-- app\design\frontend\schrack\schrackresponsive\template\catalog\product\view\hint.phtml (end) -->

@@ -1,0 +1,234 @@
+<!-- app/design/frontend/schrack/schrackresponsive/template/checkout/cart/rightcartnavmobile.phtml (start) -->
+<?php
+$_quickaddHelper = Mage::helper('schrackcheckout/quickadd');
+$affectedId = '';
+if ($this->getRequest()->getParam('id')) {
+    $affectedId = $this->getRequest()->getParam('id');
+} else {
+    if ($_quickaddHelper->getModuleName() === 'wishlist' && $_quickaddHelper->getControllerName() === 'partslist') {
+        $partslist = Mage::helper('schrackwishlist/partslist')->getActiveOrFirstPartslist();
+        $affectedId = $partslist->getId();
+    }
+}
+$_quote = Mage::registry('quote_tricky');
+if (isset($_quote)) {
+    $_isPickup = $_quote->getIsPickup();
+} else {
+    $_isPickup = false;
+}
+
+$showQuickaddContent = true;
+
+$customer = Mage::getSingleton('customer/session')->getCustomer();
+$sessionCustomerId = $customer->getId();
+$hasWwsCustomerNumber = is_string($customer->getSchrackWwsCustomerId()) != null && $customer->getSchrackWwsCustomerId() > '';
+$aclRoleId = Mage::getModel('customer/customer')->load($sessionCustomerId)->getSchrackAclRoleId();
+$isProjectant = Mage::helper('schrack/acl')->isProjectantRoleId($aclRoleId);
+if ($isProjectant) {
+    $showQuickaddContent = false;
+}
+?>
+
+<style>
+    html, body {
+        max-width: 100% !important;
+        overflow-x: hidden !important;
+    }
+
+    @media (min-width: 1px) and (max-width: 320px) {
+
+    }
+
+    @media (min-width: 321px) and (max-width: 360px) {
+        .mobileOtherActionsRow {
+            width: 91.5% !important;
+            margin-left: 16px !important;
+        }
+    }
+
+    @media (min-width: 361px) and (max-width: 410px) {
+        .mobileOtherActionsRow {
+            width: 98.5% !important;
+            margin-left: 10px !important;
+        }
+    }
+
+    @media (min-width: 411px) and (max-width: 460px) {
+        .mobileOtherActionsRow {
+            width: 94.5% !important;
+            margin-left: 12px !important;
+        }
+    }
+
+    @media (min-width: 461px) and (max-width: 480px) {
+
+    }
+
+    @media (min-width: 481px) and (max-width: 560px) {
+
+    }
+
+    @media (min-width: 561px) and (max-width: 639px) {
+        .mobileOtherActionsRow {
+            width: 97.5% !important;
+            margin-left: 7px !important;
+        }
+    }
+
+    @media (min-width: 640px) and (max-width: 767px) {
+
+    }
+
+    @media (min-width: 768px) and (max-width: 768px) {
+
+    }
+
+    @media (min-width: 769px) and (max-width: 992px) {
+
+    }
+
+</style>
+
+<?php if ($showQuickaddContent) : ?>
+    <div id="crtRtMobAction" class="hidden-sm  hidden-md  hidden-lg mobileOtherAction">
+        <div class="otherActions col-xs-12">
+            <ul>
+                <li class="mobileOtherActionsRow">
+                    <div class="row">
+                        <div class="col-xs-6 padR0 hidden-xs">
+                            <a href="javascript:void(0);" onclick="jQuery('.btn-quickAdd').click();">
+                                <img src="<?php echo $this->getSkinUrl('schrackdesign/Public/Images/rwd/uploadIcon.png'); ?>" />
+                                <span><?php echo $this->__('Upload CSV') ?></span>
+                            </a>
+                        </div>
+						<div class="col-xs-6 padR0 hidden-lg hidden-md hidden-sm paddingR5">
+                            <?php if (Mage::getStoreConfig('schrack/media_zip_download/enable_download')) : ?>
+                                <a id="download-media-files-button" href="javascript:void(0);">
+                                    <img src="<?php echo $this->getSkinUrl('schrackdesign/Public/Images/rwd/labelprintingIcon.png'); ?>" /> 
+                                    <span><?php echo $this->__('Lable Printing') ?></span>
+                                </a>
+                            <?php endif; ?>
+                        </div>
+                        <div class="col-xs-6 paddingL5">
+                            <?php if ($_quickaddHelper->getModuleName() === 'wishlist' && $_quickaddHelper->getControllerName() === 'partslist') : ?>
+                                <a id="downloadMobileButton1" href="javascript:void(0);">
+                                    <img src="<?php echo $this->getSkinUrl('schrackdesign/Public/Images/rwd/downloadIconGray.png'); ?>" /> 
+                                    <span><?php echo $this->__('Download CSV') ?></span>
+                                </a>
+                            <?php else: ?>
+                                <a id="downloadMobileButton2" href="javascript:void(0);">
+                                    <img src="<?php echo $this->getSkinUrl('schrackdesign/Public/Images/rwd/downloadIconGray.png'); ?>" /> 
+                                    <span><?php echo $this->__('Download CSV') ?></span>
+                                </a>
+                            <?php endif; ?>
+                        </div>
+                    </div>							
+                </li>
+                <li class="mobileOtherActionsRow">
+                    <div class="row">
+                        <div class="col-xs-6 paddingR5">
+                            <a href="<?php echo Mage::getUrl('checkout/cart/shareshoppingcart/'); ?>"><img src="<?php echo $this->getSkinUrl('schrackdesign/Public/Images/rwd/shareIcon.png'); ?>" />
+                                <span><?php echo $this->__('Share Shopping List') ?></span>
+                            </a>
+                        </div>
+                        <div class="col-xs-6 paddingL5">
+                            <?php if ( Mage::getSingleton('customer/session')->isLoggedIn() && $hasWwsCustomerNumber ) : ?>
+                                <a href="<?php echo Mage::getUrl('checkout/cart/makeoffer/'); ?>">
+                                    <img src="<?php echo $this->getSkinUrl('schrackdesign/Public/Images/rwd/makeOfferIcon.png'); ?>" /> 
+                                    <span><?php echo $this->__('Make an Offer') ?></span>
+                                </a>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                </li>
+                <li class="mobileOtherActionsRow">
+                    <div class="row">
+                        <div class="col-xs-6 paddingR5 hidden-xs">
+                            <?php if (Mage::getStoreConfig('schrack/media_zip_download/enable_download')) : ?>
+                                <a id="download-media-files-button-mob" data-toggle="modal" data-target="#selectmediagpopup" href="javascript:void(0);">
+                                    <img src="<?php echo $this->getSkinUrl('schrackdesign/Public/Images/rwd/labelprintingIcon.png'); ?>" /> 
+                                    <span><?php echo $this->__('Lable Printing') ?></span>
+                                </a>
+                            <?php endif; ?>
+                        </div>
+                        <div class="col-xs-6">
+                            <a id="emptyShoppingCart" href="javascript:void(0);" onclick="javascript:setCartEmpty('<?php echo Mage::helper('schrackcore/url')->getUrlWithCurrentProtocol('sd/AjaxDispatcher/setGetData'); ?>');">
+                                <img src="<?php echo $this->getSkinUrl('schrackdesign/Public/Images/rwd/cartIconGray.png'); ?>" /> 
+                                <span><?php echo $this->__('Empty cart') ?></span>
+                            </a>
+                        </div>  
+						<div class="col-xs-6 product-name posRel cart-partlist">
+                            <a id="addtocartpartlist" href="javascript:void(0);" data-toggle="dropdown" id="all-products-cart-mob">
+								<span class="glyphicon glyphicon-pushpin <?php if($sessionCustomerId) { echo  "blueTxt";  } else { echo  "lightGray"; } ?>" title="Add to partlist"></span>
+                                <span><?php echo $this->__('Add All Product to Partslist') ?></span>
+                            </a>
+							<ul aria-labelledby="all-products-cart-mob" class="dropdown-list top dropdown-menu allproductscartmob <?php if(!$sessionCustomerId) { echo  "withoutLgn";  } ?>" <?php if(!$sessionCustomerId) { ?> style="height: auto;" <?php } ?> role="menu">
+							</ul>
+                        </div>  						
+                    </div>
+                </li>
+                <!--<li>
+                    <div class="row">
+                        <div class="col-xs-8 padR0 padTB10">
+                            <button type="button" class="bttn-md marginL15" name="proceed_to_checkout">
+                                <?php //echo $this->__('Proceed to Checkout'); ?>
+                            </button>
+                        </div>
+                        <div class="col-xs-4">&nbsp;</div>
+                    </div>                    
+                </li>-->
+            </ul>
+        </div>
+    </div>
+    <style>
+        button:focus { outline: none; }
+    </style>
+<?php endif; ?>
+
+<script type="text/javascript">//<![CDATA[
+
+    jQuery(document).ready(function () {
+
+        // We have 2 forms, with 2 ok-buttons to submit new-partslist-form, with same id in footer (remove number one in cart):
+        // Wait one second, and remove the first element, after it is loaded by AJAX:
+        setTimeout( function() {
+            if (jQuery('.save_new_partslist').length > 1) {
+                jQuery('.save_new_partslist')[0].remove();
+            }
+        }, 2000);
+
+        jQuery('#quickadd_addproduct_button').focus();
+
+        jQuery('#downloadMobileButton1').click(function (e) {
+            removeMessages();
+            setOverlayLoader();
+            window.location.href = '<?php echo $this->getUrl('wishlist/partslist/downloadCsv') ?>';
+            setTimeout(function () {
+                unsetOverlayLoader();
+            }, 2000);
+            return true;
+        });
+
+        jQuery('#downloadMobileButton2').click(function (e) {
+            removeMessages();
+            setOverlayLoader();
+            window.location.href = '<?php echo $this->getUrl('checkout/cart/downloadCsv') ?>';
+            setTimeout(function () {
+                unsetOverlayLoader();
+            }, 2000);
+            return true;
+        });
+
+        jQuery("#download-media-files-mobile-button").click(function () {
+            getDownloadMediaDialog("<?php echo Mage::helper('schrackcore/url')->getUrlWithCurrentProtocol('catalog/download/getDownloadMediaDialog'); ?>", "cart.phtml");
+            return false;
+        });
+		
+		/* partslist drop down for mobile Add all product to partlist */
+		var partlistdropdownhtml = jQuery('.product-name.posRel ul').html();
+		jQuery('.col-xs-6.product-name.posRel.cart-partlist ul').append(partlistdropdownhtml);
+    });
+
+    //]]>
+</script>
+<!-- app/design/frontend/schrack/schrackresponsive/template/checkout/cart/rightcartnavmobile.phtml (end) -->

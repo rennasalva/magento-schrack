@@ -1,0 +1,219 @@
+<!-- app/design/frontend/schrack/schrackresponsive/template/checkout/success.phtml (start) -->
+
+<?php
+    // @var $this Schracklive_SchrackCheckout_Block_Success
+    if (!stristr($this->getMessagesBlock()->getGroupedHtml(), 'MAIL HEADERS')) {
+        echo $this->getMessagesBlock()->getGroupedHtml();
+    }
+
+    $order = Mage::getModel('sales/order')->load($this->getOrderId(),'schrack_wws_order_number');
+    $orderedItems = $order->getItemsCollection();
+    $revenue = (float) $order->getGrandTotal();
+
+    $readConnection = Mage::getSingleton('core/resource')->getConnection('core_read');
+
+    $schrackWwsOrderId = $order->getSchrackWwsOrderNumber();
+
+    // customerTypes: 1.normal user with WWS-ID / 2. prospect without WWS-ID / 3. guest without WWS-ID
+    $customerType = 'normalCustomerType';
+    $totalAmount = 0;
+    $totalTax = 0;
+
+    if ($schrackWwsOrderId) {
+        $query  = "SELECT * FROM sales_flat_quote";
+        $query .= " WHERE schrack_wws_order_number LIKE '" . $schrackWwsOrderId . "'";
+
+        $queryResult = $readConnection->query($query);
+
+        if ($queryResult->rowCount() > 0) {
+            foreach ($queryResult as $recordset) {
+                if ($recordset['schrack_customertype'] == 'guest') {
+                    $customerType = 'guestCustomerType';
+                }
+                if ($recordset['schrack_customertype'] == 'newProspect') {
+                    $customerType = 'newProspectCustomerType';
+                }
+                if ($recordset['schrack_customertype'] == 'oldLightProspect') {
+                    $customerType = 'lightProspectCustomerType';
+                }
+                if ($recordset['schrack_customertype'] == 'oldFullProspect') {
+                    $customerType = 'fullProspectCustomerType';
+                }
+            }
+        }
+
+        // Fetch tax and total order amounts from insert_update_order response (WWS):
+        $query  = "SELECT * FROM wws_insert_update_order_response";
+        $query .= " WHERE wws_order_id LIKE '" . $schrackWwsOrderId . "'";
+        $query .= " ORDER BY response_datetime LIMIT 1";
+
+        $queryResult = $readConnection->query($query);
+
+        if ($queryResult->rowCount() > 0) {
+            foreach ($queryResult as $recordset) {
+                $totalAmount = $recordset['amount_tot'];
+                $totalTax = $recordset['amount_tax'];
+            }
+        }
+
+        if (Mage::helper('ids')->isIdsSession()) {
+            $resource = Mage::getSingleton('core/resource');
+            $writeConnection = $resource->getConnection('core_write');
+            
+            $session = Mage::getSingleton('customer/session');
+            $email = $session->getCustomer()->getEmail();
+
+            $query  = "UPDATE schrack_ids_data SET wws_order_number = '" . $schrackWwsOrderId . "'";
+            $query .= " WHERE email LIKE '" . $email . "' and active = 1";
+            $writeConnection->query($query);
+        }
+    }
+
+?>
+
+<br>
+<br>
+<div class="page-title">
+    <h1><?php echo $this->__('Your order has been received') ?></h1>
+</div>
+<p><strong><?php echo $this->__('Thank you for your purchase!') ?></strong></p>
+<?php if ($this->canPrint()) :?>
+    <p><?php echo $this->__('Your order # is: <a href="%s">%s</a>', $this->getViewOrderUrl(), $this->getOrderId()) ?></p>
+<?php  else :?>
+    <p><?php echo $this->__('Your order # is: %s', $this->getOrderId()) ?></p>
+<?php endif;?>
+    <p><?php echo $this->__('You will receive an order confirmation email with details of your order and a link to track its progress.') ?></p>
+<?php if ($this->canPrint()) :?>
+    <p>
+        <?php echo $this->__('Click <a href="%s" onclick="this.target=\'_blank\'">here to print</a> a copy of your order confirmation.', $this->getPrintUrl()) ?>
+        <?php echo $this->getChildHtml() ?>
+    </p>
+<?php endif;?>
+<div class="buttons-set">
+    <button type="button" class="bttn-lg" style="width: 27%;" title="<?php echo Mage::helper('core')->quoteEscape($this->__('Continue Shopping')) ?>" onclick="window.location='<?php echo $this->getUrl() ?>'"><span><span><?php echo $this->__('Continue Shopping') ?></span></span></button>
+</div>
+<?php if(Mage::helper('ids')->isIdsSession()) : ?>
+    <div style="display: none">
+        <?php echo Mage::helper('ids')->getIdsForm('true', $this->getOrderId()); ?>
+    </div>
+    <br>
+    <br>
+    <div>
+        <button style="margin-top: 10px;" id="ids_cart_transfer_success" type="button" class="bttn-md"><?php echo $this->__('Export IDS Order'); ?></button>
+    </div>
+<?php endif; ?>
+<br>
+<br>
+
+<script type="text/javascript">
+
+<?php if (Mage::getStoreConfig('ec/config/active')) : ?>
+        var orderedItems = new Array();
+        var item;
+
+        <?php
+            $position = 0;
+            $coreHelper = Mage::helper('core');
+            foreach ($orderedItems as $itemId => $item) :
+                $position++;
+                $product = $item->getProduct();
+        ?>
+
+        var query = '<?php echo $item->getSku(); ?>';
+        var category = '';
+
+        jQuery.ajax('<?php echo Mage::getStoreConfig('schrack/typo3/typo3url') ?>' + '?eID=schrack_suggest&q=' + encodeURIComponent(query) + '&cat=', {
+            'dataType': 'json',
+            'type': 'GET',
+            'success': function (data) {
+                var parsedData = data;
+                var url = parsedData.products[0].url;
+                var arr = url.split('/');
+                var arrayLength = arr.length;
+                for (var i = 0; i < arrayLength; i++) {
+                    if (i > 3 && i < (arrayLength - 1)) {
+                        category = category + '/' + arr[i];
+                    }
+                }
+
+                while(category.charAt(0) === '/') {
+                    category = category.substring(1);
+                }
+
+                item = {
+                    'id' : '<?php echo $item->getSku(); ?>',
+                    'name' : '<?php echo $product->getName(); ?>',
+                    //'price' : '<?php echo str_replace(',', '.', $coreHelper->formatPrice($item->getPrice())); ?>',
+                    'category' : '<?php echo $product->getCategoryId4googleTagManager(); ?>',
+                    'position' : <?php echo $position; ?>,
+                    'quantity' : <?php echo intval($item->getQtyOrdered()); ?>,
+                    'dimension9' : '<?php echo $product->getCategoryId4googleTagManager(); ?>',
+                };
+
+                orderedItems.push(item);
+            },
+            'error': function (data) {
+                var parsedData = data;
+                console.log('Tracking ERROR from success.phtml');
+                console.log(parsedData);
+            }
+        });
+
+        <?php endforeach; ?>
+
+        if (dataLayer) {
+            dataLayer.push(
+            {
+                'event': 'transaction',
+                'currencyCode': '<?php echo Mage::app()->getStore()->getCurrentCurrencyCode() ?>',
+                'ecommerce' : {
+                    'purchase' : {
+                        'actionField': {
+                            'id'         : '<?php echo $order->getSchrackWwsOrderNumber(); ?>',
+                            'revenue'    : '<?php echo $totalAmount; ?>',
+                            'tax'        : '<?php echo $totalTax; ?>',
+                            'shipping'   : '<?php echo $order->getShippingInclTax(); ?>',
+                            'dimension8' : 'purchase',
+                            'dimension11': '<?php echo $customerType; ?>'
+                        },
+                        'products' : orderedItems
+                    }
+                }
+            });
+
+            dataLayer.push(
+            {
+                'event': 'purchase_completed'
+            });
+        }
+
+        if (localStorage.newCheckoutAnalyticsTrackingStatus == 'registerInCheckoutAsNewCustomer') {
+            if (dataLayer) {
+                dataLayer.push({
+                    'event': 'registrationtype_set',
+                    'registrationtype': 'Checkout Registration'
+                });
+            }
+        }
+
+        if (localStorage.getItem('newCheckoutAnalyticsTrackingStatus') !== null) {
+            localStorage.removeItem('newCheckoutAnalyticsTrackingStatus');
+        }
+
+<?php endif ?>
+jQuery(document).ready(function() {
+
+        jQuery("#IdsForm").on('submit', function(event){
+            localStorage.setItem('IDS_Transfer_Done', 'true');
+        });
+
+        jQuery('#ids_cart_transfer_success').on('click', function(event) {
+            event.preventDefault();
+            jQuery('#IdsForm').submit();
+        });
+
+});
+
+</script>
+
+<!-- app/design/frontend/schrack/schrackresponsive/template/checkout/success.phtml (end) -->

@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<layout version="0.1.0">
+	<catalog_category_default>
+		<reference name="product_list">
+			
+            <block type="catalog/product_list" name="product_list_table" template="catalog/product/list/table_solr.phtml">               
+            </block>
+		</reference>
+                <reference name="category.products">
+			<action method="insert">
+				<block>schrack_search</block>
+			</action>
+                </reference>
+	</catalog_category_default>
+	<catalog_category_layered>
+		<reference name="product_list">
+			
+            <block type="catalog/product_list" name="product_list_table" template="catalog/product/list/table_solr.phtml">
+                
+            </block>
+		</reference>
+                <reference name="category.products">
+			<action method="insert">
+				<block>schrack_search</block>
+			</action>
+                </reference>
+	</catalog_category_layered>
+        <catalog_category_dash>
+            <block type="catalog/category_view" name="category.products" template="catalog/category/view.phtml" output="toHtml">
+                <block type="catalog/product_list" name="product_list" template="catalog/product/list.phtml">
+                    <block type="catalog/product_list" name="product_list_table" template="catalog/product/list/table_solr.phtml">
+                
+                    </block>
+                </block>                
+                <block type="schracklive_typo3/catalog_category_cmsContent" name="category.cms_content"/>
+            </block>
+	</catalog_category_dash>
+</layout>

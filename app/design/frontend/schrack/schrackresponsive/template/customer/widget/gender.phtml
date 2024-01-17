@@ -1,0 +1,56 @@
+<!-- app/design/frontend/schrack/schrackresponsive/template/customer/widget/gender.phtml (start) -->
+<style>
+.gender-input-cell-div-fullwidth {
+    color: #555555;
+    display: inline-block;
+    min-width: 300px;
+    width: 100%;
+    padding: 0 0 0 16px;
+    margin-bottom: 0px;
+}
+
+.gender-input-label {
+    float: left;
+    vertical-align: middle;
+    padding: 0px 12px 6px 0px;
+    height: 25px !important;
+    display: inline;
+    margin-top: 8px;
+}
+
+.gender-one-line-radio-fieldset {
+    vertical-align: middle;
+    padding: 0px 12px 0px 6px;
+    height: 25px !important;
+    display: inline;
+    margin-top: 2px;
+}
+
+.gender-radioorcheck-label-right {
+    margin-left: 3px;
+    margin-right: 12px;
+}
+
+</style>
+
+<div class="gender-input-cell-div-fullwidth">
+    <h3 class="gender-input-label"><?php echo $this->__('Gender') ?> <span class="red">*</span></h3>
+    <fieldset class="gender-one-line-radio-fieldset">
+       <?php $options = Mage::getResourceSingleton('customer/customer')->getAttribute('gender')->getSource()->getAllOptions();?>
+        <?php $value = $this->getGender(); ?>
+        <?php $i = 0; foreach ($options as $option):?>
+            <?php if ( $i > 0 ) : ?>
+                <input type="radio" id="gender_radio_<?php echo $i ?>" value="<?php echo $option['value'] ?>"
+                    name="<?php echo $this->getFieldName('gender')?>"
+                    <?php if ($option['value'] == $value || !$value && $i == 1 ) echo ' checked="checked"';?>
+                >
+                <label for="gender_radio_<?php echo $i ?>" class="gender-radioorcheck-label-right">
+                    <?php echo $this->__($option['label'] ? $option['label'] : 'Gender');?>
+                </label>
+            <?php endif; ?>
+            <?php ++$i; ?>
+        <?php endforeach;?>
+    </fieldset>
+</div>
+
+<!-- app/design/frontend/schrack/schrackresponsive/template/customer/widget/gender.phtml (end) -->

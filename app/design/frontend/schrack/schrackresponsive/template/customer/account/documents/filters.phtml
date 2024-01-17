@@ -1,0 +1,211 @@
+<!-- app/design/frontend/schrack/schrackresponsive/template/customer/account/documents/filters.phtml (start) -->
+<?php
+$schrackLocale = strtolower(Mage::getStoreConfig('schrack/general/country'));
+$currentPage = Mage::app()->getRequest()->getActionName();
+if ($schrackLocale == 'at' || $schrackLocale == 'de') {
+    $dateTimePickerLocale = 'de';
+} else {
+    $dateTimePickerLocale = 'en';
+}
+?>
+
+<style>
+    .bootstrap-datetimepicker-widget {
+        width: auto !important;
+    }
+</style>
+
+<div class="tab-pane active products-tab" id="topFilter">
+    <div class="topSection">
+        <a class="btn btn-default hidden-lg hidden-md clear-filter" href="javascript:void(0)">
+            <?php echo $this->__('Clear'); ?>
+        </a>
+        <?php echo $this->__('Filter by'); ?>:
+		<span class="glyphicon glyphicon-remove filterCrossIcondashoard gray" onclick="jQuery('#filterMenu').click();"></span>
+    </div>
+    <div class="topBttmSection hidden-xs hidden-sm clearfix">
+        <a class="btn btn-default clear-filter" href="#clear-filter">
+            <?php echo $this->__('Clear'); ?>
+        </a>
+    </div>
+    <div aria-multiselectable="true" class="panel-group" id="accordion" role="tablist">
+        <div class="panel panel-default">
+            <div class="panel-heading" id="headingOne" role="tab">
+                <h4 class="panel-title">
+                    <a id="time-accordion" class="accordion-toggle collapsed" aria-controls="collapseOne" aria-expanded="true" data-parent="#accordion" data-toggle="collapse" href="#collapseOne" role="button"><?php echo $this->__('backorders' == $currentPage ? 'Time ordered' : 'time'); ?></a>
+                </h4>
+            </div>
+            <div aria-labelledby="headingOne" class="panel-collapse collapse" id="collapseOne" role="tabpanel">
+                <div class="panel-body">
+                    <ul id="column-2">
+                        <li>
+                            <input name="time-rangle" class="time-span time-range reset-me" type="radio" value="120" id="radio-all">
+                            <label for="radio-all"><?php echo $this->__('All'); ?></label>
+                            </input>
+                        </li>
+                        <li>
+                            <input name="time-rangle" class="time-span"  type="radio" value="1" id="radio-1m">
+                            <label for="radio-1m"><?php echo $this->__('Last 1 Month') ?></label>
+                            </input>
+                        </li>
+                        <li>
+                            <input name="time-rangle"  class="time-span" type="radio" value="3" id="radio-3m">
+                            <label for="radio-3m"><?php echo $this->__('Last 3 Month') ?></label>
+                            </input>
+                        </li>
+                        <li>
+                            <input name="time-rangle"  class="time-span" type="radio" value="6" id="radio-6m">
+                            <label for="radio-6m"><?php echo $this->__('Last 6 Month') ?></label>
+                            </input>
+                        </li>
+                        <li>
+                            <input name="time-rangle" class="time-span" type="radio" value="12" id="radio-1y">
+                            <label for="radio-1y"><?php echo $this->__('Last 1 Year') ?></label>
+                            </input>
+                        </li>
+                        <li>
+                            <input name="time-rangle" class="time-span" type="radio" value="range" id="radio-range">
+                            <label for="radio-range"><?php echo $this->__('Select Range') ?></label>
+                            </input>
+                        </li>
+                        <li class="form-group">
+                            <input class="form-control" type="text" id="from-date" placeholder=<?php echo $this->__("from"); ?>/>
+                        </li>
+                        <li class="form-group">
+                            <input class="form-control" type="text" id="to-date" placeholder=<?php echo $this->__("to"); ?>/>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <?php if ( 'backorders' == $currentPage ) : ?>
+            <div class="panel panel-default">
+                <div class="panel-heading" id="headingOne-2" role="tab">
+                    <h4 class="panel-title">
+                        <a id="expected-accordion-2" class="accordion-toggle collapsed" aria-controls="collapseOne" aria-expanded="false" data-parent="#accordion" data-toggle="collapse" href="#collapseOne-2" role="button"><?php echo $this->__('Expected at'); ?></a>
+                    </h4>
+                </div>
+                <div aria-labelledby="headingOne" class="panel-collapse collapse" id="collapseOne-2" role="tabpanel">
+                    <div class="panel-body">
+                        <ul id="column-2-2">
+                            <li>
+                                <input name="time-rangle-2" class="time-span time-range reset-me" aria-filtertype="expected" type="radio" value="120" id="radio-all-2">
+                                <label for="radio-all-2"><?php echo $this->__('All'); ?></label>
+                                </input>
+                            </li>
+                            <li>
+                                <input name="time-rangle-2" class="time-span" aria-filtertype="expected" type="radio" value="1" id="radio-1m-2">
+                                <label for="radio-1m-2"><?php echo $this->__('Next 1 Month') ?></label>
+                                </input>
+                            </li>
+                            <li>
+                                <input name="time-rangle-2"  class="time-span" aria-filtertype="expected" type="radio" value="3" id="radio-3m-2">
+                                <label for="radio-3m-2"><?php echo $this->__('Next 3 Month') ?></label>
+                                </input>
+                            </li>
+                            <li>
+                                <input name="time-rangle-2"  class="time-span" aria-filtertype="expected" type="radio" value="6" id="radio-6m-2">
+                                <label for="radio-6m-2"><?php echo $this->__('Next 6 Month') ?></label>
+                                </input>
+                            </li>
+                            <li>
+                                <input name="time-rangle-2" class="time-span" aria-filtertype="expected" type="radio" value="12" id="radio-1y-2">
+                                <label for="radio-1y-2"><?php echo $this->__('Next 1 Year') ?></label>
+                                </input>
+                            </li>
+                            <li>
+                                <input name="time-rangle-2" class="time-span" aria-filtertype="expected" type="radio" value="range" id="radio-range-2">
+                                <label for="radio-range-2"><?php echo $this->__('Select Range') ?></label>
+                                </input>
+                            </li>
+                            <li class="form-group">
+                                <input class="form-control" type="text" id="from-date-2" aria-filtertype="expected" placeholder=<?php echo $this->__("from"); ?>/>
+                            </li>
+                            <li class="form-group">
+                                <input class="form-control" type="text" id="to-date-2" aria-filtertype="expected" placeholder=<?php echo $this->__("to"); ?>/>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        <?php else : ?>
+            <div class="panel panel-default dynamic-filters">
+                <div class="panel-heading" id="headingOne" role="tab">
+                    <h4 class="panel-title">
+                    <a class="accordion-toggle collapsed" aria-controls="collapseTwo" aria-expanded="false" data-parent="#accordion" data-toggle="collapse" href="#collapseTwo" role="button"><?php echo $this->__('Status') ?></a>
+                    </h4>
+                </div>
+                <div aria-labelledby="headingOne" class="panel-collapse collapse" id="collapseTwo" role="tabpanel" aria-expanded="false" style="height: 0px;">
+                    <div class="panel-body">
+                    <ul id="dynamicStatusRow"></ul>
+                    </div>
+                </div>
+            </div>
+        <?php endif; ?>
+        <?php if ('documentsDetailsearch' == $currentPage) : ?>
+            <div class="panel panel-default dynamic-filters">
+                <div class="panel-heading" id="headingThree" role="tab">
+                    <h4 class="panel-title">
+                    <a class="accordion-toggle collapsed" aria-controls="collapseThree" aria-expanded="false" data-parent="#accordion" data-toggle="collapse" href="#collapseThree" role="button"><?php echo $this->__('Receipt') ?></a>
+                    </h4>
+                </div>
+                <div aria-labelledby="headingThree" class="panel-collapse collapse" id="collapseThree" role="tabpanel" aria-expanded="false" style="height: 0px;">
+                    <div class="panel-body">
+                    <ul id="dynamicReceiptRow"></ul>
+                    </div>
+                </div>
+            </div>
+        <?php endif; ?>
+    </div>
+</div>
+<script type="text/javascript">//<![CDATA[
+	jQuery(function () {
+        jQuery('#from-date').datetimepicker( {
+            locale: '<?php echo $dateTimePickerLocale; ?>',
+            format: "YYYY-MM-DD"
+        }).on('dp.change', function(e) {
+            var $toDate = jQuery('#to-date');
+            $toDate.data("DateTimePicker").minDate(e.date);
+            if ($toDate.val()) {
+                jQuery('#radio-range').trigger('click');
+            }
+        });
+        jQuery('#to-date').datetimepicker( {
+            locale: '<?php echo $dateTimePickerLocale; ?>',
+            format: "YYYY-MM-DD",
+            useCurrent: false
+        }).on("dp.change", function (e) {
+            var $fromDate = jQuery('#from-date');
+            $fromDate.data("DateTimePicker").maxDate(e.date);
+            if ($fromDate.val()) {
+                jQuery('#radio-range').trigger('click');
+            }
+		});
+    <?php if ( 'backorders' == $currentPage ) : ?>
+        jQuery('#from-date-2').datetimepicker( {
+            locale: '<?php echo $dateTimePickerLocale; ?>',
+            format: "YYYY-MM-DD",
+            useCurrent: false
+        }).on("dp.change", function (e) {
+            var $fromDate = jQuery('#from-date-2');
+            $fromDate.data("DateTimePicker").maxDate(e.date);
+            if ($fromDate.val()) {
+                jQuery('#radio-range-2').trigger('click');
+            }
+		});
+        jQuery('#to-date-2').datetimepicker( {
+            locale: '<?php echo $dateTimePickerLocale; ?>',
+            format: "YYYY-MM-DD",
+            useCurrent: false
+        }).on("dp.change", function (e) {
+            var $toDate = jQuery('#to-date-2');
+            $toDate.data("DateTimePicker").minDate(e.date);
+            if ($toDate.val()) {
+                jQuery('#radio-range-2').trigger('click');
+            }
+		});
+    <?php endif; ?>
+	});
+//]]>
+</script>
+<!-- app/design/frontend/schrack/schrackresponsive/template/customer/account/documents/filters.phtml (end) -->

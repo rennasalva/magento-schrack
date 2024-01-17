@@ -1,0 +1,126 @@
+<!-- app/design/frontend/schrack/schrackresponsive/template/checkout/shareshoppingcart.phtml (start) -->
+<?php
+$itemCnt = Mage::helper('checkout/cart')->getItemsCount();
+$customer = Mage::getSingleton('customer/session')->getCustomer();
+$eMail = $customer->getEmail();
+?>
+
+<div class="shareshopingCartCont">
+	<div class="row">
+		<div class="col-xs-12">
+			<h1 class="headline b1"><?php echo $this->__('Share Shopping Cart'); ?></h1>
+		</div>
+	</div>
+	<?php echo $this->getMessagesBlock()->getGroupedHtml() ?>
+
+	<?php if ($itemCnt > 0) : ?>
+
+    <div class="row">
+        <form id="share-cart-form" action="" method="post">
+            <div class="col-xs-12 col-md-12">
+                <div class="formContianer">
+                    <p><?php echo $this->__('Share your shopping cart with you colleagues via Email. Add email adresses and products of you cart will be sent as CSV file to the given Email Adresses'); ?>:</p>
+
+                    <div class="row">
+                        <div class="col-xs-12 col-md-6">
+                            <ul>
+                                <li class="entry">
+                                    <div class="input-group">
+                                        <input class="required-entry validate-email form-control" name="email[]" alt="email" type="text" placeholder="<?php echo $this->__('Email Address') ?>*" value="<?php echo $eMail ?>"/>
+                                        <span class="input-group-btn">
+                                            <button class="btn btn-success btn-add" type="button">
+                                                <span class="glyphicon glyphicon-plus"></span>
+                                            </button>
+                                        </span>
+                                    </div>
+								</li>
+								<?php // -- Start SCHRAC-1076 -- ?>
+								<li style="display: none;"  class="entryLast"><input type="hidden" name="schrack-custom-order-number" id="schrack-custom-order-number" value="" /></li>
+                                <?php /* ?><li class="entryLast">
+                                    <input placeholder="<?php echo $this->__('Purchase Order Number') ?>" type="text" id="schrack-custom-order-number" name="schrack-custom-order-number" maxlength="20" size="20" class="form-control" value="" />
+                                </li> <?php */ ?>
+								<?php // -- End SCHRAC-1076 -- ?>
+                            </ul>
+                            <small><?php echo $this->__('Press %s to add another form field.','<span class="glyphicon glyphicon-plus gs"></span>') ?></small>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-8 col-sm-6"><button class="bttn-md" type="button" title="<?php echo $this->__('Share Shopping List') ?>" onclick="submitShareShoppingCart();" class="button"><?php echo $this->__('Share Shopping List') ?></button></div>
+                        <div class="col-xs-4 col-sm-6 text-right small paddingT10"><a href="<?php echo Mage::getUrl('checkout/cart'); ?>" title="<?php echo $this->__('Back to Shopping Cart') ?>"><small>&laquo; </small><?php echo $this->__('Back') ?></a></div>
+                    </div>
+                </div>
+
+            </div>
+        </form>
+    </div>
+
+    <script type="text/javascript">//<![CDATA[
+        function submitShareShoppingCart() {
+            var shareEmailList = [];
+            var shareCartForm = new VarienForm('share-cart-form', true);
+            jQuery('input[name="email[]"]').map(function (i, el) {
+                shareEmailList.push(el.value);
+            });
+
+            var dataArray = {};
+            if (shareCartForm.validator.validate()) {
+                dataArray.setTransferOfCartAsCSV = {'data': {'emailRecipients': shareEmailList}};
+                setOverlayLoader();
+                jQuery.ajax(ajaxUrl, {
+                    'dataType': 'json',
+                    'type': 'POST',
+                    'data': dataArray,
+                    'success': function (data) {
+                        var parsedData = data;
+                        unsetOverlayLoader();
+                        //debugger;
+                        // TODO : do something here with proxessed response data!
+                        var ajaxDispatcher = new AjaxDispatcher();
+                        jQuery.each(parsedData, function (key, value) {
+                            ajaxDispatcher[key](value.result);
+                        });
+                    },
+                    'error': function (data) {
+                        var parsedData = data;
+                        //debugger;
+                    }
+                });
+            }
+        }
+        jQuery(function ()
+        {
+            jQuery(document).on('click', '.btn-add', function (e)
+            {
+                e.preventDefault();
+
+                var controlForm = jQuery('.formContianer'),
+                        currentEntry = jQuery(this).parents('.entry:first'),
+                        newEntry = jQuery(currentEntry.clone());
+                jQuery(jQuery('.entryLast')).before(newEntry);
+                newEntry.find('input').val('');
+                newEntry.find('input').removeClass('required-entry');
+                newEntry.find('input').attr('placeholder', '<?php echo $this->__('Email Address') ?>');
+                controlForm.find('.entry:not(:first) .btn-add')
+                        .removeClass('btn-add').addClass('btn-remove')
+                        .removeClass('btn-success').addClass('btn-danger')
+                        .html('<span class="glyphicon glyphicon-minus"></span>');
+            }).on('click', '.btn-remove', function (e)
+            {
+                jQuery(this).parents('.entry:first').remove();
+
+                e.preventDefault();
+                return false;
+            });
+        });
+    </script>
+<?php else: ?>
+    <div class="row">
+        <div class="col-xs-12 col-md-12">
+            <div class="formContianer"><?php echo $this->__('Please add item in your cart.'); ?></div>
+        </div>
+    </div>
+<?php endif; ?>
+
+
+</div>
+<!-- app/design/frontend/schrack/schrackresponsive/template/checkout/shareshoppingcart.phtml (end) -->

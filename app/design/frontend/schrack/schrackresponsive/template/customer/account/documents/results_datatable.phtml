@@ -1,0 +1,95 @@
+<!-- app/design/frontend/schrack/schrackresponsive/template/customer/account/documents/results_datatable.phtml (start) -->
+<div class="tableCont hidden-xs hidden-sm">
+    <table id="orders-datatable" class="table table-bordered" cellspacing="0" width="100%">
+        <thead>
+            <tr>
+                <th></th>
+                <th><?php echo $this->__('Meine Bestellangabe'); ?></th>
+                <th><?php echo $this->__('Order Number'); ?></th>
+                <th class="datesort"><?php echo $this->__('Date'); ?></th>
+                <th><?php echo $this->__('Status'); ?></th>
+                <th  style="width:28%"></th>
+            </tr>
+        </thead>
+		<tr align="center" id="dashboardLoaderDesktop">
+			<td colspan="6" align="center">
+				<img src="<?php echo $this->getSkinUrl('schrackdesign/Public/Images/download_ajax_loader.gif'); ?>" style="opacity: 0.4; z-index: 99999;" />
+			</td>
+		</tr>
+    </table>
+</div>
+
+<!--For Mobile -->
+<div class="tabularCont hidden-md hidden-lg">
+    <table id="orders-datatable-xs" class="table table-bordered dataTableMobil" cellspacing="0" width="100%">
+        <thead>
+            <tr>
+                <th></th>
+                <th></th>
+            </tr>
+        </thead>
+		<tr align="center" id="dashboardLoaderDesktop">
+			<td colspan="2" align="center">
+				<img src="<?php echo $this->getSkinUrl('schrackdesign/Public/Images/download_ajax_loader.gif'); ?>" style="opacity: 0.4; z-index: 99999;" />
+			</td>
+		</tr>
+    </table>
+</div>
+<!--For Mobile  End-->
+
+<script type="text/javascript">
+	if(getParameterByName('excludeAjaxCall') == null) {	// Added by Nagarro for exclude AJAX call for performance testing
+
+    function desktopOrder(order, mobile) {
+            jQuery('#orders-datatable').DataTable({
+                "data": order,
+                "pageLength": 10,
+                "lengthChange": false,
+				"language": {
+					"url": dataTableTranslationFileUrl
+				},
+                "columns": [{
+                        "data": "creationDateYmd"
+                    }, {
+                        "data": "name"
+                    }, {
+                        "data": "orderNumber"
+                    }, {
+                        "data": "creationDate",
+                        "orderable": false
+                    }, {
+                        "data": "status"
+                    }, {
+                        "data": "reorder",
+                        "orderable": false,
+                        "bSearchable": false
+                    }],
+                initComplete: function () {
+                    this.api().column(0).visible(0);
+                    // Sort array by lastest record date wise
+					jQuery('#dashboardLoaderDesktop').hide();
+                    jQuery('#orders-datatable').DataTable().column(0).order('desc').draw();
+                    mobileOrder(mobile);
+                    dataTableFilter();
+                    addFilter(this.api().column(4));
+                    filterHandler();
+                    dateSortHandler();
+                }
+            });
+    }
+    jQuery(document).ready(function () {
+        addDateHandler();
+        jQuery.ajax({
+            url: BASE_URL + 'sd/AjaxDispatcher/orders/',
+            method: 'POST'
+        }).done(function (data) {
+            var orderData = JSON.parse(data);
+            var order = orderData.order;
+            var mobile = orderData.mobile;
+            desktopOrder(order, mobile);
+        });
+    });
+	}
+</script>
+<?php echo $this->getChildHtml('datatablefunctions');?>
+<!-- app/design/frontend/schrack/schrackresponsive/template/customer/account/documents/results_datatable.phtml (end) -->

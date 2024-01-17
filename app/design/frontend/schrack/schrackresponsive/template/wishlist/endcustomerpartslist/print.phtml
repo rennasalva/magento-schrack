@@ -1,0 +1,89 @@
+<head>
+    <link rel="stylesheet" type="text/css" href="<?php echo $this->getSkinUrl('schrackdesign/Public/Stylesheets/allPacked.css')?>" media="all">
+    <script type="text/javascript" src="<?php echo $this->getSkinUrl('schrackdesign/Public/Javascript/prototype.compacted.js')?>"></script>
+    <script type="text/javascript" src="<?php echo $this->getSkinUrl('schrackdesign/Public/Javascript/allPacked.js')?>"></script>
+    <script type="text/javascript" src="<?php echo $this->getSkinUrl('schrackdesign/Public/Javascript/commonPacked.js')?>"></script>
+    <script type="text/javascript" src="<?php echo $this->getSkinUrl('schrackdesign/Public/Javascript/packedFooter.js')?>"></script>
+</head>
+<body>
+<?php
+/* @var $this Schracklive_SchrackWishlist_Block_Endcustomerpartslist_View */
+?>
+<?php
+$_infoHelper = Mage::helper('schrackcatalog/info');
+$_productHelper = Mage::helper('schrackcatalog/product');
+$_customer = Mage::getSingleton('customer/session')->getCustomer();
+$_stockHelper = Mage::helper('schrackcataloginventory/stock');
+$_partslistHelper = $this->helper('schrackwishlist/partslist');
+$_partslist = $this->getPartslist();
+$_priceHelper = Mage::helper('schrackcatalog/price');
+$_ecplHelper = Mage::helper('schrackwishlist/endcustomerpartslist');
+
+/* @var $_infoHelper Schracklive_SchrackCatalog_Helper_Info */
+/* @var $_productHelper Schracklive_SchrackCatalog_Helper_Product */
+?>
+<div class="headline a"><?php echo $this->__('Partslist')?></div>
+<div class="table">
+<?php
+$_partslistItems = $this->getPartslistItems($_partslist);
+$products = array();
+foreach ($_partslistItems as $item) {
+    $products[] = $item->getProduct();
+}
+$_infoHelper->preloadProductsInfo($products, $_customer);
+?>
+<?php
+$i = 0;
+foreach ($_partslistItems as $item): /* start foreach for products loop */
+    ?>
+    <?php
+    $_product = $item->getProduct();
+    $_categories = $_product->getCategoryIds();
+    if (isset($_categories[0])) {
+        $_category = Mage::getModel('catalog/category')->load($_categories[0]);
+        $_url = $this->getUrl(dirname($_category->getUrlPath()) . '/' . basename($_category->getUrlPath(), '.html') . '/' . basename($_product->getProductUrl(false)));
+    } else {
+        $_url = '';
+    }
+    ?>
+    <div class="row-fine body">
+        <div class="large-fine-5 columns-fine image-col">
+            <?php $_product_image = $this->helper('catalog/image')->init($_product, 'small_image')->constrainOnly(true)->resize(66, 66); ?>
+            <a href="#" target="_blank"
+               title="<?php echo $this->htmlEscape($this->getImageLabel($_product, 'small_image')) ?>"
+               class="product-image"><img src="<?php echo $_product_image ?>"
+                                          width="<?php echo $_product_image->getWidth() ?>"
+                                          height="<?php echo $_product_image->getHeight() ?>"
+                                          alt="<?php echo $this->htmlEscape($this->getImageLabel($_product, 'small_image')) ?>"/></a>
+        </div>
+        <div class="large-fine-14 columns-fine">
+            <div class="row">
+                <div class="large-12 columns text-col">
+                    <h2 class="product-name"><a href="#" onClick="openReferredCatalog('<?php echo trim($item->getReferrerUrl())?>', '<?php echo $this->getCatalogName($item)?>');"
+                                                title="<?php echo $this->htmlEscape($_product->getName()) ?>"><?php echo $this->htmlEscape($_product->getName()) ?></a>
+                    </h2>
+                </div>
+            </div>
+            <div class="row">
+                <div class="large-12 columns text-col" style="position: relative; height: 25px;">
+                    <div class="bottom-align-container-0" style="position: absolute; bottom: 12px;">
+                        <?php if ($_product->getSku()): ?>
+                            <span class="catalog-nr"><?php echo $this->htmlEscape($_product->getSku()); ?></span>
+                        <?php endif; ?>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="large-fine-5 columns-fine buttons-col" style="padding-top: 20px; padding-bottom: 10px;">
+            <label class="unit"><?php echo $_product->getSchrackQtyunit() ?></label>&nbsp;<?php echo Mage::helper('schrackcore/string')->numberFormat($item->getQty()); ?>
+        </div>
+    </div>
+    <?php ++$i;endforeach; ?>
+</div>
+
+<script>
+    jQuery(document).ready(function() {
+        window.print();
+    });
+</script>
+</body>

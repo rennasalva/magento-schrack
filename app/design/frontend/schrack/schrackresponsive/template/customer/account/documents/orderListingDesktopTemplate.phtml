@@ -1,0 +1,28 @@
+<?php
+	$orderLstDesktop = json_decode(json_encode(Mage::registry('dashboardOrderList')),TRUE);
+?>
+<?php /* For Desktop View */ ?>
+
+<?php
+	if(count($orderLstDesktop) > 0) {
+		$i = 0;
+		foreach ($orderLstDesktop as $orderLstObjDesktop) {	// For Desktop View
+?>
+	<tr class="<?php if($i%2==0) { echo "even"; } else { echo "odd"; } ?>" id="dashboardOrderTrId" totalOrderDeskRecordCount="<?php echo count($orderLstDesktop); ?>">
+		<td><?php echo $orderLstObjDesktop['name']; ?></td>
+		<td><a class="order-number number_tracking_information" href="<?php echo $orderLstObjDesktop['detailUrl']; ?>"><?php echo $orderLstObjDesktop['documentNumber']; ?></a></td>
+		<td><?php echo $orderLstObjDesktop['creationDate']; ?></td>
+		<td><?php echo $orderLstObjDesktop['status']; ?></td>
+		<td><?php echo $orderLstObjDesktop['reorder']; ?></td>
+	</tr>
+<?php		//if($i === 9) { break; }
+			$i++;
+		} 
+	} else {	
+?>
+	<!--<tr align="center" class="no-documents <?php if($i%2==0) { echo "even"; } else { echo "odd"; } ?>">
+		<td align="center" colspan="5"><?php echo $this->__('There are no documents to display.')?></td>
+	</tr>-->
+<?php
+	}
+?>

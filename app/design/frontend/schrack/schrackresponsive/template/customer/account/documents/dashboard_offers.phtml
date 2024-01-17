@@ -1,0 +1,162 @@
+<!-- app/design/frontend/schrack/schrackresponsive/template/customer/account/documents/dashboard_offers.phtml (start) -->
+<?php
+    $_partslistHelper = Mage::helper('schrackwishlist/partslist');  // Get partlist object
+    $_customer = $this->getCurrentCustomer();   // Get customer objects
+    $aclroleClass = '';
+    $aclrole = $_customer->getSchrackAclRole();
+    if($aclrole == 'staff' || $aclrole == 'projectant' || $aclrole == 'customer' || $aclrole == 'list_price_customer'){
+        $aclroleClass = 'hide';
+    }
+    $_useMDoc = Mage::getStoreConfig('schrack/mdoc/use_mdoc');
+    $sessionCustomerId = Mage::getSingleton('customer/session')->getCustomer()->getId();
+    $aclRoleId = Mage::getModel('customer/customer')->load($sessionCustomerId)->getSchrackAclRoleId();
+    $isProjectant = Mage::helper('schrack/acl')->isProjectantRoleId($aclRoleId);
+    // Compose patlist li to avoid iteration of partlist compostion in each row
+    $partListLiHtml = "";
+    $partListLiHtml .= '<li onClick="checkLsChkBx(this);partslistFE.addCheckedItemsToNewList(\'' . $this->__("New partslist") . '\',\'rowId' . $this->getClassId() . '\',\'documentId\',\'type\', \'' . Mage::getSingleton('core/session')->getFormKey() . '\', true, \'overview\');"><span class="glyphicon glyphicon-plus-sign plusIcon"></span>&nbsp;' . $this->__("Add to new partslist") . '</li>';
+    if ($_partslistHelper->getPartslistCount() > 0) {
+        $activePl = $_partslistHelper->getActiveOrFirstPartslist();
+        $partListLiHtml .= '<li onclick="dashAddToPartlistAjaxCall(' . $activePl->getId() . ', \'offer\', this, \'' . Mage::getSingleton('core/session')->getFormKey() . '\', \'overview\');" title="' . $activePl->getDescription() . '">' . $this->__("Add to %s", $activePl->getDescription()) . '</li>';
+    } else {
+        $activePl = null;
+    }
+    foreach ($_partslistHelper->getPartslists() as $pl) {
+        if ($activePl === null || $pl->getId() !== $activePl->getId()) {
+            $partListLiHtml .= '<li onclick="dashAddToPartlistAjaxCall(' . $pl->getId() . ', \'offer\', this, \'' . Mage::getSingleton('core/session')->getFormKey() . '\', \'overview\');" title="' . $pl->getDescription() . '">' . $this->__("Add to %s", $pl->getDescription()) . '</li>';
+        }
+    }
+    $showOrderInfo = intval(Mage::getStoreConfigFlag('schrack/shop/enable_custom_project_info_in_checkout')) == 1;
+
+    $_geoipHelper = Mage::helper('geoip/data');
+    $geoIPHelperMayPerformCheckout = 'NO';
+    if ($_geoipHelper->mayPerformCheckout()) {
+        $geoIPHelperMayPerformCheckout = "YES";
+    } else {
+        $aclroleClass = 'hide';
+    }
+?>
+
+<style>
+    .dataTables_filter{
+        display: none;
+    }
+</style>
+
+<div class="hidden-xs tableCont hidden-sm">
+    <table id="offers-datatable" class="table table-bordered" cellspacing="0" width="100%">
+        <thead>
+            <tr>
+                <?php if ( $showOrderInfo ) : ?>
+                    <th><?php echo $this->__('Order-/Project Reference'); ?></th>
+                <?php else : ?>
+                    <th><?php echo $this->__('Meine Bestellangabe'); ?></th>
+                <?php endif; ?>
+                <th><?php echo $this->__('Offer #'); ?></th>
+                <th><?php echo $this->__('Date'); ?></th>
+                <th><?php echo $this->__('Valid till'); ?></th>
+                <th><?php echo $this->__('Status'); ?></th>
+                <th class="dashOfferActId">&nbsp;</th>
+            </tr>
+        </thead>
+        <tbody>
+        <?php if (count($this->getDocuments()) == 0): ?>
+            <td colspan="6"><?php echo $this->__('There are no documents to display.') ?></td>
+        <?php else: ?>
+            <?php $i = 0;
+            foreach ($this->getFinalDocuments() as $_document):
+				if($i == 10) break;
+                $detailLink =  Mage::getUrl('customer/account/documentsDetailView/id/' . $_document->getOrderId() . '/type/offer/documentId/' . $_document->getSchrackWwsOfferNumber());
+                ?>
+                <tr>
+                    <td>
+                        <input type="checkbox" class="rowId<?php echo $this->getClassId() ?>" id="rowId-<?php echo $this->getClassId() ?><?php echo $i ?>" style="display:none;" />
+                        <input type="hidden" id="documentId-<?php echo $this->getClassId() ?><?php echo $i ?>" value="<?php echo $this->getDocumentId($_document) ?>" />
+                        <input type="hidden" id="type-<?php echo $this->getClassId() ?><?php echo $i ?>" value="<?php echo $this->getDocTypeShortName($_document) ?>" />
+                        <input type="hidden" id="orderId-<?php echo $this->getClassId() ?><?php echo $i ?>" value="<?php echo $_document->getOrderEntityId() ?>" />
+                        <input type="hidden" id="itemId-<?php echo $this->getClassId() ?><?php echo $i ?>" value="<?php echo $this->getDocumentNumber($_document, 'offer') ?>" />
+                        <?php echo $this->getDocumentCustomerNumber($_document, 'offer'); ?>
+                    </td>
+                    <td>
+                        <a href="<?php echo $detailLink ?>"><?php echo $_document->getSchrackWwsOfferNumber(); ?></a>
+                    </td>
+                    <td data-order="<?php echo strtotime($_document->getDocumentDateTime());?>"><?php echo $this->getFormattedDate(strtotime($_document->getDocumentDateTime())) ?></td>
+                    <td data-order="<?php echo strtotime($_document->getDocumentValidUntil());?>">
+						<?php echo $this->getFormattedDate($_document->getSchrackWwsOfferValidThru()); ?>
+					</td>
+                    <td>
+					<?php
+						//echo $this->getDocumentStatus($_document); //$this->getUnfakedDocumentStatus($_document);
+						$offerStatusString = $_document->getSchrackWwsStatus();
+						echo $offerStatusString[2] == 1 ? $docStatus = $this->__('offer_new') : $docStatus = $this->__('offer_ordered');
+					?>
+					</td>
+                    <td class="actionSec" style="width:28%">
+                        <div class="product-name posRel">
+                            <?php if (Mage::getSingleton('customer/session')->isLoggedIn()) : ?>
+                                <input type="hidden" id="documentId-<?php echo $this->getDocumentId($_document); ?>" value="<?php echo $this->getDocumentId($_document); ?>" />
+                                <input type="hidden" id="realtype-<?php echo $this->getDocumentId($_document); ?>" value="offer" />
+                                <span class="pin-icon partlistBlueIcon marginT5" id="parlistdropdownbtn-rowId<?php echo $_document->getSchrackWwsOrderNumber(); ?>-<?php echo $i ?>" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></span>
+                                <ul class="dropdown-list dropdown-menu src_dashboard_offers" aria-labelledby="parlistdropdownbtn-rowId<?php echo $_document->getSchrackWwsOrderNumber(); ?>-<?php echo $i ?>" doc-id="<?php echo $this->getDocumentId($_document); ?>">
+                                <?php echo $partListLiHtml; ?>
+                                </ul>
+                            <?php endif; ?>
+                            <?php if ($_useMDoc && !$isProjectant) : //$_customer->isAllowed('customerOrder','order') && !$this->isOfferList() && !$isProjectant ?>
+                                <?php
+                                $orderDocDownloadAjaxUrl = Mage::getUrl('customer/account/documentsDownload/id/' . $this->getDocumentId($_document) . '/type/offer/documentId/' . $_document->getSchrackWwsOfferNumber());
+                                ?>
+                                <a href="javascript:void(0)" class="pdfIcon selection-print-button" onclick="documentDownloadAjaxCall('<?php echo $orderDocDownloadAjaxUrl; ?>', 'offer')"></a>
+                            <?php endif; ?>
+                            <a data-rule="may_perform_checkout" class="<?php echo $aclroleClass; ?>" href="<?php echo $detailLink ?>">
+                            <?php
+                                if ($docStatus == 'offer_ordered') {
+                                    echo $this->__('Order Again');
+                                } else {
+                                    echo $this->__('Order Now');
+                                }
+                            ?>
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                <?php ++$i; ?>
+            <?php endforeach; ?>
+        <?php endif; ?>
+        </tbody>
+    </table>
+</div>
+
+<script type="text/javascript">//<![CDATA[
+
+    jQuery(document).ready(function () {
+
+        // We have 2 forms, with 2 ok-buttons to submit new-partslist-form, with same id in footer (remove number one in cart):
+        // Wait one second, and remove the first element, after it is loaded by AJAX:
+        setTimeout( function() {
+            if (jQuery('.save_new_partslist').length > 1) {
+                jQuery('.save_new_partslist')[0].remove();
+            }
+        }, 2000);
+
+<?php if (count($this->getDocuments()) > 0): ?>
+        jQuery('#offers-datatable').DataTable({
+            lengthChange: false,
+            ordering: true,
+            paging: false,
+            info: false,
+			aoColumnDefs: [{
+				'bSortable': false,
+				'aTargets': ['dashOfferActId']
+			}]
+        });
+		// Sort array by lastest record date wise
+		jQuery('#offers-datatable').DataTable().column(2).order('desc').draw();
+<?php endif; ?>
+
+        console.log('Customer-Data: GEO IP (may perform checkout) = ' + '<?php echo $geoIPHelperMayPerformCheckout; ?>');
+
+    });
+
+    //]]>
+</script>
+
+<!-- app/design/frontend/schrack/schrackresponsive/template/customer/account/documents/dashboard_offers.phtml (end) -->

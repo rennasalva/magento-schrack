@@ -1,0 +1,302 @@
+<!-- app/design/frontend/schrack/schrackresponsive/template/checkout/onepage/payment/methods.phtml (start) -->
+<?php
+/**
+ * One page checkout payment methods
+ */
+/* @var $this Mage_Checkout_Block_Onepage_Payment_Methods */
+
+$session  = Mage::getSingleton('customer/session');
+$customer = $session->getCustomer();
+$swcid    = $customer->getSchrackWwsCustomerId();
+$prospect = false;
+
+#   check limit web for schrackpo -> delivery note/invoice
+$account = $customer->getAccount();
+$limitCheck = $account->_data['limit_web'];
+
+// Prospect check #1:
+if (stristr($swcid, 'PROS') || stristr($swcid, 'PROSLI')) {
+    $prospect = true;
+}
+
+if ($customer) {
+    $customerType = $customer->getSchrackCustomerType(); // ProspectTypes: 'light-prospect' / 'full-prospect'
+}
+
+$prospectFull  = false;
+$prospectLight = false;
+
+// Prospect check #2:
+if ($customerType == 'light-prospect') {
+    $prospectLight = true;
+}
+// Prospect check #3:
+if ($customerType == 'full-prospect') {
+    $prospectFull = true;
+}
+
+if ($prospect == false) {
+    if ($prospectLight || $prospectFull) {
+        $prospect = true;
+    }
+    // Prospect check #4:
+    if ($customer && $customer->getGroupId() == Mage::getStoreConfig('schrack/shop/prospect_group')) {
+        $prospect = true;
+    }
+}
+
+if (!is_int($swcid)) {
+    $swcid = (int) $swcid;
+}
+
+$isFullyRegisteredCustomer = false;
+if ($swcid > 0) {
+    $isFullyRegisteredCustomer = true;
+}
+
+if ($prospect) {
+    $isFullyRegisteredCustomer = false;
+}
+
+$firstMethod = null;
+
+// Find out matching default payment method.
+// Shipping / Pickup ??
+$defaultPaymentMethod  = '';
+
+if (!$this->helper('customer')->isLoggedIn() || $isFullyRegisteredCustomer == false) {
+    if (Mage::getStoreConfig('schrack/new_self_registration/checkmo_payment_available') == 1) {
+        $availablePaymentMethods = array('paypal_standard', 'payunitycw_mastercard', 'payunitycw_visa', 'checkmo', 'free');
+    } else {
+        $availablePaymentMethods = array('paypal_standard', 'payunitycw_mastercard', 'payunitycw_visa', 'free');
+    }
+} else {
+    foreach ($this->getMethods() as $paymentMethod) {
+        $availablePaymentMethods[] = $paymentMethod->getCode();
+    }
+}
+
+$pickupLocation = Mage::registry('pickup_location');
+if ($pickupLocation && stristr($pickupLocation,'pickup')) {
+    // Abholung:
+    if ($customer && in_array($customer->getSchrackDefaultPaymentPickup(), $availablePaymentMethods)) {
+        $defaultPaymentMethod = $customer->getSchrackDefaultPaymentPickup();
+    }
+} else {
+    // Versand:
+    if ($customer && in_array($customer->getSchrackDefaultPaymentShipping(), $availablePaymentMethods)) {
+        $defaultPaymentMethod = $customer->getSchrackDefaultPaymentShipping();
+    }
+}
+// Deletes registry-key 'pickup_location', after using it:
+if (Mage::registry('pickup_location')) Mage::unregister('pickup_location');
+
+$disableCreditCardPayment = false;
+$disablePayPalPayment     = false;
+
+$checkPayment = false;
+$switch = true;
+
+#   check limit web for schrackpo -> delivery note/invoice
+$allPaymentMethods = $this->getMethods();
+$invoiceArray = array();
+
+foreach ($allPaymentMethods as $method) {
+    array_push($invoiceArray, $method);
+}
+#   !!!!!! $switch needs to set to be true that it works      !!!!!!!!!
+if($limitCheck < 2 && $switch) {
+    $invoiceArray = array_slice($invoiceArray, 1);
+}
+$invoiceArrayLength = count($invoiceArray);
+$checked = false;
+$index = 0;
+?>
+
+<style>
+    .radio {
+        top: -1px !important;
+    }
+    .checkout_payment_method_radio_button {
+        width: 14px;
+        float: left;
+        margin-right: 10px !important;
+    }
+
+    .checkout_payment_method_radio_button:after {
+        width: 15px;
+        height: 15px;
+        border-radius: 15px;
+        top: -2px;
+        left: -1px;
+        position: relative;
+        background-color: #d1d3d1;
+        content: '';
+        display: inline-block;
+        visibility: visible;
+        border: 2px solid white;
+    }
+
+    .checkout_payment_method_radio_button:checked:after {
+        width: 15px;
+        height: 15px;
+        border-radius: 15px;
+        top: -2px;
+        left: -1px;
+        position: relative;
+        background-color: #005B9F;
+        content: '';
+        display: inline-block;
+        visibility: visible;
+        border: 2px solid white;
+    }
+
+    .checkout_payment_method_row {
+        margin-bottom: 10px;
+    }
+
+    #checkout-payment-method-load {
+        margin-top: 2%;
+        margin-left: 2%;
+    }
+    .no-display {
+        display: none !important;
+    }
+
+    @media (min-width: 300px) and (max-width: 702px) {
+        .payment_label {
+            max-width: 80%
+        }
+    }
+</style>
+
+<?php echo $this->getChildHtml('payment_before'); ?>
+<dl class="sp-methods" id="checkout-payment-method-load">
+    <input type="hidden" id="defaultPayment" value="<?php echo $defaultPaymentMethod; ?>">
+    <?php foreach ($invoiceArray as $_method): $_code = $_method->getCode(); ?>
+        <?php // Mastercard & Visa deactivated temporarely (except N.Kasper ==> 800199) ?>
+        <?php if ($_code == 'pupay_cc') continue; ?>
+        <?php
+            $index++;
+        // Override criteria (nothing accepted, except listed here):
+        if (!$this->helper('customer')->isLoggedIn() || $isFullyRegisteredCustomer == false) {
+            if (Mage::getStoreConfig('schrack/new_self_registration/checkmo_payment_available') == 1) {
+                $allowedPaymentMethodsForNonFullyRegisteredCustomers = array('paypal_standard', 'payunitycw_mastercard', 'payunitycw_visa', 'checkmo', 'free');
+            } else {
+                $allowedPaymentMethodsForNonFullyRegisteredCustomers = array('paypal_standard', 'payunitycw_mastercard', 'payunitycw_visa', 'free');
+            }
+
+            if (!in_array($_code, $allowedPaymentMethodsForNonFullyRegisteredCustomers) ) continue;
+        }
+        $localeCode = strtolower(Mage::getStoreConfig('schrack/general/country'));
+
+        // Get information about articles, which could have cutting-costs (only cable main article), and disable Credit-card payment:
+        /*
+        $quoteItems = $this->getQuote()->getAllItems();
+        if (is_array($quoteItems) && !empty($quoteItems)) {
+            foreach ($quoteItems as $item) {
+                if ($product = $item->getProduct()) {
+                    if ($product->hasSubProducts() ) {
+                        $disableCreditCardPayment = true;
+                    }
+                }
+            }
+        }
+        */
+
+        // Disable credit card payment:
+        if ($disableCreditCardPayment == true) {
+            if ($_code == 'payunitycw_mastercard') continue;
+            if ($_code == 'payunitycw_visa') continue;
+        }
+
+        // Examples (orginally used for implementing the working process):
+        // if ($_code == 'payunitycw_mastercard' && !in_array(intval($swcid), array(800199, 777777))) continue;
+        // if ($_code == 'payunitycw_visa' && !in_array(intval($swcid), array(800199, 777777))) continue;
+
+        // Disable paypal payment:
+        if ($disablePayPalPayment == true) {
+            if ($_code == 'paypal_standard' && !in_array(intval($swcid), array(777777))) continue;
+        }
+
+//        if($limitCheck > 2) {
+//            if($_code == 'schrckpo') continue;
+//        }
+        ?>
+        <dt id= "checkout_payment_method_row" class="checkout_payment_method_row">
+            <?php if ( $firstMethod == null ) { $firstMethod = $_code; } ?>
+            <?php if( sizeof($this->getMethods()) > 1) : ?>
+                <input id="p_method_<?php echo $_code ?>" value="<?php echo $_code ?>"
+                       type="radio" name="payment[method]" title="<?php echo $this->htmlEscape($_method->getTitle()) ?>"
+                       onclick="payment.switchMethod('<?php echo $_code ?>')"
+                    <?php if($defaultPaymentMethod == $_code): ?>
+                        checked="checked"
+                        <?php $checked = true; ?>
+                    <?php elseif(!$defaultPaymentMethod && $_code == 'schrackpo') : ?>
+                        checked="checked"
+                        <?php $checked = true;?>
+                    <?php elseif($invoiceArrayLength == $index && !$checked) : ?>
+                        checked="checked"
+                    <?php endif; ?>
+                       class="radio checkout_payment_method_radio_button" />
+            <?php else: ?>
+                <span class="no-display">
+
+                            <input id="p_method_<?php echo $_code ?>"
+                                   value="<?php echo $_code ?>"
+                                   type="radio" name="payment[method]" checked="checked"
+                                   class="radio" />
+                        </span>
+                    <?php endif; ?>
+                    <label id="payment_label" class="payment_label" for="p_method_<?php echo $_code ?>"><?php echo $_method->getTitle() ?> <?php echo $this->getMethodLabelAfterHtml($_method) ?></label>
+                    <?php if($_code == 'schrackcod') {$checkPayment = true;}?>
+            </dt>
+                <?php if ($html = $this->getPaymentMethodFormHtml($_method)): ?>
+                    <dd>
+                        <?php echo $html; ?>
+                    </dd>
+                <?php endif; ?>
+    <?php endforeach; ?>
+</dl>
+
+
+
+<script type="text/javascript">
+//<![CDATA[
+<?php echo $this->getChildChildHtml('scripts'); ?>
+jQuery(document).ready(function() {
+    console.log('checkout.onpage.payment_methods.phtml SUCCESFULLY LOADED');
+    var checkPayment = '<?php echo $checkPayment ? 'true' : 'false'; ?>';
+    if (localStorage.newCheckoutShippingMethod == 'container' && checkPayment == 'true') {
+        jQuery('#p_method_schrackcod').hide();
+        jQuery('label[for="p_method_schrackcod"]').hide();
+        console.log('%cContainer -> HIDE CASH PAYMENT', 'color: red');
+    }
+
+    if (localStorage.newCheckoutShippingMethod == 'inpost' && checkPayment) {
+        jQuery('#p_method_schrackcod').hide();
+        jQuery('label[for="p_method_schrackcod"]').hide();
+        console.log('%cInPost -> HIDE CASH PAYMENT', 'color: red');
+    }
+
+    (function() {
+        payment.init();
+
+            if (jQuery('#defaultPayment').val() == '') {
+                jQuery('#p_method_<?php echo $firstMethod; ?>').prop('checked', true);
+            }
+            var pmcon = $('payment-schrack-custom-order-number');
+            if (pmcon && typeof(pmcon) !== 'undefined') {
+                pmcon.disabled = false;
+            }
+            var pinf = $('payment-schrack-custom-project-info');
+            if (pinf && typeof(pinf) !== 'undefined') {
+                pinf.disabled = false;
+            }
+        }());
+
+        jQuery('a[href*=paypal]').prop('href', '#');
+    });
+    //]]>
+</script>
+<!-- app/design/frontend/schrack/schrackresponsive/template/checkout/onepage/payment/methods.phtml (end) -->

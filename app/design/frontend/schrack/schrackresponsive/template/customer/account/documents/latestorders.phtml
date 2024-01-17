@@ -1,0 +1,14 @@
+<!-- app\design\frontend\schrack\schrackresponsive\template\customer\account\documents\latestorders.phtml (start) -->
+<div class="row hidden-xs hidden-sm">
+    <div class="col-xs-6">
+        <div class="headline c1"><div class="middle-align-container"><h1><?php echo $this->__('My Latest Orders') ?></h1></div></div>
+    </div>
+    <div class="col-xs-6">
+        <div class="header-icon"><div class="middle-align-container text-right"><a class="link-arrow" href="<?php echo $this->getUrl('customer/account/orders', array('reset' => 1)) ?>"><?php echo $this->__('View All') ?></a></div></div>
+    </div>
+</div>
+<form action="<?php echo $this->getUrl('*/*/*') ?>" method="get" id="documents_form">
+    <?php echo $this->getChildHtml('documents_results_table') ?>
+    <?php // echo $this->getChildHtml('documents_results_table_bottom') ?>
+</form>
+<!-- app\design\frontend\schrack\schrackresponsive\template\customer\account\documents\latestorders.phtml (end) -->

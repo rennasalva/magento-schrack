@@ -1,0 +1,14 @@
+<!-- app/design/frontend/schrack/schrackresponsive/template/tools/intercom_calculator_complex.phtml (start) -->
+<div><?php echo $this->__('Huge Housing Complex is coming soon'); ?></div>
+<a href="javascript:void(0);" class="onlinetools-3icon-selection-label-tiny"
+     id="change_selection"><?php echo $this->__('Change selection'); ?></a>
+
+<script type="text/javascript">//<![CDATA[
+    jQuery(document).ready(function () {
+        jQuery('#change_selection').off('click').on('click', function () {
+            loadIntercomCalculatorPart('selection');
+        });
+    });
+//]]></script>
+
+<!-- app/design/frontend/schrack/schrackresponsive/template/tools/intercom_calculator_complex.phtml (end) -->

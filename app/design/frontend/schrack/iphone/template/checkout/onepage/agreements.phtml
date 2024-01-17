@@ -1,0 +1,137 @@
+<?php
+
+// Regelwerk, in welchem Fall, welche Checkboxen angezeigt werden sollen:
+// Bei Bestandskunden, die die DSGVO bereits bestätigt haben, soll nur die AGB angezeigt werden:
+$quoteCustomerType = Mage::getSingleton('checkout/session')->getQuote()->getSchrackCustomertype();
+if (in_array($quoteCustomerType, array('newProspect', 'guest'))) {
+    $isOldCustomerWithDSGVOAlreadyConfirmed = false;
+}
+if (in_array($quoteCustomerType, array('oldFullProspect', 'oldLightProspect'))) {
+    $isOldCustomerWithDSGVOAlreadyConfirmed = true;
+}
+$custSession = Mage::getSingleton('customer/session');
+if ( $custSession->isLoggedIn() ) {
+    $customer = $custSession->getCustomer();
+    if ($customer && $customer->getSchrackConfirmedDsgvo()) {
+        $isOldCustomerWithDSGVOAlreadyConfirmed = true;
+    } else {
+        $isOldCustomerWithDSGVOAlreadyConfirmed = false;
+    }
+}
+?>
+
+<style>
+    #checkout-review-agreement-checkbox {
+        float: left;
+    }
+
+    #checkout-review-agreement-checkbox-label {
+        float: left;
+        margin-left: 10px;
+    }
+
+    #dataprotection-checkout-review-agreement-checkbox {
+        float: left;
+    }
+
+    #dataprotection-checkout-review-agreement-checkbox-label {
+        float: left;
+        margin-left: 10px;
+    }
+
+    #dsgvo-checkout-review-agreement-checkbox {
+        float: left;
+    }
+
+    #dsgvo-checkout-review-agreement-checkbox-label {
+        float: left;
+        margin-left: 10px;
+    }
+
+    #review-warning {
+        color: red;
+        font-size: 1em;
+        height: 20px;
+        font-weight: bold;
+        display: none;
+    }
+
+    @media (min-width: 1px) and (max-width: 658px) {
+        #checkout-review-agreement-checkbox-label {
+            font-size: 0.9em;
+            margin-top: 2px;
+            width: 80% !important;
+        }
+        #dataprotection-checkout-review-agreement-checkbox-label {
+            font-size: 0.9em;
+            margin-top: 2px;
+            width: 80% !important;
+        }
+        #dsgvo-checkout-review-agreement-checkbox-label {
+            font-size: 0.9em;
+            margin-top: 2px;
+            width: 80% !important;
+        }
+        #review-warning {
+            height: 43px;
+        }
+    }
+</style>
+
+<?php if (!$this->getAgreements()) return; ?>
+<div id="review-warning" style=""></div>
+<form action="" id="checkout-agreements" onsubmit="return false;">
+    <div class="checkout-agreements">
+        <?php foreach ($this->getAgreements() as $_a): ?>
+            <div class="agreement-content"<?php echo ($_a->getContentHeight() ? ' style="height:' . $_a->getContentHeight() . '"' : '')?>>
+                <?php if ($_a->getIsHtml()):?>
+                    <?php echo $_a->getContent() ?>
+                <?php else:?>
+                    <?php echo str_replace('.', '', nl2br($this->htmlEscape($_a->getContent()))); ?>
+                <?php endif; ?>
+            </div>
+            <div class="agree">
+                <div id="checkout-review-agreement-checkbox">
+                    <input type="checkbox" id="agreement-<?php echo $_a->getId()?>" name="agreement[<?php echo $_a->getId()?>]" value="1" title="<?php echo $this->__('Checkout Terms and Conditions Complete Title'); ?>" class="checkbox" />
+                </div>
+                <div id="checkout-review-agreement-checkbox-label">
+                    <label for="agreement-<?php echo $_a->getId()?>"><?php echo $this->__('Checkout Terms and Conditions Complete'); ?></label>
+                </div>
+                <div class="clear-both"></div>
+            </div>
+
+
+            <?php if (intval(Mage::getStoreConfig('schrack/dsgvo/activateCheckoutCheckboxDataProtection')) == 1 && $isOldCustomerWithDSGVOAlreadyConfirmed == false) : ?>
+                <br>
+                <br>
+                <div class="agree">
+                    <div id="dataprotection-checkout-review-agreement-checkbox">
+                        <input type="checkbox" id="agreement-<?php echo (intval($_a->getId()) + 1); ?>" name="agreement[<?php echo (intval($_a->getId()) + 1); ?>]" value="1" title="<?php echo strip_tags($this->__('Schrack DataProtection Checkbox Confirm Text')); ?>" class="checkbox" />
+                    </div>
+                    <div id="dataprotection-checkout-review-agreement-checkbox-label">
+                        <label for="agreement-<?php echo (intval($_a->getId()) + 1); ?>"><?php echo $this->__('Schrack DataProtection Checkbox Confirm Text'); ?></label>
+                    </div>
+                    <div class="clear-both"></div>
+                </div>
+            <?php endif; ?>
+
+            <?php if (intval(Mage::getStoreConfig('schrack/dsgvo/activateCheckoutCheckboxDSGVO')) == 1 && $isOldCustomerWithDSGVOAlreadyConfirmed == false) : ?>
+                <br>
+                <br>
+                <div class="agree">
+                    <div id="dsgvo-checkout-review-agreement-checkbox">
+                        <input type="checkbox" id="dsgvo-agreement-<?php echo (intval($_a->getId()) + 2); ?>" name="agreement[<?php echo (intval($_a->getId()) + 2); ?>]" value="1" title="<?php echo strip_tags($this->__('Schrack DSGVO Checkbox Confirm Text')); ?>" class="checkbox" />
+                    </div>
+                    <div id="dsgvo-checkout-review-agreement-checkbox-label">
+                        <label for="dsgvo-agreement-<?php echo (intval($_a->getId()) + 2); ?>"><?php echo $this->__('Schrack DSGVO Checkbox Confirm Text'); ?></label>
+                    </div>
+                    <div class="clear-both"></div>
+                </div>
+                <br>
+            <?php endif; ?>
+
+
+
+        <?php endforeach ?>
+    </div>
+</form>

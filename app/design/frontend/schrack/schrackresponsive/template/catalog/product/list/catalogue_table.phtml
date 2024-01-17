@@ -1,0 +1,216 @@
+<!-- app\design\frontend\schrack\schrackresponsive\template\catalog\product\list\catalogue_table.phtml (start) -->
+<?php
+    $_category  =  Mage::registry('current_category');
+    $_changeQtyListIndex = $this->getRequest()->getParam('changeqtylistindex', 0);
+    $dataArray =  array();
+?>
+<?php $_productCollection = Mage::registry('productCollectionSolr'); //$this->getLoadedProductCollection() ?>
+<?php if (!count($_productCollection)): ?>    
+        <p class="note-msg"><?php // echo $this->__('There are no products matching the selection.') ?></p>
+<?php else: ?>
+    <?php
+        // TODO: remove that sql access when online catalogue is available from Solr:
+        $imageBaseUrl = Mage::getStoreConfig('schrack/general/imageserver');
+        $onlineCatalogLink = array();
+        $tmp = "";
+        //----------------------------------------------------------------------
+        foreach ($_productCollection as $_product):
+            $onlineCatalogLink[$_product['sku']] = "";
+            $tmp .= "'".$_product['sku']."',";
+        endforeach;
+        //----------------------------------------------------------------------
+        $length = strlen($tmp);
+        $in = substr($tmp,0,$length - 1);
+        //----------------------------------------------------------------------
+        $sql = " SELECT catalog_product_entity.sku, url FROM catalog_attachment"
+             . " JOIN catalog_product_entity ON catalog_attachment.entity_id = catalog_product_entity.entity_id"
+             . " WHERE catalog_product_entity.sku IN (".$in.") AND filetype = 'onlinekatalog'";
+        //----------------------------------------------------------------------
+        $result = Mage::getSingleton('core/resource')->getConnection('core_read')->fetchAll($sql);
+        //----------------------------------------------------------------------
+        foreach ($result as $k => $v):
+            $onlineCatalogLink[$v['sku']] = $imageBaseUrl.$v['url'];
+        endforeach;
+        //----------------------------------------------------------------------
+        $_iterator = 0;
+    ?>
+    <?php foreach ($_productCollection as $_product): ?>
+        <?php $_iterator++; ?>
+        <div class="col-xs-12 col-sm-6 catalogLstCont" id="product_<?php echo $_product['sku']; ?>">
+            <div class="row">
+                <!---------------------------------------------Catalog Image -->
+                <div class="col-xs-5 col-sm-5 col-md-3 catalogImg">
+                    <a data-preview-path="<?php echo Schracklive_SchrackCatalog_Helper_Image::getImageUrl($_product['image'],Schracklive_SchrackCatalog_Helper_Image::PRODUCT_LISTING_PAGE_MAIN); ?>" class="previewImageHover <?php echo $_product['isDead'] ? ' grayscale' : ''; ?>" href="<?php echo Mage::helper('schrackcore/url')->getUrlWithCurrentProtocol().$_product['path'] ?>" previewimage="<?php echo Schracklive_SchrackCatalog_Helper_Image::getImageUrl($_product['image'],Schracklive_SchrackCatalog_Helper_Image::PRODUCT_LISTING_PAGE_MOUSEOVER); ?>" title="<?php echo $this->htmlEscape($_product['name']) ?>">
+                        <img fetchpriority="low" data-src="<?php echo Schracklive_SchrackCatalog_Helper_Image::getImageUrl($_product['image'],Schracklive_SchrackCatalog_Helper_Image::PRODUCT_LISTING_PAGE_MAIN); ?>"rel="preload" <?php echo $_product['isDead'] ? ' class="grayscale lazy" ' : ' class="lazy"'; ?> alt="<?php echo $this->htmlEscape($_product['sku']) ?>" />
+                    </a>
+                    <img class="print-only" src="<?php echo Schracklive_SchrackCatalog_Helper_Image::getImageUrl($_product['image'],Schracklive_SchrackCatalog_Helper_Image::PRODUCT_LISTING_PAGE_PRINT); ?>" alt="<?php echo $this->htmlEscape($_product['sku']) ?>" />
+
+                </div>
+                <!---------------------------------------Catalog Form Action -->
+                <div class="col-xs-7 col-sm-7 col-md-9">
+                        <h5>
+                            <?php if ($_product['sku']): $dataArray['data']['skus'][] = $_product['sku'];  ?>
+                                <?php echo $this->__('Article Number')?>: <?php echo $this->htmlEscape($_product['sku']); ?>
+                            <?php endif; ?>  
+                        </h5>
+                        <h3><a href="<?php echo Mage::helper('schrackcore/url')->getUrlWithCurrentProtocol().$_product['path'] ?>" title="<?php echo $this->htmlEscape($_product['name']) ?>"><?php echo $this->htmlEscape($_product['name']) ?></a></h3>
+                        <?php if ( ! $_product['isDead'] && ! $_product['isRestricted'] && ! $_product['isDownload'] ) : ?>
+                            <form action="" method="post" name="product_addtocart_form_<?php echo $_product['id']; ?>" id="product_addtocart_form_<?php echo $_product['id']; ?>" enctype="multipart/form-data">
+                                <input type="hidden" name="request-source" value="product-category-list-view" />
+                                <input type="hidden" name="request-source-list-index" id="productId-<?php echo $_product['sku']; ?>" value="<?php echo $_product['id'] ?>" />
+                                <input type="hidden" onkeypress="return isNumberKey(event)" class="form-control quantity-bx qty" name="qty" id="qty-<?php echo $_product['sku']; ?>" maxlength="12" value="" title="<?php echo $this->__('Qty'); ?>" />
+                                <input type="hidden" name="drum" id="drum-<?php echo $_product['sku']; ?>" value="" />
+                                <a class="addCart" title="<?php echo $this->__('Add to Cart'); ?>" data-sku="<?php echo $_product['sku']?>" data-name="<?php echo $_product['name']?>" data-position="<?php echo $_iterator;?>" data-category="<?php echo $_product['category']?>" data-brand="" data-click="" data-event="addToCart" data-metric1="" data-id="<?php echo $_product['sku']?>" data-price="" onclick="trackListAddToCart(this, productAddToCartForm_<?php echo $_product['id']; ?>.submit()); <?php if (Mage::getStoreConfig('ec/config/active')){ ?>return AEC.ajaxList(this,dataLayer);<?php } ?>">
+                                    <?php echo $this->__('Add to Cart'); ?>
+                                </a><br>
+                            </form>
+                        <?php endif; ?>
+                        <?php
+                            //--------------------------------------------------
+                            $downLoadLink = false;
+                            if ( isset($_product['downloadLink']) ) {
+                                $downLoadLink = $imageBaseUrl . $_product['downloadLink'];
+                                $length = strlen($_product['downloadLink']);
+                            }
+                        ?>
+                        <?php if ( $_product['isDownload'] ) : ?>
+                            <a class="downloadBttn" title="<?php echo $this->__('Download'); ?>" href="<?php echo $downLoadLink; ?>" target="_blank">
+                                <span class="pull-left cart-iconDwnld glyphicon glyphicon-download-alt marginR10"></span>
+                                <span class="downld"><?php echo $this->__('Download'); ?></span>
+                            </a><br>
+                        <?php endif; ?>
+                        <?php if ( ! $_product['isDead'] && ! $_product['isRestricted'] ) : ?>
+                            <?php if ( $onlineCatalogLink[$_product['sku']]."." != "." ) : ?>
+                                <a href="<?php echo $onlineCatalogLink[$_product['sku']]; ?>" class="browseOnline" target="_blank"><?php echo $this->__('Browse Online'); ?></a><br>
+                            <?php endif; ?>
+                            <?php if ( $downLoadLink ) : ?>
+                                <a href="<?php echo $downLoadLink; ?>" target="_blank" class="downloadNow trackingCatalogDownload" data-sku="<?php echo $this->htmlEscape($_product['sku']); ?>" title="<?php echo $this->__('Download') ?>"><?php echo $this->__('Download Now') ?></a>
+                                <?php unset($downLoadLink); ?>
+                            <?php endif; ?>
+                        <?php endif; ?>
+                        <?php if ( $_product['isRestricted'] ) : ?>
+                            <?php echo $this->__('Currently not orderable') ?>
+                        <?php elseif ( ! $_product['isDead'] ) : ?>
+                            <script type="text/javascript">
+                                //<![CDATA[
+                                var productAddToCartForm_<?php echo $_product['id']; ?> = new VarienForm('product_addtocart_form_<?php echo $_product['id']; ?>');
+                                productAddToCartForm_<?php echo $_product['id']; ?>.submit = function() {
+                                    var inputQuantity = jQuery('#qty-<?php echo $_product['sku']; ?>').val();                                    
+                                    if(inputQuantity == "") {
+                                        inputQuantity = "1";
+                                        jQuery('#qty-<?php echo $_product['sku']; ?>').val(1);
+                                    }
+                                    if (!inputQuantity.match(/^\d+$/) || inputQuantity == 0) {
+                                        return false;
+                                    }
+                                    var drumId = jQuery('#drum-<?php echo $_product['sku']; ?>').val();
+                                    if ( drumId == null ) {
+                                            drumId = '';
+                                    }
+
+                                    //document.forms['product_addtocart_form_<?php echo $_product['id']; ?>'].submit();
+                                    addToCartUrl = jQuery('#product_addtocart_form').attr('action');
+                                    var productItem = jQuery('#product_<?php echo $_product['id']; ?>');
+                                    var data = jQuery('#product_addtocart_form_<?php echo $_product['id']; ?>').serialize();
+                                    //jQuery('#ajax-loader').show();
+                                    setOverlayLoader();
+                                    jQuery('ul.messages').empty();
+                                    jQuery('ul.errors').empty();
+                                    jQuery.ajax(ajaxUrl, {
+                                       'dataType' : 'json',
+                                       'type': 'POST',
+                                       'data': {
+                                            'form_key' : '<?php echo Mage::getSingleton('core/session')->getFormKey(); ?>',
+                                            'setAddToCart' : {'data' : {'sku' : '<?php echo $_product['sku']; ?>', 'quantity' : jQuery('#qty-<?php echo $_product['sku']; ?>').val(), 'drum' : drumId}}
+                                        },
+                                       'success': function (data) {            
+                                            unsetOverlayLoader();			
+                                            var parsedData = data;
+                                            var result = parsedData.setAddToCart.result;
+                                            if(result.showPopup == true) {	// Open Inquiry Popup
+                                                jQuery('#quantitywarningpopup').html(result.popupHtml);
+                                                jQuery('#quantitywarningpopupBtn').click();
+                                            } else {
+                                                    jQuery("html, body").animate({ scrollTop: 0 }, "slow");
+                                                    console.log('ScrollTop #68');
+                                                    if(result.numberOfDifferentItemsInCart){
+                                                            jQuery('.MyCart').append('<div id="cartNoBxItemCount" class="cartNoBx">'+result.numberOfDifferentItemsInCart+'</div>');
+                                                    }
+                                                    if (result.data.newQty && result.data.newQty > 0) {
+                                                        jQuery('#qty-<?php echo $_product['sku']; ?>').val(result.data.newQty);
+                                                    }
+                                                    if (result.data.newDrum && result.data.newDrum.length > 0) {
+                                                            jQuery('#drum-<?php echo $_product['sku']; ?>').val(result.data.newDrum);
+                                                    }
+                                                    var messageArray = result.data.messages;
+                                                    if(result.result.indexOf("SUCCESS") == -1){
+                                                            appendMessageUl(messageArray, 'messages', 'error-msg', 'glyphicon glyphicon-exclamation-sign');
+                                                            console.log('appendMessageUl #02');
+                                                    }else{
+                                                            appendMessageUl(messageArray, 'messages', 'success-msg', 'glyphicon glyphicon-ok');
+                                                            console.log('appendMessageUl #03');
+                                                    }  
+                                                    //jQuery('.messages').delay(5000).fadeOut(1000);
+                                            }
+                                        },
+                                        'error': function (data) {
+                                           var parsedData = data;
+                                           //debugger;
+                                        }                
+                                    });
+
+                                }.bind(productAddToCartForm_<?php echo $_product['id']; ?>);
+
+                                jQuery(document).ready(function () {
+                                    <?php /* Ugly construction was necessary because setting eventhandler on input element was removed somewhere else ?!? */ ?>
+                                    jQuery(document).keypress(function(ev) {
+                                        if ( jQuery(ev.target).attr('id') === 'qty-<?php echo $_product['sku']; ?>' && ev.which == 13 ) {
+                                            ev.preventDefault();
+                                            trackListAddToCart(ev.target, productAddToCartForm_<?php echo $_product['id']; ?>.submit());
+                                        }
+                                    });
+                                });
+                                //]]>
+                            </script>
+                        <?php endif; ?>
+                </div>
+            </div>
+        </div>
+        <?php endforeach; ?>
+           
+    <!--div class="toolbar-bottom">
+        <?php //echo $this->getToolbarHtml() ?>
+    </div-->
+<?php endif; ?>
+<script type="text/javascript">
+    //<![CDATA[
+jQuery(document).ready(function () {
+
+    jQueryLazyLoader.update();
+
+    if (jQuery('#change-qty-list-index').val() != '0') {
+        var changeQtyListIndex = jQuery('#change-qty-list-index').val();
+        if(changeQtyListIndex) {
+            var listIndexQty = changeQtyListIndex.split("_");
+            jQuery('#qty-' + listIndexQty[0]).val(listIndexQty[1]);
+        }
+    }
+
+    if (jQuery(window).width() > 992) {
+        imagePreviewHover();
+    }
+
+    jQuery('.trackingCatalogDownload').on('click', function () {
+        if (dataLayer) {
+            dataLayer.push({
+                'event' : 'userDownloads',
+                'eventCategory' : 'File Download',
+                'eventAction' : 'Catalog Download',
+                'eventLabel' : jQuery(this).attr("data-sku")
+            });
+        }
+    });
+});
+    //]]>
+</script>
+<!-- app\design\frontend\schrack\schrackresponsive\template\catalog\product\list\catalogue_table.phtml (end) -->

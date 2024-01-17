@@ -1,0 +1,10 @@
+
+<?php if (is_object($this->getQrCode())) { ?>
+    <?php echo $this->__('Please Scan This Qr Code With Your Sezame App'); ?>
+    <div style="padding:20px;">
+    <img src="<?php echo $this->getQrCode()->getDataUri() ?>"/>
+    </div>
+<?php } else {
+    echo $this->getMessage();
+    ?>
+<?php } ?>

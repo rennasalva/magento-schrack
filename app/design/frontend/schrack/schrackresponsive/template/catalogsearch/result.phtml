@@ -1,0 +1,549 @@
+<!-- app\design\frontend\schrack\schrackresponsive\template\catalogsearch\result.phtml (start) -->
+<?php
+
+    if (Mage::getStoreConfig('ec/config/active')) $trackingEnabled = 'enabled'; else $trackingEnabled = 'disabled';
+
+?>
+
+<style>
+<?php if ( intval(Mage::getStoreConfig('carriers/schrackpickup/active')) != 1 ) : ?>
+    #store-icon-container {
+        display: none !important;
+    }
+<?php endif; ?>
+
+    .availability_headline{
+        font-size:16pt;
+    }
+
+    .logstics-icon-new {
+        background: url(<?php echo $this->getSkinUrl('schrackdesign/Public/Images/rwd/logistics.png'); ?>) left top no-repeat;
+        width: 25px;
+        height: 12px;
+        display: inline-block;
+        margin-right: 5px;
+        margin-top: 5px;
+        background-size: 100%;
+    }
+
+    #cut_off_times_ajax_loader_gif {
+        width: 20px;
+        height: 20px;
+        margin-left: 10px;
+    }
+
+    .cut_off_time_text {
+        color: black;
+        margin-left: 53px;
+        font-family: robotomedium,Helvetica,Arial,Sans-Serif;
+        font-size: 18px;
+    }
+
+    .cut_off_time_text_counter {
+        color: #00589d;
+        font-family: robotomedium,Helvetica,Arial,Sans-Serif;
+        font-size: 18px;
+    }
+
+    .cut_off_time_text_alternate {
+        color: #00589d;
+    }
+
+    .store-icon {
+        margin-right: 16px !important;
+    }
+
+    .logstics-icon {
+        margin-right: 14px !important;
+        margin-left: 14px !important;
+        display: none;
+    }
+
+    #logistics-store-section {
+        width: auto;
+        float: left;
+    }
+
+    #logstics-section {
+        float: left !important;
+        color: black !important;
+        font-size: 18px !important;
+        font-family: 'robotomedium', Helvetica, Arial, Sans-Serif !important;
+        width: auto !important;
+        margin-right: 5px !important;
+    }
+
+    #store-section {
+        font-size: 18px !important;
+    }
+
+    .glyphicon.glyphicon-info-sign.info-icon{
+        color:#00589d;
+    }
+
+
+@media (min-width: 60px) and (max-width: 320px) {
+        .cut_off_time_text {
+            font-size: 14px !important;
+        }
+        .cut_off_time_text_counter {
+            font-size: 14px !important;
+        }
+        #logstics-icon {
+            float: left !important;
+        }
+        #logstics-section {
+            font-size: 14px !important;
+            width: 69% !important;
+        }
+        #store-section-cartInfoHide {
+            float: left !important;
+            width: 90% !important;
+            height: 37px !important;
+        }
+        #store-icon {
+            float: left !important;
+            width: 1.2em !important;
+            margin-left: 0 !important;
+            margin-top: 4px;
+            margin-right: 20px !important;
+        }
+        #store-section {
+            float: left !important;
+            width: 75% !important;
+            height: 37px !important;
+            padding-top: 6px !important;
+            font-size: 14px !important;
+        }
+    }
+
+    @media (min-width: 321px) and (max-width: 480px) {
+        .cut_off_time_text {
+            font-size: 14px !important;
+        }
+        .cut_off_time_text_counter {
+            font-size: 14px !important;
+        }
+        #logstics-icon {
+            float: left !important;
+            margin-top: 3px !important;
+        }
+        #logstics-section {
+            font-size: 14px !important;
+            width: 69% !important;
+        }
+        #store-section-cartInfoHide {
+            float: left !important;
+            width: 90% !important;
+            height: 37px !important;
+        }
+        #store-icon {
+            float: left !important;
+            width: 1.2em !important;
+            margin-left: 0 !important;
+            margin-top: 7px !important;
+            margin-right: 20px !important;
+        }
+        #store-section {
+            float: left !important;
+            width: 75% !important;
+            height: 37px !important;
+            padding-top: 6px !important;
+            font-size: 14px !important;
+        }
+    }
+
+    @media (min-width: 481px) and (max-width: 768px) {
+        .cut_off_time_text {
+            font-size: 14px !important;
+        }
+        .cut_off_time_text_counter {
+            font-size: 14px !important;
+        }
+        #logstics-icon {
+            float: left !important;
+            margin-top: 3px !important;
+        }
+        #logstics-section {
+            font-size: 14px !important;
+            width: 59% !important;
+        }
+        #store-section-cartInfoHide {
+            float: left !important;
+            width: 90% !important;
+            height: 37px !important;
+        }
+        #store-icon {
+            float: left !important;
+            width: 1.2em !important;
+            margin-left: 0 !important;
+            margin-top: 7px !important;
+            margin-right: 20px !important;
+        }
+        #store-section {
+            float: left !important;
+            width: 75% !important;
+            height: 37px !important;
+            padding-top: 6px !important;
+            font-size: 14px !important;
+        }
+    }
+
+    @media (min-width: 769px) and (max-width: 1024px) {
+        #logstics-icon {
+            float: left !important;
+        }
+        #logstics-section {
+            font-size: 18px !important;
+        }
+        #store-section-cartInfoHide {
+            float: left !important;
+            width: 90% !important;
+            height: 37px !important;
+        }
+        #store-icon {
+            float: left !important;
+            width: 1.2em !important;
+            margin-left: 0 !important;
+            margin-top: 4px;
+        }
+        #store-section {
+            float: left !important;
+            width: 75% !important;
+            height: 37px !important;
+            font-size: 18px !important;
+            padding-top: 3px !important;
+        }
+    }
+
+    @media (min-width: 1025px) and (max-width: 1370px) {
+        #logstics-icon {
+            float: left !important;
+        }
+        #logstics-section {
+            font-size: 18px !important;
+        }
+        #store-section-cartInfoHide {
+            float: left !important;
+            width: 90% !important;
+            height: 37px !important;
+        }
+        #store-icon {
+            float: left !important;
+            width: 1.2em !important;
+            margin-left: 0 !important;
+            margin-top: 4px;
+        }
+        #store-section {
+            float: left !important;
+            width: 75% !important;
+            height: 37px !important;
+            font-size: 18px !important;
+            padding-top: 3px !important;
+        }
+    }
+
+    @media (min-width: 1371px) and (max-width: 1919px) {
+        #logstics-icon {
+            float: left !important;
+        }
+        #logstics-section {
+            font-size: 18px !important;
+        }
+        #store-section-cartInfoHide {
+            float: left !important;
+            width: 90% !important;
+            height: 37px !important;
+        }
+        #store-icon {
+            float: left !important;
+            width: 1.2em !important;
+            margin-left: 0 !important;
+            margin-top: 4px;
+        }
+        #store-section {
+            float: left !important;
+            width: 75% !important;
+            height: 37px !important;
+            font-size: 18px !important;
+            padding-top: 3px !important;
+        }
+    }
+
+    @media (min-width: 1920px) and (max-width: 4000px) {
+        #logstics-icon {
+            float: left !important;
+        }
+        #logstics-section {
+            font-size: 18px !important;
+        }
+        #store-section-cartInfoHide {
+            float: left !important;
+            width: 90% !important;
+            height: 37px !important;
+        }
+        #store-icon {
+            float: left !important;
+            width: 1.2em !important;
+            margin-left: 0 !important;
+            margin-top: 4px;
+        }
+        #store-section {
+            float: left !important;
+            width: 75% !important;
+            height: 37px !important;
+            font-size: 18px !important;
+            padding-top: 3px !important;
+        }
+    }
+
+    .ajaxSpinnerOverlay {
+        display: block !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
+        width: 20% !important;
+    }
+</style>
+
+<div id="searchResult">
+    <img class="ajaxSpinnerOverlay" src="<?php echo $this->getSkinUrl('schrackdesign/Public/Images/download_ajax_loader.gif'); ?>" >
+    <div class="col-md-3 col-sm-3 col-xs-6">
+        <div class="prdouct-box" style="display: none">
+            <div class="product-name">
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 col-sm-3 col-xs-6">
+        <div class="prdouct-box" style="display: none">
+            <div class="product-name">
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 col-sm-3 col-xs-6">
+        <div class="prdouct-box" style="display: none">
+            <div class="product-name">
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 col-sm-3 col-xs-6">
+        <div class="prdouct-box" style="display: none">
+            <div class="product-name">
+            </div>
+        </div>
+    </div>
+</div>
+
+<input type="hidden" id="activeproductcontainer" name="activeproductcontainer" value="gridListView" />
+<input type="hidden" id="gridListView_next" name="gridListView_next" value="0" />
+<input type="hidden" id="gridListView_count" name="gridListView_count" value="0" />
+<input type="hidden" id="articleCont_count" name="articleCont_count" value="0" />
+<input type="hidden" id="articleCont_next" name="articleCont_next" value="0" />
+<input type="hidden" id="prodListingSales_count" name="prodListingSales_count" value="0" />
+<input type="hidden" id="prodListingSales_next" name="prodListingSales_next" value="0" />
+
+<script type="text/javascript">//<![CDATA[
+    //for back button ajax request     
+    var imageServerUrl = '<?php echo Mage::getStoreConfig('schrack/general/imageserver'); ?>';
+    var baseUrlWithCurrentProtocal = '<?php echo Mage::helper('schrackcore/url')->getUrlWithCurrentProtocol() ?>';
+    var sort = '';
+    var isSafari = /^((?!chrome).)*safari/i.test(navigator.userAgent);
+    var isMobile = /^((?!chrome).)*iPod|iPhone|iPad/i.test(navigator.userAgent);
+    var firstLoad = true;
+    if(getParameterByName('sort')){
+        sort = getParameterByName('sort')
+    }else{
+        sort = 'ranking';
+    }
+    // jQuery(window).load(function () {
+    //     if (!jQuery("#breadcrumb_block").children(".sale_red_breadcrumbitem").get(0)) {
+    //         jQuery(".prodListHd div h3.search").removeClass("hide");
+    //         console.log("!SALE FOUND");
+    //     } else {
+    //         jQuery(".prodListHd h3.search").addClass("hide");
+    //         console.log("SALE FOUND");
+    //     }
+    // }
+
+    jQuery(document).ready(function(){
+        /* chnage string in breadcrumb for view all */
+        if(window.location.href.indexOf("last_viewed") > -1 && getParameterByName('q') == null) {
+            jQuery('#breadcrumbs .search strong').html(jQuery('#breadcrumbs .search strong').html().replace(": ''", ": 'last viewed'"));
+        }
+        if(window.location.href.indexOf("last_purchased") > -1 && getParameterByName('q') == null) {
+            jQuery('#breadcrumbs .search strong').html(jQuery('#breadcrumbs .search strong').html().replace(": ''", ": 'last purchased'"));
+        }
+        if(window.location.href.indexOf("promotions") > -1 && getParameterByName('q') == null) {
+            jQuery('#breadcrumbs .search strong').html(jQuery('#breadcrumbs .search strong').html().replace(": ''", ": 'promotions'"));
+        }
+        /* chnage string in breadcrumb for view all */
+        
+        //start search category dropdown 
+        if(typeof (jQuery("#searchDropdownBox").find("[catid='" + getParameterByName('cat') + "']").attr('value')) != 'undefined' && jQuery("#searchDropdownBox").find("[catid='" + getParameterByName('cat') + "']").attr('value') != ''){
+            jQuery("#selSrchHidden").val(getParameterByName('cat'));
+            jQuery("#allSrchCat").text(jQuery("#searchDropdownBox").find("[catid='" + getParameterByName('cat') + "']").attr('value'));
+        }
+        //end search category dropdown
+        //hack for google tab 
+        jQuery(window).resize(function() {
+            if(jQuery('#stockCleranceMob').length && jQuery(window).width() == 600){
+                jQuery('#stockCleranceMobCon').html(jQuery('#stockCleranceMob').html());
+                //jQuery('#stockCleranceMob').html('');
+            }else if(jQuery('#stockCleranceMobCon').length && jQuery(window).width() == 960){
+                jQuery('#stockCleranceMob').html(jQuery('#stockCleranceMobCon').html());
+                //jQuery('#stockCleranceMobCon').html('');
+            }
+        });
+        //end hack for google tab 
+
+
+        /* for browser back and forward button */
+        jQuery(window).on('popstate', function (e) {
+            //hack for safari, in safari browser, popstate fire on page load instead back button click
+            if ((isSafari && firstLoad) || (navigator.userAgent.match(/(iPod|iPhone|iPad)/) && firstLoad)){
+                firstLoad = false;
+                return;
+            }
+            //ajaxUpdateSubcategory(window.location);
+            jQuery('#productsBtn').click();
+            url = window.location.href;
+            catId = getParameterByName('cat');
+            if(catId || url.indexOf('fq=') >= 0 || url.indexOf('q=') >= 0){
+                if(catId == null || catId == ''){
+                    catId = '';                        
+                }
+                checkFilterFromUrl();
+                dataArray.getRenderedSearchBlocks = {'data' : {'query': getParameterByName('q'), 'sort' : sort, 'start': 0, 'limit': 21, 'saleLimit' : 7, 'pageLimit' : 20, 'category': getParameterByName('cat'), 'facets': filterArray, 'general_filters': generalFilterArray, 'filterChanged': true}};
+                ajaxDispatcherCall();
+            }else{
+                window.location = window.location.href;
+            }
+        }); 
+        /* for browser back and forward button */
+        /* Back to Top */
+        jQuery('body').append('<div id="toTop" class="btn btn-info print-hide-imp" style="z-index: 5 !important"><span class="glyphicon glyphicon-chevron-up"></span> <?php echo $this->__('Back to Top'); ?></div>');
+        jQuery(window).scroll(function () {
+            if (jQuery(this).scrollTop() != 0) {
+                    jQuery('#toTop').fadeIn();
+            } else {
+                   jQuery('#toTop').fadeOut();
+            }
+        }); 
+        jQuery('#toTop').click(function(){
+            jQuery("html, body").animate({ scrollTop: 0 }, 600);
+            console.log('ScrollTop #69');
+            return false;
+        });
+        /* Back to Top */
+        /* load more */
+        jQuery(window).scroll(function () { 
+            if (jQuery(window).scrollTop() + jQuery(window).height() + 400 >= jQuery(document).height()) {
+                if (loading == false && (parseInt(jQuery('#' + jQuery('#activeproductcontainer').val() + '_next').val()) < parseInt(jQuery('#' + jQuery('#activeproductcontainer').val() + '_count').val()))) {
+                    loading = true;
+                    needToUpdateBreadcrumbs = false;
+                    checkFilterFromUrl();
+                    dataArray.getRenderedSearchBlocks = {'data' : {'query': getParameterByName('q'), 'sort' : sort, 'start': jQuery('#' + jQuery('#activeproductcontainer').val() + '_next').val(), 'limit': 21, 'saleLimit' : 7, 'pageLimit' : 20, 'category': getParameterByName('cat'), 'facets': filterArray, 'general_filters': generalFilterArray, 'filterChanged': true}};
+                    ajaxDispatcherCallWithCallback(function (data) {
+                        jQuery('.product-stock-icon').off('click').on('click', function() {
+                            handleClickShowStockIcon(jQuery(this).data('sku'));
+                        });
+                        jQuery('.product-stock-icon-close').off('click').on('click', function() {
+                            handleClickShowStockIconClose(jQuery(this).data('sku'));
+                        });
+                    });
+                }
+            }
+        });
+        /* load more */
+        //for first loads ajax request 
+        setOverlayLoaderToLockScreen();
+        checkFilterFromUrl();
+        jQuery('#search').val(getParameterByName('q'));
+        dataArray.getRenderedSearchBlocks = {'data' : {'query': getParameterByName('q'), 'sort' : sort, 'start': 0, 'limit': 21, 'saleLimit' : 7, 'pageLimit' : 20, 'category': getParameterByName('cat'), 'facets': filterArray, 'general_filters': generalFilterArray, 'filterChanged': false}};
+
+    });   
+       
+function performFilterSearchAjax(ele, showall){
+console.log('--> performFilterSearchAjax');
+    filter = true;
+    needToUpdateBreadcrumbs = false;
+    if(showall == 'showall'){
+        facet = jQuery(ele).closest('.facet').attr('id');
+        jQuery('#'+facet+' input:checkbox:checked').each(function(index){
+            jQuery(this).removeAttr('checked');
+        });
+    }
+    urlappend = createQueryFromFilter();
+    urlForBookMark = updateQueryStringParameter(window.location.href, 'fq', urlappend);
+    history.pushState('data', '', urlForBookMark);
+    dataArray.getRenderedSearchBlocks = {'data' : {'query': getParameterByName('q'), 'sort' : sort, 'start': 0, 'limit': 21, 'saleLimit' : 21, 'pageLimit' : 20, 'category': getParameterByName('cat'), 'facets': filterArray, 'general_filters': generalFilterArray, 'filterChanged': true}};
+    ajaxDispatcherCall();
+    refreshBreadcrumbOnSale();
+}
+
+function getSearchCategory(id){
+console.log('--> getSearchCategory');
+    urlForBookMark = window.location.href;
+    //var sign = ( url.indexOf('?') > -1 ) ? '&' : '?';
+    //urlForBookMark = url + sign + 'cat=' + id;
+    urlForBookMark = updateQueryStringParameter(urlForBookMark, 'cat', id);
+    if(urlappend != ''){
+        urlForBookMark = updateQueryStringParameter(urlForBookMark, 'fq', urlappend);
+    }
+    history.pushState('data', '', urlForBookMark);
+    checkFilterFromUrl();
+    dataArray.getRenderedSearchBlocks = {'data' : {'query': getParameterByName('q'), 'sort' : sort, 'start': 0, 'limit': 21, 'saleLimit' : 7, 'pageLimit' : 20, 'category': getParameterByName('cat'), 'facets': filterArray, 'general_filters': generalFilterArray, 'filterChanged': true}};
+    ajaxDispatcherCall();
+}
+
+function backtoAllCategories(){
+console.log('--> backtoAllCategories');
+    urlForBookMark = window.location.href;
+    //var sign = ( url.indexOf('?') > -1 ) ? '&' : '?';
+    //urlForBookMark = url + sign + 'cat=' + id;
+    urlForBookMark = updateQueryStringParameter(urlForBookMark, 'cat', '');
+    if(urlappend != ''){
+        urlForBookMark = updateQueryStringParameter(urlForBookMark, 'fq', urlappend);
+    }
+    history.pushState('data', '', urlForBookMark);
+    checkFilterFromUrl();
+    dataArray.getRenderedSearchBlocks = {'data' : {'query': getParameterByName('q'), 'sort' : sort, 'start': 0, 'limit': 21, 'saleLimit' : 7, 'pageLimit' : 20, 'category': getParameterByName('cat'), 'facets': filterArray, 'general_filters': generalFilterArray, 'filterChanged': true}};
+    ajaxDispatcherCall();
+}
+
+function sortBySearch(value){
+console.log('--> sortBySearch');
+    urlForBookMark = window.location.href;
+    //var sign = ( url.indexOf('?') > -1 ) ? '&' : '?';
+    //urlForBookMark = url + sign + 'cat=' + id;
+    urlForBookMark = updateQueryStringParameter(urlForBookMark, 'sort', value);
+    if(urlappend != ''){
+        urlForBookMark = updateQueryStringParameter(urlForBookMark, 'fq', urlappend);
+    }
+    history.pushState('data', '', urlForBookMark);
+    checkFilterFromUrl();
+    sort = value;
+    dataArray.getRenderedSearchBlocks = {'data' : {'query': getParameterByName('q'), 'sort' : sort, 'start': 0, 'limit': 21, 'saleLimit' : 7, 'pageLimit' : 20, 'category': getParameterByName('cat'), 'facets': filterArray, 'general_filters': generalFilterArray, 'filterChanged': true}};
+    ajaxDispatcherCall();
+}
+
+function clearSearchFilter(){
+console.log('--> clearSearchFilter');
+    needToUpdateBreadcrumbs = false;
+    jQuery('#solrsearch-container input:checkbox:checked').each(function(index){
+        jQuery(this).removeAttr('checked');
+    });
+    filterArray = {};
+    generalFilterArray = {};
+    urlappend = '';
+    urlForBookMark = window.location.href;
+    urlForBookMark = updateQueryStringParameter(urlForBookMark, 'fq', '');
+    history.pushState('data', '', urlForBookMark);
+    dataArray.getRenderedSearchBlocks = {'data' : {'query': getParameterByName('q'), 'sort' : sort, 'start': 0, 'limit': 21, 'saleLimit' : 7, 'pageLimit' : 20, 'category': getParameterByName('cat'), 'facets': filterArray, 'general_filters': generalFilterArray, 'filterChanged': true}};
+    ajaxDispatcherCall();
+    refreshBreadcrumbOnSale();
+}
+
+//]]>
+</script>
+<!-- app\design\frontend\schrack\schrackresponsive\template\catalogsearch\result.phtml (end) -->
+    

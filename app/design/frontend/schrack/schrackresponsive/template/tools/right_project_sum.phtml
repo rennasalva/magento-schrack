@@ -1,0 +1,1073 @@
+<!-- app/design/frontend/schrack/schrackresponsive/template/tools/right_project_sum.phtml (start) -->
+
+<?php
+$_session = Mage::getSingleton('customer/session');
+$customer = $_session->getCustomer();
+$loggedIn = $customer->getId();
+$currency = Mage::app()->getStore()->getCurrentCurrencyCode();
+$partslistHelper = Mage::helper('schrackwishlist/partslist');
+$hideAll = Mage::registry('tools_hide_right_project_sum');
+?>
+
+<div id="right_col_content"
+<?php if ( $hideAll ) : ?>
+    style="visibility: hidden;"
+<?php endif; ?>
+>
+    <div class="blue-box">
+        <div class="blue-box-label"><?php echo $this->__('Project Name'); ?>:</div>
+        <div class="blue-box-data" id="blue_box_project_name"> </div>
+        <div class="blue-box-label"><?php echo $this->__('Description'); ?>:</div>
+        <div class="blue-box-data" id="blue_box_description"> </div>
+        <div class="blue-box-label"><?php echo $this->__('Note'); ?>:</div>
+        <div class="blue-box-data" id="blue_box_note"> </div>
+        <div class="blue-box-label"><?php echo $this->__('Address'); ?>:</div>
+        <div class="blue-box-data" id="blue_box_address"> </div>
+        <div class="blue-box-label"><?php echo $this->__('Contact Person'); ?>:</div>
+        <div class="blue-box-data" id="blue_box_contact_person"> </div>
+        <hr style="margin-top: 10px; margin-bottom: 10px"/>
+        <div class="blue-box-label"><span><?php echo $currency ?></span>&nbsp;<span class="blue-box-amount" id="total_amount">0,00</span>
+            <button id="add_to_cart_button" type="button" class="onlinetools-bluebox-add2cart-button"
+                    name="add_to_cart" ><?php echo $this->__('Add to Cart'); ?></button>
+        </div>
+    </div>
+
+    <div id="other_actions_container" class="otherActions other-actions">
+        <ul>
+            <li>
+                <a id="download_csv_action" href="javascript:void(0);">
+                   <img src="<?php echo $this->getSkinUrl('schrackdesign/Public/Images/rwd/downloadIconGray.png'); ?>" />
+                   <span><?php echo $this->__('Download CSV'); ?></span>
+               </a>
+            </li>
+            <li>
+                <a id="download_docu_action" href="javascript:void(0);">
+                   <img src="<?php echo $this->getSkinUrl('schrackdesign/Public/Images/rwd/downloadIconGray.png'); ?>" />
+                   <span><?php echo $this->__('Download Documentation'); ?></span>
+               </a>
+            </li>
+            <?php if($loggedIn) : ?>
+<?php /* bloody Copy&Paste listRequestManagerStuff begin */ ?>
+                <li>
+                    <div class="product-name posRel">
+                        <a class="dropdown partslist-drop all-products" href="javascript:void(0);"
+                           data-toggle="dropdown" id="all-products-cart">
+                            <span class="glyphicon glyphicon-pushpin
+                                <?php if($loggedIn) { echo  "blueTxt";  }
+                                      else { echo  "lightGray"; } ?>" title="Add to partlist">
+                            </span>
+                            <span>
+                                <?php echo $this->
+                                __('Add All Product to Partslist')?>
+                            </span>
+                        </a>
+                        <ul aria-labelledby="all-products-cart"
+                            class="dropdown-list dropdown-menu allproductaddtocart-switch <?php echo $loggedIn ? '' : "withoutLgn" ?>"
+                            <?php echo $loggedIn ? '' : ' style="height: auto;" ' ?> role="menu">
+                            <?php if($loggedIn) { ?>
+                                <li class="add-to-new-partslist no-auto-activate"
+                                    onClick="partslistFECartSku.addCheckedItemsToNewList(
+                                                '<?php echo $this->__('New partslist') ?>',
+                                                'rowId', 'sku', 'qty',
+                                                '<?php echo Mage::getSingleton('core/session')->getFormKey(); ?>',
+                                                '', localStorage.featureSrc
+                                    );"
+                                >
+                                    <span class="glyphicon glyphicon-plus-sign plusIcon"></span>&nbsp;<?php echo $this->__("Add to new partslist"); ?>
+                                </li>
+                                <?php if ($partslistHelper->getPartslistCount() > 0): ?>
+                                    <?php $activePl = $partslistHelper->getActiveOrFirstPartslist(); ?>
+                                    <li onClick="addSKUToPartlistAjaxCall('<?php echo $activePl->getId(); ?>', 1, this, localStorage.featureSrc, '-');"
+                                        selected="selected" title="<?php echo $activePl->getDescription() ?>"
+                                    >
+                                        <?php echo $this->__('Add to %s', $activePl->getDescription()) ?>
+                                    </li>
+                                <?php else: ?>
+                                    <?php $activePl = null; ?>
+                                <?php endif; ?>
+
+                                <?php
+                                    foreach ($partslistHelper->getPartslists() as $pl) {
+                                        $partslistIds[]          = $pl->getId();
+                                        $partslistDescriptions[] = $pl->getDescription();
+                                    }
+                                ?>
+                                <?php foreach ($partslistIds as $index => $partslistId) : ?>
+                                    <?php if ($activePl === null || (int) $partslistId !== (int) $activePl->getId()) : ?>
+                                        <li onClick="addSKUToPartlistAjaxCall('<?php echo $partslistId; ?>', 1, this, localStorage.featureSrc, '-');"
+                                            title="<?php echo $partslistDescriptions[$index]; ?>"
+                                        >
+                                            <?php echo $this->__('Add to %s', $partslistDescriptions[$index]) ?>
+                                        </li>
+                                    <?php endif; ?>
+                                <?php endforeach; ?>
+                            <?php } else {
+                                $cartUrlReferrer = Mage::getUrl('customer/account/login',
+                                    array('referer' => base64_encode(Mage::getUrl('onlinetools'))));
+                            ?>
+                                <li title="<?php echo $this->__('Please login first!'); ?>">
+                                    <a href="<?php echo $cartUrlReferrer; ?>" title="<?php echo $this->__('Login'); ?>">
+                                        <?php echo $this->__('Please login first!'); ?>
+                                    </a>
+                                </li>
+                            <?php } ?>
+                        </ul>
+                    </div>
+
+                </li>
+<?php /* bloody Copy&Paste listRequestManagerStuff end */ ?>
+            <?php endif; ?>
+        </ul>
+    </div>
+    <h1 class="onlinetools-right"><?php echo $this->__('Summary of Your Products'); ?></h1>
+    <div id="product_list">
+    </div>
+</div>
+
+<script type="text/javascript">//<![CDATA[
+    var partslistCartSku = new ListRequestManager.List('<?php echo $partslistHelper->getBaseUrl() ?>', false);
+    var partslistFECartSku = new ListRequestManager.Frontend(partslistCartSku, ListRequestManager.Product);
+    var rowIdCnt = 0;
+    var jqrAjax = null;
+    var articleDeleteEnabled = false;
+    var articleDeleteCallbackFunction = null;
+    var afterAddAccessoryCallbackFunction = null;
+
+    jQuery(document).ready(function () {
+        initData();
+        jQuery('#add_to_cart_button').on('click', function () {
+            addAllToCart();
+        });
+        jQuery('#download_csv_action').on('click', function () {
+            downloadCSV();
+        });
+        jQuery('#download_docu_action').on('click', function () {
+            downloadDocu();
+        });
+        jQuery('#input_contact_phone').on('keyup paste', function () {
+            removeForbiddenPhoneFieldCharacters('input_contact_phone');
+        });
+    });
+
+    function initData () {
+        var userAgent = navigator.userAgent.toLowerCase();
+        var isIphone = userAgent.indexOf("iphone") > -1;
+        if ( isIphone ) {
+            jQuery('.onlinetools-input').css({ 'font-size': '16px' });
+        }
+
+        getAdditionalArticleData();
+        if ( typeof  schrackToolModel == 'object' ) {
+            schrackToolModel.rightList = {};
+            schrackToolModel.hints = {};
+        }
+    }
+
+    function abortAjax () {
+        if ( jqrAjax != null ) {
+            jqrAjax.abort();
+        }
+    }
+
+    function enableDeleteArticles () {
+        articleDeleteEnabled = true;
+    }
+
+    function setArticleDeleteCallbackFunction ( func ) {
+        articleDeleteCallbackFunction = func;
+    }
+
+    function setAfterAddAccessoryCallbackFunction ( func ) {
+        afterAddAccessoryCallbackFunction = func;
+    }
+
+    function addRightListSku ( key, sku, count ) {
+        if ( count < 1 )
+            return;
+        if ( sku[0] == '@' )
+            return;
+        if ( typeof schrackToolModel.articlesQuickAcces[sku] == 'undefined' )
+            return;
+        var id = mkId(key, sku);
+        if ( typeof schrackToolModel.rightList[id] == 'undefined' ) {
+            schrackToolModel.rightList[id] = {
+                keyprefix : key,
+                sku : sku,
+                count : count,
+                name : schrackToolModel.articlesQuickAcces[sku].name,
+                qtyunit : schrackToolModel.articlesQuickAcces[sku].qtyunit
+            };
+        } else {
+            schrackToolModel.rightList[id].count += count;
+        }
+        appendUpdateOrRemoveArticleHtml(sku);
+        recalcSum();
+    }
+
+    function removeRightListSku ( key, sku ) {
+        if ( sku[0] == '@' )
+            return;
+        var id = mkId(key, sku);
+        delete schrackToolModel.rightList[id];
+        appendUpdateOrRemoveArticleHtml(sku);
+        recalcSum();
+    }
+
+    function removeAllRightListSkusForKey ( key ) {
+        var ids = [];
+        var skus = [];
+        var idStart = mkId(key,'');
+        for ( var k in schrackToolModel.rightList ) {
+            if ( k.substr(0,idStart.length) == idStart ) {
+                ids.push(k);
+                skus.push(schrackToolModel.rightList[k]['sku']);
+            }
+        }
+        for ( var i = 0; i < ids.length; ++i ) {
+            delete schrackToolModel.rightList[ids[i]];
+            appendUpdateOrRemoveArticleHtml(skus[i]);
+        }
+        recalcSum();
+    }
+
+    function removeAllRightListSkusForKey ( key ) {
+        var ids = [];
+        var skus = [];
+        var idStart = mkId(key,'');
+        for ( var k in schrackToolModel.rightList ) {
+            if ( k.substr(0,idStart.length) == idStart ) {
+                ids.push(k);
+                skus.push(schrackToolModel.rightList[k]['sku']);
+            }
+        }
+        for ( var i = 0; i < ids.length; ++i ) {
+            delete schrackToolModel.rightList[ids[i]];
+            appendUpdateOrRemoveArticleHtml(skus[i]);
+        }
+        recalcSum();
+    }
+
+    function getAllKeysForSku ( sku ) {
+        var keys = [];
+        for ( var k in schrackToolModel.rightList ) {
+            if ( schrackToolModel.rightList[k]['sku'] == sku ) {
+                keys.push(schrackToolModel.rightList[k]['keyprefix']);
+            }
+        }
+        return keys;
+    }
+
+    function removeRightListSkuForAllKeys ( sku ) {
+        var ids = [];
+        var keys = [];
+        for ( var k in schrackToolModel.rightList ) {
+            if ( schrackToolModel.rightList[k]['sku'] == sku ) {
+                ids.push(k);
+                keys.push(schrackToolModel.rightList[k]['keyprefix']);
+            }
+        }
+        for ( var i = 0; i < ids.length; ++i ) {
+            delete schrackToolModel.rightList[ids[i]];
+        }
+        appendUpdateOrRemoveArticleHtml(sku);
+        recalcSum();
+        return keys;
+    }
+
+    function clearRightList () {
+        schrackToolModel.rightList = {};
+        schrackToolModel.hints = {};
+        jQuery('#product_list').text('');
+        recalcSum();
+    }
+
+    function getRightListSkuCount ( key, sku ) {
+        if ( typeof sku == 'undefined' || sku == '' || sku[0] == '@' )
+            return 0;
+        var id = mkId(key, sku);
+        if ( typeof(schrackToolModel.rightList[id]) == 'undefined' )
+            return 0;
+        return schrackToolModel.rightList[id].count;
+    }
+
+    function hasRightListKey ( key ) {
+        key += '_';
+        for ( var k in schrackToolModel.rightList ) {
+            if ( k.substr(0,key.length) == key ) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    function hasRightListSku ( sku ) {
+        for ( var k in schrackToolModel.rightList ) {
+            var p = k.indexOf('_');
+            if ( k.substr(p + 1) == sku ) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    function changeRightListSkuCount ( key, sku, count ) {
+        if ( sku[0] == '@' )
+            return;
+        if ( count == 0 ) {
+            removeRightListSku(key,sku);
+            return;
+        }
+        var id = mkId(key, sku);
+        if ( typeof schrackToolModel.rightList[id] == 'undefined' ) {
+            addRightListSku(key, sku, count);
+            return;
+        }
+        schrackToolModel.rightList[id].count = count;
+        appendUpdateOrRemoveArticleHtml(sku);
+        recalcSum();
+    }
+
+    function mkId ( key, sku ) {
+        return key + '_' + sku;
+    }
+
+    function splitId ( id ) {
+        return id.split('_');
+    }
+
+    function recalcSum () {
+        var sum = 0;
+        for ( var k in schrackToolModel.rightList ) {
+            var rec = schrackToolModel.rightList[k];
+            sum += mkPriceFloatForSkuAndCount(rec.sku,rec.count);
+        }
+        jQuery('#total_amount').text(mkPriceString(sum));
+    }
+
+    function appendUpdateOrRemoveArticleHtml ( sku ) {
+        var count = 0;
+        var idArticle = 'lsl_' + sku;
+        var idArticleJQ = '#' + idArticle;
+        var htmlExists = jQuery(idArticleJQ).length > 0;
+        for ( var k in schrackToolModel.rightList ) {
+            var rec = schrackToolModel.rightList[k];
+            if ( rec.sku == sku ) {
+                count += rec.count;
+            }
+        }
+        if ( count < 1 ) {
+            if ( htmlExists ) {
+                jQuery(idArticleJQ).remove();
+            }
+        } else {
+            if ( htmlExists ) {
+                var idCountJQ = '#' + idArticle + '_count';
+                jQuery(idCountJQ).text("" + count);
+                var amountStr = mkPriceStringForSkuAndCount(sku,count);
+                var idAmountJQ = '#' + idArticle + '_amount';
+                jQuery(idAmountJQ).text(amountStr);
+            } else {
+                var html = buildRightArticleHtml(idArticle,sku,count);
+                jQuery('#product_list').append(html);
+                addProductClickEventRightSide('Rightside-ClickTracking Executed');
+            }
+        }
+    }
+
+    function buildRightArticleHtml ( id, sku, count ) {
+        var countId = id + '_count';
+        var amountId = id + '_amount';
+        var delId = id + '_delete';
+        var url = schrackToolModel.articlesQuickAcces[sku].url;
+
+        var skuA = '<a href="' + url+ '" data-sku="' + sku + '" target="' + sku + '"';
+        skuA    += ' class="onlinetools-product-sku tracking_onlinetool_product_right_side">' + sku + '</a>';
+        var delA = '';
+        if ( articleDeleteEnabled ) {
+            delA = '<a href="javascript:void(0);" class="rightlist_deletebutton" onClick="deleteClickedAction(\'' + id + '\')">'
+                + '<img class="onlinetools-product-delete-img" '
+                + 'src="<?php echo $this->getSkinUrl('schrackdesign/Public/Images/tools/Bin.png'); ?>"/></a>';
+        }
+        var skuDiv = '<div class="onlinetools-product-sku-container">' + skuA + delA + '</div>';
+
+        var nameA  = '<a class="onlinetools-product-name-right tracking_onlinetool_product_right_side" href="' + url+ '"';
+        nameA     +=  ' data-sku="' + sku + '" target="' + sku + '">';
+        nameA     += schrackToolModel.articlesQuickAcces[sku].name + '</a>';
+
+        var nameText = '<?php echo $this->__('Amount') ?>';
+
+        var amountDiv = '<div class="onlinetools-product-qty-right"><span>' + nameText + ': </span>'
+                      + '<span id="'+ countId + '">' + count + '</span>&nbsp;'
+                      + '<span>' + schrackToolModel.articlesQuickAcces[sku].qtyunit + '</span>'
+                      + '<span style="color: white; font-size: 20px"> </span></div>';
+
+        var currencyText = '<?php echo $currency ?>';
+        var amountStr = mkPriceStringForSkuAndCount(sku,count);
+
+        var priceDiv = '<div class="onlinetools-product-price-right">'
+                     + '<span>'+ currencyText + '</span>&nbsp;'
+                     + '<span id="' + amountId + '" class="onlinetools-product-price-val-right">' + amountStr
+                     + '</span></div>';
+
+        var qtyPrictDiv = '<div style="width: 100%; height: 24px;">' + amountDiv + priceDiv + '</div>';
+
+        <?php /* ugly stuff for bloody listRequestManager :-( */ ?>
+        var lrmData = '<input type="checkbox" class="rowId product-checkbox" id="row-' + (++rowIdCnt) + '" data-sku="'
+                    + sku + '" data-qty="' + count + '"  checked="checked" style="display:none" />'
+                    + '<input type="hidden" id="sku-' + rowIdCnt + '" value="' + sku + '" />'
+                    + '<input type="hidden" id="qty-' + rowIdCnt + '" value="' + count + '" />';
+
+        var articleDiv = '<div id="' + id + '">' + skuDiv + nameA + qtyPrictDiv + lrmData + '</div>';
+        return articleDiv;
+    }
+
+    function deleteClickedAction ( id ) {
+        var sku = splitId(id)[1];
+        var keys = getAllKeysForSku(sku);
+        if ( typeof articleDeleteCallbackFunction == 'function' ) {
+            var ok = articleDeleteCallbackFunction(keys,sku);
+            if ( ok ) {
+                removeRightListSkuForAllKeys(sku);
+            }
+        }
+    }
+
+    function mkPriceFloatForSkuAndCount ( sku, count ) {
+        var price = schrackToolModel.articlesQuickAcces[sku].priceFloat;
+        var priceUnit = schrackToolModel.articlesQuickAcces[sku].priceunitInt;
+        var amount = ((count / priceUnit) * price);
+        return amount;
+    }
+
+    function mkPriceStringForSkuAndCount ( sku, count ) {
+        var amount = mkPriceFloatForSkuAndCount(sku,count);
+        return mkPriceString(amount);
+    }
+
+    function mkPriceString ( amount ) {
+        // TODO: NLS??
+        var amountStr = amount.toFixed(2).replace('.',',');
+        if ( amountStr.length > 9 )
+            amountStr = amountStr.substr(-amountStr.length,amountStr.length - 9) + '.' + amountStr.substr(-9, 9);
+        if ( amountStr.length > 6 )
+            amountStr = amountStr.substr(-amountStr.length,amountStr.length - 6) + '.' + amountStr.substr(-6, 6);
+        return amountStr;
+    }
+
+    function addAllToCart () {
+        var productsParam = getSkuQtyList4UrlParam();
+        if ( productsParam == '' ) {
+            alert('<?php echo $this->__("Nothing to add to cart yet!") ?>');
+            return;
+        }
+        var url = '<?php echo Mage::getBaseUrl() . "checkout/cart/batchAdd?products=" ?>' + productsParam;
+        setOverlayLoader();
+        jQuery.ajax(url,
+            {
+                method: 'get',
+                success: function (response) {
+                    var parsedData = JSON.parse(response);
+                    if ( jQuery('#cartNoBxItemCount').length ) {
+                        jQuery('#cartNoBxItemCount').text(parsedData.numberOfDifferentItemsInCart);
+                    } else {
+                        jQuery('.MyCart').append(  '<div id="cartNoBxItemCount" class="cartNoBx">'
+                                                 + parsedData.numberOfDifferentItemsInCart + '</div>');
+                    }
+                    var allMsgs = '';
+                    for ( var i = 0; i < parsedData.messages.length; ++i ) {
+                        if ( i > 0 )
+                            allMsgs += '<br>';
+                        allMsgs += parsedData.messages[i];
+                    }
+
+                    // Added Google Tracking (add to cart):
+                    if (dataLayer) {
+                        if (typeof localStorage.featureSrc !== 'undefined' && localStorage.featureSrc == 'toolSchrackProtect') {
+                            dataLayer.push({
+                                'event' : 'trackingActionFromOnlineTools',
+                                'eventAction' : 'Schrack Protect',
+                                'eventLabel' : 'Add to Cart'
+                            });
+                        }
+                    }
+
+                    showMessage(allMsgs,'success');
+                    unsetOverlayLoader();
+                }.bind(this),
+                error: function (response) {
+                    alert('<?php echo $this->__('Error while adding products to cart!') ?>');
+                    unsetOverlayLoader();
+                    return;
+                }
+            }
+        );
+    }
+
+    function downloadCSV () {
+        var productsParam = getSkuQtyList4UrlParam();
+        if ( productsParam == '' ) {
+            alert('<?php echo $this->__("Nothing to get CSV from yet!") ?>');
+            return;
+        }
+        var fileNameParam = jQuery('#blue_box_project_name').text();
+        if ( typeof fileNameParam != 'string' || fileNameParam <= ' ' ) {
+            fileNameParam = schrackToolModel.projectType;
+        }
+        fileNameParam += '.csv';
+        var url = '<?php echo Mage::getBaseUrl() . "sd/csv/csvFromSkusNew?products=" ?>' + productsParam + '&filename=' + fileNameParam;
+
+        // Added Google Tracking (CSV download):
+        if (dataLayer) {
+            if (typeof localStorage.featureSrc !== 'undefined' && localStorage.featureSrc == 'toolSchrackProtect') {
+                dataLayer.push({
+                    'event' : 'trackingActionFromOnlineTools',
+                    'eventAction' : 'Schrack Protect',
+                    'eventLabel' : 'CSV Download'
+                });
+            }
+        }
+        openInNewTab(url);
+    }
+
+    function openInNewTab ( url)  {
+        var win = window.open(url, '_blank');
+        win.focus();
+    }
+
+    function getSummarizedRightList () {
+        var tmpMap = {};
+        for ( var k in schrackToolModel.rightList ) {
+            var rec = schrackToolModel.rightList[k];
+            if ( typeof tmpMap[rec.sku] == 'undefined' ) {
+                tmpMap[rec.sku] = JSON.parse(JSON.stringify(rec));
+            } else {
+                tmpMap[rec.sku].count += rec.count;
+            }
+        }
+        return tmpMap;
+    }
+
+    function getSkuQtyList4UrlParam () {
+        var tmpMap = {};
+        for ( var k in schrackToolModel.rightList ) {
+            var rec = schrackToolModel.rightList[k];
+            if ( typeof tmpMap[rec.sku] == 'undefined' ) {
+                tmpMap[rec.sku] = 0;
+            }
+            tmpMap[rec.sku] += rec.count;
+        }
+        var res = '';
+        for ( var sku in tmpMap ) {
+            if ( res != '' ) {
+                res += ';';
+            }
+            var count = tmpMap[sku];
+            res += (sku + ':' + count);
+        }
+        return res;
+    }
+
+    function filterOneByExample ( records, example ) {
+        return filterByExampleImpl(records,example,true);
+    }
+
+    function filterMultipleByExample ( records, example ) {
+        return filterByExampleImpl(records,example,false);
+    }
+
+    function filterByExampleImpl ( records, example, findOnlyFirst ) {
+        var res = [];
+        for ( var i = 0; i < records.length; ++i ) {
+            var equal = true;
+            for ( var k in example ) {
+                var v = example[k];
+                if ( typeof records[i][k] == "object" ) {
+                    if ( ! findInMultival(v,records[i][k]) ) {
+                        equal = false;
+                        break;
+                    }
+                } else if ( records[i][k] != v ) {
+                    equal = false;
+                    break;
+                }
+            }
+            if ( equal ) {
+                if ( findOnlyFirst ) {
+                    return records[i];
+                }
+                res.push(records[i]);
+            }
+        }
+        if ( findOnlyFirst ) {
+            return null;
+        }
+        return res;
+    }
+
+    function findInMultival ( pattern, record ) {
+        if (  typeof pattern != "object" ) {
+            pattern = [ pattern ];
+        }
+        for ( var i = 0; i < pattern.length; ++i ) {
+            if ( record.indexOf(pattern[i]) == -1 ) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    function fillSelect ( selectSelector, map, showNon, useValues ) {
+        fillSelectExt(selectSelector,map,showNon,! showNon,useValues,false,false,false);
+    }
+
+    function fillSelectExt ( selectSelector, map, showNon, showPleaseSelect, useValues, valueToSelect, textToSelect, multiselect ) {
+        var firstText = '';
+        if ( ! multiselect ) {
+            if ( showNon )
+                firstText = '<?php echo $this->__('(non)'); ?>'
+            else if ( showPleaseSelect )
+                firstText = '<?php echo $this->__('(please select)'); ?>'
+            if ( firstText > '' ) {
+                jQuery(selectSelector).append(
+                    jQuery('<option>', {
+                        value: '',
+                        text: firstText
+                    })
+                );
+            }
+        }
+        for ( var k in map ) {
+            var v = map[k];
+            var valToUse = useValues ? v : k;
+            jQuery(selectSelector).append(
+                valueToSelect && valueToSelect == valToUse || textToSelect && textToSelect == k
+                ?   jQuery('<option>',{
+                        value: valToUse,
+                        text: k,
+                        selected: 'selected'
+                    })
+                :   jQuery('<option>',{
+                        value: valToUse,
+                        text: k
+                    })
+            )
+        }
+    }
+
+    function getAdditionalArticleData () {
+        if (    typeof schrackToolModel != 'object'
+             || typeof schrackToolModel.articles != 'object'
+             || schrackToolModel.articles.length == 0 )
+            return;
+        var skus = [];
+        var articles = schrackToolModel.articles;
+        for ( var i = 0; i < articles.length; ++i ) {
+            if (   articles[i].SKU[0] == '@'
+                || (typeof articles[i].preload_additional_data == 'boolean' || articles[i].preload_additional_data == true) )
+                continue;
+            skus.push(articles[i].SKU);
+            var subSKUs = articles[i].AdditionalSKUs;
+            if ( typeof subSKUs != 'undefined' ) {
+                for ( var j = 0; j < subSKUs.length; ++j ) {
+                    skus.push(subSKUs[j]);
+                }
+            }
+        }
+        getArticleDataImpl({ skus: skus },'/onlinetools/commonTools/getAdditionalArticleData',null);
+    }
+
+    function getArticleDataImpl ( params, urlPath, optionalCallback ) {
+        var url = "<?php echo Mage::getBaseUrl(); ?>" + urlPath;
+        jqrAjax = jQuery.ajax(url,
+            {
+                method: 'post',
+                data: jQuery.param(params),
+                success: function (response) {
+                    var parsedData = JSON.parse(response);
+                    if ( typeof schrackToolModel.articlesQuickAcces == 'undefined' ) {
+                        schrackToolModel.articlesQuickAcces = parsedData;
+                    } else {
+                        for ( var k in parsedData ) {
+                            schrackToolModel.articlesQuickAcces[k] = parsedData[k];
+                        }
+                    }
+                    for ( var i = 0; i < schrackToolModel.articles.length; ++i ) {
+                        var sku = schrackToolModel.articles[i].SKU;
+                        var additionalData = parsedData[sku];
+                        if ( additionalData ) {
+                            for ( var k in additionalData ) {
+                                var v = additionalData[k];
+                                schrackToolModel.articles[i][k] = v;
+                            }
+                        }
+                    }
+                    gotAdditionalProductData = true;
+                    console.log("Article data got.");
+                    if ( typeof optionalCallback == 'function' ) {
+                        optionalCallback(parsedData);
+                    }
+                }.bind(this),
+                error: function (response) {
+                    alert('<?php echo $this->__('Can not retrieve article data!') ?>');
+                    return;
+                }
+            }
+        );
+    }
+
+    function downloadDocu () {
+        var params = {};
+        params.stylesheet           = schrackToolModel.documentationStylesheet;
+        params.legalNotesKeyPrefix  = schrackToolModel.legalNotesKeyPrefix;
+        params.articles             = getSummarizedRightList();
+        params.hints                = schrackToolModel.hints;
+        params.projectName          = jQuery('#input_project_name').val().trim();
+        params.projectNote          = jQuery('#input_note').val().trim();
+        params.projectDescription   = jQuery('#input_project_description').val().trim();
+        params.projectContactPerson = jQuery('#input_contact_person').val().trim();
+        params.projectStreet        = jQuery('#input_street').val().trim();
+        params.projectZIP           = jQuery('#input_zip').val().trim();
+        params.projectCity          = jQuery('#input_city').val().trim();
+        params.projectContactPhone  = jQuery('#input_contact_phone').val().trim();
+        if ( params.projectContactPhone > '' ) {
+            params.projectContactPhone = '+' + params.projectContactPhone;
+        }
+        var url = "<?php echo Mage::getBaseUrl() . '/onlinetools/commonTools/createPdf'; ?>";
+        jQuery.post(url,jQuery.param(params),function(data,status) {
+            console.log("Retrieve PDF: Status = " + status + ", Response = " + data);
+            if ( status != 'success' || data.substring(0,6) == 'ERROR:' ) {
+                alert('<?php echo $this->__("Error %d. Please try again later or contact your Schrack contact person.",4237) ?>');
+                return;
+            }
+            var userAgent = navigator.userAgent.toLowerCase();
+            var isAndroid = userAgent.indexOf("android") > -1;
+            if ( isAndroid ) {
+                // with the implementation below chrome on android downloads the pdf in a VERY nondescript manner
+                // so that users gets the impression that nothing happens...
+                window.open(data,'_blank');
+            } else {
+                var currentDate = new Date();
+                var a = document.createElement('A');
+                var filePath = data;
+                a.href = filePath;
+                a.target = '_blank';
+                a.download = schrackToolModel.projectType + '_'
+                    + currentDate.toLocaleDateString() + '_'
+                    + currentDate.toLocaleTimeString().replace(':', '_') + '.pdf';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+            }
+            setTimeout(function () {
+                url = "<?php echo Mage::getBaseUrl() . '/onlinetools/commonTools/deletePdf'; ?>";
+                params = { "link" : data };
+                jQuery.post(url,params);
+            },2000);
+
+            // Added Google Tracking (documentation download):
+            if (dataLayer) {
+                if (typeof localStorage.featureSrc !== 'undefined' && localStorage.featureSrc == 'toolSchrackProtect') {
+                    dataLayer.push({
+                        'event' : 'trackingActionFromOnlineTools',
+                        'eventAction' : 'Schrack Protect',
+                        'eventLabel' : 'Documentation Download'
+                    });
+                }
+            }
+        });
+    }
+
+    function toggleGroup ( that, thatGroupID ) {
+        var isSelected = that.data('selected') == '1';
+        if ( isSelected ) {
+            that.toggleClass('onlinetools-active onlinetools-inactive');
+            jQuery(thatGroupID).slideUp();
+            that.data('selected','0');
+        } else {
+            that.toggleClass('onlinetools-inactive onlinetools-active');
+            jQuery(thatGroupID).slideDown();
+            var thatHeadID = thatGroupID + '-head';
+
+            jQuery('[id^="group-"][id$="-head"]').each( function () {
+                if ( this.id != thatHeadID ) {
+                    var other = jQuery(this);
+                    var otherSelected = other.data('selected') == '1';
+                    if ( otherSelected ) {
+                        var idOtherGroup = this.id.substring(0, this.id.lastIndexOf('-'));
+                        other.toggleClass('onlinetools-active onlinetools-inactive');
+                        jQuery('#' + idOtherGroup).slideUp();
+                        other.data('selected', '0');
+                    }
+                }
+            });
+            that.data('selected','1');
+            if ( /Android|webOS|iPhone|iPad|iPod|BlackBerry/i.test(navigator.userAgent) ) {
+                setTimeout(function () {
+                    that[0].scrollIntoView(true);
+                },500);
+            }
+        }
+        copyDisclosures();
+    }
+
+    function copyDisclosures () {
+        copyToKeepingSize(jQuery('#input_project_name').val(),'#blue_box_project_name');
+        copyToKeepingSize(jQuery('#input_note').val(),'#blue_box_note');
+        copyToKeepingSize(jQuery('#input_project_description').val(),'#blue_box_description');
+        var addr = jQuery('#input_street').val() + ' ' + jQuery('#input_zip').val() + ' ' + jQuery('#input_city').val();
+        copyToKeepingSize(addr.trim(),'#blue_box_address');
+        var person = jQuery('#input_contact_person').val()
+        var phone = jQuery('#input_contact_phone').val();
+        var personPhone = '';
+        if ( person > ' ' && phone > ' ' )
+            personPhone = person + ', +' + phone;
+        else if ( person > ' ' )
+            personPhone = person;
+        else if ( phone > ' ' )
+            personPhone = '+' + phone;
+        copyToKeepingSize(personPhone.trim(),'#blue_box_contact_person');
+    }
+
+    function copyToKeepingSize ( val, toJqId ) {
+        if ( val == '' )
+            val = ' ';
+        jQuery(toJqId).html(val);
+    }
+
+    function buildLeftArticleHtml ( groupId, headline, article ) {
+        var res = '<div id="' + groupId + '" style="display: none;">'; // Start-Envelope-Tag
+        if ( headline > '' )
+            res += '<h3 class="onlinetools">' + headline + '</h3>';
+        if ( typeof article.Note == 'string' )
+            res += '<div class="onlinetools-article-note">' + article.Note + '</div>';
+        if ( article.SKU[0] != '@' ) {
+            var name = prepareLongText(article.name);
+            var desc = prepareLongText(article.description);
+            res += ('   <div class="onlinetools-product-container">'
+                + '         <div class="onlinetools-product-container-image">'
+                + '             <a href="' + article.url + '" target=”' + article.SKU
+                +                   '” class="onlinetools-product-name"><img src="' + article.image + '"/></a>'
+                + '         </div>'
+                + '         <div class="onlinetools-product-container-texts" id="' + groupId + '-textcontainer">'
+                + '             <div id="' + groupId + '-sku" class="onlinetools-product-sku">' + article.SKU + '</div>'
+                + '             <div class="tracking_onlinetool_product_left_side" data-sku="' + article.SKU + '">'
+                + '                 <a href="' + article.url + '" target="' + article.SKU
+                +                       '" class="onlinetools-product-name">' + name + '</a>'
+                + '             </div>'
+                + '             <div class="onlinetools-product-description">' + desc + '</div>'
+                + '             <div class="onlinetools-product-price">'
+                +                '<?php echo $currency . ' '; ?>'
+                +                    '<span class="onlinetools-product-price-val">'
+                +                        article.price + '</span>/<span>' + article.priceunit + '</span>'
+                + '             </div>'
+                + '         </div>'
+                + '     </div>');
+        }
+        res += '</div>';  // End-Envelope-Tag
+        return res;
+    }
+
+    function addProductClickEventLeftSide(msg) {
+        jQuery(".tracking_onlinetool_product_left_side").on("click", function() {
+            console.log(msg);
+            var sku = jQuery(this).attr("data-sku");
+            //console.log('Tools Product Click Track Fetched');
+            if (typeof localStorage.featureSrc !== 'undefined') {
+                var featureTrackingSource = 'no feature source defined';
+
+                if(localStorage.featureSrc == 'toolSchrackProtect') {
+                    featureTrackingSource = 'lightning protection calculator';
+                }
+
+                var trackingData                 = new Object();
+                trackingData.trackingEnabled     = globalTRACKING_ENABLED;
+                trackingData.pageType            = 'online tools';
+                trackingData.affectedSku         = sku;
+                //trackingData.price             = dataProductPrice;
+                trackingData.currencyCode        = globalCURRENCY_CODE;
+                trackingData.trackingSource      = featureTrackingSource;
+                trackingData.typoUrl             = globalTYPO_URL;
+                trackingData.shopCategoryAjaxUrl = globalSHOP_CATEGORY_AJAX_URL;
+                trackingData.formKey             = globalFORM_KEY;
+                trackingData.crmUserId           = globalCRM_USER_ID;
+                trackingData.customerType        = globalCUSTOMER_TYPE;
+                trackingData.accountCrmId        = globalACCOUNT_CRM_ID;
+                trackingData.position            = 1;
+
+                trackProductClick(trackingData);
+            }
+        });
+    }
+
+    function addProductClickEventRightSide(msg) {
+        jQuery(".tracking_onlinetool_product_right_side").on("click", function() {
+            console.log(msg);
+            var sku = jQuery(this).attr("data-sku");
+            //console.log('Tools Product Click Track Fetched');
+            if (typeof localStorage.featureSrc !== 'undefined') {
+                var featureTrackingSource = 'no feature source defined';
+
+                if(localStorage.featureSrc == 'toolSchrackProtect') {
+                    featureTrackingSource = 'lightning protection calculator';
+                }
+
+                var trackingData                 = new Object();
+                trackingData.trackingEnabled     = globalTRACKING_ENABLED;
+                trackingData.pageType            = 'online tools';
+                trackingData.affectedSku         = sku;
+                //trackingData.price             = dataProductPrice;
+                trackingData.currencyCode        = globalCURRENCY_CODE;
+                trackingData.trackingSource      = featureTrackingSource;
+                trackingData.typoUrl             = globalTYPO_URL;
+                trackingData.shopCategoryAjaxUrl = globalSHOP_CATEGORY_AJAX_URL;
+                trackingData.formKey             = globalFORM_KEY;
+                trackingData.crmUserId           = globalCRM_USER_ID;
+                trackingData.customerType        = globalCUSTOMER_TYPE;
+                trackingData.accountCrmId        = globalACCOUNT_CRM_ID;
+                trackingData.position            = 1;
+
+                trackProductClick(trackingData);
+            }
+        });
+    }
+
+    function showMessage ( txt, type ) {
+        var glyphicon = type == 'error' ? 'glyphicon-exclamation-sign' : 'glyphicon-ok';
+        var html = '<ul class="messages"><li class="'+type+'-msg">'
+                 + '    <span class="glyphicon ' + glyphicon + '"></span> <span>' + txt + '</span>'
+                 + '</li></ul>';
+        jQuery('#left_messages').html(html);
+    }
+
+    function addDocumentationHint ( id, group, name, note ) {
+        schrackToolModel.hints[id] = { group : group, name : name, note : note };
+    }
+
+    function removeDocumentationHint ( id ) {
+        schrackToolModel.hints[id] = null;
+    }
+
+    function prepareLongText ( text ) {
+        if ( text == null )
+            return '';
+        text = text.replace(/,/gi,',<wbr>');
+        text = text.replace(/\./gi,'.<wbr>');
+        text = text.replace(/\//gi,'/<wbr>');
+        return text;
+    }
+
+    function requestAccessories ( idOfElementToAppendTo, sku, headlineTextTranslated ) {
+        var handleAcessoryData = function ( parsedData ) {
+            if ( parsedData.length == 0 ) {
+                schrackToolModel.articlesQuickAcces[sku]['accessories'] = [];
+                return;
+            }
+            var empty = true;
+            var html =
+                '<div id="accessories_for_' + sku + '" class="row">'
+                + '    <div class="col-md-12 col-sm-12 col-xs-12 view_accessories product-list-slide">'
+                + '        <div class="col-md-9 col-sm-9 col-xs-9 padL0">'
+                + '            <h3 class="headline">' + headlineTextTranslated + '</h3>'
+                + '        </div>'
+                + '    </div>'
+                + '    <div class="inner view_accessories col-md-12 col-sm-12 col-xs-12 view_accessories_list">'
+                + '        <ul id="' + idOfElementToAppendTo + '_sliderContainer" class="view-accessories product-list-slide-list">';
+            var skus = [];
+            for ( var aSku in parsedData ) {
+                article = parsedData[aSku];
+                var snippet = createAccessoryHtml(aSku,article,idOfElementToAppendTo);
+                html += snippet;
+                empty = false;
+                skus.push(aSku);
+            }
+            schrackToolModel.articlesQuickAcces[sku]['accessories'] = skus;
+            html += (
+                +'        </ul>'
+                + '    </div>'
+                + '</div>');
+            if ( ! empty ) {
+                jQuery('#' + idOfElementToAppendTo).append(html);
+                jQuery('#' + idOfElementToAppendTo + '_sliderContainer').bxSlider({
+                    touchEnabled: touchDisableForDesktop,
+                    auto: false,
+                    pager: false,
+                    slideWidth: 260,
+                    minSlides: 1,
+                    maxSlides: 5,
+                    moveSlides: 1,
+                    slideMargin: 20,
+                    infiniteLoop: false,
+                    hideControlOnEnd: true,
+                    onSliderLoad: function (currentIndex) {
+                        jQueryLazyLoader.update();
+                    }
+                });
+
+                jQuery('.add-accessory-button-' + idOfElementToAppendTo).off('click').on('click', function () {
+                    var sku = jQuery(this).attr('data-sku');
+                    var vpesize = schrackToolModel.articlesQuickAcces[sku].vpesizeInt;
+                    var oldCnt = getRightListSkuCount('accessory',sku);
+                    if ( oldCnt > 0 ) {
+                        changeRightListSkuCount('accessory',sku,oldCnt + vpesize);
+                    } else {
+                        addRightListSku('accessory', sku, vpesize);
+                    }
+                    if ( typeof afterAddAccessoryCallbackFunction == 'function' ) {
+                        afterAddAccessoryCallbackFunction(sku);
+                    }
+                });
+            }
+        }
+
+        if ( jQuery('#' + idOfElementToAppendTo + '_sliderContainer').length ) {
+            return;
+        }
+
+        if ( typeof schrackToolModel.articlesQuickAcces[sku]['accessories'] == 'object' ) {
+            var skus = schrackToolModel.articlesQuickAcces[sku]['accessories'];
+            var articles = {};
+            for ( var i = 0; i < skus.length; i++ ) {
+                articles[skus[i]] = schrackToolModel.articlesQuickAcces[skus[i]];
+            }
+            handleAcessoryData(articles);
+        } else {
+            getArticleDataImpl({ "sku": sku }, '/onlinetools/commonTools/getAccessoriesForSku', handleAcessoryData);
+        }
+    }
+
+    function createAccessoryHtml ( sku, articleData, baseId ) {
+        var currencyText = '<?php echo $currency ?>';
+        var res =
+            '<li class="onlinetools-accessory-li" data-sku="' + sku + '" data-name="' + articleData.name + '" >'
+        +   '   <div class="imgBox">'
+        +   '       <span class="onlinetools-accessory-sku">' + sku + '</span>'
+        +   '       <a class="previewImageHover accessory_image_link product-image" data-sku="' + sku + '" '
+        +               ' data-preview-path="https://image.schrack.com/340x380/f_' + sku + '.jpg" '
+        +               ' href="' + articleData.url + '" title="' + articleData.name + '" target=" ' + sku + ' ">'
+        +   '           <img src="' + articleData.image + '" alt="' + articleData.name + '" class="onlinetools-accessory-img" '+
+                            ' class="loading" data-was-processed="true"/>'
+        +   '       </a>'
+        +   '   </div>'
+        +   '   <div class="onlinetools-accessory-name"><a data-sku="' + sku + '" href="' + articleData.url + '" '
+        +           '  title="' + articleData.name + '" target=" ' + sku + ' ">'
+        +   '       ' + articleData.name
+        +   '   </a></div>'
+        +   '   <div class="onlinetools-product-price-accessories">'
+        +             currencyText
+        +             '&nbsp;<span class="onlinetools-product-price-val-accessories">' + articleData.price + '</span>'
+        +             '/' + articleData.priceunit
+        +   '   </div>'
+        +   '   <div class="onlinetools-accessory-choose">'
+        +   '       <button type="button" class="onlinetools-bluebox-add2cart-button add-accessory-button-' + baseId + '"'
+        +   '           data-sku="' + sku + '" name="choose_to_right_button" >'
+        +   '           <?php echo $this->__("Choose"); ?>'
+        +   '       </button>'
+        +   '   </div>'
+        +   '</li>';
+        return res;
+    }
+
+    function tmp ( x ) { return ''; }
+
+//]]></script>
+<!-- app/design/frontend/schrack/schrackresponsive/template/tools/right_project_sum.phtml (end) -->

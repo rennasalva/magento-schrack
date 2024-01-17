@@ -1,0 +1,17 @@
+<?php
+/* @var $this Schracklive_SchrackCheckout_Block_Success */
+?>
+<div class="in-page">
+    <div class="page-head">
+        <h3><?php echo $this->__('Your order has been received') ?></h3>
+    </div>
+	<?php echo $this->getMessagesBlock()->getGroupedHtml() ?>
+    <p><strong><?php echo $this->__('Thank you for your purchase!') ?></strong></p>
+    <p>
+        <?php echo $this->__('Your order # is: %s', $this->getOrderId()) ?>.<br/>
+        <?php echo $this->__('You will receive an order confirmation email with details of your order and a link to track its progress.') ?><br/>
+    </p>
+    <div class="button-set">
+        <button type="button" class="form-button" onclick="window.location='SchrackLiveApp:CheckoutDone:1'"><span><?php echo Mage::helper('core')->quoteEscape($this->__('Continue Shopping')) ?></span></button>
+    </div>
+</div>

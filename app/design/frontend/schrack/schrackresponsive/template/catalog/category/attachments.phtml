@@ -1,0 +1,19 @@
+<?php
+$_tableHelper = Mage::helper('schrackcore/table');
+$_attachments = Mage::registry('current_category_attachments');?>
+<?php if (count($_attachments) > 0 && intval($_category->getLevel()) <= 2):?>
+    <h2 class="headline b1"><?php echo $this->__('Product information for'); ?> <?php echo $_helper->categoryAttribute($_category, $_category->getName(), 'name') ?></h2>
+    <div class="attachment-list">
+        <?php $i = 0; $_tableHelper->resetEvenOddClass();foreach ($_attachments as $_attachment):?>
+            <?php if ($i % 3 === 0):?>
+                <?php if ($i > 0):?></div><?php endif; ?>
+                <div class="row table body <?php echo $_tableHelper->getEvenOddClass();?>">
+            <?php endif;?>
+            <div class="large-4 columns"><a class="<?php echo $_attachment->getFiletype()?>" href="<?php echo Mage::getStoreConfig('schrack/general/imageserver').$_attachment->getUrl(); ?>" target="_blank"><?php echo $_attachment->getLabel(); ?></a></div>
+        <?php ++$i; endforeach;?>
+        <?php for (; $i % 3 !== 0; ++$i):?>
+             <div class="large-4 columns empty"></div>
+       <?php endfor; ?>
+       </div>
+    </div>
+<?php endif;?>

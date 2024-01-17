@@ -1,0 +1,26 @@
+<!-- app/design/frontend/schrack/schrackresponsive/template/sezame/linkindex.phtml (start) -->
+<?php
+    // Check, if pairing already done:
+    $helper = Mage::helper('customer');
+    $customer = $helper->getCustomer();
+    $model = Mage::getModel('sezame/link');
+    $username = $customer->getEmail();
+    $linked = $model->status($username);
+    $userIsAlreadyLinked = false;
+    if ($linked) $userIsAlreadyLinked = true;
+?>
+
+<?php if($userIsAlreadyLinked == true) : ?>
+    <div style="margin-top: 3px; margin-left: 4px; background: #EBF8FC; color: #01A3D9; border: 1px solid #01A3D9; padding: 26px 10% 26px;"><?php echo $this->__('User Is Already Linked.'); ?></div>
+<?php else: ?>
+    <h2><?php echo $this->__('Sezame Pairing Explanation Headline'); ?></h2>
+    <a href="<?php echo $this->getLinkUrl() ?>">
+        <img border="0" alt="Sezame Login" src="<?php echo $this->getSkinUrl('images/sezame/pair-with-sezame.png'); ?>"/>
+    </a>
+    <p style="margin-top: 17px;color: #464646;"><?php echo $this->__('Sezame Pairing Explanation');  ?></p>
+<?php endif; ?>
+
+<div style="margin-top: 17px;color: #464646">
+    <?php echo $this->__('Sezame Help Page Text', '"' .  Mage::getStoreConfig('sezame/settings/landingpagehelp') . '"'); ?>
+</div>
+<!-- app/design/frontend/schrack/schrackresponsive/template/sezame/linkindex.phtml (end) -->

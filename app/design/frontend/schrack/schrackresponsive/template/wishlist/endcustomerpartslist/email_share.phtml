@@ -1,0 +1,8 @@
+Somebody sent you a partslist:
+
+<?php echo $this->__('Name')?>: <?php echo $params['name']?><br/>
+<?php echo $this->__('Email')?>: <?php echo $params['email']?><br/>
+<?php echo $this->__('Message')?>: <?php echo $params['message']?><br/>
+<br/>
+
+<?php echo $this->__('This is the link to the partslist')?>: <?php echo Mage::helper('schrackwishlist/endcustomerpartslist')->getPartslistUrl()?>

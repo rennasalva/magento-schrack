@@ -1,0 +1,83 @@
+<!-- app/design/frontend/schrack/schrackresponsive/template/checkout/onepage/email/noprices.phtml (start) -->
+<?php
+$session = Mage::getSingleton('core/session');
+$name = $session->getOnepageName();
+$email = $session->getOnepageEmail();
+$phone = $session->getOnepagePhone();
+$homepage = $session->getOnepageHomepage();
+$country = $session->getOnepageCountry();
+?>                
+<html>
+    <body>
+
+        <p>
+            <?php echo $this->__('Dear Distributor,')?>
+        </p>
+        <p>
+            <?php echo $this->__('we have received the following enquiry on %s.', strftime('%A %d, %Y'))?>
+            <?php echo $this->__('The enquiry was made by the customer with the following data:')?>
+        </p>
+        <p>
+            <?php echo $this->__('Customer Name') ?>: <?php echo $name?><br/>
+            <?php echo $this->__('Customer Email') ?>: <?php echo $email?><br/>
+            <?php echo $this->__('Customer Phone') ?>: <?php echo $phone?><br/>
+            <?php echo $this->__('Customer Homepage') ?>: <?php echo $homepage?><br/>
+            <?php echo $this->__('Customer Country Code') ?>: <?php echo $country?>
+        </p>
+        <p>
+            <?php echo $this->__('Please contact the customer to agree on the details and send a proposal.')?>
+
+            <?php echo $this->__('Sent from Schrack Technik Online Shop')?>
+        </p>
+        <p>
+            <?php echo $this->__('Articles') ?>:
+        </p>
+
+        <div id="checkout-review-table-wrapper">
+            <table class="checkout-review-table" id="checkout-review-table">
+                <thead>
+                    <tr>
+                        <th><?php echo $this->__('Product Name') ?></th>
+                        <th><?php echo $this->__('Qty') ?></th>
+                        <th><?php echo $this->__('Unit') ?></th>
+                    </tr>
+                </thead>        
+                <tbody>
+                    <?php foreach ($this->getItems() as $_item): ?>
+                        <?php $_product = $_item->getProduct(); ?>
+                        <tr>
+                            <td><span class="catalog-nr"><?php echo $_item->getProduct()->getSku(); ?></span><br/>
+                                <span><?php echo $this->htmlEscape($this->getProductName()) ?></span>
+                                <?php if ($_options = $this->getOptionList()): ?>
+                                    <dl class="item-options">
+                                        <?php foreach ($_options as $_option) : ?>
+                                            <?php $_formatedOptionValue = $this->getFormatedOptionValue($_option) ?>
+                                            <dt><?php echo $this->htmlEscape($_option['label']) ?></dt>
+                                            <dd<?php if (isset($_formatedOptionValue['full_view'])): ?>
+                                                    class="truncated"<?php endif; ?>><?php echo $_formatedOptionValue['value'] ?>
+                                                    <?php if (isset($_formatedOptionValue['full_view'])): ?>
+                                                    <div class="truncated_full_value">
+                                                        <dl class="item-options">
+                                                            <dt><?php echo $this->htmlEscape($_option['label']) ?></dt>
+                                                            <dd><?php echo $_formatedOptionValue['full_view'] ?></dd>
+                                                        </dl>
+                                                    </div>
+                                                <?php endif; ?>
+                                            </dd>
+                                        <?php endforeach; ?>
+                                    </dl>
+                                <?php endif; ?>
+                            </td>
+                            <td class="a-right">
+                                <?php echo $_item->getQty() ?>
+                                <?php if (strlen($this->htmlEscape($this->getDrumDescription()))): ?><span><br/><?php echo $this->htmlEscape($this->getDrumDescription()) ?>&nbsp;</span><?php endif; ?>
+                            </td>
+                            <td><?php echo $this->getSchrackProductQtyunit() ?></td>
+                        </tr>
+                    <?php endforeach ?>
+                </tbody>
+            </table>
+        </div>
+    </body>
+</html>
+<!-- app/design/frontend/schrack/schrackresponsive/template/checkout/onepage/email/noprices.phtml (start) -->

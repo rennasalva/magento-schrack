@@ -1,0 +1,55 @@
+<!-- app/design/frontend/schrack/schrackresponsive/template/tools/intercom_calculator_selection.phtml (start) -->
+
+    <h2 id="group-typeselection-head" data-selected="0"
+        class="onlinetools-inactive"><?php echo $this->__('Intercom Type Selection'); ?></h2>
+
+    <div id="group-typeselection" style="display: none">
+        <div class="onlinetools-3icon-container">
+
+            <div class="onlinetools-3icon-selection" data-template="building">
+                <div class="onlinetools-3icon-selection-icon-div">
+                    <img src="<?php echo $this->getSkinUrl('schrackdesign/Public/Images/tools/Icon-Wohnhaus.png'); ?>"
+                        class="onlinetools-3icon-selection-icon"/>
+                </div>
+                <div class="onlinetools-3icon-selection-label"><?php echo $this->__('Residential Building'); ?></div>
+            </div>
+
+            <div class="onlinetools-3icon-selection" data-template="complex">
+                <div class="onlinetools-3icon-selection-icon-div">
+                    <img src="<?php echo $this->getSkinUrl('schrackdesign/Public/Images/tools/Icon-Wohnhaus.png'); ?>"
+                        class="onlinetools-3icon-selection-icon"/>
+                </div>
+                <div class="onlinetools-3icon-selection-label"><?php echo $this->__('Housing Complex'); ?></div>
+            </div>
+
+            <div class="onlinetools-3icon-selection" data-template="one_family">
+                <div class="onlinetools-3icon-selection-icon-div">
+                    <img src="<?php echo $this->getSkinUrl('schrackdesign/Public/Images/tools/Icon_Einfamilienhaus.png'); ?>"
+                        class="onlinetools-3icon-selection-icon"/>
+                </div>
+                <div class="onlinetools-3icon-selection-label"><?php echo $this->__('One-Family House'); ?></div>
+            </div>
+
+        </div>
+    </div>
+
+    <script type="text/javascript">//<![CDATA[
+        jQuery(document).ready(function () {
+
+            if ( typeof schrackToolModel == 'object' ) {
+                schrackToolModel = {};
+            }
+
+            jQuery('#group-typeselection-head').on('click', function () {
+                toggleGroup(jQuery(this),'#group-typeselection');
+            });
+
+            jQuery('.onlinetools-3icon-selection').on('click', function () {
+                var template = jQuery(this).attr('data-template');
+                loadIntercomCalculatorPart(template);
+            });
+
+        });
+    //]]></script>
+
+<!-- app/design/frontend/schrack/schrackresponsive/template/tools/intercom_calculator_selection.phtml (end) -->

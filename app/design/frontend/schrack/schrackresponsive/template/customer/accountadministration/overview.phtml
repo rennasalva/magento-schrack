@@ -1,0 +1,242 @@
+<!-- app/design/frontend/schrack/schrackresponsive/template/customer/accountadministration/overview.phtml (start) -->
+<?php
+/* @var $this Schracklive_SchrackCustomer_Block_Account_Administration */
+
+    $_session = Mage::getSingleton('customer/session');
+    $sessionCustomer  = $_session->getCustomer();
+
+    $schrackWwsContactNumber = $sessionCustomer->getSchrackWwsContactNumber();
+    if ($schrackWwsContactNumber == '-1') {
+        $actAsCustomerActivated = true;
+    } else {
+        $actAsCustomerActivated = false;
+    }
+?>
+
+<style>
+    .initialHideToTopSymbol {
+        display: none !important;
+    }
+
+    @media (min-width: 1px) and (max-width: 992px) {
+        .my_account_settings_useraccounts_content_wrapper {
+            margin-right: 16px !important;
+        }
+    }
+
+    @media (min-width: 60px) and (max-width: 320px) {
+        #add_new_user_button {
+            height: 30px !important;
+        }
+        #user_account_edit_button {
+            height: 30px !important;
+        }
+    }
+
+    @media (min-width: 321px) and (max-width: 480px) {
+        #add_new_user_button {
+            height: 30px !important;
+        }
+        #user_account_edit_button {
+            height: 30px !important;
+        }
+    }
+
+    @media (min-width: 481px) and (max-width: 767px) {
+        #add_new_user_button {
+            height: 30px !important;
+        }
+        #user_account_edit_button {
+            height: 30px !important;
+        }
+    }
+</style>
+
+<?php if ($sessionCustomer->isAllowed('accessRight','edit') || $actAsCustomerActivated == true) :?>
+<?php echo $this->getMessagesBlock()->getGroupedHtml() ?>
+<div id="my_account_settings_useraccounts_wrapper" class="my_account_settings_useraccounts_content_wrapper">
+    <div class="row data">
+        <div class="col-xs-12 info-box">
+            <h1><?php echo $this->__('Account Administration') ?></h1>
+            <h2 class="headingBg"><?php echo $this->__('User Accounts') ?></h2>
+            <?php if ($actAsCustomerActivated == false) : ?>
+                <div class="clearfix addBx">
+                    <div class="col-xs-6 col-sm-8">
+                        <span><?php echo $this->__('Additional person') ?><br><?php echo $this->__('(each new person need their own email id) ') ?></span>
+                    </div>
+                    <div class="col-xs-6 col-sm-4">
+                        <button id="add_new_user_button" class="bttn-md add-new-user" title="<?php echo $this->__('Add') ?>" > <?php echo $this->__('Add') ?> &plus;</button>
+                    </div>
+                </div>
+            <?php endif; ?>
+
+            <?php $triggerColor = 2; ?>
+            <?php foreach ($this->getVisibleContacts() as $_customer) : ?>
+                <?php
+                    if ($triggerColor % 2 == 0) $panelInitialBackgroundColor = 'white'; else  $panelInitialBackgroundColor = '#f5f5f5';
+                    $_customer->load($_customer->getId()); // We need all attributes
+                    $triggerColor++;
+                ?>
+
+                <div class="clearfix editBx">
+                        <div class="col-xs-6 col-sm-8">
+                                <div class="col-xs-12 col-sm-6 padL0">
+                                <div class="custName"><?php echo $_customer->getName() ?>
+                                    <?php
+                                    if ($_customer->isInactiveContact()) {
+                                        echo '<span class="role">' . $this->__('inactive') . '</span>';
+                                    }
+                                    if ($_customer->isContact()) {
+                                        $aclRoleName = $_customer->getSchrackAclRole();
+                                        if ($aclRoleName == '') {
+                                            $aclRoleName = $this->__('No Role set');
+                                        }
+                                        // Only for different translation:
+                                        if ($aclRoleName == 'list_price_customer') $aclRoleName = 'List Price Customer';
+                                        echo '<span class="role">' . $this->__($aclRoleName) . '</span>';
+                                     }
+                                     ?>
+                                </div>
+
+                                </div>
+                                <div class="col-xs-12 col-sm-6 custEmail">
+                                    <a href="mailto:<?php echo $_customer->getEmailAddress(); ?>" data-rel="external"><?php echo $_customer->getEmailAddress(); ?></a>
+                                    <br>
+                                    <?php
+                                        $customerTelephone = '';
+                                        if ($_customer->getSchrackMobilePhone()) {
+                                            $customerTelephone = str_replace(array('/', '-'), '', $_customer->getSchrackMobilePhone());
+                                        } elseif ($_customer->getSchrackTelephone()) {
+                                            $customerTelephone = str_replace(array('/', '-'), '', $_customer->getSchrackTelephone());
+                                        }
+                                    ?>
+                                    <a href="tel:<?php echo $customerTelephone; ?>" data-rel="external"><?php echo $customerTelephone; ?></a>
+                                </div>
+                        </div>
+                        <div class="col-xs-6 col-sm-4">
+                            <?php if ($actAsCustomerActivated == false) : ?>
+                                <button id="user_account_edit_button" style="margin-top: 0 !important;" class="bttn-md user-account-edit" onclick="jQuery(location).attr('href', '<?php echo $this->getUrl('customer/accountadministration/edit/id/'.$_customer->getId()) ?>');return false;" title="<?php echo $this->__('Edit') ?>" ><?php echo $this->__('Edit') ?></button>
+                            <?php endif ?>
+                        </div>
+
+
+                    <div class="col-xs-12 col-sm-12">
+                        <div class="action clearfix">
+                            <?php if (!$_customer->isProspect()) : ?>
+                                <div class="col-xs-4 padL0">
+                                <?php if ($_customer->isInactiveContact()) : ?>
+                                    <?php if ($_customer->getEmailAddress()) : ?>
+                                        <?php if ($actAsCustomerActivated == false) : ?>
+                                            <span><a class="user-account-activate user_account_activated"  data-id="<?php echo $_customer->getId()?>"  href="<?php echo $this->getUrl('customer/accountadministration/activate/id/'.$_customer->getId()) ?>" ><?php echo $this->__('Activate') ?></a></span>
+                                        <?php endif ?>
+                                    <?php endif ?>
+                                <?php else : ?>
+                                    <?php if ($actAsCustomerActivated == false) : ?>
+                                        <span><a class="user-account-deactivate user_account_deactivated" data-id="<?php echo $_customer->getId()?>" href="<?php echo $this->getUrl('customer/accountadministration/deactivate/id/'.$_customer->getId()) ?>" ><?php echo $this->__('Deactivate') ?></a></span>
+                                    <?php endif ?>
+                                <?php endif ?>
+                                </div>
+                            <?php endif ?>
+                            <?php if ($actAsCustomerActivated == false) : ?>
+                                <div class="col-xs-4"><a class="user-account-delete user_account_delete" data-id="<?php echo $_customer->getId()?>"  href="<?php echo $this->getUrl('customer/accountadministration/delete/id/'.$_customer->getId()) ?>"><?php echo $this->__('Delete') ?></a></div>
+                            <?php endif ?>
+                            <?php
+                                if ($actAsCustomerActivated == false) {
+                                    $columnClass = 4;
+                                } else {
+                                    $columnClass = 12;
+                                }
+                            ?>
+                            <div class="col-xs-<?php echo $columnClass; ?>">
+                                <a type="button" style="color:#00589d; display:inline-block; background-image:url(<?php echo $this->getSkinUrl('schrackdesign/Public/Images/rwd/downloadIcon.png') ?>);  background-repeat: no-repeat; padding-left: 20px;"
+                                   href="<?php echo Mage::getUrl('customer/account/vcard',array('id' => $_customer->getId())) ?>"
+                                    <span><?php echo $this->__('Save Contact') ?></span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            <?php endforeach ?>
+        </div>
+    </div>
+
+<?php endif; ?>
+
+
+
+<script type="text/javascript">
+//<![CDATA[
+
+jQuery(document).ready(function() {
+
+    <?php if (!$sessionCustomer->isAllowed('accessRight','edit')) :?>
+        console.log('Keine Berechtigung');
+    <?php endif; ?>
+
+    jQuery('.add-new-user').on('click', function() {
+        jQuery(location).attr('href', '<?php echo $this->getUrl('customer/accountadministration/new') ?>');
+        return false;
+    });
+
+    /* Back to Top */
+    jQuery('body').append('<div id="toTop" class="btn btn-info print-hide-imp initialHideToTopSymbol"><span class="glyphicon glyphicon-chevron-up"></span> <?php echo $this->__('Back to Top'); ?></div>');
+    jQuery(window).scroll(function () {
+        if (jQuery(this).scrollTop() != 0) {
+            jQuery('#toTop').fadeIn();
+        } else {
+            jQuery('#toTop').fadeOut();
+        }
+    });
+    jQuery('#toTop').click(function(){
+        jQuery("html, body").animate({ scrollTop: 0 }, 600);
+        console.log('ScrollTop #82');
+        return false;
+    });
+    jQuery('#toTop').removeClass('initialHideToTopSymbol');
+    /* Back to Top */
+
+    function confirmDeleteCustomer() {
+        return confirm('<?php echo $this->__('Are you sure you want to delete this account?') ?>');
+    }
+
+    jQuery('.user_account_delete').on('click', function() {
+        var cofirmDecisionOfUser = confirmDeleteCustomer();
+        if (cofirmDecisionOfUser == true) {
+            if (dataLayer) {
+                dataLayer.push({
+                    'event' : 'userSettingChange',
+                    'eventLabel' : 'User Account Delete'
+                });
+            }
+        }
+        return cofirmDecisionOfUser;
+    });
+
+    jQuery('.user_account_deactivated').on('click', function() {
+        if (dataLayer) {
+            dataLayer.push({
+                'event' : 'userSettingChange',
+                'eventLabel' : 'User Account Deactivate'
+            });
+        }
+    });
+
+    jQuery('.user_account_activated').on('click', function() {
+        if (dataLayer) {
+            dataLayer.push({
+                'event' : 'userSettingChange',
+                'eventLabel' : 'User Account Activate'
+            });
+        }
+    });
+
+    if (jQuery(window).width() < 993) {
+        jQuery('#breadcrumb_block').removeClass('breadcrumb_custom');
+        jQuery('#breadcrumb_block').addClass('breadcrumb_my_account');
+    }
+
+});
+
+//]]>
+</script>
+<!-- app/design/frontend/schrack/schrackresponsive/template/customer/accountadministration/overview.phtml (end) -->

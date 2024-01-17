@@ -1,0 +1,208 @@
+<!-- app/design/frontend/schrack/schrackresponsive/template/tax/checkout/shipping.phtml (start) -->
+<?php
+    $_currency = Mage::getStoreConfig('currency/options/default');
+?>
+
+<style>
+    .checkout_review_shipping_with_tax_excluded_totals {
+        /* border: 1px solid violet; */
+    }
+
+    .checkout_review_shipping_with_tax_excluded_totals_left {
+        width: 73% !important;
+        float: left !important;
+        height: 50px !important;
+        padding-left: 16px !important;
+        padding-top: 21px !important;
+    }
+
+    .checkout_review_shipping_with_tax_excluded_totals_right {
+        width: 27% !important;
+        float: left !important;
+        height: 50px !important;
+        padding-left: 5px !important;
+        padding-right: 5px !important;
+        padding-top: 18px !important;
+    }
+
+    .checkout_review_shipping_subtotal_price_currency {
+        font-size: 0.8em !important;
+        font-weight: bold !important;
+        display: block !important;
+        float: left !important;
+        margin-top: 14px !important;
+        width: 33% !important;
+    }
+
+    .checkout_review_shipping_subtotal_price {
+        font-size: 0.9em !important;
+        font-weight: bold !important;
+        display: block !important;
+        float: left !important;
+        text-align: right !important;
+        width: 67% !important;
+        margin-top: 13px !important;
+    }
+
+
+    @media (min-width: 366px) and (max-width: 499px) {
+        .checkout_review_shipping_with_tax_excluded_totals_left {
+            height: 72px !important;
+            width: 73% !important;
+            font-size: 0.9em !important;
+        }
+        .checkout_review_shipping_with_tax_excluded_totals_right {
+            height: 72px !important;
+            width: 27% !important;
+            padding-top: 18px !important;
+        }
+        .checkout_review_shipping_subtotal_price_currency {
+            font-size: 0.6em !important;
+            margin-top: 10px !important;
+            text-align: left !important;
+            width: 33% !important;
+        }
+        .checkout_review_shipping_subtotal_price {
+            font-size: 1.0em !important;
+            width: 67% !important;
+            text-align: left !important;
+            margin-top: 5px !important;
+        }
+    }
+
+    @media (min-width: 500px) and (max-width: 700px) {
+        .checkout_review_shipping_with_tax_excluded_totals_left {
+            font-size: 1em !important;
+            width: 76% !important;
+        }
+        .checkout_review_shipping_with_tax_excluded_totals_right {
+            width: 24% !important;
+            padding-top: 17px !important;
+        }
+        .checkout_review_shipping_subtotal_price_currency {
+            font-size: 0.8em !important;
+            margin-top: 6px !important;
+            text-align: left !important;
+            width: 33% !important;
+        }
+        .checkout_review_shipping_subtotal_price {
+            font-size: 1em !important;
+            text-align: left !important;
+            width: 67% !important;
+            margin-top: 4px !important;
+        }
+    }
+
+    @media (min-width: 701px) and (max-width: 991px) {
+        .checkout_review_shipping_with_tax_excluded_totals_left {
+            width: 82% !important;
+        }
+        .checkout_review_shipping_with_tax_excluded_totals_right {
+            width: 18% !important;
+            padding-top: 12px !important;
+        }
+        .checkout_review_shipping_subtotal_price_currency {
+            font-size: 0.9em !important;
+            margin-top: 10px !important;
+            text-align: left !important;
+            width: 33% !important;
+        }
+        .checkout_review_shipping_subtotal_price {
+            font-size: 1.2em !important;
+            text-align: left !important;
+            width: 67% !important;
+            margin-top: 5px !important;
+        }
+    }
+
+    @media (min-width: 992px) and (max-width: 1240px) {
+        .checkout_review_shipping_with_tax_excluded_totals_left {
+            width: 86% !important;
+        }
+        .checkout_review_shipping_with_tax_excluded_totals_right {
+            width: 14% !important;
+            padding-top: 11px !important;
+        }
+        .checkout_review_shipping_subtotal_price_currency {
+            font-size: 0.9em !important;
+            margin-top: 11px !important;
+            text-align: left !important;
+            width: 33% !important;
+        }
+        .checkout_review_shipping_subtotal_price {
+            font-size: 1.3em !important;
+            text-align: left !important;
+            width: 67% !important;
+            margin-top: 5px !important;
+        }
+    }
+
+    @media (min-width: 1241px) and (max-width: 3000px) {
+        .checkout_review_shipping_with_tax_excluded_totals_left {
+            width: 86% !important;
+        }
+        .checkout_review_shipping_with_tax_excluded_totals_right {
+            width: 14% !important;
+            padding-top: 12px !important;
+        }
+        .checkout_review_shipping_subtotal_price_currency {
+            font-size: 0.9em !important;
+            margin-top: 9px !important;
+            text-align: left !important;
+            width: 33% !important;
+        }
+        .checkout_review_shipping_subtotal_price {
+            font-size: 1.3em !important;
+            text-align: left !important;
+            width: 67% !important;
+            margin-top: 3px !important;
+        }
+    }
+</style>
+
+<?php if ($this->displayBoth()) : ?>
+    <div class="checkout_review_shipping_with_tax_included_totals">
+        <div class="checkout_review_shipping_with_tax_excluded_totals_left">
+            <?php echo 'sss' . $this->getExcludeTaxLabel() ?>
+        </div>
+        <div class="checkout_review_shipping_with_tax_excluded_totals_right">
+            <span class="checkout_review_shipping_subtotal_price_currency"><?php echo $_currency; ?></span>
+            <span class="checkout_review_shipping_subtotal_price"><?php echo $this->helper('checkout')->formatPrice($this->getShippingExcludeTax()); ?></span>
+        </div>
+        <div style="clear: both;"></div>
+    </div>
+    <div style="clear: both;"></div>
+    <div class="checkout_review_shipping_with_tax_excluded_totals">
+        <div class="checkout_review_shipping_with_tax_excluded_totals_left">
+            <?php echo $this->getIncludeTaxLabel() ?>
+        </div>
+        <div class="checkout_review_shipping_with_tax_excluded_totals_right">
+            <span class="checkout_review_shipping_subtotal_price_currency"><?php echo $_currency; ?></span>
+            <span class="checkout_review_shipping_subtotal_price"><?php echo 'eee' . $this->helper('checkout')->formatPrice($this->getShippingIncludeTax()); ?></span>
+        </div>
+        <div style="clear: both;"></div>
+    </div>
+<?php elseif($this->displayIncludeTax()) : ?>
+    <div class="checkout_review_shipping_with_tax_included_totals">
+        <div class="checkout_review_shipping_with_tax_excluded_totals_left">
+            <?php echo $this->getTotal()->getTitle() ?>
+        </div>
+        <div class="checkout_review_shipping_with_tax_excluded_totals_right">
+            <span class="checkout_review_shipping_subtotal_price_currency"><?php echo $_currency; ?></span>
+            <span class="checkout_review_shipping_subtotal_price"><?php echo $this->helper('checkout')->formatPrice($this->getShippingIncludeTax()); ?></span>
+        </div>
+        <div style="clear: both;"></div>
+    </div>
+<?php else:?>
+    <div class="checkout_review_shipping_with_tax_excluded_totals">
+        <div class="checkout_review_shipping_with_tax_excluded_totals_left">
+            <?php echo $this->getTotal()->getTitle() ?>
+        </div>
+        <div class="checkout_review_shipping_with_tax_excluded_totals_right">
+            <span class="checkout_review_shipping_subtotal_price_currency"><?php echo $_currency; ?></span>
+            <span class="checkout_review_shipping_subtotal_price"><?php echo $this->helper('checkout')->formatPrice($this->getShippingExcludeTax()); ?></span>
+        </div>
+        <div style="clear: both;"></div>
+    </div>
+<?php endif;?>
+<!-- app/design/frontend/schrack/schrackresponsive/template/tax/checkout/shipping.phtml (end) -->

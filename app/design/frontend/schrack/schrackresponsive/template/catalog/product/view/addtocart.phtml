@@ -1,0 +1,780 @@
+<!-- app\design\frontend\schrack\schrackresponsive\template\catalog\product\view\addtocart.phtml (start) -->
+<?php
+    $_product = Mage::registry('product');
+    $_productInfo = $this->getProduct();
+    $_qty = $this->getRequest()->getParam('qty', 0);
+    $_gaHelper = Mage::helper('googleanalytics');
+    $priceHelper = Mage::helper('schrackcatalog/price');
+    if (Mage::getStoreConfig('ec/config/active')) $trackingEnabled = 'enabled'; else $trackingEnabled = 'disabled';
+    $productHelper = Mage::helper('schrackcatalog/product');
+    $replacingProduct = $_product->getLastReplacementProduct();
+    Mage::unregister('replacingProduct');
+    Mage::register('replacingProduct', $replacingProduct);
+    //----------------------------- Color Array for Energy Labels & Energy Value
+    $energyLabelColorCode = array("A" => "#1b6335", "B" => "#267c3b", "C" => "#bed522", "D" => "#fff937", "E" => "#facd2f",
+                                  "F" => "#db6022", "G" => "#d73a2e");
+    //--------------------------------------------------------------------------
+    $sku = $_productInfo->getData('sku');
+    //--------------------------------------------------------------------------
+    $conn = Mage::getSingleton('core/resource')->getConnection('core_read');
+    $query = "SELECT p.sku, optval.value FROM catalog_product_entity_text v
+                    JOIN catalog_product_entity p ON v.entity_id = p.entity_id AND sku IN ('$sku') 
+                    JOIN eav_attribute eav ON attribute_code = 'schrack_newenergieeffizienzkl' AND eav.attribute_id = v.attribute_id
+                    LEFT JOIN eav_attribute_option opt ON opt.attribute_id = v.attribute_id
+                    JOIN eav_attribute_option_value optval ON optval.option_id = opt.option_id AND optval.option_id=v.value;";
+    //--------------------------------------------------------------------------
+    $result = $conn->fetchAll($query);
+    $energyLabelValue = $result[0]["value"];
+    $colorCodeSet = $energyLabelColorCode[$energyLabelValue . ''];
+    //--------------------------------------------------------------------------
+    $imageBaseUrl = Mage::getStoreConfig('schrack/general/imageserver');
+    $attachment = $_product->getAttachment('produktdatenblatt');
+    $eprelDatasheet = $attachment  ? $imageBaseUrl.$attachment->getUrl() : false;
+    //--------------------------------------------------------------------------
+    if( $eprelDatasheet != $imageBaseUrl."eprel_datenblaetter/ed_".strtolower($sku).".pdf") {
+        $eprelDatasheet = false;
+    }
+    //--------------------------------------------------------------------------
+    $skuParts = preg_match_all('/([0-9]+|[a-zA-Z]+)/',$sku,$matches);
+    $letters = strtolower($matches[0][0]);
+    $numbers = $matches[0][1];
+    $skuLowerCase = $letters . $numbers;
+    //--------------------------------------------------------------------------
+    $etiquettePath = Mage::getStoreConfig('schrack/general/imageserver');
+    $etiquette = $etiquettePath . "energieeffizienzklasse/e_$skuLowerCase.jpg";
+?>
+
+<style>
+    <?php if ( intval(Mage::getStoreConfig('carriers/schrackpickup/active')) != 1 ) : ?>
+    .cartInfoHide {
+        display: none !important;
+    }
+    .info_button_pickup_info {
+        display: none !important;
+    }
+    <?php endif; ?>
+
+    .product-details .product-description .product-store #newStockInfoWrapper span.glyphicon{
+        font-family: 'Glyphicons Halflings';
+    }
+
+    .product-details .product-description .product-store span.pickup_store_name,
+    .product-details .product-description .product-store span.nds-time {
+        float: none;
+        padding-left: 0;
+    }
+
+    #cut_off_times_ajax_loader_gif {
+        width: 20px;
+        height: 20px;
+        margin-left: 10px;
+    }
+
+    /*
+        .cut_off_time_text {
+            margin-left: 50px;
+            font-family: robotomedium,Helvetica,Arial,Sans-Serif !important;
+            font-size: 18px !important;
+        }
+    */
+
+    .cut_off_time_text_alternate {
+        color: #000000;
+    }
+
+    .cut_off_time_text_counter {
+        color: #00589d;
+        font-family: robotomedium,Helvetica,Arial,Sans-Serif;
+    }
+
+    /*
+        .logstics-icon-text-row {
+            width: auto;
+            float: left;
+            margin-right: 5px;
+        }
+    */
+
+    .store-icon{
+        margin-right: 22px !important;
+    }
+
+    .logstics-icon {
+        margin-right: 14px !important;
+    }
+
+    .minQtyOuther {
+        width: 175px !important;
+    }
+
+    a.replacing_product_details_link {
+        background: 0 0;
+        color: #fff;
+        font-size: 15px;
+        text-align: center;
+        width: 280px;
+        border: 0;
+        position: relative;
+        border-bottom: 57px solid #d1222b;
+        border-left: 25px solid transparent;
+        display: inline-block;
+        vertical-align: top;
+        top: 0px;
+    }
+
+    a.replacing_product_details_link span{
+        position: absolute;
+        top: 17px;
+        left: 14px;
+    }
+
+    .product-details .product-description .add-cart-btn.inactive {
+        width: 254px;
+        border-top: 57px solid #b9b9b9;
+        border-right: 25px solid transparent;
+        margin-bottom: -37px;
+        padding-left: 0;
+        float: left;
+    }
+
+    .product-details .product-description .add-cart-btn .cart-btn.inactive  {
+        background: 0 0;
+        color: #fff;
+        font-size: 15px;
+        text-align: center;
+        width: 250px;
+        border: 0;
+        position: relative;
+        border-top: 53px solid #b9b9b9;
+        border-right: 25px solid transparent;
+        display: inline-block;
+        vertical-align: top;
+        top: -57px;
+    }
+
+    .logistics-icon-text-row span.logistic-icon {
+        margin-right: 10px;
+    }
+
+    .logistics-icon-text-row span.logstics-icon-text.on_request,
+    .qtyBoxCont ul li.on_request{
+        font-weight: bold;
+        color: #d1222b;
+    }
+
+    .pickup-icon-text-row span.store-icon-new {
+        margin-right: 20px;
+    }
+
+    @media (min-width: 60px) and (max-width: 320px) {
+        .logstics-icon {
+            margin-top: 0 !important;
+            width: 32px !important;
+            height: 19px !important;
+        }
+        .store-icon{
+            width: 23px !important;
+            height: 29px !important;
+            margin-top: 4px !important;
+            margin-left: 0 !important;
+        }
+        .cut_off_time_text {
+            font-size: 14px !important;
+        }
+        .cut_off_time_text_counter {
+            font-size: 14px;
+        }
+        .logstics-icon-text-row {
+            float: none;
+
+        }
+    }
+
+    @media (min-width: 321px) and (max-width: 480px) {
+        .logstics-icon {
+            margin-top: 0 !important;
+            width: 32px !important;
+            height: 19px !important;
+        }
+        .store-icon{
+            width: 23px !important;
+            height: 29px !important;
+            margin-top: 4px !important;
+            margin-left: 0 !important;
+        }
+        .cut_off_time_text {
+            font-size: 14px !important;
+            float: none;
+        }
+        .cut_off_time_text_counter {
+            font-size: 14px;
+        }
+        .logstics-icon-text-row {
+            float: none;
+
+        }
+    }
+
+    @media (min-width: 481px) and (max-width: 768px) {
+        .logstics-icon {
+            margin-top: 0 !important;
+            width: 32px !important;
+            height: 19px !important;
+        }
+        .store-icon{
+            width: 23px !important;
+            height: 29px !important;
+            margin-top: 4px !important;
+            margin-left: 0 !important;
+        }
+        .cut_off_time_text {
+            font-size: 18px !important;
+        }
+        .cut_off_time_text_counter {
+            font-size: 18px;
+        }
+        .logstics-icon-text-row {
+            float: none;
+
+        }
+    }
+
+    @media (min-width: 769px) and (max-width: 1024px) {
+        .logstics-icon {
+            margin-top: 0 !important;
+            width: 32px !important;
+            height: 19px !important;
+        }
+        .store-icon{
+            width: 23px !important;
+            height: 29px !important;
+            margin-top: 4px !important;
+            margin-left: 0 !important;
+        }
+    }
+
+    @media (min-width: 1025px) and (max-width: 1370px) {
+        .logstics-icon {
+            margin-top: 0 !important;
+            width: 32px !important;
+            height: 19px !important;
+        }
+        .store-icon{
+            width: 23px !important;
+            height: 29px !important;
+            margin-top: 4px !important;
+            margin-left: 0 !important;
+        }
+    }
+
+    @media (min-width: 1371px) and (max-width: 1919px) {
+        .logstics-icon {
+            margin-top: 0 !important;
+            width: 32px !important;
+            height: 19px !important;
+        }
+        .store-icon{
+            width: 23px !important;
+            height: 29px !important;
+            margin-top: 4px !important;
+            margin-left: 0 !important;
+        }
+    }
+
+    @media (min-width: 1920px) and (max-width: 4000px) {
+        .logstics-icon {
+            margin-top: 0 !important;
+            width: 32px !important;
+            height: 19px !important;
+        }
+        .store-icon{
+            width: 23px !important;
+            height: 29px !important;
+            margin-top: 4px !important;
+            margin-left: 0 !important;
+        }
+    }
+</style>
+
+<?php if ( $_product->isSaleable() ) : ?>
+    <div class="row">
+        <div id="detail-product-data" style="display: none;"<?php echo $_gaHelper->getDataTags($_product, 0); ?>></div>
+        <?php if ( $_product->isRestricted() ): ?>
+            <div class="not-orderable"
+                 style="font-size: 1.4em !important;
+                        color: #4e4e4e !important;
+                        font-weight: bold !important;
+                        margin-left: 16px !important;">
+                <?php echo $this->__('Currently not orderable') ?>
+            </div>
+        <?php else: ?>
+            <div class="col-md-12 col-sm-12 col-xs-12 product-price posRel hide show-for-print">
+                <span>
+                    <input type="hidden" id="priceInfoStatusField" value="closed">
+                    <span class="glyphicon glyphicon-info-sign info-icon tracking_info_icon"
+                          id="product-price-icon-<?php echo $_product->getSku(); ?>"
+                          data-toggle="dropdown"
+                          aria-haspopup="true"
+                          aria-expanded="true"
+                          data-statusfield="priceInfoStatusField"
+                          data-sku="<?= $_product->getSku(); ?>"
+                          data-type="Price">
+                    </span>
+                    <div class="popupBox qtyBoxCont dropdown-menu"
+                         aria-labelledby="product-price-icon-<?php echo $_product->getSku(); ?>">
+
+                         <!-- Fill Content here by AJAX from commonJs.js -->
+                    </div>
+<!--                    --><?php //if($energyLabelValue) : ?>
+                    <?php if($energyLabelValue && $eprelDatasheet): ?>
+                        <div id='engeryLableSet' style='display: inline-flex; '>
+                                 <!----------------- Energy Label -> SVG ------------>
+                            <div id='energyLable' class='info-icon' data-toggle='modal' data-target='#myModal_<?= $sku ?>'
+                                 style='width:50px;height:27px;border:solid 0px green; margin-left: 10px; margin-top: -7px'>
+                              <svg viewbox='0 0 290 150' style='width:100%;height:auto' >
+                                <polygon points='0,0 0,150 220,150 290,75 220,0'
+                                         style='stroke-width:1;stroke:rgb(0,0,0);fill:<?= $colorCodeSet ?>;' />
+                                <rect width='50' height='148' x='1' y='1'
+                                      style='fill:rgb(255,255,255);stroke-width:1;stroke:rgb(0,0,0);' />
+                                <text x='9' y='40' style='fill:black;font-size:35pt;font-family:Arial;font-weight:bold;'>A</text>
+                                <polyline points='26,50 40,75 30,68 30,95 23,95 23,68 13,75 26,50'
+                                          style='fill:black;stroke:black;stroke-width:1' />
+                                <text x='7' y='142'
+                                      style='fill:black;font-size:35pt;font-family:Arial;font-weight:bold;'>G</text>
+                                <text x='90' y='120'
+                                      style='fill:black;font-size:90pt;font-family:Arial;fill:rgb(255,255,255);
+                                      stroke-width:1;stroke:rgb(30,30,30);'><?= $energyLabelValue ?></text>
+                              </svg>
+                            </div>
+                            <!----------------- Modal popup for Engery Label ------->
+                            <div  id="myModal_<?= $sku ?>" class="modal fade"  role="dialog" >
+                                <div class="modal-dialog modal-sm">
+                                    <div id="modal-content">
+                                        <div class="modal-body">
+                                            <img src="<?= $etiquette ?>"
+                                                 alt="energylabel"
+                                                 width="95%"/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!----------------- Energy Label Text Link ADDTOCART------->
+                            <span style='font-size: 13px; margin-left: 10px; margin-top: -3px; text-decoration: underline'>
+                                <a id='energyLableText' style='color: #888;'
+                                   href='<?= $eprelDatasheet ?>'
+                                   rel="nofollow"
+                                   target='_blank'>Datasheet</a>
+                            </span>
+                        </div>
+                    <?php endif; ?>
+                </span>
+
+            </div>
+            <div style="padding-bottom:20px">
+                <?php if ( $_product->isWebshopsaleable() == false ) {
+                    $cssHide = 'display: none;';
+                } else {
+                    $cssHide = '';
+                }
+                ?>
+                <div class="col-md-12 col-sm-12 col-xs-12 product-quantity hide-on-print"
+                     style="margin-bottom:0; <?php echo $cssHide; ?>">
+                    <div class="qtyLbl"><?php echo $_product->getQtyLabel() ?>:</div>
+                    <div class="inputArea">
+                        <input type="number" onkeypress="return isNumberKey(event)" class="qty form-control quantity-bx"
+                               name="qty" id="qty-<?php echo $_product->getSku(); ?>" maxlength="12"
+                               value="<?php echo($_qty ? $_qty : ''); ?>" title="<?php echo $this->__('Qty') ?>"
+                        />
+                        <input type="hidden" value="<?php echo $_product->getId(); ?>" name="productId"
+                               id="productId-<?php echo $_product->getSku(); ?>"/>
+                    </div>
+                    <div class="qtyTxt hide-on-print">
+                        <!-- ### -->
+                        <div class="small sales-unit">
+                            <span class=""><?php echo $this->__('Sales Unit') . ': '; ?></span>
+                            <span style="white-space: nowrap;" id="salesunit-val-id"></span>
+                        </div>
+                        <div class="minQtyOuther small">
+                            <span><?php echo $this->__('Minimum Quantity') . ': '; ?></span>
+                            <span style="white-space: nowrap;" id="minqty-val-id"></span><br>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        <?php endif; ?>
+
+        <?php if ( $_product->isRestricted() ): ?>
+            <div style="height: 14px !important;">&nbsp;</div>
+        <?php else: ?>
+            <div class="stock-section hide">
+                <div class="col-md-12 col-sm-12 col-xs-12 product-stock posRel">
+                </div>
+                <!-- Deliverable statuses and stock info will be laoded by AJAX from commonJs.js -->
+                <div class="col-md-12 col-sm-12 col-xs-12 product-store">
+                    <!-- Fill Content here by AJAX from commonJs.js -->
+                </div>
+            </div>
+        <?php endif; ?>
+
+        <div class="col-md-12 col-sm-12 col-xs-12 hide-on-print">
+            <?php
+                $class=''; $showButton = false;
+                if ( $_product->isWebshopsaleable() ) {
+                    $showButton = true;
+                    $class = 'add-cart-btn';
+                }
+                //---------------------------------------------------- VTC Check
+                $availabilityInfo = $productHelper->getAvailibilityProductInfo([$_product['sku']]);
+                $nearestDeliveryQty = $availabilityInfo[$_product['sku']]['nearestDeliveryQty'];
+                //--------------------------------------------------------------
+                $vtcDataAttr = "";
+                if(isset($nearestDeliveryQty['providerName']) && $nearestDeliveryQty['providerName'] == "VTC"){
+                    $vtcDataAttr = "data-vtcMaxQty='".$availabilityInfo[$_product['sku']]['deliveryQtySum']."'";
+                }
+            ?>
+            <div class=" <?php echo $class; ?>">
+                <?php if ( $_product->isRestricted() ): ?>
+                    <a href="<?php echo $priceHelper->getProjectPriceUrl($_product->getSku()) ?>" target="_blank"
+                       title="<?php echo $this->__('Send inquiry') ?>" class="cart-btn">
+                        <span style="left: 44px !important;"><?php echo $this->__('Send inquiry') ?></span>
+                    </a>
+                <?php else: ?>
+                    <?php if ($showButton == true): ?>
+                        <button class="addToCartTracking cart-btn <?php echo $class; ?>"
+                            <?php echo ' '.$vtcDataAttr.' '; ?>
+                                id="buyNowButton"
+                                type="button"
+                                title="<?php echo $this->__('Buy now') ?>"
+                                data-tracking-enabled="<?php echo $trackingEnabled; ?>"
+                                data-brand=""
+                                data-click=""
+                                data-event="addToCart"
+                                data-id="<?php echo $_product->getSku(); ?>"
+                                data-sku="<?php echo $_product['sku']; ?>"
+                                data-name="<?php echo $_product['name']; ?>"
+                                data-category="<?php echo $_product->getCategoryId4googleTagManager(); ?>"
+                                data-price="<?php echo number_format((float) str_replace(',', '.', $_product->getPrice()), 2, '.', ''); ?>"
+                        <span class="pull-left cart-icon"></span><span><?php echo $this->__('Buy now') ?></span>
+                        </button>
+                    <?php endif; ?>
+                <?php endif; ?>
+            </div>
+        </div>
+    </div>
+    <div class="addtocart print-only">
+        <?php if (empty($_maySeePrices)) $_maySeePrices = false; ?>
+        <?php if ( $_maySeePrices ): ?>
+            <span class="currency"><?php echo $_currency ?></span>
+            <span class="price"><?php echo $_price; ?></span>/<?php echo $_product->getSchrackQtyunit() ?>
+        <?php else: ?>
+            <span class="price onrequest"><?php echo $this->__('On Request') ?></span>
+        <?php endif; ?>
+    </div>
+<?php endif; ?>
+<input type="hidden" id="cut_off_time_stopper" value="">
+
+<script type="text/javascript">
+    //<![CDATA[
+    var trackingData = new Object();
+    trackingData.trackingEnabled = jQuery('.addToCartTracking').attr("data-tracking-enabled");
+    trackingData.pagetype        = 'cart';
+    trackingData.sku             = jQuery('.addToCartTracking').attr("data-sku");
+    trackingData.name            = jQuery('.addToCartTracking').attr("data-name");
+    //trackingData.price           = jQuery('.addToCartTracking').attr("data-price");
+    trackingData.category        = jQuery('.addToCartTracking').attr("data-category");
+    trackingData.currencyCode    = '<?php echo Mage::app()->getStore()->getCurrentCurrencyCode() ?>';
+
+    var productAddToCartForm = new VarienForm('product_addtocart_form');
+    //--------------------------------------------------------------------------
+    productAddToCartForm.submit = function(){
+        if (this.validator.validate()) {
+            addToCartDispacher();
+        }
+    }.bind(productAddToCartForm);
+
+    function countdownTimer(remainingSeconds, remainTimeStopTime, alternateStopTimeMessage) {
+        // Update the count down every 1 second
+        var originalDistance      = (remainingSeconds - 1);
+        var calculatedDistance    = (remainingSeconds - 1);
+        var hours                 = 0;
+        var minutes               = 0;
+        var seconds               = 0;
+        var langOnOrderIn = '<span class="validToTxt"><?php echo $this->__('Valid On Order In'); ?></span>';
+        //var langDeliverablePrefix = '<?php //echo $this->__('Deliverable On Order In'); ?>//';
+        var langHours             = '<?php echo $this->__('hours'); ?>';
+        var langMinutes           = '<?php echo $this->__('minutes'); ?>';
+        var isViewStopperActive   = false;
+
+        var originalDistanceTimeStopTime   = (remainTimeStopTime - 1);
+        var calculatedDistanceTimeStopTime = (remainTimeStopTime - 1);
+        var hoursTimeStopTime              = 0;
+        var minutesTimeStopTime            = 0;
+        var secondsTimeStopTime            = 0;
+
+        if (remainTimeStopTime > 0) {
+            isViewStopperActive = true;
+        }
+
+        var x = setInterval(function() {
+            // Find the distance between now an the count down date
+            // Time calculations for days, hours, minutes and seconds
+            if (calculatedDistance >= 3600) {
+                hours = Math.floor(calculatedDistance / (60 * 60));
+                calculatedDistance = calculatedDistance - (hours * 60 * 60);
+            } else {
+                hours = 0;
+            }
+            if (calculatedDistance >= 60) {
+                minutes = Math.floor(calculatedDistance / 60);
+                calculatedDistance = calculatedDistance - (minutes * 60);
+            } else {
+                minutes = 0;
+            }
+            seconds = calculatedDistance;
+
+            var displayHours   = hours + " " + langHours;
+            var displayMinutes = minutes + " " + langMinutes;
+
+            // Output the result in an element with id="demo"
+            if (hours == 0) displayHours = "";
+            if (displayMinutes == 0) displayMinutes = "00 " + langMinutes;
+            jQuery('#cut_off_times_ajax_loader_gif').remove();
+            if (isViewStopperActive == false) {
+                jQuery('.cut_off_time_text').html(langOnOrderIn + " " + '<span class="cut_off_time_text_counter" >' + displayHours + " " + displayMinutes + '</span>');
+            }
+
+            calculatedDistance = originalDistance - 1;
+            originalDistance   = originalDistance - 1;
+
+            // If the count down is over, write some text
+            if (originalDistance < 0) {
+                clearInterval(x);
+                processCutOffTime();
+            }
+
+            if (isViewStopperActive == true) {
+                if (calculatedDistanceTimeStopTime >= 3600) {
+                    hoursTimeStopTime = Math.floor(calculatedDistanceTimeStopTime / (60 * 60));
+                    calculatedDistanceTimeStopTime = calculatedDistanceTimeStopTime - (hoursTimeStopTime * 60 * 60);
+                } else {
+                    hoursTimeStopTime = 0;
+                }
+                if (calculatedDistanceTimeStopTime >= 60) {
+                    minutesTimeStopTime = Math.floor(calculatedDistanceTimeStopTime / 60);
+                    calculatedDistanceTimeStopTime = calculatedDistanceTimeStopTime - (minutesTimeStopTime * 60);
+                } else {
+                    minutesTimeStopTime = 0;
+                }
+                secondsTimeStopTime = calculatedDistanceTimeStopTime;
+
+                var displayHoursTimeStopTime = hoursTimeStopTime;
+                var displayMinutesTimeStopTime = minutesTimeStopTime;
+
+                if (hoursTimeStopTime == 0) displayHoursTimeStopTime = "00";
+                if (displayMinutesTimeStopTime == 0) displayMinutesTimeStopTime = "00";
+                if (secondsTimeStopTime == 0) secondsTimeStopTime = "00";
+                if (hoursTimeStopTime < 10 && hoursTimeStopTime > 0) displayHoursTimeStopTime = "0" + displayHoursTimeStopTime;
+                if (displayMinutesTimeStopTime < 10 && displayMinutesTimeStopTime > 0) displayMinutesTimeStopTime = "0" + displayMinutesTimeStopTime;
+                if (secondsTimeStopTime < 10 && secondsTimeStopTime > 0) secondsTimeStopTime = "0" + secondsTimeStopTime;
+
+                var resultTimeStopTime = displayHoursTimeStopTime + ':' + displayMinutesTimeStopTime + ':' + secondsTimeStopTime;
+                jQuery('#cut_off_time_stopper').val(resultTimeStopTime);
+                jQuery('.cut_off_time_text').html('<span class="cut_off_time_text_alternate" >' + alternateStopTimeMessage + '</span>');
+
+                if (resultTimeStopTime == "00:00:00") {
+                    clearInterval(x);
+                    processCutOffTime();
+                }
+
+                calculatedDistanceTimeStopTime = originalDistanceTimeStopTime - 1;
+                originalDistanceTimeStopTime   = originalDistanceTimeStopTime - 1;
+            }
+        }, 1000);
+    }
+
+    function processCutOffTime() {
+        <?php if (intval(Mage::getStoreConfig('schrack/cutofftimes/cutofftimes_module_activated')) == 1) : ?>
+        var ajaxLoader = '<img id="cut_off_times_ajax_loader_gif" class="ajaxSpinnerOverlay" src="<?php echo $this->getSkinUrl('schrackdesign/Public/Images/download_ajax_loader.gif'); ?>" title="<?php echo $this->__('Processing'); ?>" />';
+        jQuery('.cut_off_time_text').html(ajaxLoader);
+
+        var ajaxUrl = '<?php echo Mage::getUrl("catalog/product/getCutOffTime"); ?>';
+        var current_date = new Date();
+        var gmt_offset = current_date.getTimezoneOffset() / 60;
+
+        jQuery.ajax(ajaxUrl, {
+            'dataType' : 'json',
+            'type': 'POST',
+            'data': {
+                'form_key' : '<?php echo Mage::getSingleton('core/session')->getFormKey(); ?>',
+                'timezone_offset' : gmt_offset
+            },
+
+            'success': function (data) {
+                //console.log(data.result);
+                if(data.result == 'cut_off_times_not_active') {
+                    jQuery('.cut_off_time_text').remove();
+                } else {
+                    var remainingHoursMinutes = data.result;
+                    var remainTimeStopTime = data.timestopper_time_active;
+                    var alternateStopTimeMessage = data.timestopper_alternate_message;
+                    countdownTimer(remainingHoursMinutes, remainTimeStopTime, alternateStopTimeMessage);
+                }
+            },
+            'error': function (data) {
+                var parsedData = data;
+                //debugger;
+            }
+        });
+        <?php endif; ?>
+    }
+
+
+    jQuery(document).ready(function () {
+
+        jQuery('#energyLableText').text(Translator.translate('Datasheet'));
+
+        localStorage.searchResultIsSingleProduct = '';
+
+        jQuery('#product_addtocart_form').submit(function (event) {
+            event.preventDefault();
+            jQuery('#buyNowButton').trigger('click');
+        });
+
+        jQuery('#buyNowButton').on('click', function(event){
+            event.preventDefault();
+            if (jQuery('#qty-<?php echo $_product->getSku(); ?>').length) {
+                var inputQuantityObject = jQuery('#qty-<?php echo $_product->getSku(); ?>');
+            } else if (jQuery('#qty').length) {
+                var inputQuantityObject = jQuery('#qty');
+            }
+
+            var inputQuantity = inputQuantityObject.val();
+
+            if(inputQuantity == "") {
+                inputQuantity = "1";
+                inputQuantityObject.val(1);
+            }
+
+            if (inputQuantity.match(/^\d+$/) && inputQuantity != 0) {
+                //---------------------------------------------------- VTC check
+                var vtcMaxQty = jQuery(this).data("vtcmaxqty");
+                if(typeof vtcMaxQty !== 'undefined' && inputQuantity > vtcMaxQty) {
+                    jQuery('ul.messages').empty();
+                    jQuery('ul.errors').empty();
+                    appendMessageUl([Translator.translate("Your selected quantity may result in a longer delivery time. Please select the available quantity currently in stock or pick an alternative item. Get in touch if you would like us to recommend a suitable article.")], 'messages_hidden', 'error-msg', 'glyphicon glyphicon-exclamation-sign');
+                    jQuery('.error-msg').scrollTop();
+                    console.log('appendMessageUl #vtc PDP addtocart');
+                } else {
+                    //it's all digits
+                    productAddToCartForm.submit();
+                }
+            } else {
+                console.log(inputQuantityObject.val() + ' is not a number');
+            }
+        })
+
+
+        jQuery('.tracking_info_icon').on('click', function() {
+            var infoSku              = jQuery(this).attr('data-sku');
+            var infoType             = jQuery(this).attr('data-type');
+            var infoStatusFieldId    = jQuery(this).attr('data-statusfield');
+            var infoStatusFieldValue = jQuery('#' + infoStatusFieldId).val();
+
+            if (infoStatusFieldValue == 'closed') {
+                if (dataLayer) {
+                    dataLayer.push({
+                        'event' : 'clickSmallInfoSymbol',
+                        'eventAction' : infoType,
+                        'eventLabel' : infoSku
+                    });
+                }
+                jQuery('#' + infoStatusFieldId).val('open');
+            }
+        });
+    });
+
+    function simpleAddToCartDispacher ( sku, qty, isCableLeaving ){
+        setOverlayLoader();
+        jQuery('ul.messages').empty();
+        jQuery('ul.errors').empty();
+        jQuery.ajax(ajaxUrl, {
+            'dataType' : 'json',
+            'type': 'POST',
+            'data': {
+                'form_key' : '<?php echo Mage::getSingleton('core/session')->getFormKey(); ?>',
+                'setAddToCart' : {'data' : {'sku' : sku, 'quantity' : qty, 'leaving' : isCableLeaving}}
+            },
+
+            'success': function (data) {
+                unsetOverlayLoader();
+                var parsedData = data;
+                var result = parsedData.setAddToCart.result;
+                if(result.showPopup == true) {	// Open Inquiry Popup
+                    jQuery('#quantitywarningpopup').html(result.popupHtml);
+                    jQuery('#quantitywarningpopupBtn').click();
+                } else {
+                    jQuery("html, body").animate({ scrollTop: 0 }, "slow");
+                    console.log('ScrollTop #53');
+                    if(result.numberOfDifferentItemsInCart){
+                        jQuery('.MyCart').append('<div id="cartNoBxItemCount" class="cartNoBx">'+result.numberOfDifferentItemsInCart+'</div>');
+                    }
+                    var newQuantityDetected = false;
+                    if (result.data.newQty && result.data.newQty > 0) {
+                        newQuantityDetected = true;
+                        if (jQuery('#qty-<?php echo $_product->getSku(); ?>').length) {
+                            var inputQuantityObject = jQuery('#qty-<?php echo $_product->getSku(); ?>');
+                        } else if (jQuery('#qty').length) {
+                            var inputQuantityObject = jQuery('#qty');
+                        }
+                        inputQuantityObject.val(result.data.newQty);
+                    }
+                    var messageArray = result.data.messages;
+                    if(result.result.indexOf("SUCCESS") == -1) {
+                        appendMessageUl(messageArray, 'messages', 'error-msg', 'glyphicon glyphicon-exclamation-sign');
+                        console.log('appendMessageUl #10');
+                    } else {
+                        // Fire trackingcode:
+                        if (newQuantityDetected == false) {
+                            trackingData.quantity = qty;
+                            addToCartTracking(trackingData, 'Detail');
+                        }
+                        appendMessageUl(messageArray, 'messages', 'success-msg', 'glyphicon glyphicon-ok');
+                        console.log('appendMessageUl #11');
+                    }
+                }
+            },
+            'error': function (data) {
+                var parsedData = data;
+                //debugger;
+            }
+        });
+    }
+
+    function addToCartDispacher(){
+        addToCartUrl = jQuery('#product_addtocart_form').attr('action');
+        var productItem = jQuery('#detail-product-data');
+
+        var data = jQuery('#product_addtocart_form').serialize();
+        if (jQuery('#qty-<?php echo $_product->getSku(); ?>').length) {
+            var inputQuantityObject = jQuery('#qty-<?php echo $_product->getSku(); ?>');
+        } else if (jQuery('#qty').length) {
+            var inputQuantityObject = jQuery('#qty');
+        }
+        simpleAddToCartDispacher(jQuery(productItem).attr("data-sku"),inputQuantityObject.val(),false);
+    }
+
+    function setQty(id,qty) {
+        if ('.row product-main-details') {
+            jQuery("#ajax-loader").show();
+        }
+        if (jQuery('#qty-<?php echo $_product->getSku(); ?>').length) {
+            var inputQuantityObject = jQuery('#qty-<?php echo $_product->getSku(); ?>');
+        } else if (jQuery('#qty').length) {
+            var inputQuantityObject = jQuery('#qty');
+        }
+        inputQuantityObject.val(qty);
+        productAddToCartForm.submit();
+    }
+    //]]>
+</script>
+<!-- app\design\frontend\schrack\schrackresponsive\template\catalog\product\view\addtocart.phtml (end) -->

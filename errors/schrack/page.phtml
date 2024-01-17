@@ -1,0 +1,39 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title><?php echo $this->pageTitle?></title>
+  <base href="/" />
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta name="description" content="" />
+  <meta name="keywords" content="" />
+  <meta name="robots" content="*" />
+  <link rel="stylesheet" href="<?php echo $this->getBaseUrl(); ?>skin/frontend/default/schrack/css/default.css" type="text/css" />
+  <link rel="stylesheet" href="<?php echo $this->getBaseUrl(); ?>skin/frontend/default/schrack/css/cms.css" type="text/css" />
+  <!--[if IE]>
+  <link rel="stylesheet" href="<?php echo $this->getBaseUrl(); ?>skin/frontend/default/schrack/css/ie_all.css" type="text/css" />
+  <![endif]-->
+  <link rel="icon" href="<?php echo $this->getBaseUrl(); ?>skin/frontend/default/schrack/favicon.ico" type="image/x-icon" />
+  <link rel="shortcut icon" href="<?php echo $this->getBaseUrl(); ?>skin/frontend/default/schrack/favicon.ico" type="image/x-icon" />
+</head>
+<body id="tmpl-1column">
+  <div id="header-wrap">
+    <div id="header">
+      <div id="logo">
+        <a href="<?php echo $this->getBaseUrl(); ?>"><img src="<?php echo $this->getBaseUrl(); ?>skin/frontend/default/schrack/images/logo.png" width="211" height="61" alt="Schrack Live" /></a>
+      </div>
+    </div>
+  </div>
+  <div id="content-wrap">
+    <div id="content-container">
+        <div id="content">
+<?php require_once $contentTemplate; ?>
+        </div>
+    </div>
+  </div>
+  <div id="footer-wrap">
+    <div id="footer">
+      
+    </div>
+  </div>
+</body>
+</html>

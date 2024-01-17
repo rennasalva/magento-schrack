@@ -1,0 +1,61 @@
+<?php if (Mage::getStoreConfig('ec/config/active')): ?>
+<?php
+/**
+ * LinkShare dataLayer implementation
+ * 
+ * @author Anowave
+ * @since 22/03/2016
+ */
+?>
+<script type="text/javascript">
+
+	var pipe = 
+	{
+		s:[],
+		q:[],
+		a:[],
+		p:[]
+	};
+	
+	<?php if ($this->getOrder()): ?>
+		<?php 
+			$order = Mage::getModel('sales/order')->load
+			(
+				$this->getOrder()->getId()
+			);
+		?>
+
+		<?php
+		
+			foreach ($order->getAllItems() as $item) 
+			{
+				$discount = (float) $item->getDiscountAmount();
+				$subtotal = (float) $item->getRowTotalInclTax();
+
+				if($item->getPrice() > 0)
+				{
+					?>
+						pipe.s.push('<?php echo $item->getSku() ?>');
+						pipe.q.push('<?php echo (int) $item->getQtyOrdered() ?>');
+						pipe.a.push('<?php echo ($subtotal - $discount) ?>');
+						pipe.p.push('<?php echo urlencode($item->getName())?>');
+						
+					<?php 
+				}
+			}
+		?>
+	<?php endif ?>
+
+	dataLayer.push(
+	{
+		event:							'linkshare',
+		pipeDelimitedSkuList:			pipe.s.join('|'),
+		pipeDelimitedQtyList: 			pipe.q.join('|'),
+		pipeDelimitedAmountList: 		pipe.a.join('|'),
+		pipeDelimitedProductNameList: 	pipe.p.join('|'),
+		order: 							'<?php echo $order->getId() ?>',
+		coupon:							'<?php echo $order->getCouponCode() ?>'
+	});
+			
+</script>
+<?php endif ?>

@@ -1,0 +1,15 @@
+<?php
+$_helper    = $this->helper('catalog/output');
+$_category  = Mage::registry('current_category');
+?>
+<?php $_description=$_category->getDescription(); if(isset($_description) && strlen($_description)): ?>
+    <div class="row category-description" id="category-description">
+        <div class="col-md-12">
+            <p class="normalTxt" id="category-description-bodytext-short"></p>
+            <p class="normalTxt" id="category-description-bodytext-long" style="display:none"><?php echo $_description;?></p>
+        </div>
+    </div>
+<div class="row category-description-switcher marginTB10" id="category-description-switcher-row" style="display: none">
+    <div class="col-xs-12"><a href="javascript:void(0)" class="closed" id="category-description-switcher"><?php echo $this->__('More')?></a></div>
+    </div>
+<?php endif; ?>

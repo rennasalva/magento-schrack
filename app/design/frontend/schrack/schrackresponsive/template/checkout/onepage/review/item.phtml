@@ -1,0 +1,447 @@
+<!-- app/design/frontend/schrack/schrackresponsive/template/checkout/onepage/review/item.phtml (start) -->
+<?php
+    $_item = $this->getItem();
+    $_product = $_item->getProduct();
+
+    if ( Mage::getStoreConfig('schrack/shop/show_green_stamp') && $_product->getSchrackStsGreenStamp() != null && $_product->getSchrackStsGreenStamp() > '' ) {
+        $greenStampVal = $this->__('green_stamp_value_' . $_product->getSchrackStsGreenStamp());
+    } else {
+        $greenStampVal = false;
+    }
+
+    $_currency = Mage::getStoreConfig('currency/options/default');
+
+    $_session = Mage::getSingleton('customer/session');
+
+    $aclrole = '';
+    if ($_session->isLoggedIn()) {
+        $sessionLoggedInCustomer = $_session->getCustomer();
+        $aclrole = $sessionLoggedInCustomer->getSchrackAclRole();
+        if($aclrole == 'list_price_customer') {
+            if ($sessionLoggedInCustomer) {
+                $maySpecialCaseCustomerCanSeePrices = $sessionLoggedInCustomer->isAllowed('price', 'view');
+            }
+        }
+    }
+?>
+
+<style>
+    .checkout_review_item_sku {
+        color: #005B9F !important;
+        font-size: 15px !important;
+        float: left !important;
+        width: 100% !important;
+    }
+
+    .checkout_review_item_fulldescription {
+        color: #000000 !important;
+        font-size: 0.9em !important;
+        float: left !important;
+        width: 100% !important;
+    }
+
+    .checkout_review_item_list_left_detail_container {
+        /* border: 1px solid red; */
+        float: left !important;
+        width: 75% !important;
+        height: 124px !important;
+        padding-left: 13px !important;
+        padding-top: 10px !important;
+        border-bottom: 1px solid #cccccc !important;
+    }
+
+    .checkout_review_item_list_right_detail_container {
+        /* border: 1px solid #1b2cff; */
+        float: left !important;
+        width: 25% !important;
+        height: 124px !important;
+        padding-left: 5px !important;
+        padding-right: 5px !important;
+        padding-top: 15px !important;
+        border-bottom: 1px solid #cccccc !important;
+    }
+
+    .checkout_review_item_list_left_detail_container_surcharge {
+        /* border: 1px solid red; */
+        float: left !important;
+        width: 75% !important;
+        height: 163px !important;
+        padding-left: 13px !important;
+        padding-top: 10px !important;
+        border-bottom: 1px solid #cccccc !important;
+    }
+
+    .checkout_review_item_list_right_detail_container_surcharge {
+        /* border: 1px solid #1b2cff; */
+        float: left !important;
+        width: 25% !important;
+        height: 163px !important;
+        padding-left: 5px !important;
+        padding-right: 5px !important;
+        padding-top: 15px !important;
+        border-bottom: 1px solid #cccccc !important;
+    }
+
+    .distance_1 {
+        float: left !important;
+        height: 14px !important;
+        width: 100% !important;
+    }
+
+    .checkout_review_basic_price {
+        color: #005B9F !important;
+        font-size: 1em !important;
+        font-weight: bold !important;
+    }
+
+    .checkout_review_price_unit_to_price {
+        color: #005B9F !important;
+        font-size: 1em !important;
+        font-weight: bold !important;
+    }
+
+    .checkout_review_item_quantity {
+        color: #000000 !important;
+    }
+
+    .checkout_review_total_price_currency{
+        color: #838383 !important;
+        font-size: 0.9em !important;
+        font-weight: bold !important;
+        display: block !important;
+        float: left !important;
+        margin-top: 10px !important;
+        text-align: right !important;
+        width: 100% !important;
+    }
+
+    .checkout_review_total_price {
+        color: #005B9F !important;
+        font-size: 0.9em !important;
+        font-weight: bold !important;
+        display: block !important;
+        float: left !important;
+        text-align: right !important;
+        width: 100% !important;
+    }
+
+    @media (min-width: 366px) and (max-width: 499px) {
+        .checkout_review_item_list_left_detail_container {
+            width: 73% !important;
+            height: 131px !important;
+            padding-left: 2px !important;
+            padding-top: 2px !important;
+        }
+        .checkout_review_item_list_right_detail_container {
+            width: 27% !important;
+            height: 131px !important;
+        }
+        .checkout_review_item_list_left_detail_container_surcharge {
+            width: 73% !important;
+            height: 170px !important;
+            padding-left: 2px !important;
+            padding-top: 2px !important;
+        }
+
+        .checkout_review_item_list_right_detail_container_surcharge {
+            width: 27% !important;
+            height: 170px !important;
+        }
+        .checkout_review_total_price_currency {
+            font-size: 0.8em !important;
+            margin-top: 6px !important;
+            text-align: left !important;
+            width: 33% !important;
+        }
+        .checkout_review_total_price {
+            font-size: 1em !important;
+            width: 67% !important;
+            text-align: left !important;
+            margin-top: 4px !important;
+        }
+        .checkout_review_item_sku {
+            font-size: 0.9em !important;
+        }
+        .checkout_review_item_fulldescription {
+            font-size: 0.9em !important;
+        }
+        .checkout_review_basic_price {
+            font-size: 0.9em !important;
+        }
+        .checkout_review_price_unit_to_price {
+            font-size: 0.9em !important;
+        }
+        .checkout_review_item_quantity {
+            font-size: 0.9em !important;
+        }
+    }
+
+    @media (min-width: 500px) and (max-width: 700px) {
+        .checkout_review_item_list_left_detail_container {
+            width: 76% !important;
+        }
+        .checkout_review_item_list_right_detail_container {
+            width: 24% !important;
+        }
+        .checkout_review_item_list_left_detail_container_surcharge {
+            width: 76% !important;
+        }
+
+        .checkout_review_item_list_right_detail_container_surcharge {
+            width: 24% !important;
+        }
+        .checkout_review_total_price_currency {
+            font-size: 0.9em !important;
+            margin-top: 6px !important;
+            text-align: left !important;
+            width: 33% !important;
+        }
+        .checkout_review_total_price {
+            font-size: 1.2em !important;
+            margin-top: 2px !important;
+            text-align: left !important;
+            width: 67% !important;
+        }
+        .checkout_review_basic_price {
+            font-size: 1em !important;
+        }
+        .checkout_review_price_unit_to_price {
+            font-size: 1em !important;
+        }
+        .checkout_review_item_quantity {
+            font-size: 0.9em !important;
+        }
+    }
+
+    @media (min-width: 701px) and (max-width: 991px) {
+        .checkout_review_item_list_left_detail_container {
+            width: 82% !important;
+        }
+        .checkout_review_item_list_right_detail_container {
+            width: 18% !important;
+        }
+        .checkout_review_item_list_left_detail_container_surcharge {
+            width: 82% !important;
+        }
+
+        .checkout_review_item_list_right_detail_container_surcharge {
+            width: 18% !important;
+        }
+        .checkout_review_total_price_currency {
+            font-size: 0.9em !important;
+            margin-top: 6px !important;
+            text-align: left !important;
+            width: 33% !important;
+        }
+        .checkout_review_total_price {
+            font-size: 1.2em !important;
+            margin-top: 1px !important;
+            text-align: left !important;
+            width: 67% !important;
+        }
+        .checkout_review_basic_price {
+            font-size: 1em !important;
+        }
+        .checkout_review_price_unit_to_price {
+            font-size: 1em !important;
+        }
+        .checkout_review_item_quantity {
+            font-size: 0.9em !important;
+        }
+    }
+
+    @media (min-width: 992px) and (max-width: 1240px) {
+        .checkout_review_item_list_left_detail_container {
+            width: 86% !important;
+        }
+        .checkout_review_item_list_right_detail_container {
+            width: 14% !important;
+        }
+        .checkout_review_item_list_left_detail_container_surcharge {
+            width: 86% !important;
+        }
+
+        .checkout_review_item_list_right_detail_container_surcharge {
+            width: 14% !important;
+        }
+        .checkout_review_total_price_currency {
+            font-size: 1em !important;
+            margin-top: 6px !important;
+            text-align: left !important;
+            width: 33% !important;
+        }
+        .checkout_review_total_price {
+            font-size: 1.3em !important;
+            text-align: left !important;
+            width: 67% !important;
+            margin-top: 2px !important;
+        }
+    }
+
+    @media (min-width: 1241px) and (max-width: 3000px) {
+        .checkout_review_item_list_left_detail_container {
+            width: 86% !important;
+        }
+        .checkout_review_item_list_right_detail_container {
+            width: 14% !important;
+        }
+        .checkout_review_item_list_left_detail_container_surcharge {
+            width: 86% !important;
+        }
+
+        .checkout_review_item_list_right_detail_container_surcharge {
+            width: 14% !important;
+        }
+        .checkout_review_total_price_currency {
+            font-size: 1em !important;
+            margin-top: 6px !important;
+            width: 33% !important;
+            text-align: left !important;
+        }
+        .checkout_review_total_price {
+            font-size: 1.5em !important;
+            width: 67% !important;
+            text-align: left !important;
+            margin-top: -1px !important;
+        }
+    }
+</style>
+
+<div>
+	<div class="<?php if ($_item->getSchrackSurcharge() > 0) echo 'checkout_review_item_list_left_detail_container_surcharge'; else echo 'checkout_review_item_list_left_detail_container'; ?>">
+	    <span class="checkout_review_item_sku"><?php echo $this->__('Article Number') . ' : ' . $_item->getProduct()->getSku(); ?></span>
+        <div class="checkout_review_item_fulldescription">
+		    <span><?php echo $this->htmlEscape($this->getProductName()) ?></span>
+        </div>
+		<?php if ($greenStampVal) : ?>
+		    <div>
+			    <span><?php echo $this->htmlEscape($greenStampVal); ?></span>
+            </div>
+		<?php endif; ?>
+		<?php if ($_options = $this->getOptionList()): ?>
+			<dl class="item-options">
+				<?php foreach ($_options as $_option) : ?>
+				<?php $_formatedOptionValue = $this->getFormatedOptionValue($_option) ?>
+				<dt><?php echo $this->htmlEscape($_option['label']) ?></dt>
+				<dd<?php if (isset($_formatedOptionValue['full_view'])): ?>
+						class="truncated"<?php endif; ?>><?php echo $_formatedOptionValue['value'] ?>
+					<?php if (isset($_formatedOptionValue['full_view'])): ?>
+						<div class="truncated_full_value">
+							<dl class="item-options">
+								<dt><?php echo $this->htmlEscape($_option['label']) ?></dt>
+								<dd><?php echo $_formatedOptionValue['full_view'] ?></dd>
+							</dl>
+						</div>
+					<?php endif; ?>
+				</dd>
+				<?php endforeach; ?>
+			</dl>
+		<?php endif;?>
+        <div class="distance_1">&nbsp;</div>
+        <?php if ( Mage::helper('geoip')->maySeePrices() ) : ?>
+            <div>
+                <span class="checkout_review_basic_price">
+                    <?php if ($aclrole == 'list_price_customer' && $maySpecialCaseCustomerCanSeePrices == false) : ?>
+                    <?php else: ?>
+                        <?php echo $_currency . ' ' . $this->helper('checkout')->formatPrice($_item->getSchrackBasicPrice()); ?>
+                    <?php endif; ?>
+                </span>
+                <?php if ($aclrole == 'list_price_customer' && $maySpecialCaseCustomerCanSeePrices == false) : ?>
+                <?php else: ?>
+                    <span class="checkout_review_price_unit_to_price">
+                        <?php echo $this->__('per') . ' ' . ($_product->getSchrackPriceunit() > 1 ? $_product->getSchrackPriceunit() . ' ' : '') . $_product->getSchrackQtyunit(); ?>
+                    </span>
+                <?php endif; ?>
+                <?php if ($_item->getSchrackSurcharge() > 0): ?>
+                    <br>
+                    <span class="checkout_review_surcharge_to_price">
+                        <?php if ($aclrole == 'list_price_customer' && $maySpecialCaseCustomerCanSeePrices == false) : ?>
+                        <?php else: ?>
+                            <?php echo $this->__('Surcharge') . ' ' . $_currency . ' ' . $this->helper('checkout')->formatPrice($_item->getSchrackSurcharge()) . ' ' .  $this->__('per') . ' ' . ($_product->getSchrackPriceunit() > 1 ? $_product->getSchrackPriceunit() . ' ' : '') . $_product->getSchrackQtyunit(); ?>
+                        <?php endif; ?>
+                    </span>
+                <?php endif; ?>
+                <?php if ($_item->getSchrackWwsCuttingfee() > 0): ?>
+                    <br>
+                    <span class="checkout_review_cuttingfee_to_price">
+                        <?php echo $this->__('Cuttingcosts'); ?>
+                    </span>
+                <?php endif; ?>
+            </div>
+            <div>
+                <span class="checkout_review_item_quantity">
+                    <?php echo $this->__('Qty') . ' ' . $_item->getQty() . ' ' . $_product->getSchrackQtyunit(); ?>
+                </span>
+                <?php if (intval($_item->getSchrackBackorderQty(), 10) > 0) : ?>
+                    <span class="backorder_quantity">
+                        <?php echo '  |  ' . $this->__('Back Ordered') . ' ' . $_item->getSchrackBackorderQty() . ' ' . $_product->getSchrackQtyunit(); ?>
+                    </span>
+                <?php endif; ?>
+            </div>
+        <?php endif;?>
+	    <div class="drum_description">
+		    <?php // echo $_item->getQty(); ?>
+		    <?php if (strlen($this->htmlEscape($this->getDrumDescription()))) : ?>
+                <span>
+                    <?php //echo $this->htmlEscape($this->getDrumDescription()) ?>
+                </span>
+		    <?php endif;?>
+	    </div>
+	    <div><?php // echo $this->getSchrackProductQtyunit() ?></div>
+    </div>
+    <div class="<?php if ($_item->getSchrackSurcharge() > 0) echo 'checkout_review_item_list_right_detail_container_surcharge'; else echo 'checkout_review_item_list_right_detail_container'; ?>">
+        <?php if ( Mage::helper('geoip')->maySeePrices() ) : ?>
+        <div class="checkout_review_item_list_right_price_row">
+            <span class="checkout_review_total_price_currency">
+                <?php if ($aclrole == 'list_price_customer' && $maySpecialCaseCustomerCanSeePrices == false) :  ?>
+                <?php else: ?>
+                    <?php echo $_currency; ?>
+                <?php endif; ?>
+            </span>
+            <span class="checkout_review_total_price">
+                <?php if ($aclrole == 'list_price_customer' && $maySpecialCaseCustomerCanSeePrices == false) :  ?>
+                <?php else: ?>
+                    <?php echo ' ' . $this->helper('checkout')->formatPrice($_item->getSchrackRowTotalExclSurcharge()) ?>
+                <?php endif;?>
+            </span>
+            <div style="clear: both;"></div>
+            <?php if ($_item->getSchrackSurcharge() > 0): ?>
+                <br>
+                <br>
+                <div>
+                    <?php if ($aclrole == 'list_price_customer' && $maySpecialCaseCustomerCanSeePrices == false) :  ?>
+                    <?php else: ?>
+                        <?php echo  $_currency . ' &nbsp;&nbsp;<span style="color: #767676 !important;">' . $this->helper('checkout')->formatPrice($_item->getSchrackRowTotalSurcharge()) . '</span>'; ?>
+                    <?php endif; ?>
+                </div>
+                <?php if ($_item->getSchrackWwsCuttingfee() > 0): ?>
+                    <div>
+                        <?php if ($aclrole == 'list_price_customer' && $maySpecialCaseCustomerCanSeePrices == false) :  ?>
+                        <?php else: ?>
+                            <?php echo $_currency . ' &nbsp;&nbsp;<span style="color: #767676 !important;">' . $this->helper('checkout')->formatPrice($_item->getSchrackWwsCuttingfee()) . '</span>'; ?>
+                        <?php endif; ?>
+                    </div>
+                <?php endif; ?>
+            <?php else: ?>
+                <?php if ($_item->getSchrackWwsCuttingfee() > 0): ?>
+                    <br>
+                    <br>
+                    <div>
+                        <?php if ($aclrole == 'list_price_customer' && $maySpecialCaseCustomerCanSeePrices == false) :  ?>
+                        <?php else: ?>
+                            <?php echo $_currency . ' &nbsp;&nbsp;<span style="color: #767676 !important;">' . $this->helper('checkout')->formatPrice($_item->getSchrackWwsCuttingfee()) . '</span>'; ?>
+                        <?php endif; ?>
+                    </div>
+                <?php endif; ?>
+            <?php endif;?>
+
+        </div>
+    </div>
+    <?php else : ?>
+        <div class="checkout_review_item_list_right_price_row">
+            <span class="checkout_review_total_price"> <h4><?php echo $this->__('Price') . '&nbsp;' . $this->__('on request'); ?></h4></span>
+        </div>
+    <?php endif; ?>
+</div>
+<div style="clear: both;"></div>
+<!-- app/design/frontend/schrack/schrackresponsive/template/checkout/onepage/review/item.phtml (end) -->

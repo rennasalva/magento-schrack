@@ -1,0 +1,264 @@
+<!-- app/design/frontend/schrack/schrackresponsive/template/page/html/head.phtml (start) -->
+<meta http-equiv="X-UA-Compatible" content="IE=10,9"/>
+<link rel="manifest" href="/manifest.json"/>
+<!-- usercentrics implementation-->
+<?php
+    $usercentricsID = Mage::getStoreConfig('ec/config/usercentrics-id');
+    $shopLanguage = Mage::getStoreConfig('schrack/general/country');
+    $gtmID = Mage::getStoreConfig('ec/config/code_head');
+
+    if(false && $usercentricsID) {
+        echo
+            // improves performance
+            '<link rel="preconnect" href="//app.usercentrics.eu">' .
+            '<link rel="preconnect" href="//api.usercentrics.eu">' .
+            '<link 
+                rel="preload" 
+                href="//app.usercentrics.eu/browser-ui/2.29.0/loader.js" 
+                as="script" 
+                integrity="sha384-sk5xB6+CEx8Chzyh3NbtvSerFjNi/I1Loud7IXpAr7SoUV1DVAraAvxEyKs8eYOt" 
+                crossorigin="anonymous" 
+            >';
+
+        echo
+           //  userCentric script (language auto), Version 2.29.0
+            '<script 
+                id="usercentrics-cmp" 
+                data-language="' . $shopLanguage . '" 
+                src="https://app.usercentrics.eu/browser-ui/2.29.0/loader.js" 
+                integrity="sha384-sk5xB6+CEx8Chzyh3NbtvSerFjNi/I1Loud7IXpAr7SoUV1DVAraAvxEyKs8eYOt" 
+                crossorigin="anonymous" 
+                data-settings-id= "' . $usercentricsID . '" async>
+            </script>'
+
+            //  userCentric script for the draft version
+            #<script id="usercentrics-cmp" src="https://app.usercentrics.eu/browser-ui/2.29.0/loader.js" integrity=sha384-sk5xB6+CEx8Chzyh3NbtvSerFjNi/I1Loud7IXpAr7SoUV1DVAraAvxEyKs8eYOt" crossorigin=“anonymous“ data-version="preview" data-settings-id="cyEHNkcZH" async></script>
+
+            .'<script type="text/javascript">
+                // create dataLayer
+                window.dataLayer = window.dataLayer || [];
+                function gtag() {
+                    dataLayer.push(arguments);
+                }
+        
+                // set „denied" as default for both ad and analytics storage,
+                gtag("consent", "default", {
+                    ad_storage: "denied",
+                    analytics_storage: "denied",
+                    wait_for_update: 2000 // milliseconds to wait for update
+                });
+        
+                // Enable ads data redaction by default [optional]
+                gtag("set", "ads_data_redaction", true);
+            </script>'
+
+            .'<script type="text/javascript">
+                // Google Tag Manager
+                (function(w, d, s, l, i) {
+                        w[l] = w[l] || [];
+                        w[l].push({
+                       "gtm.start": new Date().getTime(),
+                        event: "gtm.js"
+                    });
+                    var f = d.getElementsByTagName(s)[0],
+                        j = d.createElement(s),
+                        dl = l != "dataLayer" ? "&l=" + l : "";
+                    j.async = true;
+                    j.src =
+                        "https://www.googletagmanager.com/gtm.js?id=" + i + dl;
+                    f.parentNode.insertBefore(j, f);
+                 })(window, document, "script", "dataLayer", "'. $gtmID .'");
+            </script>';
+    }
+?>
+
+<?php if (($this->getTitle() != "Magento Commerce" ) && ($this->getTitle() != NULL )) : ?>
+	<title><?php echo trim($this->getTitle()) ?></title>
+<?php endif; ?>
+<?php
+	$currentUrl = Mage::helper('core/url')->getCurrentUrl();
+	$tsMegaMenu = Mage::helper('schrackcatalog/megamenu')->getMegamenuChangedTimestampText();
+
+	$onlineschauraumIdentifier = false;
+
+	if (stristr($currentUrl, 'www.schrack.at/shop/wishlist/endcustomerpartslist/data/')
+		|| stristr($currentUrl, 'www.schrack.at/shop/wishlist/endcustomerpartslist/catalogs')
+		|| stristr($currentUrl, 'www.schrack.at/shop/wishlist/endcustomerpartslist/index/idkey/') ) {
+		$onlineschauraumIdentifier = true;
+	}
+
+	/* facebook */
+	if (($this->getTitle() != "Magento Commerce" ) && ($this->getTitle() != NULL )) :
+		$title = $this->getTitle();
+		$title = str_replace(Mage::getStoreConfig('design/head/title_prefix'), '', $title);
+		$title = str_replace(Mage::getStoreConfig('design/head/title_suffix'), '', $title);
+?>
+<?php endif; ?>
+<?php
+	if ( isset($refreshURL) ) {
+		echo '<meta http-equiv="refresh" content="1; URL='.$refreshURL.'">';
+	}
+?>
+<meta http-equiv="Content-Type" content="<?php echo $this->getContentType() ?>" />
+
+<meta id="metaDescriptionDataHead" name="description" content="<?php echo $this->getDescription() ?>" />
+
+<?php if (($this->getKeywords() != "Magento, Varien, E-commerce" ) && ($this->getKeywords() != NULL )) : ?>
+	<meta name="keywords" content="<?php echo htmlspecialchars($this->getKeywords()) ?>" />
+<?php endif; ?>
+<?php if (($this->getRobots() != "INDEX,FOLLOW") && ($this->getRobots() != "*")) : ?>
+	<meta name="robots" content="<?php echo htmlspecialchars($this->getRobots()) ?>" />
+<?php endif; ?>
+<link rel="shortcut icon" href="<?php echo $this->getSkinUrl('favicon.ico') ?>" type="image/x-icon" />
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!--    Conifigurator implementation-->
+<script
+    src="https://portal.combeenation.com/plugin/Schrack/VERTEILER">
+</script>
+
+<!--    InPost implementation-->
+<link rel="stylesheet" href="https://geowidget.inpost.pl/inpost-geowidget.css"/>
+<script src='https://geowidget.inpost.pl/inpost-geowidget.js' defer></script>
+
+<script type="text/javascript">
+//<![CDATA[
+    var BLANK_URL = '<?php echo $this->helper('core/js')->getJsUrl('blank.html') ?>';
+    var BLANK_IMG = '<?php echo $this->helper('core/js')->getJsUrl('spacer.gif') ?>';
+    var BASE_URL  = '<?php echo str_replace('index.php/', '', Mage::getBaseUrl());?>';
+	var shopPageBaseUrl = BASE_URL;
+    console.log('mega_menu_latest_refresh_datetime (ISO): ' + '<?php echo $tsMegaMenu; ?>');
+    var MEGA_MENU_LATEST_REFRESH_TIMESTAMP = '<?php echo strtotime($tsMegaMenu); ?>';
+    
+    var formKey = '<?php echo Mage::getSingleton('core/session')->getFormKey(); ?>';
+    var ajaxUrl = '<?php echo Mage::helper('schrackcore/url')->getUrlWithCurrentProtocol('sd/AjaxDispatcher/setGetData'); ?>';
+    localStorage.newCheckoutProcessCurrentRole = "none";
+    <?php if ($this->helper('customer')->isLoggedIn()) : ?>
+        localStorage.customerNotLoggedIn = "0";
+        localStorage.setItem('itemCustomerNotLoggedIn',"0");
+    <?php else : ?>
+        localStorage.customerNotLoggedIn = "1";
+        localStorage.setItem('itemCustomerNotLoggedIn',"1");
+    <?php endif; ?>
+//]]>
+</script>
+
+<?php
+if ($onlineschauraumIdentifier == true) {
+	$resultgetCssJsHtml = str_replace('js/../', '', $this->getCssJsHtml());
+	$resultgetCssJsHtml = preg_replace('/Public\/Stylesheets\/.*allPacked.css/', 'Public/Stylesheets/allPacked.css', $resultgetCssJsHtml);
+	$resultgetCssJsHtml = preg_replace('/Public\/Javascript\/.*prototype.compacted.js/', 'Public/Javascript/prototype.compacted.js', $resultgetCssJsHtml);
+	$resultgetCssJsHtml = preg_replace('/Public\/Javascript\/.*allPacked.js/', 'Public/Javascript/allPacked.js', $resultgetCssJsHtml);
+	echo $resultgetCssJsHtml;
+} else {
+	echo $this->getCssJsHtml();
+}
+?>
+
+<!-- <?php echo $currentUrl; ?>  -->
+
+<?php
+	if ($onlineschauraumIdentifier == true) :
+?>
+<script type="text/javascript" src="<?php echo $this->getSkinUrl('schrackdesign/Public/Javascript/packedFooter.js')?>" ></script>
+<?php endif; ?>
+
+<?php
+	$actionName = $this->getAction()->getFullActionName();
+	if ($actionName == 'catalog_category_view') {
+		$category = Mage::registry('current_category');
+		$prodCol = $category->getProductCollection();
+		$tool = $this->getLayout()->createBlock('page/html_pager')->setLimit($this->getLayout()->createBlock('catalog/product_list_toolbar')->getLimit())->setCollection($prodCol);
+		$linkPrev = false;
+		$linkNext = false;
+		if ($tool->getCollection()->getSelectCountSql()) {
+			if ($tool->getLastPageNum() > 1) {
+				if (!$tool->isFirstPage()) {
+					$linkPrev = true;
+					if ($tool->getCurrentPage() == 2) {
+						$url = explode('?', $tool->getPreviousPageUrl());
+						$prevUrl = @$url[0];
+					}
+					else {
+						$prevUrl = $tool->getPreviousPageUrl();
+					}
+				}
+				if (!$tool->isLastPage()) {
+					$linkNext = true;
+					$nextUrl = $tool->getNextPageUrl();
+				}
+			}
+		}
+		if ($linkPrev) echo '<link rel="prev" href="' . $prevUrl . '" />'."\n";
+		if ($linkNext) echo '<link rel="next" href="' . $nextUrl . '" />'."\n";
+	}
+?>
+<?php echo $this->getChildHtml() ?>
+<?php echo $this->helper('core/js')->getTranslatorScript() ?>
+<?php echo $this->getIncludes() ?>
+<?php echo $this->getChildHtml('applicationjs')?>
+
+<input type="hidden" id="head_phtml_uncached_timestamp" value="<?php echo date('Y-m-d H:i:s'); ?>">
+
+<script type="text/javascript">
+    //<![CDATA[
+if('serviceWorker' in navigator) {
+  navigator.serviceWorker
+           .register('serviceworker.js')
+           .then(function(registration) {
+               console.log("Service Worker Registered");
+               registration.update();
+           });
+}
+
+<?php
+    $session = Mage::getSingleton('customer/session');
+    $customer = $session->getCustomer();
+    $actAsCustomer = $session->getLoggedInCustomer();
+?>
+<?php if ( $customer && $customer->getId() && $actAsCustomer && $actAsCustomer->getId() && $customer->getId() != $actAsCustomer->getId() ) : ?>
+    localStorage.actAsACustomer = "1";
+    localStorage.actAsACustomerRealEmail = "<?php echo $actAsCustomer->getEmail(); ?>";
+    localStorage.customerLoggedInEmail = "<?php echo $customer->getEmail(); ?>";
+    <?php if ($customer->getAccount()) : ?>
+        localStorage.customerLoggedInCompanyName = '<?php echo str_replace("'",'"',$customer->getAccount()->getName1()); ?>';
+    <?php else : ?>
+        localStorage.customerLoggedInCompanyName = "";
+    <?php endif; ?>
+<?php else : ?>
+    localStorage.actAsACustomer = "0";
+    localStorage.actAsACustomerRealEmail = "";
+    localStorage.customerLoggedInEmail = "<?php echo (! $customer || ! $customer->getId()) ? '' : $customer->getEmail() ?>";
+    <?php if ($customer && $customer->getAccount()) : ?>
+        localStorage.customerLoggedInCompanyName = "";
+    <?php endif; ?>
+<?php endif; ?>
+
+jQuery(document).ready(function() {
+    if (jQuery('#search').length != 1) {
+    console.log('Search Bar is missing');
+<?php if (!stristr($currentUrl, 'checkout/onepage/')) : ?>
+    jQuery.ajax({
+        url: '<?php echo Mage::helper('schrackcore/url')->getUrlWithCurrentProtocol('sd/cache/setSearchBarFlushed'); ?>',
+        type: 'post',
+        dataType: 'json',
+        data: {
+            'form_key' : '<?php echo Mage::getSingleton('core/session')->getFormKey(); ?>',
+        },
+        success: function (data) {
+                console.log('Search Bar flush returned: ' + data);
+                if ( data == 'flushed' ) {
+                    location.reload(true);
+                }
+        },
+        error: function (data) {
+                console.log('Search Bar not successfully flushed');
+        }
+     });
+<?php endif; ?>
+}
+
+});
+    //]]>
+</script>
+<!-- app/design/frontend/schrack/schrackresponsive/template/page/html/head.phtml (end) -->

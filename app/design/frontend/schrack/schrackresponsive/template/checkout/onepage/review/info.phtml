@@ -1,0 +1,302 @@
+<!-- app/design/frontend/schrack/schrackresponsive/template/checkout/onepage/review/info.phtml (start) -->
+<?php
+    $isProspect = false;
+
+    $quote = Mage::getSingleton('checkout/session')->getQuote();
+
+    if ($quote && is_object($quote)) {
+        $quoteCustomerType = $quote->getSchrackCustomertype();
+        if (in_array($quoteCustomerType, array('oldFullProspect', 'oldLightProspect', 'newProspect'))) {
+           $isProspect = true;
+        }
+    }
+
+    $_session = Mage::getSingleton('customer/session');
+
+    $showPaymentTerms = true;
+    $aclrole = '';
+    if ($_session->isLoggedIn()) {
+        $sessionLoggedInCustomer = $_session->getCustomer();
+        $aclrole = $sessionLoggedInCustomer->getSchrackAclRole();
+        if($aclrole == 'list_price_customer') {
+            $showPaymentTerms = false;
+            if ($sessionLoggedInCustomer) {
+                $maySpecialCaseCustomerCanSeePrices = $sessionLoggedInCustomer->isAllowed('price', 'view');
+            }
+        }
+    }
+
+    $quote = Mage::getSingleton('checkout/session')->getQuote();
+    $quoteItems = $quote->getItemsCollection();
+?>
+
+<style>
+    #checkout_review_container_headline {
+        color: #005B9F !important;
+        width: 170px !important;
+        height: 31px !important;
+        margin-left: 2% !important;
+        margin-top: 20px !important;
+        margin-bottom: 10px !important;
+        font-size: 17px !important;
+    }
+
+    #checkout-review-itemslist-headline {
+        height: 55px !important;
+        background: #eeeeee !important;
+        border: 1px solid #cccccc !important;
+        margin-left: 2% !important;
+        margin-right: 2% !important;
+    }
+
+    #checkout-review-itemslist-headline-item {
+        float: left !important;
+        color: #005B9F !important;
+        margin-left: 20px !important;
+        margin-top: 20px !important;
+        margin-bottom: 10px !important;
+        font-size: 0.9em !important;
+        font-weight: bold !important;
+        width: 26% !important;
+        height: 24px !important;
+    }
+
+    #checkout-review-itemslist-headline-itemprice {
+        float: right !important;
+        color: #005B9F !important;
+        margin-left: 20px !important;
+        margin-top: 20px !important;
+        margin-bottom: 10px !important;
+        font-size: 0.9em !important;
+        font-weight: bold !important;
+        width: 50% !important;
+        height: 24px !important;
+        padding-right: 11px !important;
+        text-align: right !important;
+    }
+
+    #checkout-review-itemslist {
+        /* background-color: #00f400; */
+        margin-left: 2% !important;
+        margin-right: 2% !important;
+        border: 1px solid #cccccc !important;
+    }
+
+    #checkout-review-itemslist-totals {
+        /* background-color: #7ffdff; */
+        margin-left: 2% !important;
+        margin-right: 2% !important;
+    }
+
+    #checkout-review-submit{
+        margin-left: 2% !important;
+        margin-right: 2% !important;
+    }
+
+    #checkout-review-shipment-mode {
+        margin-left: 2% !important;
+        margin-right: 2% !important;
+        margin-bottom: 10px !important;
+
+    }
+
+    #checkout-review-payment-terms {
+        margin-left: 2% !important;
+        margin-right: 2% !important;
+        margin-bottom: 10px !important;
+    }
+
+    .clear-both {
+        clear: both !important;
+    }
+
+    @media (max-width: 365px)) {
+        #checkout-review-itemslist-headline {
+            height: 34px !important;
+        }
+        #checkout-review-itemslist-headline-item {
+            width: 26% !important;
+            height: 34px !important;
+            margin-top: 0px !important;
+            margin-bottom: 0px !important;
+            padding-top: 8px !important;
+        }
+        #checkout-review-itemslist-headline-itemprice {
+            width: 50% !important;
+            height: 34px !important;
+            margin-top: 0px !important;
+            margin-left: 0px !important;
+            margin-bottom: 0px !important;
+            padding-top: 8px !important;
+            text-align: right !important;
+            margin-right: 10px !important;
+        }
+    }
+
+    @media (min-width: 366px) and (max-width: 499px) {
+        #checkout-review-itemslist-headline {
+            height: 34px !important;
+        }
+        #checkout-review-itemslist-headline-item {
+            width: 30% !important;
+            height: 34px !important;
+            margin-top: 0px !important;
+            margin-bottom: 0px !important;
+            padding-top: 8px !important;
+        }
+        #checkout-review-itemslist-headline-itemprice {
+            width: 50% !important;
+            height: 34px !important;
+            margin-top: 0px !important;
+            margin-left: 0px !important;
+            margin-bottom: 0px !important;
+            padding-top: 8px !important;
+            text-align: right !important;
+            margin-right: 10px !important;
+        }
+    }
+
+    @media (min-width: 500px) and (max-width: 991px) {
+        #checkout-review-itemslist-headline-item {
+            font-size: 1.1em !important;
+        }
+        #checkout-review-itemslist-headline-itemprice {
+            text-align: right !important;
+            margin-right: 10px !important;
+            font-size: 1.1em !important;
+        }
+    }
+
+    @media (min-width: 992px) and (max-width: 3000px) {
+        #checkout-review-itemslist-headline-item {
+            font-size: 1.2em !important;
+        }
+        #checkout-review-itemslist-headline-itemprice {
+            font-size: 1.2em !important;
+        }
+    }
+</style>
+<input type="hidden" value="<?php echo $aclrole; ?>" id="acl_role">
+<div class="box-content">
+    <?php echo $this->getChildHtml('items_before'); ?>
+    <div id="checkout_review_container_headline"><?php echo $this->__('Order Review') ?></div>
+    <div id="checkout-review-itemslist-headline">
+        <span id="checkout-review-itemslist-headline-item"><?php echo $this->__('Items') ?></span>
+        <span id="checkout-review-itemslist-headline-itemprice">
+            <?php if ($aclrole == 'list_price_customer' && $maySpecialCaseCustomerCanSeePrices == false) : ?>
+            <?php else: ?>
+                <?php echo $this->__('Subtotal') ?>
+            <?php endif; ?>
+        </span>
+        <div class="clear-both"></div>
+    </div>
+    <div id="checkout-review-itemslist">
+        <?php foreach($this->getItems() as $_item) : ?>
+            <?php echo $this->getItemHtml($_item)?>
+         <?php endforeach; ?>
+    </div>
+    <div id="checkout-review-itemslist-totals">
+        <?php echo $this->getChildHtml('totals'); ?>
+    </div>
+    <?php
+    $geoipHelper = Mage::helper('geoip');
+    if ($geoipHelper->maySeePrices()):?>
+        <p>
+            <?php
+                $shipmentMode = Mage::getSingleton('checkout/session')->getQuote()->getSchrackShipmentMode();
+                $paymentTerms = Mage::getSingleton('checkout/session')->getQuote()->getSchrackPaymentTerms();
+            ?>
+            <?php if ($shipmentMode && strlen(trim($shipmentMode)) > 0) : ?>
+            <div id="checkout-review-shipment-mode">
+                <strong><?php echo $this->__('Shipment Mode'); ?></strong>:
+                <span id="shipment-mode-hide"> <?php echo $this->__($shipmentMode); ?> </span>
+                <span id="shipping-method-checkout"></span>
+            </div>
+            <?php endif; ?>
+            <div id="checkout-review-payment-terms">
+                <?php if ($showPaymentTerms == true) : ?>
+                    <?php if ($paymentTerms && strlen(trim($paymentTerms)) > 0) : ?>
+                            <strong><?php echo $this->__('Payment Terms'); ?></strong>: <?php echo $this->__($paymentTerms); ?>
+                    <?php endif; ?>
+                <?php endif; ?>
+                <span style="float:left;width:100%;clear:both;">
+                    <strong><?php echo $this->__('Payment Terms'); ?> - PV: </strong><?php echo $this->__('For Orders With Photovoltaic Products, 14 Days Net Generally Apply'); ?>
+                </span>
+            </div>
+        </p>
+    <?php endif;?>
+</div>
+
+<div id="checkout-review-submit">
+    <div class="box-content">
+		<?php echo $this->getChildHtml('agreements') ?>
+        <?php if ($isProspect && Mage::getStoreConfig('schrack/new_self_registration/triggerNewsletterForProspects')): ?>
+            <div>
+                <input id="newsletter_checkbox" type="checkbox" value="newsletter" <?php if (Mage::getStoreConfig('schrack/new_self_registration/triggerNewsletterForProspectsDefaultSetting')) : ?> checked="checked" <?php endif; ?>>&nbsp;<?php echo $this->__('Agree Newsletter Checkbox Text'); ?>
+            </div>
+            <br>
+        <?php endif; ?>
+		<p class="f-left"><?php echo $this->__('Forgot an Item?') ?> <a href="<?php echo $this->getUrl('checkout/cart') ?>"><?php echo $this->__('Edit Your Cart') ?></a></p>
+    </div>
+	<?php echo $this->getChildHtml('button') ?>
+</div>
+
+
+<script type="text/javascript">
+//<![CDATA[
+jQuery(document).ready(function(){
+    //  fetching shipping method from localstorage search for the right key and display it in checkout
+    var shipping_method_type_start = localStorage.newCheckoutShippingMethod;
+    jQuery('#shipment-mode-hide').hide();
+
+    if (shipping_method_type_start == 'pickup') {
+        jQuery('#shipping-method-checkout').text(Translator.translate('Pickup'));
+    } else if (shipping_method_type_start == 'delivery') {
+        jQuery('#shipping-method-checkout').text(Translator.translate('Delivery'));
+    } else if(shipping_method_type_start == 'container') {
+        jQuery('#shipping-method-checkout').text(Translator.translate('PickUp Station'));
+    } else if(shipping_method_type_start == 'inpost') {
+        jQuery('#shipping-method-checkout').text(Translator.translate('InPost'));
+    }
+
+    jQuery('#step_one_progress_circle').html('&#10112;');
+    jQuery('#step_one_progress_circle').addClass('checkout_progress_link');
+    jQuery('#step_two_progress_circle').html('&#10113;');
+    jQuery('#step_two_progress_circle').addClass('checkout_progress_link');
+    jQuery('#step_three_progress_circle').html('&#10114;');
+    jQuery('#step_three_progress_circle').addClass('checkout_progress_link');
+    jQuery('#step_one_two_progress_circle_line').addClass('checkout_progress_hr_line_active');
+    jQuery('#step_two_three_progress_circle_line').addClass('checkout_progress_hr_line_active');
+    jQuery('#step_one_two_progress_circle_line').addClass('checkout_progress_hr_line_active');
+    jQuery('#step_three_four_progress_circle_line').addClass('checkout_progress_hr_line_active');
+    jQuery('#step_four_progress_circle').addClass('checkout_progress_color_active');
+
+    <?php if (Mage::getStoreConfig('schrack/new_self_registration/triggerNewsletterForProspectsDefaultSetting')) : ?>
+        localStorage.newCheckoutNewsletter = 1;
+    <?php else :?>
+        localStorage.newCheckoutNewsletter = 0;
+    <?php endif; ?>
+
+    jQuery('#newsletter_checkbox').on('click', function() {
+        if (jQuery('#newsletter_checkbox').prop('checked') == true) {
+            localStorage.newCheckoutNewsletter = 1;
+        } else {
+            localStorage.newCheckoutNewsletter = 0;
+        }
+    });
+
+<?php if (Mage::getStoreConfig('ec/config/active')) : ?>
+        if (localStorage.trackingQuoteItems) {
+            console.log('Checkout Step 1 Tracked #066');
+            trackAnalyticsCheckoutStep('checkoutOrderReview', 'Order Review', 4, 'order_review', JSON.parse(localStorage.trackingQuoteItems));
+        }
+<?php endif; ?>
+
+        localStorage.checkoutShippingStep = 'four';
+
+});
+
+review = new Review('<?php echo $this->getUrl('checkout/onepage/saveOrder', array('form_key' => Mage::getSingleton('core/session')->getFormKey())) ?>', '<?php echo $this->getUrl('checkout/onepage/success') ?>', $('checkout-agreements')); //Nagarro: Added for key parameter
+//]]>
+</script>
+<!-- app/design/frontend/schrack/schrackresponsive/template/checkout/onepage/review/info.phtml (end) -->

@@ -1,0 +1,22 @@
+<?php
+/* @var $this Mage_Checkout_Block_Onepage_Review */
+?>
+<div id="checkout-review-load" class="default-box">
+    <?php echo $this->getChildHtml('info') ?>
+</div>
+
+<?php echo $this->getChildHtml('agreements') ?>
+<div class="content button-set">
+    <p class="a-center" style="text-align:center;">
+        <span id="review-please-wait" style="display:none;padding:5px 0;" class="opc-please-wait">
+            <img src="<?php echo $this->getSkinUrl('images/opc-ajax-loader.gif') ?>" class="v-middle" alt="" /> &nbsp; <?php echo $this->__('Submitting order information...') ?> &nbsp;
+        </span>
+        <span id="review-buttons-container" class="a-center">
+            <input type="button" onclick="review.save();" value="<?php echo $this->__('Place Order') ?>" />
+        </span>
+    </p>
+</div>
+
+<script type="text/javascript">
+    var review = new Review('<?php echo $this->getUrl('mobile/onepage/saveOrder', array('form_key' => Mage::getSingleton('core/session')->getFormKey())) ?>', '<?php echo $this->getUrl('mobile/onepage/success') ?>', $('checkout-agreements'));
+</script>

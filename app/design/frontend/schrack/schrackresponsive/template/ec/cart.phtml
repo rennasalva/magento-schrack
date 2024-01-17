@@ -1,0 +1,28 @@
+<?php if (Mage::getStoreConfig('ec/config/active')): ?>
+<script type="text/javascript">
+
+	var ecomm = 
+	{
+			i: [], /* ecomm_prodid[] array */
+			v: [], /* ecomm_pvalue[] array */
+			p: []  /* ecomm_pname[]  array */
+	}
+
+	<?php foreach ($this->getItems() as $item) : ?>
+
+		ecomm.i.push('<?php echo $this->helper('ec/datalayer')->getAdWordsRemarketingId($item->getProduct()) ?>');
+		ecomm.v.push('<?php echo $this->getFinalPrice($item->getProduct()) ?>');
+		ecomm.p.push('<?php echo $this->jsQuoteEscape($item->getProduct()->getName()) ?>');
+		
+	<?php endforeach ?>
+	
+	if (window.google_tag_params)
+	{
+		window.google_tag_params.ecomm_prodid 		= ecomm.i;
+		window.google_tag_params.ecomm_pvalue		= ecomm.v;
+		window.google_tag_params.ecomm_pname		= ecomm.p;
+		window.google_tag_params.ecomm_pagetype 	= 'cart';
+		window.google_tag_params.ecomm_totalvalue 	= '<?php echo $this->getQuote()->getGrandTotal() ?>';
+	}
+</script>
+<?php endif ?>

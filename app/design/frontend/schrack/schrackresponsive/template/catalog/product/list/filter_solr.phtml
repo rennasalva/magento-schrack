@@ -1,0 +1,243 @@
+<!-- app\design\frontend\schrack\schrackresponsive\template\catalog\product\list\filter_solr.phtml (start) -->
+<?php
+
+    $_showAll = $this->getRequest()->getParam('showAll', null);
+
+    $_facets = Mage::registry('facetsCollectionSolr');
+
+     //print_r($_facets);
+    $categoryId = '';
+    if($this->getCategoryId()){
+        $categoryId = $this->getCategoryId();
+    } else {
+        $categoryId = Mage::registry('current_category')->getId();
+    }
+
+    $category = Mage::getModel('catalog/category');
+    $category->load($categoryId);
+    $trackingCategory = $category->getId4googleTagManager();
+
+    $chBxCount = 0;
+?>
+
+<a href="javascript:void(0)" class="btn pull-right btn-default filter-btn marginT0 hide-for-print" id="filterMenu">
+    <?php echo $this->__('Filter'); ?> <span class="filter-btn-icon"></span>
+    <span class="count"></span>
+</a>
+<div class="dropdown-menu filterPopup search-attributes hide-on-print">
+<?php if (count($_facets) || $this->getQ() != '') : ?>
+
+    <div class="tabSection posRel">
+        <span class="glyphicon glyphicon-remove filterCrossIcon hidden-md hidden-lg" onclick="jQuery('#filterMenu').click();"></span>
+        <!-- Filter tabs -->
+        <ul class="clearfix" role="tablist">
+            <li role="presentation"
+                class="active shop_specific shop_specific_height">
+                <a class="shop_specific shop_specific_height"
+                   href="#topFilter"
+                   role="tab"
+                   data-toggle="tab"
+                   onclick="toggleFilterState = 'topFilter';" id="topFilterBtn"><?php echo $this->__('Filter'); ?>
+                 </a>
+            </li>
+            <li role="presentation"
+                class="shop_specific shop_specific_height" <?php if(count($_facets) <= Schracklive_Search_Helper_Search::TOP_FILTER_COUNT){ ?>style="display:none" <?php } ?>>
+                <a class="shop_specific shop_specific_height"
+                   href="#moreFilter"
+                   role="tab"
+                   data-toggle="tab"
+                   onclick="toggleFilterState = 'moreFilter';"
+                   id="moreFilterBtn"><?php echo $this->__('More Filters'); ?>
+                </a>
+            </li>
+        </ul>
+    <?php if(!(count(Mage::registry('productCollectionSolr')) > 0 || $this->getQ() != '')){ ?>
+        <a href="javascript:void(0);" onclick="viewAllProductsOfCategory();" class="view-all-product">&GT; <?php echo $this->__('View All Products'); ?></a>
+        <script type="text/javascript">
+        //<![CDATA[
+        function viewAllProductsOfCategory(){
+            var cat = '';
+            var fq = '';
+            if(jQuery('#category_id').val() != '' && jQuery('#category_id').val() != null){
+                cat = jQuery('#category_id').val()
+            }
+            if(getParameterByName('fq') != '' && getParameterByName('fq') != null){
+                fq = getParameterByName('fq');
+            }
+            var resultURL = '<?php echo Mage::helper('schrackcore/url')->getUrlWithCurrentProtocol('catalogsearch/result'); ?>';
+            var searchParams = encodeURIComponent(fq);
+            return window.location = resultURL + '?cat=' + cat + '&fq=' + searchParams;
+        }
+        //]]>
+        </script>
+    <?php } ?>
+        <!-- Filter tab Data -->
+      <div class="tab-content">
+              <div class="tab-pane active products-tab" id="topFilter">
+                <button id="clearFilter" class="btn btn-default marginTB10 marginL15" onclick="clearFilter()"><?php echo $this->__('Clear Filters') ?></button>
+                <?php if(count(Mage::registry('productCollectionSolr')) > 0 || $this->getQ() != ''){ ?>
+                <div class="clearfix" style="padding-top: 10px;">
+                    <div class="col-xs-12" style="margin-top: 5px;">
+                        <form id="search_category_form" method="get">
+                            <div class="input-group">
+                                <input type="hidden" name="cat" value="Shop_Category" />
+                                <input id="search-attr-full" type="text" name="q" value="<?php echo $this->getQ(); ?>" class="search default form-control" autocomplete="off" placeholder="<?php echo $this->__('Search within article selection') ?>"/>
+                                <span class="input-group-addon" id="srchFrmSbmt" onClick="searchFormWithinArticle();"><span class="glyphicon glyphicon-search"></span></span>
+                                <div id="search_category_autocomplete_wrapper" style="display: none;"><div id="search_category_autocomplete" class="search-autocomplete"></div></div>
+                                <script type="text/javascript">
+                                //<![CDATA[
+                                    var searchCatForm = new Varien.searchForm('search_category_form', 'search-attr-full', '');
+                                    searchCatForm.initAutocomplete('<?php echo $this->helper('catalogsearch')->getSuggestUrl() ?>?searchcategoryid=<?php echo $this->getCurrentCategoryId(); ?><?php echo $this->getFacetsRequestString('&'); ?>', 'search_category_autocomplete');
+
+                                    jQuery(document).keypress(function(ev) {
+                                        if ( jQuery(ev.target).attr('id') === 'search-attr-full' && ev.which == 13 ) {
+                                            ev.preventDefault();
+                                           searchFormWithinArticle();
+                                        }
+                                    });
+                                //]]>
+                                </script>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <?php } ?>
+              <div class="panel-group" id="topFilterAccordion" role="tablist" aria-multiselectable="true">
+                <?php
+                    $index = 1;
+                    foreach ($_facets as $facet => $entries) {
+                        if ($facet != null || strlen($facet) > 0) :
+                ?>
+                      <div class="panel panel-default facet" id="<?php echo $facet; ?>">
+                            <div class="panel-heading" role="tab">
+                              <h4 class="panel-title">
+                                    <a role="button"
+                                    class="accordion-toggle <?php if ($facet == 'general_filters') echo ''; else echo 'collapsed'; ?>"
+                                    data-toggle="collapse"
+                                    href="#facet-<?php echo $index; ?>"
+                                    aria-expanded="true"
+                                    aria-controls="facet-<?php echo $index; ?>">
+                                      <span class="facetlabel"><?php echo $entries['label']; ?>:</span>
+                                      <!--span class="glyphicon glyphicon-menu-down pull-right arrow-icon"></span-->
+                                      <span class="facetlabel selected-filter" id="selectedFilter-<?php echo $facet; ?>"><span></span></span>
+                                    </a>
+                              </h4>
+                            </div>
+                            <div id="facet-<?php echo $index; ?>"
+                                class="panel-collapse <?php if($facet == 'general_filters') echo 'collapse in'; else echo 'collapse'; ?>"
+                                role="tabpanel">
+                              <div class="panel-body">
+                                  <a href="javascript:void(0);" onclick="performFilterAjax(this, 'showall')" class="filter-deselect hide" style="font-size: 0.9em; color: #174573;"><i style="font-size: 1em; position: absolute; margin-top: 5px;" class="fa fa-eject fa-lg"></i> <span style="margin-left: 19px;"><?php echo $this->__('Deselect All'); ?></span></a>
+                                  <ul id="ul-<?php echo $index?>">
+                                    <?php
+                                        $pos = 0;
+                                        $selectedFilters = '';
+                                        foreach ($entries['options'] as $entry) {
+                                            ++$pos;
+                                            if (isset($entry['type']) && $entry['type'] == 'active') {
+                                                $_isActive = true;
+                                            } else {
+                                                $_isActive = false;
+                                            }
+                                            if ($_isActive) $selectedFilters .= $entry['label'] . ', ';
+                                            if ( !array_key_exists('filter_type', $entry) ) {
+                                                $entry['filter_type'] = '';
+                                            }
+                                            ++$chBxCount;
+                                    ?>
+                                            <li position="<?php echo $pos; ?>">
+                                          <input type="hidden"
+                                                 id="checked_status_<?php echo $index . '_' . $pos; ?>"
+                                                 value="<?php if ($_isActive) : ?>checked<?php endif;?>"
+                                          >
+                                          <input id="checkbox-<?php echo $index . '-' . $pos; ?>"
+                                            type="checkbox"
+                                            class="filter_checkbox_input"
+                                            data-index="<?php echo $index ?>"
+                                            data-pos="<?php echo $pos ?>"
+                                            data-showwhat="<?php echo ($entry['count'] == '*' ? 'showall' : 'current'); ?>"
+                                            <?php if ($_isActive) : ?> checked="checked"<?php endif;?>
+                                            value="<?php echo str_replace('"', '&quot;', $entry['label']); ?>"
+                                            filtertype="<?php echo $entry['filter_type']; ?>"
+                                          />
+                                          <label for="checkbox-<?php echo $index . '-' . $pos; ?>">&nbsp;
+                                              <a class="filter_checkbox_label_link"
+                                                 id="link-<?php echo $index . '-' . $pos; ?>"
+                                                 data-index="<?php echo $index ?>"
+                                                 data-pos="<?php echo $pos ?>"
+                                                 data-showwhat="<?php echo ($entry['count'] == '*' ? 'showall' : 'current'); ?>"
+                                                 rel="nofollow"
+                                                 filtertype="<?php echo $entry['filter_type'] ?>"><?php echo $entry['label']; ?></a>&nbsp;
+                                          </label>
+                                          </li>
+                                        <?php } ?>
+                                  </ul>
+                              </div>
+                            </div>
+                          <div class="hide" id="selectedFilterTemp-<?php echo $facet; ?>"><?php echo rtrim($selectedFilters,' ,'); ?></div>
+                      </div>
+                    <?php if ($index == Schracklive_Search_Helper_Search::TOP_FILTER_COUNT) : ?>
+                        </div>
+                        </div>
+                        <div class="tab-pane products-tab" id="moreFilter">
+                            <div class="panel-group" id="moreFilterAccordion" role="tablist" aria-multiselectable="true">
+                    <?php endif;?>
+                    <?php endif; ?>
+                <?php ++$index; } ?>
+                    </div>
+              </div>
+      </div>
+    </div>
+<?php endif ?>
+</div>
+<script type="text/javascript">//<![CDATA[
+
+    console.log("Checkbox count = " + <?php echo $chBxCount; ?>);
+
+    decorateTable('attributes-list', 'none-recursive');
+    jQuery(document).ready(function() {
+        jQuery('#filterMenu').on('click', function() {
+            jQuery('.filterPopup').toggle();
+            console.log('filter click #15');
+        });
+
+        jQuery('#content').off('click', '.filter_checkbox_input').on( 'click', '.filter_checkbox_input', function() {
+            console.log("!!! category filter click !!!");
+            var eventname       = 'filterPLP';
+            var index           = jQuery(this).data('index');
+            var pos             = jQuery(this).data('pos');
+            var checkedStatusId = '#checked_status_' + index + '_' + pos;
+            if (jQuery(checkedStatusId).val() == 'checked') {
+                jQuery(checkedStatusId).val('');
+                eventname = 'none';
+            } else {
+                jQuery(checkedStatusId).val('checked');
+                eventname = 'filterPLP';
+                localStorage.LastSuccessfulUrlOnPlpPage = window.location.href;
+            }
+            console.log(eventname);
+            <?php if (Mage::getStoreConfig('ec/config/active')) : ?>
+                 if (dataLayer) {
+                    dataLayer.push({
+                        'eventAction': '<?php echo $entries['label']; ?>',
+                        'eventLabel': jQuery(this).val(),
+                        'event': eventname,
+                        'generalCategoryID' : '<?php echo $trackingCategory; ?>'
+                    });
+                 }
+            <?php endif; ?>
+            performFilterAjax(this, jQuery(this).data('showwhat'));
+         });
+
+        jQuery('#content').off('click', '.filter_checkbox_label_link').on( 'click', '.filter_checkbox_label_link', function() {
+            var index      = jQuery(this).data('index');
+            var pos        = jQuery(this).data('pos');
+            var checkBoxId = '#checkbox-' + index + '-' + pos;
+            if (!jQuery(checkBoxId).is(':checked')) {
+                jQuery(checkBoxId).trigger("change");
+            }
+        });
+    });
+//]]>
+</script>
+<!-- app\design\frontend\schrack\schrackresponsive\template\catalog\product\list\filter_solr.phtml (end) -->

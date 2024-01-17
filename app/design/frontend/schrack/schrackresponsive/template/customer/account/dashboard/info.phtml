@@ -1,0 +1,163 @@
+<!-- app/design/frontend/schrack/schrackresponsive/template/customer/account/dashboard/info.phtml (start) -->
+<?php
+	$_session = Mage::getSingleton('customer/session');
+	$showMenuLineBecauseImNotAProspect = true;
+	$colSmClassNo = 6;
+	$customerType = $_session->getCustomer()->getSchrackCustomerType(); // ProspectTypes: 'light-prospect' / 'full-prospect'
+	// Prospect Light / Full
+	if (in_array($customerType, array('light-prospect', 'full-prospect'))) {
+		$showMenuLineBecauseImNotAProspect = false;
+		$colSmClassNo = 12;
+	}
+        $aclroleClass = '';
+        if ($_session->isLoggedIn()) {
+            $_customer = $_session->getCustomer();
+            $aclrole = $_customer->getSchrackAclRole();
+            if($aclrole == 'staff' || $aclrole == 'projectant' || $aclrole == 'customer'|| $aclrole == 'list_price_customer'){
+                $aclroleClass = 'hide';
+            }
+        } 
+	$editUrl = Mage::getUrl('customer/account/edit', array('_secure' => true));
+?>
+<div class="userAccountCont">
+    <div class="row">
+        <div class="col-xs-12 col-sm-6">
+            <h2><?php echo $this->__('My Data') ?></h2>
+        </div>
+		<?php if ($showMenuLineBecauseImNotAProspect == true) : ?>
+        <div class="col-xs-12 col-sm-6 hidden-xs">
+            <h2><?php echo $this->__('My Settings') ?></h2>
+        </div>
+		<?php endif; ?>
+    </div>
+    <div class="contentArea">
+        <div class="row">
+            <div class="col-xs-12 col-sm-<?php echo $colSmClassNo; ?>">
+                <div class="box">
+                    <div class="row">
+                        <div class="col-xs-4">
+                            <?php echo $this->__('Password'); ?>:
+                        </div>
+                        <div class="col-xs-5 padR0">
+                            <strong>
+                                ********
+                            </strong>
+                        </div>
+                        <div class="col-xs-3"><a href="<?php echo $this->getUrl('customer/account/editpassword') ?>"><?php echo $this->__('Change') ?></a></div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-4">
+                            <?php echo $this->__('Landline'); ?>:
+                        </div>
+                        <div class="col-xs-5 padR0">
+                            <strong>
+                                <?php echo $this->getCustomer()->getSchrackTelephone() ?>
+                            </strong>
+                        </div>
+                        <div class="col-xs-3">
+						<?php if ($showMenuLineBecauseImNotAProspect == true) : ?>
+							<a href="<?php echo $editUrl ?>"><?php echo $this->__('Edit') ?></a>
+						<?php endif; ?>
+						</div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-4">
+                            <?php echo $this->__('Mobile'); ?>:
+                        </div>
+                        <div class="col-xs-5 padR0">
+                            <strong>
+                                <?php echo $this->getCustomer()->getSchrackMobilePhone() ?>
+                            </strong>
+                        </div>
+                        <div class="col-xs-3">
+						<?php if ($showMenuLineBecauseImNotAProspect == true) : ?>
+							<a href="<?php echo $editUrl ?>"><?php echo $this->__('Edit') ?></a>
+						<?php endif; ?>
+						</div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-4">
+                            <?php echo $this->__('Fax'); ?>:
+                        </div>
+                        <div class="col-xs-5 padR0">
+                            <strong>
+                                <?php echo $this->getCustomer()->getSchrackFax() ?>
+                            </strong>
+                        </div>
+                        <div class="col-xs-3">
+						<?php if ($showMenuLineBecauseImNotAProspect == true) : ?>
+							<a href="<?php echo $editUrl ?>"><?php echo $this->__('Edit') ?></a>
+						<?php endif; ?>
+						</div>
+                    </div>
+                </div>
+            </div>
+			<?php if ($showMenuLineBecauseImNotAProspect == true) : ?>
+            <div class="col-xs-12 col-sm-6">
+                <div class="box">
+                    <div class="row <?php echo $aclroleClass; ?>">
+                        <div class="col-xs-4">
+                            <?php
+                                if (Mage::helper('schrackshipping/pickup')->getWarehouse($this->getCustomer()->getSchrackPickup())) {
+                                    echo $this->__('Default Payment Method (Store Pickup)');
+                                } else {
+                                    echo $this->__('Default Payment Method (Shipping)');
+                                }
+                            ?>
+                        </div>
+                        <div class="col-xs-5 padR0">
+                            <strong>
+                                <?php
+                                    $possiblePaymentMethodCodes = array(
+                                        'payunitycw_visa' => 'Visa',
+                                        'payunitycw_mastercard' => 'MasterCard',
+                                        'checkmo' => Mage::getStoreConfig('payment/checkmo/title'),
+                                        'schrackpo' => Mage::getStoreConfig('payment/schrackpo/title'),
+                                        'free' => Mage::getStoreConfig('payment/free/title'),
+                                        'schrackcod' => Mage::getStoreConfig('payment/schrackcod/title'),
+                                        'googlecheckout' => Mage::getStoreConfig('payment/googlecheckout/title'),
+                                        'purchaseorder' => Mage::getStoreConfig('payment/purchaseorder/title'),
+                                        'paypal_standard' => Mage::getStoreConfig('payment/paypal_standard/title'));
+
+                                    if (Mage::helper('schrackshipping/pickup')->getWarehouse($this->getCustomer()->getSchrackPickup())) {
+                                        if ($this->getCustomer()->getSchrackDefaultPaymentPickup()) {
+                                            echo $possiblePaymentMethodCodes[$this->getCustomer()->getSchrackDefaultPaymentPickup()];
+                                        } else {
+                                            echo $this->__('None');
+                                        }
+                                    } else {
+                                        if ($this->getCustomer()->getSchrackDefaultPaymentShipping()) {
+                                            echo $possiblePaymentMethodCodes[$this->getCustomer()->getSchrackDefaultPaymentShipping()];
+                                        } else {
+                                            echo $this->__('None');
+                                        }
+                                    }
+                                 ?>
+                            </strong>
+                        </div>
+                        <div class="col-xs-3"><a href="<?php echo $this->getUrl('customer/account/editpayment') ?>"><?php echo $this->__('Change') ?></a></div>
+                    </div>
+                    <div class="row">
+                        <?php if (Mage::helper('schrackshipping/pickup')->getWarehouse($this->getCustomer()->getSchrackPickup())) : ?>
+                            <div class="col-xs-4">
+                                <?php echo $this->__('Default Pickup Location'); ?>:
+                            </div>
+                            <div class="col-xs-5 padR0">
+                                <strong>
+                                    <?php
+                                        if (Mage::helper('schrackshipping/pickup')->getWarehouse($this->getCustomer()->getSchrackPickup())) {
+                                            echo Mage::helper('schrackshipping/pickup')->getWarehouse($this->getCustomer()->getSchrackPickup())->getName();
+                                        }
+                                    ?>
+                                </strong>
+                            </div>
+                            <div class="col-xs-3"><a href="<?php echo $this->getUrl('customer/account/editpickup') ?>"><?php echo $this->__('Change') ?></a></div>
+                        <?php endif;?>
+                    </div>
+                </div>
+            </div>
+			<?php endif; ?>
+        </div>
+    </div>
+</div>
+<!-- app/design/frontend/schrack/schrackresponsive/template/customer/account/dashboard/info.phtml (end) -->

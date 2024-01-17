@@ -1,0 +1,9 @@
+"<?php echo $this->__('Article Number')?>";"<?php echo $this->__('Product Name')?>";"<?php echo $this->__('Power Loss')?>"
+<?php foreach ( $this->getProductCollection() as $product ) : ?>
+<?php
+    $sku = $this->htmlEscape($product->getSku());
+    $name = $this->htmlEscape($product->getName());
+    $powerLoss = $this->htmlEscape($product->getSchrackVerlustleistung());
+?>
+"<?php echo $sku; ?>";"<?php echo $name; ?>";"<?php echo $powerLoss; ?>"
+<?php endforeach; ?>

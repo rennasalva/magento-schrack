@@ -1,0 +1,240 @@
+<!-- app/design/frontend/schrack/schrackresponsive/template/tax/checkout/tax.phtml (start) -->
+<?php
+#   tax value from net amount
+#$_value = $this->getTotal()->getValue();
+$_style = $this->getTotal()->getStyle();
+$_currency = Mage::getStoreConfig('currency/options/default');
+
+
+#   CH tax solution
+#   tax value from net amount with 7.7% if CH
+$countryCheck = Mage::getStoreConfig('schrack/general/country');
+$subTotal = $this->getTotal()->getAddress()->getSubtotal();
+$shipping = $this->getTotal()->getAddress()->getShippingAmount();
+$netAmount = $subTotal + $shipping;
+
+if($countryCheck == 'CH') {
+    $_value = $netAmount * 0.077;   #$this->getTotal()->getAddress()->getTaxAmount();
+} else {
+    $_value = $this->getTotal()->getValue();
+}
+
+?>
+
+<style>
+    .checkout_review_tax_with_tax_excluded_totals {
+        /* border: 1px solid red; */
+    }
+
+    .checkout_review_tax_with_tax_excluded_totals_left {
+        width: 73% !important;
+        float: left !important;
+        height: 50px !important;
+        padding-left: 16px !important;
+        padding-top: 21px !important;
+    }
+
+    .checkout_review_tax_with_tax_excluded_totals_right {
+        width: 27% !important;
+        float: left !important;
+        height: 50px !important;
+        padding-left: 5px !important;
+        padding-right: 5px !important;
+        padding-top: 18px !important;
+    }
+
+    .checkout_review_tax_subtotal_price_currency {
+        font-size: 0.8em !important;
+        font-weight: bold !important;
+        display: block !important;
+        float: left !important;
+        margin-top: 14px !important;
+        width: 33% !important;
+    }
+
+    .checkout_review_tax_subtotal_price {
+        font-size: 0.9em !important;
+        font-weight: bold !important;
+        display: block !important;
+        float: left !important;
+        text-align: right !important;
+        width: 67% !important;
+        margin-top: 13px !important;
+    }
+
+    @media (min-width: 366px) and (max-width: 499px) {
+        .checkout_review_tax_with_tax_excluded_totals_left {
+            width: 73% !important;
+            font-size: 0.9em !important;
+        }
+        .checkout_review_tax_with_tax_excluded_totals_right {
+            width: 27% !important;
+            padding-top: 18px !important;
+        }
+        .checkout_review_tax_subtotal_price_currency {
+            font-size: 0.6em !important;
+            margin-top: 9px !important;
+            width: 33% !important;
+            text-align: left !important;
+        }
+        .checkout_review_tax_subtotal_price {
+            font-size: 1.0em !important;
+            text-align: left !important;
+            width: 67% !important;
+            margin-top: 3px !important;
+        }
+    }
+
+    @media (min-width: 500px) and (max-width: 700px) {
+        .checkout_review_tax_with_tax_excluded_totals_left {
+            width: 76% !important;
+            font-size: 0.9em !important;
+        }
+        .checkout_review_tax_with_tax_excluded_totals_right {
+            width: 24% !important;
+        }
+        .checkout_review_tax_subtotal_price_currency {
+            font-size: 0.8em !important;
+            margin-top: 6px !important;
+            width: 33% !important;
+            text-align: left !important;
+        }
+        .checkout_review_tax_subtotal_price {
+            font-size: 1em !important;
+            text-align: left !important;
+            width: 67% !important;
+            margin-top: 3px !important;
+        }
+    }
+
+    @media (min-width: 701px) and (max-width: 991px) {
+        .checkout_review_tax_with_tax_excluded_totals_left {
+            width: 82% !important;
+            font-size: 0.9em !important;
+        }
+        .checkout_review_tax_with_tax_excluded_totals_right {
+            width: 18% !important;
+            padding-top: 12px !important;
+        }
+        .checkout_review_tax_subtotal_price_currency {
+            font-size: 0.9em !important;
+            margin-top: 8px !important;
+            text-align: left !important;
+            width: 33% !important;
+        }
+        .checkout_review_tax_subtotal_price {
+            font-size: 1.2em !important;
+            text-align: left !important;
+            width: 67% !important;
+            margin-top: 3px !important;
+        }
+    }
+
+    @media (min-width: 992px) and (max-width: 1240px) {
+        .checkout_review_tax_with_tax_excluded_totals_left {
+            width: 86% !important;
+            font-size: 0.9em !important;
+        }
+        .checkout_review_tax_with_tax_excluded_totals_right {
+            width: 14% !important;
+            padding-top: 11px !important;
+        }
+        .checkout_review_tax_subtotal_price_currency {
+            font-size: 0.9em !important;
+            margin-top: 9px !important;
+            text-align: left !important;
+            width: 33% !important;
+        }
+        .checkout_review_tax_subtotal_price {
+            font-size: 1.3em !important;
+            text-align: left !important;
+            width: 67% !important;
+            margin-top: 3px !important;
+        }
+    }
+
+    @media (min-width: 1241px) and (max-width: 3000px) {
+        .checkout_review_tax_with_tax_excluded_totals_left {
+            width: 86% !important;
+            font-size: 0.9em !important;
+        }
+        .checkout_review_tax_with_tax_excluded_totals_right {
+            padding-top: 14px !important;
+            width: 14% !important;
+        }
+        .checkout_review_tax_subtotal_price_currency {
+            font-size: 0.9em !important;
+            margin-top: 6px !important;
+            text-align: left !important;
+            width: 33% !important;
+        }
+        .checkout_review_tax_subtotal_price {
+            font-size: 1.3em !important;
+            text-align: left !important;
+            width: 67% !important;
+            margin-top: 0 !important;
+        }
+    }
+</style>
+
+<?php
+global $taxIter; $taxIter++;
+if ($this->helper('tax')->displayFullSummary() && $_value > 0):
+    $isTop = 1;
+    foreach ($this->getTotal()->getFullInfo() as $info) :
+        if (isset($info['hidden']) && $info['hidden']):
+            continue;
+        endif;
+        $percent = $info['percent'];
+        $amount = $_value;  #$info['amount'];
+        $rates = $info['rates'];
+        $isFirst = 1;
+
+        foreach ($rates as $rate):
+            $ratePercent = $rate['percent'] ?: '';
+            $percentSymbol = $ratePercent ? '%' : '';
+            $isFirstLine = '';
+            if ($isFirst):
+                $isFirstLine =
+                    '<div class="checkout_review_tax_with_tax_excluded_totals_right">' .
+                        '<span class="checkout_review_tax_subtotal_price_currency">' . $_currency .'</span>' .
+                        '<span class="checkout_review_tax_subtotal_price">'. $this->helper('checkout')->formatPrice($amount) .'</span>'.
+                    '</div>' .
+                    '<div style="clear: both;"></div>';
+            endif;
+
+            echo
+                '<div class="checkout_review_tax_with_tax_excluded_totals">'.
+                    '<div class="checkout_review_tax_with_tax_excluded_totals_left">' .
+                        $rate['title'] . $ratePercent . $percentSymbol .
+                        '<br />' .
+                    '</div>' .
+                    $isFirstLine .
+                '</div>';
+            $isFirst = 0;
+            $isTop = 0;
+        endforeach;
+    endforeach;
+else:
+    $content = '';
+    if ($this->helper('tax')->displayFullSummary()):
+        $content = '<div class="tax-collapse">' . $this->getTotal()->getTitle() .'</div>';
+    else:
+        $content = $this->getTotal()->getTitle();
+    endif;
+
+
+    echo
+        '<div class="checkout_review_tax_with_tax_excluded_totals">' .
+            '<div class="checkout_review_tax_with_tax_excluded_totals_left">' .
+                $content .
+            '</div>' .
+            '<div class="checkout_review_tax_with_tax_excluded_totals_right">' .
+                '<span class="checkout_review_tax_subtotal_price_currency">' . $_currency .'</span>' .
+                '<span class="checkout_review_tax_subtotal_price">' . $this->helper('checkout')->formatPrice($_value)  .'</span>'.
+            '</div>' .
+            '<div style="clear: both;"></div>' .
+        '</div>';
+endif;
+?>
+<!-- app/design/frontend/schrack/schrackresponsive/template/tax/checkout/tax.phtml (end) -->

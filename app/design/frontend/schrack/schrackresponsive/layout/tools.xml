@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<layout version="0.1.0">
+    <onlinetools_index_index>
+        <reference name="head">
+            <action method="setTitle" translate="title">
+                <title>Online Tools</title>
+            </action>
+        </reference>
+
+        <reference name="root">
+            <action method="setTemplate">
+                <template>page/1column.phtml</template>
+            </action>
+        </reference>
+
+        <reference name="breadcrumbs">
+            <action method="addCrumb">
+                <crumbName>Home</crumbName>
+                <crumbInfo>
+                    <label>Home</label>
+                    <title>Home</title>
+                    <link>/</link>
+                </crumbInfo>
+            </action>
+            <action method="addCrumb">
+                <crumbName>Online Tools</crumbName>
+                <crumbInfo>
+                    <label>Online Tools</label>
+                    <title>Online Tools</title>
+                </crumbInfo>
+            </action>
+        </reference>
+
+        <reference name="content">
+            <block type="core/template" name="tools_index" template="tools/index.phtml" />
+        </reference>
+
+        <reference name="left">
+            <remove name="catalog.vertnav" />
+            <block type="customer/account_menu" name="customer_account_menu" template="customer/account/menu.phtml"></block>
+        </reference>
+    </onlinetools_index_index>
+
+    <onlinetools_schrackprotect_index>
+        <reference name="root">
+            <action method="setTemplate">
+                <template>page/2columns-right-onlinetools.phtml</template>
+            </action>
+        </reference>
+
+        <reference name="right">
+            <block type="core/template" name="right_project_sum" template="tools/right_project_sum.phtml"></block>
+        </reference>
+
+        <reference name="content">
+            <block type="tools/html" name="tools_lightningProtectionConfigurator" template="tools/lightning_protection_configurator.phtml">
+                <block type="tools/html" name="tool.disclosures" as="disclosures" template="tools/disclosures.phtml"/>
+            </block>
+        </reference>
+    </onlinetools_schrackprotect_index>
+
+    <onlinetools_intercomcalculator_index>
+        <reference name="root">
+            <action method="setTemplate">
+                <template>page/2columns-right-onlinetools.phtml</template>
+            </action>
+        </reference>
+
+        <reference name="right">
+            <block type="core/template" name="right_project_sum" template="tools/right_project_sum.phtml"></block>
+        </reference>
+
+        <reference name="content">
+            <block type="tools/html" name="tools_intercomCalculator" template="tools/intercom_calculator.phtml">
+                <block type="tools/html" name="tool.disclosures" as="disclosures" template="tools/disclosures.phtml"/>
+                <!-- block type="tools/html" name="tool.selection" as="selection" template="tools/intercom_calculator_selection.phtml"/ -->
+                <block type="tools/html" name="tool.one_family" as="one_family" template="tools/intercom_calculator_one_family.phtml"/>
+            </block>
+        </reference>
+    </onlinetools_intercomcalculator_index>
+
+    <onlinetools_easylanconfigurator_index>
+        <reference name="root">
+            <action method="setTemplate">
+                <template>page/1column.phtml</template>
+            </action>
+        </reference>
+
+        <reference name="content">
+            <block type="tools/html" name="tools_easylanConfigurator" template="tools/easylan_configurator.phtml" />
+        </reference>
+    </onlinetools_easylanconfigurator_index>
+
+    <onlinetools_schracklwl_index>
+        <reference name="root">
+            <action method="setTemplate">
+                <template>page/1column.phtml</template>
+            </action>
+        </reference>
+
+        <reference name="content">
+            <block type="tools/html" name="tools_schrackLWL" template="tools/easylan_configurator.phtml" />
+        </reference>
+    </onlinetools_schracklwl_index>
+
+    <onlinetools_distributionboard_index>
+        <reference name="root">
+            <action method="setTemplate">
+                <template>page/1column.phtml</template>
+            </action>
+        </reference>
+
+        <reference name="content">
+            <block type="tools/html" name="tools_distributionBoard" template="tools/distribution_board_configurator.phtml" />
+        </reference>
+    </onlinetools_distributionboard_index>
+
+
+</layout>

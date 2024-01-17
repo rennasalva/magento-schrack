@@ -1,0 +1,194 @@
+<!-- app\design\frontend\schrack\schrackresponsive\template\customer\form\edit.payment.phtml (start) -->
+
+<?php
+    $_helper = $this->helper('schrackcustomer');
+    $customer = $this->getCustomer();
+
+    if (is_object($customer) && !$customer->getId() > 0) {
+        $customer = Mage::getSingleton('customer/session')->getCustomer();
+    }
+    if (!is_object($customer)) {
+        $customer = Mage::getSingleton('customer/session')->getCustomer();
+    }
+    $showBecauseImNotAProspect = true;
+    $customerType = $customer->getSchrackCustomerType(); // ProspectTypes: 'light-prospect' / 'full-prospect'
+    // Prospect Light / Full
+    if (!in_array($customerType, array('light-prospect', 'full-prospect'))) {
+        $showBecauseImNotAProspect = false;
+    }
+    $currentUrl = Mage::helper('core/url')->getCurrentUrl();
+?>
+
+<style>
+    .initialHideToTopSymbol {
+        display: none !important;
+    }
+
+    @media (min-width: 1px) and (max-width: 992px) {
+        .my_account_settings_preferredpayment_content_wrapper {
+            margin-right: 16px !important;
+        }
+    }
+
+    @media (min-width: 60px) and (max-width: 320px) {
+        #save_default_payment_data_button {
+            height: 30px !important;
+        }
+    }
+
+    @media (min-width: 321px) and (max-width: 480px) {
+        #save_default_payment_data_button {
+            height: 30px !important;
+        }
+    }
+
+    @media (min-width: 481px) and (max-width: 767px) {
+        #save_default_payment_data_button {
+            height: 30px !important;
+        }
+    }
+</style>
+
+<?php echo $this->getMessagesBlock()->getGroupedHtml() ?>
+<div id="my_account_settings_preferredpayment_wrapper" class="my_account_settings_preferredpayment_content_wrapper">
+    <div class="row">
+        <?php if($showBecauseImNotAProspect == false) { ?>
+        <div class="col-xs-12">
+            <h1>
+                <?php echo $this->__('Default Payment Method') ?>
+            </h1>
+            <form action="<?php echo $this->getUrl('customer/account/setDefaultPaymentMethodPost') ?>" method="post" id="form-validate">
+                <input type="hidden" name="email" id="email" value="<?php echo $this->htmlEscape($this->getCustomer()->getEmail()) ?>" />
+                <div class="gray-form loginCont">
+
+                    <div class="formContianer">
+                        <?php echo $this->getBlockHtml('formkey')?>
+                        <ul class="form-list">
+                            <?php if (Mage::getStoreConfig('carriers/schrackpickup/active')) : ?>
+                                    <li>
+                                        <h3><?php echo $this->__('Default Payment Method (Store Pickup)') ?></h3>
+                                    </li>
+                                    <li>
+                                        <?php
+                                            $visaAlreadyFound       = false;
+                                            $mastercardAlreadyFound = false;
+
+                                            if ($customer) {
+                                                $schrackDefaultPaymentPickup = $customer->getSchrackDefaultPaymentPickup();
+                                            }
+                                            $checked = '';
+                                            $allActivePaymentMethods = Mage::getModel('payment/config')->getActiveMethods();
+                                            foreach ($allActivePaymentMethods as $_method) {
+                                                if ($_method->getCode() != 'free' && $_method->getCode() != 'schrackcod') {
+                                                    if($_method->getCode() == 'payunitycw_visa') $visaAlreadyFound = true;
+                                                    if($_method->getCode() == 'payunitycw_mastercard') $mastercardAlreadyFound = true;
+                                                    if($schrackDefaultPaymentPickup == $_method->getCode()) $checked = ' checked="checked"'; else $checked = '';
+                                                    echo '<div><input class="marginR5" type="radio" name="default_payment_method_pickup" ' . $checked . ' value="' . $_method->getCode() . '" />' . ($_method->getTitle() . '</div>');
+                                                }
+                                            }
+                                            if (Mage::getStoreConfig('payment/payunitycw_visa/active') && $visaAlreadyFound == false) {
+                                                if($schrackDefaultPaymentPickup == 'payunitycw_visa') $checked = ' checked="checked"'; else $checked = '';
+                                                echo '<div><input class="marginR5" type="radio" name="default_payment_method_pickup" ' . $checked . ' value="payunitycw_visa" />' . $this->__('Visa') . '</div>';
+                                            }
+                                            if (Mage::getStoreConfig('payment/payunitycw_mastercard/active') && $mastercardAlreadyFound == false) {
+                                                if($schrackDefaultPaymentPickup == 'payunitycw_mastercard') $checked = ' checked="checked"'; else $checked = '';
+                                                echo '<div><input class="marginR5" type="radio" name="default_payment_method_pickup" ' . $checked . ' value="payunitycw_mastercard" />' . $this->__('MasterCard') . '</div>';
+                                            }
+                                        ?>
+                                    </li>
+                            <?php endif; ?>
+                            <?php if (Mage::getStoreConfig('carriers/schrackdelivery/active')) : ?>
+                                    <li class="marginT15">
+                                        <h3><?php echo $this->__('Default Payment Method (Shipping)') ?></h3>
+                                    </li>
+                                    <li>
+                                        <?php
+                                            $visaAlreadyFound       = false;
+                                            $mastercardAlreadyFound = false;
+
+                                            if ($customer) {
+                                                $schrackDefaultPaymentShipping = $customer->getSchrackDefaultPaymentShipping();
+                                            }
+                                            $checked = '';
+                                            $allActivePaymentMethods = Mage::getModel('payment/config')->getActiveMethods();
+                                            foreach ($allActivePaymentMethods as $_method) {
+                                                if ($_method->getCode() != 'free' && $_method->getCode() != 'schrackcash') {
+                                                    if($_method->getCode() == 'payunitycw_visa') $visaAlreadyFound = true;
+                                                    if($_method->getCode() == 'payunitycw_mastercard') $mastercardAlreadyFound = true;
+                                                    if($schrackDefaultPaymentShipping == $_method->getCode()) $checked = ' checked="checked"'; else $checked = '';
+                                                    echo '<div><input class="marginR5" type="radio" name="default_payment_method_shipping" ' . $checked . ' value="' . $_method->getCode() . '" />' . ($_method->getTitle()) . '</div>';
+                                                }
+                                            }
+                                            if (Mage::getStoreConfig('payment/payunitycw_visa/active') && $visaAlreadyFound == false) {
+                                                if($schrackDefaultPaymentShipping == 'payunitycw_visa') $checked = ' checked="checked"'; else $checked = '';
+                                                echo '<div><input class="marginR5" type="radio" name="default_payment_method_shipping" ' . $checked . ' value="payunitycw_visa" />' . $this->__('Visa') . '</div>';
+                                            }
+                                            if (Mage::getStoreConfig('payment/payunitycw_mastercard/active') && $mastercardAlreadyFound == false) {
+                                                if($schrackDefaultPaymentShipping == 'payunitycw_mastercard') $checked = ' checked="checked"'; else $checked = '';
+                                                echo '<div><input class="marginR5" type="radio" name="default_payment_method_shipping" ' . $checked . ' value="payunitycw_mastercard" />' . $this->__('MasterCard') . '</div>';
+                                            }
+                                        ?>
+                                    </li>
+                            <?php endif; ?>
+                        </ul>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-6">
+                        <button id="save_default_payment_data_button" class="bttn-md" title="<?php echo $this->__('Save') ?>"><?php echo $this->__('Save') ?></button>
+                    </div>
+                    <div class="col-xs-6 text-right">
+                        <p class="back-link hidden-xs hidden-sm"><a href="<?php echo Mage::helper('schrackcore/url')->getUrlWithCurrentProtocol('customer/account'); ?>"><small>&laquo; </small><?php echo $this->__('Back') ?></a></p>
+                        <p class="back-link hidden-md hidden-lg"><a href="<?php echo Mage::helper('schrackcore/url')->getUrlWithCurrentProtocol('account/account/index'); ?>" ><small>&laquo; </small><?php echo $this->__('Back') ?></a></p>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <?php } ?>
+    </div>
+</div>
+
+
+<script type="text/javascript">
+//<![CDATA[
+    var dataForm = new VarienForm('form-validate', true);
+
+	jQuery(document).ready(function() {
+
+		jQuery('#form-validate :input,select,button,a').each(function (fv) { if (this.type != "hidden") { jQuery(this).attr('tabindex', fv + 1); } });
+
+        /* Back to Top */
+        jQuery('body').append('<div id="toTop" class="btn btn-info print-hide-imp initialHideToTopSymbol"><span class="glyphicon glyphicon-chevron-up"></span> <?php echo $this->__('Back to Top'); ?></div>');
+        jQuery(window).scroll(function () {
+            if (jQuery(this).scrollTop() != 0) {
+                jQuery('#toTop').fadeIn();
+            } else {
+                jQuery('#toTop').fadeOut();
+            }
+        });
+        jQuery('#toTop').click(function(){
+            jQuery("html, body").animate({ scrollTop: 0 }, 600);
+            console.log('ScrollTop #87');
+            return false;
+        });
+        jQuery('#toTop').removeClass('initialHideToTopSymbol');
+        /* Back to Top */
+
+        jQuery('#save_default_payment_data_button').on('click', function() {
+            if (dataLayer) {
+                dataLayer.push({
+                    'event' : 'userSettingChange',
+                    'eventLabel' : 'Payment Method Change'
+                });
+            }
+        });
+
+        if (jQuery(window).width() < 993) {
+            jQuery('#breadcrumb_block').removeClass('breadcrumb_custom');
+            jQuery('#breadcrumb_block').addClass('breadcrumb_my_account');
+        }
+
+    });
+//]]>
+</script>
+<!-- app\design\frontend\schrack\schrackresponsive\template\customer\form\edit.payment.phtml (end) -->

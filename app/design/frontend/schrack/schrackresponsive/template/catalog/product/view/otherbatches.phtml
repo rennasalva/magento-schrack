@@ -1,0 +1,40 @@
+<!-- app/design/frontend/schrack/schrackresponsive/template/catalog/product/view/otherbatches.phtml(start) -->
+<?php
+/** @var $_product Schracklive_SchrackCatalog_Model_Product */
+    $_product = Mage::registry('product');
+?>
+<?php if ( $_product->isCable() || $_product->hasFamily() ) : ?>
+    <div class="panel panel-default <?php if ( ! $_product->hasFamily() ) echo 'hide'; ?>" id="cableGroup">
+        <div class="panel-heading" role="tab" id="headingZero">
+            <h4 class="panel-title">
+              <a id="collapseButtonZero" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseZero" aria-expanded="true" aria-controls="collapseZero">
+                <?php if ( $_product->isCable() && ! $_product->hasMainProduct() ) : ?>
+                    <?php echo $this->__('Further batches without cutting costs'); ?>
+                <?php else: ?>
+                    <?php echo $this->__('Further batches'); ?>
+                <?php endif; ?>
+                <span class="glyphicon glyphicon-menu-down pull-right arrow-icon"></span>
+              </a>
+            </h4>
+        </div>
+        <div id="collapseZero" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingZero">
+            <div class="panel-body">
+                <div class="filelinks-single">
+                    <?php foreach ( $this->getFamilyLinkHtmls($_product) as $linkHtml ) : ?>
+                        <?php echo $linkHtml; ?>
+                    <?php endforeach; ?>
+                    <div id="leavings" class="hide" style="color: black">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="text/javascript">//<![CDATA[
+        jQuery(document).ready(function () {
+            jQuery('#collapseButtonZero').trigger('click');
+        });
+        //]]>
+    </script>
+<?php endif; ?>
+<!-- app/design/frontend/schrack/schrackresponsive/template/catalog/product/view/otherbatches.phtml(end) -->

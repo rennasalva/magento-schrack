@@ -1,0 +1,459 @@
+<!-- schrackresponsive/template/datanorm/form/index.phtml (start) -->
+<?php
+    /* @var $this Mage_Core_Block_Template */
+    $ajaxLoaderGifPath = $this->getSkinUrl('schrackdesign/Public/Images/download_ajax_loader.gif');
+
+    $_session = Mage::getSingleton('customer/session');
+
+    $sessionCustomer  = Mage::getSingleton('customer/session')->getCustomer();
+    $schrackWwsContactNumber = $sessionCustomer->getSchrackWwsContactNumber();
+    if ($schrackWwsContactNumber == '-1') {
+        $actAsCustomerActivated = true;
+    } else {
+        $actAsCustomerActivated = false;
+    }
+
+    $hideDatanormFromUnauthorizedAdvisor = 'deactivated';
+
+    if ($actAsCustomerActivated == true) {
+        $readConnection = Mage::getSingleton('core/resource')->getConnection('core_read');
+        // Find out, if this advisor is authorized to download pricelists for this selected customer:
+        $schrackWwsCustomerId = $sessionCustomer->getSchrackWwsCustomerId();
+        $query  = "SELECT * FROM account";
+        $query .= " WHERE wws_customer_id LIKE '" . $schrackWwsCustomerId . "%'";
+
+        $queryResult = $readConnection->query($query);
+
+        if ($queryResult->rowCount() > 0) {
+            foreach ($queryResult as $recordset) {
+                $principalNameFromCustomerAdvisor = $recordset['advisor_principal_name'];
+                $emailFromEmployeeExploded = explode('@', $principalNameFromCustomerAdvisor);
+                $emailFromEmployeePrefix = $emailFromEmployeeExploded[0];
+            }
+
+            // Compare account-principalusername-prefix to currently logged in employee-email:
+            if (!stristr($_session->getData("real_user_email"), $emailFromEmployeePrefix)) {
+                $hideDatanormFromUnauthorizedAdvisor = 'activated';
+
+                if ($_session->getData("real_user_email")) {
+                    $queryWhitelist  = "SELECT * FROM act_as_a_customer_whitelist";
+                    $queryWhitelist .= " WHERE employee_mail_address LIKE '" . $_session->getData("real_user_email") . "'";
+                    $queryWhitelist .= " AND wws_customer_number LIKE 'all'";
+                    $queryWhitelist .= " AND active = 1";
+                    $queryWhitelistResult = $readConnection->query($queryWhitelist);
+
+                    if ($queryWhitelistResult->rowCount() > 0) {
+                        // Employee is on the whitelist and allowed to see all pricelists from userss, which are not assigned to himself:
+                        $hideDatanormFromUnauthorizedAdvisor = 'deactivated';
+                    }
+                }
+            }
+        }
+    } else {
+        if (Mage::getSingleton('customer/session')->getCustomer() && Mage::getSingleton('customer/session')->getCustomer()->getEmail()) {
+            $_session->setData("real_user_email", Mage::getSingleton('customer/session')->getCustomer()->getEmail());
+        } else {
+            $_session->setData("real_user_email", '');
+        }
+    }
+?>
+
+<style>
+    #getCVSPricelistButton {
+        float: left;
+    }
+    #getXMLCatalogueButton {
+        float: left;
+    }
+    #getDatanormArticledataButton {
+        float: left;
+    }
+    #getCVSPricelistButtonHelpPdf {
+        float: left;
+        margin-left: 10%;
+    }
+    @media (min-width: 1px) and (max-width: 992px) {
+        .my_account_datanorm_content_wrapper {
+            margin-right: 16px !important;
+        }
+    }
+
+    @media (min-width: 60px) and (max-width: 320px) {
+        #getCVSPricelistButton {
+            height: 30px !important;
+            font-size: 0.8em !important;
+        }
+        #getDatanormArticledataButton {
+            height: 30px !important;
+            font-size: 0.8em !important;
+        }
+        #getXMLCatalogueButton {
+            font-size: 0.8em !important;
+            height: 30px;
+        }
+        #getCVSPricelistButtonHelpPdf {
+            float: left;
+            margin-left: 10%;
+            max-width: 50%;
+            font-size: 0.8em !important;
+            height: 30px;
+            padding-top: 9px !important;
+        }
+    }
+
+    @media (min-width: 321px) and (max-width: 480px) {
+        #getCVSPricelistButton {
+            height: 30px !important;
+            font-size: 0.8em !important;
+        }
+        #getDatanormArticledataButton {
+            height: 30px !important;
+            font-size: 0.8em !important;
+        }
+        #getXMLCatalogueButton {
+            font-size: 0.8em !important;
+            height: 30px;
+        }
+        #getCVSPricelistButtonHelpPdf {
+            float: left;
+            margin-left: 10%;
+            max-width: 50%;
+            font-size: 0.8em !important;
+            height: 30px;
+            padding-top: 9px !important;
+        }
+    }
+
+    @media (min-width: 481px) and (max-width: 767px) {
+        #getCVSPricelistButton {
+            height: 30px !important;
+            font-size: 0.8em !important;
+        }
+        #getDatanormArticledataButton {
+            height: 30px !important;
+            font-size: 0.8em !important;
+        }
+        #getXMLCatalogueButton {
+            font-size: 0.8em !important;
+            height: 30px;
+        }
+        #getCVSPricelistButtonHelpPdf {
+            float: left;
+            margin-left: 10%;
+            max-width: 50%;
+            font-size: 0.8em !important;
+            height: 30px;
+            padding-top: 9px !important;
+        }
+    }
+</style>
+
+<?php echo $this->getMessagesBlock()->getGroupedHtml() ?>
+
+<?php if ($hideDatanormFromUnauthorizedAdvisor == 'deactivated') : ?>
+    <div id="my_account_datanorm_wrapper" class="my_account_datanorm_content_wrapper">
+        <h1><?php echo $this->__('Pricelists/Datanorm') ?></h1>
+        <?php // BlockVariable "$isLoggedIn" ---> app/code/local/Schracklive/Datanorm/controllers/IndexController.php->indexAction() ?>
+        <?php if (!$isLoggedIn): ?>
+            <p><a href="<?php echo $this->getUrl('customer/account/login') ?>" class="info-msg-link"><?php echo $this->__('Go to login?') ?></a></p>
+        <?php endif; ?>
+        <div class="listArea"></div>
+        <div class="priceFormatCont">
+            <div class="form-group hidden-xs hidden-sm">
+        <?php echo $this->__('Select format for download') ?><br>
+                <input type="hidden" id="datanorm-download-type" value="csvFormat">
+                <label class="radio-inline">
+                    <input data-val="true" name="downloadFormat" type="radio" checked value="csvFormat"><?php echo $this->__('CSV Format') ?>
+                </label>
+                <label class="radio-inline">
+                    <input data-val="true" name="downloadFormat" type="radio" value="datanom"><?php echo $this->__('Datanorm') ?>
+                </label>
+                <label class="radio-inline">
+                    <input  data-val="true" name="downloadFormat" type="radio" value="xmlFormat"><?php echo $this->__('XML Format') ?>
+                </label>
+            </div>
+            <div class="csvFormat box open">
+                <h2 class="secondryHd gray"><?php echo $this->__('CSV Format'); ?> </h2>
+                <p style="margin:0 0 20px 0;"><?php echo $this->__('Download CSV Price Lists Explanation'); ?></p>
+                <?php
+                    if ( $isLoggedIn ):
+                        echo $this->__('Download Price Information Text')."<br>";
+                    endif;
+                ?>
+                <button id="getCVSPricelistButton"
+                        type="button"
+                        class="bttn bttn-md"
+                        title="<?php echo $this->__('Download Now') ?>">
+                    <?php echo $this->__('Download Now!') ?>
+                </button>
+                <?php
+                    if ( $isLoggedIn ):
+                        echo
+                        '<a id="getCVSPricelistButtonHelpPdf"' .
+                            ' href="' . Mage::getStoreConfig('schrack/datanorm/priceinformation_pdf_url') . '?a=' . time() .'"' .
+                            ' target="_blank"' .
+                            ' class="bttn bttn-md"' .
+                            ' title="' . $this->__('Download Price Information')  .'">' .
+                                $this->__('Download Price Information') .
+                        '</a>';
+                    endif;
+                ?>
+            </div>
+
+            <div class="datanom box">
+                <h2 class="secondryHd gray"><?php echo $this->__('Datanorm'); ?></h2>
+                <p><?php echo $this->__('Datanorm Text'); ?><?php echo $this->__('Datanorm Information'); ?>... <a href="<?php echo Mage::getStoreConfig('schrack/typo3/typo3url') . '?id=' . Mage::getStoreConfig('schrack/datanorm/typo3_information_site_id'); ?>" target="_blank"><?php echo $this->__('Read more'); ?></a> </p>
+
+                <?php if (Mage::getStoreConfig('schrack/datanorm/priceinformation_pdf_url') != '') : ?>
+                    <?php echo $this->__('Download Price Information Text'); ?>
+                    <br>
+                <?php endif; ?>
+
+                <div class="accordionCont" id="accordion">
+                    <div class="panel">
+                        <div class="panel-heading">
+                            <h4 class="panel-title" id="download-flags-opener"><a role="button" data-toggle="collapse" data-parent="#accordion-56362" href="#collapse-56363" aria-expanded="true" aria-controls="collapse-56363" class="accordion-toggle"><?php echo $this->__('Customize your download'); ?>
+                            <span class="glyphicon glyphicon-menu-down pull-right arrow-icon"></span>
+                            </a></h4>
+                        </div>
+                        <div id="collapse-56363" class="panel-collapse collapse" role="tabpanel">
+                            <div class="panel-body">
+                                <div id="download-flags-content" class="datanomChkCont">
+
+                                    <div class="row">
+                                        <div class="left">
+                                            <input id="idSelectImgURLs" class="checkbox" type="checkbox" name="addImages" value="1"/>
+                                        </div>
+                                        <div class="right">
+                                            <label for="idSelectImgURLs"><?php echo ' ' . $this->__('Include Image URLs'); ?></label>
+                                            <p><?php echo $this->__('Datanorm Image Explanation Text'); ?></p>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="left">
+                                            <input id="idEncodeUTF8" class="checkbox" type="checkbox" name="encodeUTF8" value="1"/>
+                                        </div>
+                                        <div class="right">
+                                            <label for="idEncodeUTF8"><?php echo ' ' . $this->__('Use UTF-8 Format'); ?></label>
+                                            <p><?php echo $this->__('Use UTF-8 Format Explanation'); ?></p>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="left">
+                                            <input id="idGroupArticlesBySchrackStructure" class="checkbox" type="checkbox" name="groupArticlesBySchrackStructure" value="1"/>
+                                        </div>
+                                        <div class="right">
+                                            <label for="idGroupArticlesBySchrackStructure"><?php echo ' ' . $this->__('Use Alternative Grouping'); ?></label>
+                                            <p><?php echo $this->__('Use Alternative Grouping Explanation'); ?></p>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="left">
+                                            <input id="idUseEdsArticleNumbers" class="checkbox" type="checkbox" name="useEdsArticleNumbers" value="1"/>
+                                        </div>
+                                        <div class="right">
+                                            <label for="idUseEdsArticleNumbers"><?php echo ' ' . $this->__('Use EDS Article Numbers'); ?></label>
+                                            <p><?php echo $this->__('Use EDS Article Numbers Explanation'); ?></p>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="left">
+                                            <input id="idWithoutLongText" class="checkbox" type="checkbox" name="withoutLongText" value="1"/>
+                                        </div>
+                                        <div class="right">
+                                            <label for="idWithoutLongText"><?php echo ' ' . $this->__('Omit Longtexts'); ?></label>
+                                            <p><?php echo $this->__('Omit Longtexts Explanation'); ?></p>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="left">
+                                            <input id="idWithoutUVP" class="checkbox" type="checkbox" name="withoutUVP" value="1" checked/>
+                                        </div>
+                                        <div class="right">
+                                            <label for="idWithoutUVP"><?php echo ' ' . $this->__('Without Recommended Retail Price'); ?></label>
+                                            <p><?php echo $this->__('Without Recommended Retail Price Explanation'); ?></p>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <button id="getDatanormArticledataButton"
+                    type="button"
+                    class="bttn bttn-md"
+                    title="<?php echo $this->__('Download Now!') ?>"
+                >
+                    <?php echo $this->__('Download Now!') ?>
+                </button>
+                <?php if (Mage::getStoreConfig('schrack/datanorm/priceinformation_pdf_url') != '') : ?>
+                    <a id="getCVSPricelistButtonHelpPdf"
+                       href="<?php echo Mage::getStoreConfig('schrack/datanorm/priceinformation_pdf_url'); ?>"
+                       target="_blank"
+                       class="bttn bttn-md"
+                       title="<?php echo $this->__('Download Price Information') ?>"
+                    >
+                        <?php echo $this->__('Download Price Information') ?>
+                    </a>
+                <?php endif; ?>
+                <div style="clear: both;"></div>
+            </div>
+            <div class="xmlFormat box">
+                <h2 class="secondryHd gray"><?php echo $this->__('XML Format'); ?> </h2>
+                <p><?php echo $this->__('XML Catalog Download Explanation'); ?></p>
+                <?php if (Mage::getStoreConfig('schrack/datanorm/priceinformation_pdf_url') != '') : ?>
+                    <?php echo $this->__('Download Price Information Text'); ?>
+                    <br>
+                    <br>
+                    <button id="getXMLCatalogueButton"
+                        type="button"
+                        class="bttn bttn-md"
+                        title="<?php echo $this->__('Download Now!') ?>"
+                    >
+                        <?php echo $this->__('Download Now!') ?>
+                    </button>
+                    <a id="getCVSPricelistButtonHelpPdf"
+                       href="<?php echo Mage::getStoreConfig('schrack/datanorm/priceinformation_pdf_url'); ?>"
+                       target="_blank"
+                       class="bttn bttn-md"
+                       title="<?php echo $this->__('Download Price Information') ?>"
+                    >
+                        <?php echo $this->__('Download Price Information') ?>
+                    </a>
+                    <div style="clear: both;"></div>
+                <?php else : ?>
+                    <button id="getXMLCatalogueButton"
+                            type="button"
+                            class="bttn bttn-md"
+                            title="<?php echo $this->__('Download Now!') ?>"
+                    >
+                        <?php echo $this->__('Download Now!') ?>
+                    </button>
+                <?php endif; ?>
+            </div>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        //<![CDATA[
+        jQuery(document).ready(function () {
+
+            var getArticleDataFile = function (species) {
+                // Removes head banner (error-) messages:
+                jQuery('.errors').remove();
+
+                // Show overlay loader for protect from interim actions from user, and for show action progress:
+                setOverlayLoader('listArea', '<?php echo $ajaxLoaderGifPath; ?>');
+                var ajaxUrl = '';
+                var ajaxUrlWithProtocol = '';
+                if (species == 'csv') {
+                    ajaxUrlWithProtocol = '<?php echo Mage::getUrl('datanorm/index/downloadCvs/'); ?>';
+                    // Removing protocol ('http:' / 'https'):
+                    ajaxUrl = ajaxUrlWithProtocol.replace('http:', '');
+                    ajaxUrl = ajaxUrl.replace('https:', '');
+                }
+
+                if (species == 'datanorm') {
+                    ajaxUrlWithProtocol = '<?php echo Mage::getUrl('datanorm/index/download/'); ?>';
+                    // Removing protocol ('http:' / 'https'):
+                    ajaxUrl = ajaxUrlWithProtocol.replace('http:', '');
+                    ajaxUrl = ajaxUrl.replace('https:', '');
+                }
+
+                if (species == 'xml') {
+                    ajaxUrlWithProtocol = '<?php echo Mage::getUrl('datanorm/index/downloadXml/'); ?>';
+                    // Removing protocol ('http:' / 'https'):
+                    ajaxUrl = ajaxUrlWithProtocol.replace('http:', '');
+                    ajaxUrl = ajaxUrl.replace('https:', '');
+                }
+
+                jQuery.ajax(ajaxUrl, {
+                    'type': 'POST',
+                    'dataType': "json",
+                    'data': {
+                        'SelectImgURLs': jQuery('#idSelectImgURLs').is(':checked'),
+                        'EncodeUTF8': jQuery('#idEncodeUTF8').is(':checked'),
+                        'GroupArticlesBySchrackStructure': jQuery('#idGroupArticlesBySchrackStructure').is(':checked'),
+                        'UseEdsArticleNumbers': jQuery('#idUseEdsArticleNumbers').is(':checked'),
+                        'WithoutLongText': jQuery('#idWithoutLongText').is(':checked'),
+                        'WithoutUVP': jQuery('#idWithoutUVP').is(':checked')
+                    },
+                    'success': function (responseData) {
+                        console.log(responseData + "responseData");
+                        console.log(ajaxUrl + "ajaxUrl");
+                        console.log(ajaxUrlWithProtocol + "protocol");
+                        if (jQuery.isEmptyObject(responseData) || responseData.downloadFilePath == '' || responseData.error) {
+                            unsetOverlayLoader('listArea');
+                            var errorMessages = ['<?php echo $this->__('Datanorm could not be fetched.'); ?>'];
+                            appendMessageUl(errorMessages, 'messages', 'error-msg', 'glyphicon glyphicon-exclamation-sign');
+                            console.log('appendMessageUl #24');
+                        } else {
+                            // Datanorm download uccessfully processed:
+                            if (dataLayer) {
+                                dataLayer.push({
+                                    'event' : 'userDownloads',
+                                    'eventCategory' : 'File Download',
+                                    'eventAction' : 'Datanorm Download',
+                                    'eventLabel' : jQuery("#datanorm-download-type").val()
+                                });
+                            }
+                            unsetOverlayLoader('listArea');
+                            window.location.href = responseData.downloadFilePath;
+                        }
+                    },
+                    error: function (e) {
+                        unsetOverlayLoader('listArea');
+                        var errorMessages = ['<?php echo $this->__('Datanorm could not be fetched.'); ?>'];
+                        appendMessageUl(errorMessages, 'messages', 'error-msg', 'glyphicon glyphicon-exclamation-sign');
+                        console.log('appendMessageUl #25');
+                    }
+                });
+            }
+            // Elapse/collapse options:
+            /* jQuery('#download-flags-opener').click(function (ev) {
+             var t = jQuery(ev.target);
+             if (t.hasClass('closed')) {
+             jQuery('#download-flags-content').show();
+             t.switchClass('closed', 'opened');
+             } else {
+             jQuery('#download-flags-content').hide();
+             t.switchClass('opened', 'closed');
+             }
+             }); */
+
+            // Button actions (download: csv, datanorm, xml):
+            jQuery('#getCVSPricelistButton').on('click', function () {
+                getArticleDataFile('csv');
+            });
+            jQuery('#getDatanormArticledataButton').on('click', function () {
+                getArticleDataFile('datanorm');
+            });
+            jQuery('#getXMLCatalogueButton').on('click', function () {
+                getArticleDataFile('xml');
+            });
+
+            jQuery("input[type='radio'][name='downloadFormat']").on('change', function() {
+                var selected = jQuery("input[type='radio'][name='downloadFormat']:checked");
+                if (selected.length > 0) {
+                    jQuery("#datanorm-download-type").val(selected.val());
+                }
+            });
+
+            if (jQuery(window).width() < 993) {
+                jQuery('#breadcrumb_block').removeClass('breadcrumb_custom');
+                jQuery('#breadcrumb_block').addClass('breadcrumb_my_account');
+            }
+
+        });
+        //]]>
+    </script>
+
+<?php endif; ?>
+
+<!-- schrackresponsive/template/datanorm/form/index.phtml (end) -->

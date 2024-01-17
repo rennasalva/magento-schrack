@@ -1,0 +1,481 @@
+<!-- app\design\frontend\schrack\schrackresponsive\template\catalog\product\view.phtml (start) -->
+<?php
+    Mage::register('articleDetailPage', 'yes');
+    $customerSession = Mage::getSingleton('customer/session');
+    $_helper = $this->helper('catalog/output');
+    $_partslistHelper = Mage::helper('schrackwishlist/partslist');
+    $_product = $this->getProduct();
+    $_accessories = $_product->getAccessoryProducts();
+    $_minQty = $this->getMinimalQty($_product);
+    $productUrl = $_product->getUrlModel()->getUrl($_product, array('_escape' => true, '_ignore_category' => true, '_nosid' => true));
+    $_categories = $_product->getCategoryCollection();
+    $_categoryNames = array();
+    foreach ($_categories as $_category) {
+        $_fullCategoryName = array();
+        foreach ($_category->getParentCategories() as $_parentCategory) {
+            $_fullCategoryName[] = $_parentCategory->getName();
+        }
+        $_categoryNames[] = $this->htmlEscape(implode(' > ', $_fullCategoryName));
+    }
+    //--------------------------------------------------------------------------
+    $countryCode = Mage::getStoreConfig('general/country/default');
+    //--------------------------------------------------------------------------
+    $replacingProduct = null;
+    $replacingProduct = $_product->getLastReplacementProduct();
+    Mage::unregister('replacingProduct');
+    Mage::register('replacingProduct', $replacingProduct);
+    $replacingProductURL = $replacingProduct ? $replacingProduct->getProductUrl() : null;
+    //--------------------------------------------------------------------------
+    $dataArray =  array();
+
+    $_images = $_product->getImageAttachments(true);
+    foreach ($_images as $_image) {
+        $foto = $_image['foto'];
+        if ( $foto ) {
+            $url = $foto->getUrl();
+            $large_img_url = Schracklive_SchrackCatalog_Helper_Image::getImageUrl($url, Schracklive_SchrackCatalog_Helper_Image::PRODUCT_DETAIL_PAGE_MAIN);
+        }
+    }
+?>
+
+<style>
+    @media (min-width: 1150px) {
+        .instead_price {
+            position: absolute;
+            left: 40%;
+            top: 0;
+        }
+    }
+    @media (min-width: 992px) and (max-width: 1149px){
+        .instead_price {
+            position: absolute;
+            left: 50%;
+            top: 0;
+        }
+    }
+    @media (max-width: 991px){
+        .instead_price {
+            display: none;
+        }
+    }
+    /* > 908 */
+    .instead_price {
+        /* text-decoration: line-through red; */
+        background: #eeeeee;
+        color: black !important;
+        padding-left: 10px;
+        padding-right: 10px;
+        margin-left: 110px;
+    }
+    .instead_price::after {
+        content:"";
+        position:absolute;
+        top:50%; left:3%; width:94%; height:1px;
+        background:red;
+        transform:rotate(-7deg);
+    }
+    .instead_price::before {
+        content:"";
+        position:absolute;
+        top:50%; left:3%; width:94%; height:1px;
+        background:red;
+        transform:rotate(7deg);
+    }
+
+    .trinity_sign {
+        display: inline-block;
+        vertical-align: top;
+        border: 3px solid #555555;
+        background: #555555;
+        color: #fff;
+        font-size: 13px;
+        letter-spacing: 3px;
+        line-height: 11px;
+        margin-left: 15px;
+        font-weight: 600 !important;
+        padding-left: 8px;
+        padding-right: 7px;
+        padding-top: 1px;
+        padding-bottom: 1px;
+    }
+
+    .vignette_sign {
+        display: inline-block;
+        vertical-align: top;
+        border: 3px solid #d1222b;
+        background: #d1222b;
+        color: #fff;
+        font-size: 13px;
+        letter-spacing: 3px;
+        line-height: 11px;
+        margin-left: 15px;
+        font-weight: 600 !important;
+        padding-left: 8px;
+        padding-right: 7px;
+        padding-top: 1px;
+        padding-bottom: 1px;
+    }
+
+    .promotion_sign {
+        margin-left: 15px;
+        position: absolute;
+        top: -8px;
+        height: 27px;
+        width: 27px;
+    }
+
+    .cut_off_time_text, .cut_off_time_text_counter {
+        font-size: 11pt;
+    }
+
+    .product-details .other-actions li a.replacing_product{
+        background-color: #d1222b;
+        color: #ffffff;
+    }
+
+    a.moreactions_replacing_product_link{
+        background: #00589d;
+        color: #fff;
+    }
+
+    a.moreactions_replacing_product_link span{
+        color: #fff;
+    }
+
+    @media (min-width: 60px) and (max-width: 320px) {
+        .trinity_sign {
+            float: left;
+            margin-left: 0;
+        }
+        .vignette_sign {
+            float: left;
+            margin-left: 0;
+        }
+        .promotion_sign {
+            width: 25px;
+            height: 25px;
+        }
+        .product-sq {
+            font-size: 16px;
+            width: 185px;
+        }
+        .marker_sku_infoline_mobile {
+            padding-left: 0;
+            margin-left: -14px;
+        }
+        .marker_sku_infoline_desktop {
+            display: none;
+        }
+    }
+
+    @media (min-width: 321px) and (max-width: 346px) {
+        .trinity_sign {
+            float: left;
+            margin-left: 0;
+        }
+        .vignette_sign {
+            float: left;
+            margin-left: 0;
+        }
+        .promotion_sign {
+            width: 25px;
+            height: 25px;
+        }
+        .product-sq {
+            font-size: 16px;
+            width: 185px;
+        }
+        .marker_sku_infoline_mobile {
+            padding-left: 0;
+            margin-left: -14px;
+        }
+        .marker_sku_infoline_desktop {
+            display: none;
+        }
+    }
+
+    @media (min-width: 347px) and (max-width: 480px) {
+        .trinity_sign {
+            float: left;
+            margin-left: 0;
+        }
+        .vignette_sign {
+            margin-left: 0;
+            float: left;
+        }
+        .promotion_sign {
+            width: 25px;
+            height: 25px;
+        }
+        .product-sq {
+            font-size: 16px;
+            width: 185px;
+        }
+        .marker_sku_infoline_mobile {
+            padding-left: 0;
+            margin-left: -14px;
+        }
+        .marker_sku_infoline_desktop {
+            display: none;
+        }
+    }
+
+    @media (min-width: 481px) and (max-width: 767px) {
+        .trinity_sign {
+            float: left;
+            margin-left: 0;
+        }
+        .vignette_sign {
+            float: left;
+            margin-left: 0;
+        }
+        .promotion_sign {
+            width: 25px;
+            height: 25px;
+        }
+        .product-sq {
+            font-size: 16px;
+            width: 185px;
+        }
+        .marker_sku_infoline_mobile {
+            padding-left: 0;
+            margin-left: -14px;
+        }
+        .marker_sku_infoline_desktop {
+            display: none;
+        }
+    }
+
+    @media (min-width: 768px) and (max-width: 768px) {
+        .trinity_sign {
+            top: -470px;
+            left: 1px;
+        }
+        .vignette_sign {
+
+        }
+        .marker_sku_infoline_mobile {
+            display: none;
+        }
+    }
+
+    @media (min-width: 769px) and (max-width: 1024px) {
+        .marker_sku_infoline_mobile {
+            display: none;
+        }
+    }
+    @media (min-width: 1025px) and (max-width: 1370px) {
+        .marker_sku_infoline_mobile {
+            display: none;
+        }
+    }
+    @media (min-width: 1371px) and (max-width: 1919px) {
+        .marker_sku_infoline_mobile {
+            display: none;
+        }
+    }
+    @media (min-width: 1920px) and (max-width: 4000px) {
+        .marker_sku_infoline_mobile {
+            display: none;
+        }
+    }
+</style>
+
+<?php echo $this->getMessagesBlock()->getGroupedHtml(); ?>
+<script type="text/javascript">
+    var PAGETYPE = 'DETAIL_VIEW';
+
+    //<![CDATA[
+    var partslist = new ListRequestManager.List('<?php echo $_partslistHelper->getBaseUrl() ?>');
+    partslist.setProductAddUrl('<?php echo Mage::helper('schrackcore/url')->getUrlWithCurrentProtocol('checkout/cart/addProductToPartslist')?>');
+    var partslistFE = new ListRequestManager.Frontend(partslist, ListRequestManager.Product);
+
+    var cart = new ListRequestManager.List('<?php echo $this->getUrl('checkout/cart/')?>', true);
+    var cartFE = new ListRequestManager.Frontend(cart, ListRequestManager.Product);
+
+    var compare = new ListRequestManager.List('<?php echo $this->getUrl('catalog/product_compare') ?>', true);
+    var compareFE = new ListRequestManager.Frontend(compare, ListRequestManager.Product);
+
+    jQuery(document).ready(function () {
+        jQuery('select.dropdown-menu').dropdown({activateOnClick: false});
+
+        if (typeof(window.matchMedia) !== 'undefined' && window.matchMedia('print').matches) {
+            jQuery('#content-wrap > div.large-3').remove();
+            jQuery('#content-wrap > div.content-container')
+                .removeClass('large-9').addClass('large-12');
+        }
+    });
+
+    //]]>
+</script>
+
+<!-- Collecting Google SEO Data (start) -->
+
+<div>
+    <div itemtype="http://schema.org/Product" itemscope>
+        <meta itemprop="mpn" content="<?php echo $_product->getSchrackEan(); ?>" />
+        <meta itemprop="name" content="<?php echo $_helper->productAttribute($_product, $_product->getName(), 'name') ?>" />
+        <link itemprop="image" href="<?php echo $large_img_url; ?>" />
+        <meta itemprop="description" content="<?php echo $_product->getSchrackLongTextAddition(); ?>" />
+        <meta itemprop="sku" content="0446310786" />
+        <div itemprop="offers" itemtype="http://schema.org/Offer" itemscope>
+            <link itemprop="url" href="<?php echo $productUrl; ?>" />
+            <meta itemprop="availability" content="https://schema.org/InStock" />
+            <meta itemprop="priceCurrency" content="<?php echo Mage::app()->getStore()->getBaseCurrencyCode(); ?>" />
+            <meta itemprop="itemCondition" content="https://schema.org/UsedCondition" />
+            <meta itemprop="price" content="<?php echo $_product->getFinalPrice(); ?>" />
+            <meta itemprop="priceValidUntil" content="<?php echo date('Y-m-d') ?>" />
+            <div itemprop="seller" itemtype="http://schema.org/Organization" itemscope>
+                <meta itemprop="name" content="Schrack" />
+            </div>
+        </div>
+        <div itemprop="brand" itemtype="http://schema.org/Thing" itemscope>
+            <meta itemprop="name" content="<?php if($_product->getData('schrack_main_producer'))
+              echo $_product->getData('schrack_main_producer'); else echo 'Schrack'; ?>" />
+        </div>
+    </div>
+</div>
+
+
+<!-- Collecting Google SEO Data (end) -->
+
+<div class="col-xs-12 product-detail">
+    <?php echo $this->getChildHtml('hint') ?>
+    <!-- Product Details -->
+    <div class="col-md-12 padLR0 product-details" id="product_<?php echo $_product->getSku(); ?>">
+        <form class="" action="<?php echo $this->getAddToCartUrl($_product) ?>" method="post" name="product_addtocart_form" id="product_addtocart_form"<?php if ($_product->getOptions()): ?>enctype="multipart/form-data"<?php endif; ?>>
+            <div class="row">
+                <div class="col-md-12 col-sm-12 col-xs-12 product-name name-mobile<?php echo '' . ($_product->isDead() ? ' gray' : ''); ?>">
+                    <?php echo $_helper->productAttribute($_product, $_product->getName(), 'name') ?><br>
+                    <?php if ( $_product->getSchrackLongTextAddition()) : ?>
+                    <div class="gray small long-text-addition">
+                            <?php echo $_product->getSchrackLongTextAddition(); ?>
+                    </div>
+                    <?php endif; ?>
+                </div>
+            </div>
+            <div class="col-md-12 col-sm-12 col-xs-12 marker_sku_infoline_mobile">
+                <div class="product-sq">
+                    <?php if ($_product->getSku()): ?>
+                        <?php echo $this->__('Article') . ' #: ' ?><span><?php echo $this->htmlEscape($_product->getSku()); ?></span>
+                    <?php endif; ?>
+                    <?php if ( $_product->isDead() ) : ?>
+                        <span class="gray hide"><?php echo $this->__('NOT AVAILABLE'); ?></span>
+                    <?php else : ?>
+                        <?php if ($_product->getSku()) $dataArray['data']['skus'][] = $_product->getSku(); ?>
+                        <span class="sale_mark sale-btn hide"></span>
+                    <?php endif; ?>
+                    <input type="hidden" id="schrack_hersteller" value="<?php echo $_product->getData('schrack_main_producer'); ?>">
+                    <?php if (stristr($_product->getData('schrack_main_producer'), 'Trinity')) : ?>
+                        <?php if (!stristr($_product->getData('schrack_sts_promotion_label'), 'Vignette')) : ?>
+                            <span class="trinity_sign">Trinity</span>
+                        <?php endif; ?>
+                    <?php endif; ?>
+                    <?php if (stristr($_product->getData('schrack_sts_promotion_label'), 'Vignette')) : ?>
+                        <span class="vignette_sign">Vignette</span>
+                    <?php endif; ?>
+                </div>
+                <!-- ATTENTION: please take care to AJAX Call which is pointed to css-class 'product-sq' -->
+                <!-- There is some Element about promotions inserted here, after '.product-sq' -->
+            </div>
+            <div class="row" style="margin-top: 10px;">
+                <div class="col-md-4 col-sm-6 col-xs-12 mobile-product-slider">
+                    <?php echo $this->getChildHtml('media') ?>
+                </div>
+                <div class="col-md-6 col-sm-6 col-xs-12 product-description padR0">
+                    <div class="row">
+                        <div class="col-md-12 col-sm-12 col-xs-12 marker_sku_infoline_desktop">
+                            <div class="product-sq">
+                                <?php if ($_product->getSku()): ?>
+                                    <?php echo $this->__('Article') . ' #: ' ?><span><?php echo $this->htmlEscape($_product->getSku()); ?></span>
+                                <?php endif; ?>
+                                <?php if ( $_product->isDead() ) : ?>
+                                    <span class="gray hide"><?php echo $this->__('NOT AVAILABLE'); ?></span>
+                                <?php else : ?>
+                                    <?php if ($_product->getSku()) $dataArray['data']['skus'][] = $_product->getSku(); ?>
+                                    <span class="sale_mark sale-btn hide"></span>
+                                <?php endif; ?>
+                                <input type="hidden" id="schrack_hersteller" value="<?php echo $_product->getData('schrack_main_producer'); ?>">
+                                <?php if (stristr($_product->getData('schrack_main_producer'), 'Trinity')) : ?>
+                                    <?php if (!stristr($_product->getData('schrack_sts_promotion_label'), 'Vignette')) : ?>
+                                        <span class="trinity_sign">Trinity</span>
+                                    <?php endif; ?>
+                                <?php endif; ?>
+                                <?php if (stristr($_product->getData('schrack_sts_promotion_label'), 'Vignette')) : ?>
+                                    <span class="vignette_sign">Vignette</span>
+                                <?php endif; ?>
+                            </div>
+                            <!-- ATTENTION: please take care to AJAX Call which is pointed to css-class 'product-sq' -->
+                            <!-- There is some Element about promotions inserted here, after '.product-sq' -->
+                        </div>
+                        <div class="col-md-12 col-sm-12 col-xs-12 product-name<?php echo '' . ($_product->isDead() ? ' gray' : ''); ?>">
+                            <?php echo $_helper->productAttribute($_product, $_product->getName(), 'name') ?> <br>
+                            <?php if ( $_product->getSchrackLongTextAddition()) : ?>
+                            <div class="gray normalTxt long-text-addition">
+                                <?php echo $_product->getSchrackLongTextAddition(); ?>
+                            </div>
+                            <?php endif; ?>
+                        </div>
+                        <div class="col-md-12 col-sm-12 col-xs-12">
+                            <?php if ($_product->isDead()) : ?>
+                                <?php if ($replacingProduct) : ?>
+                                    <?php
+                                        echo $this->getChildHtml('deadreplacing');
+                                        if ( ! $replacingProduct->isDead() ) { // get price only for non-dead replacing product
+                                            // If product is dead, the SKU will be left out from price fetch request (getProductPrices()/getProductAvailabilities())!:
+                                            $dataArray['data']['skus'][] = $replacingProduct->getSku(); //to pass replacing product SKU
+                                        }
+                                    ?>
+                                <?php else : ?>
+                                    <?php echo $this->getChildHtml('dead') ?>
+                                <?php endif; ?>
+                            <?php elseif ( $_product->isDownload() ) : ?>
+                                <?php echo $this->getChildHtml('download') ?>
+                            <?php else : ?>
+                                <?php if ($_product->isSaleable()): ?>
+                                    <div class="addtocart">
+                                        <?php echo $this->getChildHtml('addtocart') ?>
+                                    </div>
+                                <?php else: ?>
+                                    <?php Mage::log('product ' . $_product->getSku() . ' is not saleable.'); ?>
+                                <?php endif; ?>
+                            <?php endif; ?>
+                        </div>     
+                    </div>        
+                </div>			
+                <div class="col-md-2 col-sm-12 col-xs-12 other-actions"> 
+                    <?php echo $this->getChildHtml('moreactions') ?>
+                </div>
+            </div>
+        </form>
+    </div>
+    <!-- Product Details -->
+    <!-- Product Accordin -->
+    <div class="row">
+        <div class="col-md-12 col-sm-12 col-xs-12  product-content-section">
+            <?php echo $this->getChildHtml('additional',false) /* attributes.phtml!!! */ ?>
+        </div>
+    </div>
+    <!-- Product Accordin -->   
+    <!-- View Accessories -->    
+    <?php echo $this->getChildHtml('accessories') ?>
+    <!-- View Accessories -->
+    <!-- Releated Products -->
+    <?php echo $this->getChildHtml('related') ?>    
+    <!-- Releated Products --> 
+    <!-- Next Previous --> 
+    <?php //echo $this->getChildHtml('browseblock') ?> <!-- SCHRAC-890 -->
+    <!-- Next Previous -->    
+</div>
+<script type="text/javascript">
+    //<![CDATA[
+    //------------------------------------ set actual store country for commonJS
+    if (localStorage.getItem("actualShopCountry") === null) {
+        localStorage.actualShopCountry = '<?php echo strtoupper($countryCode); ?>';
+    }
+    var productSKUForPrice = <?php echo json_encode($dataArray); ?>;
+    var productSKUForStock = <?php $dataArray['data']['forceRequest'] = 1; echo json_encode($dataArray); ?>;
+    var mainProductSKU = {'data' : {'sku' : '<?php echo $_product->getSku(); ?>' }};
+    //]]>
+</script>
+<!-- app\design\frontend\schrack\schrackresponsive\template\catalog\product\view.phtml (end) -->

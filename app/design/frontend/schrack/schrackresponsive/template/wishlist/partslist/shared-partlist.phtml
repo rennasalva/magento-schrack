@@ -1,0 +1,101 @@
+<!-- app/design/frontend/schrack/schrackresponsive/template/wishlist/partslist/shared-partlist.phtml (start) -->
+
+<style>
+.receivedStatusColumn{
+    padding-right: 2px !important;
+    width: 8% !important;
+}
+.receivedDateColumnw{
+    padding-right: 2px !important;
+    width: 8% !important;
+}
+.receivedDescriptionColumn{
+    padding-right: 2px !important;
+    width: 20% !important;
+}
+.receivedSharedByColumn{
+    padding-right: 2px !important;
+    width: 16% !important;
+}
+.receivedCommentColumn{
+    padding-right: 2px !important;
+    width: 15% !important;
+}
+.receivedArticlesColumn{
+    padding-right: 2px !important;
+    width: 8% !important;
+}
+.partlistActionColumn{
+    width: 25% !important;
+}
+</style>
+
+<div class="tableCont hidden-xs">
+    <table cellspacing="0" class="table table-bordered" id="shared-partslist" width="100%">
+        <thead>
+            <tr>
+                <th class="receivedStatusColumn">
+                    <?php echo $this->__('Status'); ?>
+                </th>
+                <th class="receivedDateColumnw">
+                    <?php echo $this->__('Date'); ?>
+                </th>
+                <th class="receivedDescriptionColumn">
+                    <?php echo $this->__('Description'); ?>
+                </th>
+                <th class="receivedSharedByColumn">
+                    <?php echo $this->__('Shared by'); ?>
+                </th>
+                <th class="receivedCommentColumn">
+                    <?php echo $this->__('Comment'); ?>
+                </th>
+                <th class="receivedArticlesColumn">
+                    <?php echo $this->__('Articles'); ?>
+                </th>
+                <th class="partlistActionColumn">
+                    <?php echo $this->__(''); ?>
+                </th>
+            </tr>
+        </thead>
+		<tr align="center" id="mySharedPartlistLoader">
+			<td colspan="7" align="center">
+				<img src="<?php echo $this->getSkinUrl('schrackdesign/Public/Images/download_ajax_loader.gif'); ?>" style="opacity: 0.4; z-index: 99999;" />
+			</td>
+		</tr>
+    </table>
+</div>
+<div class="hidden-sm hidden-md hidden-lg">
+    <div class="sharedPartListCont shared-mobilebox tableCont">
+        <table cellspacing="0" class="table table-bordered mobileview" id="shared-partslist-mobile" width="100%">
+            <thead>
+                <tr>
+                    <th class="col-xs-2 text-center">
+                        <?php echo $this->
+                        __('Shared Partslist'); ?>
+                    </th>
+                </tr>
+            </thead>
+			<tr align="center" id="mySharedPartlistLoader">
+				<td align="center">
+					<img src="<?php echo $this->getSkinUrl('schrackdesign/Public/Images/download_ajax_loader.gif'); ?>" style="opacity: 0.4; z-index: 99999;" />
+				</td>
+			</tr>
+        </table>
+    </div>
+</div>
+
+
+<script type="text/javascript">
+    //<![CDATA[
+    jQuery(document).ready(function () {
+
+        jQuery("body").on('DOMSubtreeModified', ".badge.partlist", function() {
+            if (jQuery(".badge.partlist").html() == '0') {
+                jQuery(".badge.partlist").html('');
+            }
+        });
+
+    });
+    //]]>
+</script>
+<!-- app/design/frontend/schrack/schrackresponsive/template/wishlist/partslist/shared-partlist.phtml (end) -->

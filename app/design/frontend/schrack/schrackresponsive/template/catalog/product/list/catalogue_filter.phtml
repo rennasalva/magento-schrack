@@ -1,0 +1,89 @@
+<!-- app\design\frontend\schrack\schrackresponsive\template\catalog\product\list\catalogue_filter.phtml (start)-->
+<?php
+    /* @var $this Schracklive_SolrSearch_Block_Form_Search */
+    $_showAll = $this->getRequest()->getParam('showAll', null);
+    $_facets = Mage::registry('facetsCollectionSolr');
+    //--------------------------------------------------------------------------
+    $categoryId = '';
+    if($this->getCategoryId()){
+        $categoryId = $this->getCategoryId();
+    }else{
+        $categoryId = Mage::registry('current_category')->getId();
+    }
+    //----------------------------------------------------------------- Headline
+    echo '<div class="catalogAction">'.
+             '<div class="col-xs-12">' .
+                 '<h2 class="subHeading">' .
+                    $this->__('Catalogues List') . ':&nbsp;<span class="gray">('. $this->__('All catalogues are free') . ')</span>' .
+                 '</h2>'.
+             '</div>';
+    if (count($_facets)):
+        $i = 1;
+        //---------------------------------------------------- build selectboxes
+        foreach ($_facets as $facet => $entries):
+            if ( $facet != null ||strlen($facet) > 0 ):
+                $j = 0; $options = '';
+                //---------------------------------- build options for selectbox
+                foreach ($entries['options'] as $entry):
+                    ++$j;
+                    $selected = ($entry['type'] == 'active') ? 'selected="selected"' : '';
+                    $value = ($entry['label'] == $this->__('All')) ? '' : $entry['label'] ;
+                    $options .= '<option ' . $selected . ' value="' . $value . '">' .
+                        $entry['label'] .
+                        '</option>';
+                endforeach;
+                //--------------------------------------------------------------
+                echo '<div class="col-xs-5 col-sm-2">' .
+                        '<select class="form-control" onchange="' . "performFilterAjax('current'); " .'" id="' . $facet .'" name="' . $facet .'">' .
+                            '<option value="">' . $entries['label'] . '</option>'.
+                            $options .
+                        '</select>' .
+                     '</div>';
+            endif;
+            ++$i;
+        endforeach;
+    endif;
+
+
+// <option selected="selected" value="2023">2023</option>
+    //--------------------------------------------------------------------------
+    $hiddenFields = '';
+    foreach ($this->getQueryFacets() as $fq):
+        $hiddenFields .= '<input type="hidden" name="fq[]" value="' . $fq. '" />';
+    endforeach;
+    //--------------------------------------------------------------------------
+    $searchAttrFull = $this->helper('catalogsearch')->getEscapedQueryText();
+    $placeholder = $this->__('Search within article selection');
+    //--------------------------------------------------------------------------
+    echo '<div class="col-xs-12 col-sm-5 col-md-3">' .
+            '<form id="search_category_form" method="get">' .
+                $hiddenFields .
+                '<div class="input-group">' .
+                    '<input type="hidden" name="cat" value="Shop_Category" />' .
+                    '<input id="search-attr-full" type="text" name="q" value="' . $searchAttrFull . '" class="search default form-control" autocomplete="off" placeholder="' . $placeholder . '"/>' .
+                    '<span class="input-group-addon" id="srchFrmSbmt" onClick="searchFormWithinArticle();">' .
+                        '<span class="glyphicon glyphicon-search"></span>' .
+                    '</span>' .
+                    '<div id="search_category_autocomplete_wrapper" style="display: none;">' .
+                        '<div id="search_category_autocomplete" class="search-autocomplete"></div>' .
+                    '</div>' .
+                '</div>' .
+            '</form>' .
+        '</div>'.
+    '</div>';
+?>
+
+<script type="text/javascript">
+//<![CDATA[
+    var searchCatForm = new Varien.searchForm('search_category_form', 'search-attr-full', '');
+    searchCatForm.initAutocomplete('<?php echo $this->helper('catalogsearch')->getSuggestUrl() ?>?searchcategoryid=<?php echo $this->getCurrentCategoryId().$this->getFacetsRequestString('&'); ?>', 'search_category_autocomplete');
+
+    jQuery(document).keypress(function(ev) {
+        if ( jQuery(ev.target).attr('id') === 'search-attr-full' && ev.which == 13 ) {
+            ev.preventDefault();
+           searchFormWithinArticle();
+        }
+    });
+//]]>
+</script>
+<!-- app\design\frontend\schrack\schrackresponsive\template\catalog\product\list\catalogue_filter.phtml (end) -->

@@ -1,0 +1,1076 @@
+<!-- app/design/frontend/schrack/schrackresponsive/template/checkout/onepage/progress.phtml (start) -->
+<?php
+
+    $userLoggedIn = false;
+    if ($this->helper('customer')->isLoggedIn()) {
+        $userLoggedIn = true;
+    }
+
+    $_session = Mage::getSingleton('customer/session');
+    if ($_session->getCustomer()) {
+        $sessionCustomerId = $_session->getCustomer()->getId();
+    }
+
+    $stretch = 0.79;
+    $showColors = false;
+
+    $quote = Mage::getSingleton('checkout/session')->getQuote();
+    $quoteItems = $quote->getItemsCollection();
+?>
+
+<style>
+.checkout_progress_bar {
+    width: <?php echo $stretch * 100?>%;
+    margin-left: 2%;
+}
+
+.checkout_progress_bar_labels {
+    width: <?php echo $stretch * 100?>%;
+}
+
+.checkout_progress_color_inactive {
+    color: #D0D0D0;
+}
+
+.checkout_progress_color_active {
+    color: #005B9F;
+}
+
+.checkout_progress_hr_line_inactive {
+    border: 3px solid #D0D0D0;
+    width: 101%;
+    margin-left: -4%;
+}
+
+.checkout_progress_hr_line_active {
+    border: 3px solid #005B9F;
+    width: 100%;
+    margin-left: -1%;
+}
+
+.checkout_progress_link {
+    cursor: pointer;
+}
+
+.clear_both {
+    clear: both
+}
+
+.checkout_progress_label_shipping_method {
+    float: left;
+}
+
+.checkout_progress_label_shipping_address_stock {
+    float: left;
+}
+
+.checkout_progress_label_payment_method {
+    float: left;
+}
+
+.checkout_progress_label_order_review {
+    float: left;
+}
+
+.checkout_progress_numbers {
+    font-size: 1.8em;
+    float: left;
+    height: 100%;
+}
+
+.checkout_progress_line {
+    font-size: 1.8em;
+    min-width: <?php echo $stretch * 22.5; ?>%;
+    float: left;
+    height: 70px;
+    margin: 0 auto;
+}
+
+.checkout_progress_label_shipping_method {
+    display: none;
+}
+.checkout_progress_label_shipping_address_stock {
+    display: none;
+}
+.checkout_progress_label_payment_method {
+    display: none;
+}
+.checkout_progress_label_order_review {
+    display: none;
+}
+
+.checkout_tab_header_description {
+    width: 80%;
+    height: 100%;
+    float: left;
+    padding-top: 10px;
+}
+.checkout_tab_header_description_dropdown {
+    width: 20%;
+    height: 100%;
+    float: left;
+    padding-top: 9px;
+}
+
+.checkout_dropdown_toggle:after {
+    display: inline-block;
+    width: 0;
+    height: 0;
+    margin-left: 2em;
+    vertical-align: middle;
+    content: "";
+    border-top: 0.3em solid;
+    border-right: 0.3em solid transparent;
+    border-left: 0.3em solid transparent;
+}
+
+.checkout_step_inactive_untouched_tab {
+    background: #ffffff;
+    border: 1px solid #4e4e4e;
+    width: 100%;
+    height: 43px;
+    padding-left: 22px;
+    margin-bottom: 7px;
+}
+
+.checkout_step_active_tab {
+    background: #005B9F;
+    color: #ffffff !important;
+    width: 100%;
+    height: 43px;
+    padding-left: 22px;
+    margin-bottom: 7px;
+}
+
+.checkout_step_inactive_tab {
+    border: 1px solid #707070;
+    background: #dedede;
+    color: #000000;
+    cursor: pointer;
+    width: 100%;
+    height: 43px;
+    padding-left: 22px;
+    margin-bottom: 7px;
+}
+
+.checkout_progress_bar_container {
+    margin-top: 34px;
+    margin-bottom: -5px;
+}
+
+.checkout_hidden_field {
+    display: none !important;
+}
+
+.checkout_show_act_as_a_customer_email_field {
+    display: none;
+    width: auto;
+    z-index: 111;
+}
+.checkout_show_act_as_a_customer_email {
+    color: #e32c2c !important;
+    font-weight: bold !important;
+    padding: 5px !important;
+    cursor: default !important;
+    margin-top: -2px !important;
+}
+
+#checkout_modal_result_not_available_product_list_container {
+    display: none;
+}
+#checkout_modal_result_not_manageable_product_list_container {
+    display: none;
+}
+
+@media (min-width: 1px) and (max-width: 474px) {
+    #content {
+    <?php if ($showColors) : ?>
+        background: #11fff7 !important;
+     <?php endif;  ?>
+    }
+    .checkout_progress_hr_line {
+        margin-top: 16px;
+    }
+    .checkout-onepage-index {
+        width:  100%;
+    }
+    .checkout_step_active_tab {
+        width: 100%;
+        margin-left: 0;
+    }
+    #co-shipping-method-form {
+        width: 100%;
+    }
+    #checkoutDeliveryButton {
+        width: 180px;
+        padding-left: 7px;
+    }
+    #checkoutPickupButton {
+        width: 180px;
+        padding-left: 8px;
+    }
+    .fa {
+        display: none !important;
+    }
+    .checkout_progress_hr_line_active {
+        margin-left: -3%;
+        width: 96%;
+    }
+    .checkout_show_act_as_a_customer_email_field {
+        position: absolute !important;
+        left: 10px !important;
+        top: 0 !important;
+        font-size: 0.8em !important;
+    }
+
+    .logout_act_as_customer {
+        display: inline-block !important;
+        height: 19px !important;
+        float: right !important;
+        margin-top: -2px !important;
+    }
+}
+
+@media (min-width: 475px) and (max-width: 637px) {
+    #content {
+    <?php if ($showColors) : ?>
+         background: #ff28e1 !important;
+    <?php endif;  ?>
+    }
+    .checkout_progress_line {
+        min-width: <?php echo $stretch * 26; ?>%;
+    }
+    .checkout_progress_hr_line {
+        margin-top: 16px;
+    }
+    .checkout_progress_hr_line_inactive {
+        margin-left: -3%;
+    }
+    .checkout_dropdown_toggle:after {
+        margin-left: 3.6em;
+    }
+    .container {
+        width: 474px;
+    }
+    .checkout_show_act_as_a_customer_email_field {
+        position: absolute !important;
+        left: 10px !important;
+        top: 0 !important;
+        font-size: 0.8em !important;
+    }
+    .logout_act_as_customer {
+        display: inline-block !important;
+        height: 19px !important;
+        float: right !important;
+        margin-top: -2px !important;
+    }
+}
+
+@media (min-width: 638px) and (max-width: 760px) {
+    #content {
+    <?php if ($showColors) : ?>
+         background: yellow !important;
+    <?php endif;  ?>
+    }
+    .checkout_progress_line {
+        min-width: <?php echo $stretch * 28; ?>%;
+    }
+    .checkout_progress_hr_line {
+        margin-top: 16px;
+    }
+    .checkout_progress_hr_line_inactive {
+        margin-left: -2%;
+    }
+    .checkout_dropdown_toggle:after {
+        margin-left: 4.5em;
+    }
+    .checkout_show_act_as_a_customer_email_field {
+        position: absolute !important;
+        left: 10px !important;
+        top: 0 !important;
+        font-size: 1em !important;
+    }
+    .logout_act_as_customer {
+        display: inline-block !important;
+        height: 19px !important;
+        float: right !important;
+        margin-top: -2px !important;
+    }
+}
+
+@media (min-width: 761px) and (max-width: 767px) {
+    #content {
+    <?php if ($showColors) : ?>
+         background: #979797 !important;
+    <?php endif;  ?>
+    }
+    .checkout_progress_line {
+        width: <?php echo $stretch * 28.94; ?>%;
+    }
+    .checkout_progress_hr_line {
+        margin-top: 16px;
+    }
+    .checkout_progress_hr_line_inactive {
+        margin-left: -1%;
+    }
+    .checkout_dropdown_toggle:after {
+        margin-left: 5em;
+    }
+    .checkout_show_act_as_a_customer_email_field {
+        position: absolute !important;
+        left: 10px !important;
+        top: 0 !important;
+    }
+    .logout_act_as_customer {
+        display: inline-block !important;
+        height: 19px !important;
+        float: right !important;
+        margin-top: -2px !important;
+    }
+}
+
+@media (min-width: 768px) and (max-width: 990px) {
+    #content {
+    <?php if ($showColors) : ?>
+         background: #ff9931 !important;
+    <?php endif;  ?>
+    }
+    .checkout_progress_line {
+        width: <?php echo $stretch * 28.93; ?>%;
+    }
+    .checkout_progress_hr_line {
+        margin-top: 16px;
+    }
+    .checkout_progress_hr_line_inactive {
+        margin-left: -1%;
+    }
+    .checkout_progress_hr_line_active {
+        margin-left: -2%;
+    }
+    .checkout_dropdown_toggle:after {
+        margin-left: 5.5em;
+    }
+    .checkout_show_act_as_a_customer_email_field {
+        position: absolute !important;
+        left: 10px !important;
+        top: 0 !important;
+    }
+}
+
+@media (min-width: 991px) and (max-width: 1099px) {
+    #content {
+    <?php if ($showColors) : ?>
+         background: blue !important;
+    <?php endif;  ?>
+    }
+    .checkout_progress_numbers {
+        font-size: 2.2em;
+    }
+    .checkout_progress_line {
+        font-size: 2.2em;
+        width: <?php echo $stretch * 28.94; ?>%;
+    }
+    .checkout_progress_hr_line {
+        margin-top: 20px;
+    }
+    .checkout_progress_label_shipping_method {
+        margin-left: 0.5%;
+        display: block;
+        width: 20%;
+    }
+    .checkout_progress_label_shipping_address_stock {
+        margin-left: 0;
+        display: block;
+        width: 20%;
+        text-align: center;
+    }
+    .checkout_progress_label_payment_method {
+        margin-left: 6%;
+        display: block;
+        width: 20%;
+        text-align: center;
+    }
+    .checkout_progress_label_order_review {
+        margin-left: 6%;
+        display: block;
+        width: 20%;
+        text-align: center;
+    }
+    .checkout_dropdown_toggle:after {
+        margin-left: 7.5em;
+    }
+    .checkout_progress_hr_line_inactive {
+        margin-left: -1%;
+    }
+    .checkout_show_act_as_a_customer_email_field {
+        position: absolute !important;
+        left: 10px !important;
+        top: 0 !important;
+    }
+}
+
+@media (min-width: 1100px) and (max-width: 1236px) {
+    #content {
+    <?php if ($showColors) : ?>
+         background: #1dff0f !important;
+    <?php endif;  ?>
+    }
+    .checkout_progress_numbers {
+        font-size: 2.6em;
+    }
+    .checkout_progress_line {
+        font-size: 2.6em;
+        width: <?php echo $stretch * 28.94; ?>%;
+    }
+    .checkout_progress_hr_line {
+        margin-top: 24px;
+    }
+    .checkout_progress_label_shipping_method {
+        margin-left: 0.5%;
+        display: block;
+        width: 20%;
+    }
+    .checkout_progress_label_shipping_address_stock {
+        margin-left: 0;
+        display: block;
+        width: 20%;
+        text-align: center;
+    }
+    .checkout_progress_label_payment_method {
+        margin-left: 6%;
+        display: block;
+        width: 20%;
+        text-align: center;
+    }
+    .checkout_progress_label_order_review {
+        margin-left: 6%;
+        display: block;
+        width: 20%;
+        text-align: center;
+    }
+    .checkout_dropdown_toggle:after {
+        margin-left: 9em;
+    }
+    .checkout_progress_hr_line_inactive {
+        margin-left: -1%;
+    }
+    .checkout_show_act_as_a_customer_email_field {
+        position: absolute !important;
+        left: 10px !important;
+        top: 0 !important;
+    }
+}
+
+@media (min-width: 1237px) and (max-width: 8000px) {
+    #content {
+    <?php if ($showColors) : ?>
+         background: red !important;
+    <?php endif;  ?>
+    }
+    .checkout_progress_numbers {
+        font-size: 2.6em;
+    }
+    .checkout_progress_line {
+        font-size: 3em;
+        width: <?php echo $stretch * 28.94; ?>%;
+    }
+    .checkout_progress_hr_line {
+        margin-top: 24px;
+    }
+    .checkout_progress_label_shipping_method {
+        margin-left: 0.5%;
+        display: block;
+        width: 20%;
+    }
+    .checkout_progress_label_shipping_address_stock {
+        margin-left: 0;
+        display: block;
+        width: 20%;
+        text-align: center;
+    }
+    .checkout_progress_label_payment_method {
+        margin-left: 6%;
+        display: block;
+        width: 20%;
+        text-align: center;
+    }
+    .checkout_progress_label_order_review {
+        margin-left: 6%;
+        display: block;
+        width: 20%;
+        text-align: center;
+    }
+    .checkout_progress_hr_line_inactive {
+        margin-left: -1%;
+    }
+    .checkout_dropdown_toggle:after {
+        margin-left: 10em;
+    }
+    .checkout_show_act_as_a_customer_email_field {
+        position: absolute !important;
+        left: 10px !important;
+        top: 0 !important;
+    }
+}
+</style>
+
+<!-- Modal -->
+<div id="checkout_modal_pickup_warning" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button id="checkout_close_modal_pickup_warning"  type="button" class="close" data-dismiss="modal">&times;</button>
+                <div style="font-size: 2.6em; color:red;">&#9888;</div>
+            </div>
+            <div class="modal-body">
+                <div id="checkout_modal_result_not_available_product_list_container">
+                    <p><?php echo $this->__('Some Articles Are Not In The Stock That You Have Chosed Description'); ?></p>
+                    <br>
+                    <div id="checkout_modal_result_not_available_product_list"></div>
+                </div>
+                <div id="checkout_modal_result_not_manageable_product_list_container">
+                    <br>
+                    <p><?php echo $this->__('Please choose another store for pickup or choose delivery. Following products are not available for pickup in your current Schrack Technik store.'); ?></p>
+                    <br>
+                    <div id="checkout_modal_result_not_manageable_product_list"></div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div>
+                    <div class="checkout_modal_left_button">
+                        <button id="checkout_modal_edit_cart" type="button" class="bttn-lg"><?php echo $this->__('Edit Cart') ?></button>
+                    </div>
+                    <div class="checkout_modal_right_button">
+                        <button id="checkout_modal_ignore_pickup_warning_and_continue" type="button" class="bttn-lg"><?php echo $this->__('Continue') ?></button>
+                    </div>
+                    <div class="checkout_modal_clear_both"></div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<div id="checkout_login_header_tab" class="checkout_step_active_tab checkout_hidden_field">
+    <div class="checkout_tab_header_description"><?php echo $this->__('Log In')  ?></div>
+    <div class="checkout_tab_header_description_dropdown checkout_dropdown_toggle"></div>
+    <div style="clear: both;"></div>
+</div>
+
+
+<div id="checkout_progress_bar_container" class="checkout_progress_bar_container checkout_hidden_field">
+    <div class="checkout_progress_bar">
+        <div id="step_one_progress_circle" class="checkout_progress_numbers checkout_progress_color_inactive">&#10122;</div>
+        <div class="checkout_progress_line"><hr id="step_one_two_progress_circle_line" class="checkout_progress_hr_line checkout_progress_hr_line_inactive"></div>
+        <div id="step_two_progress_circle" class="checkout_progress_numbers checkout_progress_color_inactive">&#10123;</div>
+        <div class="checkout_progress_line"><hr id="step_two_three_progress_circle_line" class="checkout_progress_hr_line checkout_progress_hr_line_inactive"></div>
+        <div id="step_three_progress_circle" class="checkout_progress_numbers checkout_progress_color_inactive">&#10124;</div>
+        <div class="checkout_progress_line"><hr id="step_three_four_progress_circle_line" class="checkout_progress_hr_line checkout_progress_hr_line_inactive"></div>
+        <div id="step_four_progress_circle" class="checkout_progress_numbers checkout_progress_color_inactive">&#10125;</div>
+        <div class="clear_both"></div>
+    </div>
+
+    <div class="checkout_progress_bar_labels">
+        <div class="checkout_progress_label_shipping_method">
+            <h4><?php echo $this->__('Shipping Method') ?></h4>
+        </div>
+        <div class="checkout_progress_label_shipping_address_stock">
+            <h4><?php echo $this->__('Shipping Information') ?></h4>
+        </div>
+        <div class="checkout_progress_label_payment_method">
+            <h4><?php echo $this->__('Payment Method') ?></h4>
+        </div>
+        <div class="checkout_progress_label_order_review">
+            <h4><?php echo $this->__('Order Review') ?></h4>
+        </div>
+        <div class="clear_both"></div>
+    </div>
+
+    <div class="box one-page-checkout-progress">
+        <?php if($this->getCheckout()->getStepData('shipping_method', 'complete')): ?>
+        <?php endif ?>
+
+        <?php if($this->getCheckout()->getStepData('billing', 'complete')): ?>
+        <?php endif ?>
+
+        <?php if($this->getCheckout()->getStepData('shipping', 'complete')): ?>
+        <?php endif ?>
+
+        <?php if($this->getCheckout()->getStepData('payment', 'complete')): ?>
+        <?php endif ?>
+    </div>
+</div>
+
+<div id="showActAsACustomerEmailFieldCheckout" class="checkout_show_act_as_a_customer_email_field">
+    <span id="showActAsACustomerEmailCheckout" class="checkout_show_act_as_a_customer_email"></span>
+</div>
+
+<script type="text/javascript">
+    //<![CDATA[
+
+    jQuery(document).ready(function() {
+
+        <?php if ($userLoggedIn) : ?>
+            var userLoginStatus = 'logged in';
+        <?php else : ?>
+            var userLoginStatus = 'not logged in';
+        <?php endif; ?>
+
+        console.log(userLoginStatus);
+        console.log(localStorage.newCheckoutProcessCurrentRole);
+
+        jQuery('#checkout_select_store_pickup').on('change', function(){
+            console.log('newCheckoutSelectedPickupLocation (#1) filled here from this location = ' + jQuery(this).val());
+            localStorage.newCheckoutSelectedPickupLocation = jQuery(this).val();
+        });
+
+        jQuery('#checkout_modal_edit_cart').on('click', function () {
+            window.location.href = "<?php echo Mage::getUrl('checkout/cart', array('_secure' => true)); ?>";
+        });
+
+        jQuery('#checkout_modal_ignore_pickup_warning_and_continue').on('click', function () {
+            jQuery('#checkout_close_modal_pickup_warning').trigger( "click" );
+            if (localStorage.newCheckoutActionPath == 'action_one') {
+                checkoutActionOne();
+            }
+            if (localStorage.newCheckoutActionPath == 'action_two') {
+                checkoutActionTwo();
+            }
+            if (localStorage.newCheckoutActionPath == 'action_three') {
+                checkoutActionThree();
+            }
+            if (localStorage.newCheckoutActionPath == 'action_four') {
+                checkoutActionFour();
+            }
+        });
+
+        if (userLoginStatus == 'not logged in' && (localStorage.newCheckoutProcessCurrentRole == "none" || !localStorage.newCheckoutProcessCurrentRole)) {
+            console.log('Step Zero not already finished #1');
+
+            // First step before anything is not finshed (before login selection!):
+            jQuery('#checkout_login_header_tab').removeClass('checkout_hidden_field');
+            jQuery('#checkout_login_header_tab').show();
+            jQuery('#checkout_progress_bar_container').hide();
+        } else {
+            console.log('Step Zero finished #1');
+
+            if ((!localStorage.checkoutShippingStep || typeof localStorage.checkoutShippingStep == 'undefined' || localStorage.checkoutShippingStep != 'one')
+                && (localStorage.newCheckoutProcessCurrentStep == 'opc-shipping_method' || typeof localStorage.newCheckoutProcessCurrentStep  == 'undefined')) {
+
+<?php if (Mage::getStoreConfig('ec/config/active')) : ?>
+                if (localStorage.trackingQuoteItems) {
+                    console.log('Checkout Step 1 Tracked #001');
+                    trackAnalyticsCheckoutStep('checkoutShipping', 'Shipping Method', 1, 'order_shipping_method', JSON.parse(localStorage.trackingQuoteItems));
+                }
+<?php endif ?>
+
+                localStorage.checkoutShippingStep = 'one';
+            }
+
+            // First step before anything is already finshed (login selection done!):
+            jQuery('#checkout_login_header_tab').hide();
+            jQuery('#checkout_progress_bar_container').removeClass('checkout_hidden_field');
+            jQuery('#checkout_progress_bar_container').show();
+        }
+
+        function resetDisplayElementsToStepOne() {
+            console.log('checkout.onpage.progress.phtml : resetDisplayElementsToStepOne()');
+            localStorage.newCheckoutMagicFlag1 = 0;
+            localStorage.newCheckoutMagicFlag2 = 0;
+            localStorage.newCheckoutWwsIdContainer = '';
+            localStorage.inpostPhoneNumber = '';
+
+            jQuery('#step_one_progress_circle').html('&#10122;');
+            jQuery('#step_one_progress_circle').addClass('checkout_progress_color_active');
+            jQuery('#step_one_two_progress_circle_line').removeClass('checkout_progress_hr_line_active');
+            jQuery('#step_two_progress_circle').removeClass('checkout_progress_color_active');
+            // Reset progress bar-display to current status (remove deprecated CSS-Classes):
+            jQuery('#step_one_progress_circle').removeClass('checkout_progress_link');
+            jQuery('#step_two_progress_circle').removeClass('checkout_progress_link');
+            jQuery('#step_two_progress_circle').html('&#10123;');
+            jQuery('#step_three_progress_circle').removeClass('checkout_progress_link');
+            jQuery('#step_three_progress_circle').html('&#10124;');
+            jQuery('#step_four_progress_circle').html('&#10125;');
+            jQuery('#step_one_two_progress_circle_line').removeClass('checkout_progress_hr_line_active');
+            jQuery('#step_two_three_progress_circle_line').removeClass('checkout_progress_hr_line_active');
+            jQuery('#step_three_four_progress_circle_line').removeClass('checkout_progress_hr_line_active');
+            jQuery('#step_two_progress_circle').removeClass('checkout_progress_color_active');
+            jQuery('#step_three_progress_circle').removeClass('checkout_progress_color_active');
+            jQuery('#step_three_progress_circle').addClass('checkout_progress_color_inactive');
+            jQuery('#step_four_progress_circle').removeClass('checkout_progress_color_active');
+            jQuery('#co-shipping-method-form').show();
+
+            jQuery('#shipping-method-please-wait-alternate').hide();
+            jQuery('#shipping-method-buttons-container-alternate').css('opacity', 1);
+            jQuery('#checkout_saveShippingMethodButtonContinueAlternate').show();
+            jQuery('#checkout_saveShippingMethodButtonContinue').show();
+
+            // if button pressed, then go back to first step ->  button is showen again!
+            jQuery('#checkout_saveShippingMethodButton').show();
+
+            jQuery('#checkout_savePaymentMethodButtonContinue').show();
+
+            jQuery('#checkout-step-shipping').hide();
+
+            jQuery('#opc-shipping').css('height', '100%');
+        }
+
+        function resetDisplayElementsToStepTwo() {
+            console.log('checkout.onpage.progress.phtml : resetDisplayElementsToStepTwo()');
+
+            localStorage.newCheckoutMagicFlag2 = 0;
+            jQuery('#step_one_progress_circle').html('&#10112;');
+            jQuery('#step_one_progress_circle').addClass('checkout_progress_link');
+            jQuery('#step_one_progress_circle').addClass('checkout_progress_color_active');
+            jQuery('#step_one_two_progress_circle_line').addClass('checkout_progress_hr_line_active');
+            jQuery('#step_two_progress_circle').html('&#10123;');
+            jQuery('#step_two_progress_circle').addClass('checkout_progress_color_active');
+            // Reset progress bar-display to current status (remove deprecated CSS-Classes):
+            jQuery('#step_two_progress_circle').removeClass('checkout_progress_link');
+            jQuery('#step_three_progress_circle').html('&#10124;');
+            jQuery('#step_three_progress_circle').removeClass('checkout_progress_link');
+            jQuery('#step_three_progress_circle').addClass('checkout_progress_color_inactive ');
+            jQuery('#step_four_progress_circle').html('&#10125;');
+            jQuery('#step_two_three_progress_circle_line').removeClass('checkout_progress_hr_line_active');
+            jQuery('#step_three_four_progress_circle_line').removeClass('checkout_progress_hr_line_active');
+            jQuery('#step_three_progress_circle').removeClass('checkout_progress_color_active');
+            jQuery('#step_four_progress_circle').removeClass('checkout_progress_color_active');
+
+            jQuery('#checkout_tab_header_shipping_method').removeClass('checkout_step_active_tab');
+            jQuery('#checkout_tab_header_shipping_method').addClass('checkout_step_inactive_tab');
+
+            jQuery('#checkout_tab_header_shipping').removeClass('checkout_step_inactive_untouched_tab');
+            jQuery('#checkout_tab_header_shipping').addClass('checkout_step_active_tab');
+            jQuery('#checkout_tab_header_shipping').removeClass('checkout_step_inactive_untouched_tab');
+
+            jQuery('#shipping-method-please-wait-alternate').hide();
+            jQuery('#shipping-method-buttons-container-alternate').css('opacity', 1);
+            jQuery('#checkout_saveShippingMethodButtonContinueAlternate').show();
+            jQuery('#checkout_saveShippingMethodButtonContinue').show();
+
+            jQuery('#checkout_savePaymentMethodButtonContinue').show();
+
+            // if button is pressed in first step -> first button is not showing up in the second step!
+            jQuery('#checkout_saveShippingMethodButton').hide();
+
+            if (localStorage.newCheckoutShippingMethod == 'delivery' || (localStorage.newCheckoutShippingMethod == 'pickup'
+                && localStorage.newCheckoutRunningProcess == 'processCheckoutAsNonLoggedInUser' && localStorage.newCheckoutMagicFlag1 != 1 ||
+                localStorage.newCheckoutShippingMethod == 'container' || localStorage.newCheckoutShippingMethod == 'inpost')) {
+
+                console.log('CHECKPOINT progress.phtml #001');
+                jQuery('#checkout_select_store_pickup_container').hide();
+                jQuery('#shipping-form-inpost-choice').hide();
+
+                if (localStorage.newCheckoutRunningProcess == 'processCheckoutAsNonLoggedInUser') {
+                    console.log('CHECKPOINT progress.phtml #002');
+                    jQuery('#opc-billing').appendTo('#opc-shipping');
+                    jQuery('#checkout-step-billing').show();
+                    jQuery('#co-billing-form').show();
+                } else {
+                    console.log('CHECKPOINT progress.phtml #003');
+                    jQuery('#checkout-step-shipping').show();
+                    jQuery('#shipping-form-container').show();
+                    jQuery('#shipping-form-container-choice').hide();
+                    jQuery('#co-shipping-form').show();
+
+                    if (localStorage.newCheckoutProspectRole == 'prospect-light' && localStorage.newCheckoutRunningProcess == 'processCheckoutAsLoggedInUser') {
+                        jQuery('#new_address_button').click();
+                    }
+                }
+            }
+            if (localStorage.newCheckoutShippingMethod == 'pickup') {
+                console.log('CHECKPOINT progress.phtml #004');
+                jQuery('#checkout_select_store_pickup_container').hide();
+                jQuery('#shipping-form-container-choice').hide();
+                jQuery('#checkout-step-payment').hide();
+                jQuery('#checkout-step-shipping').show();
+
+                jQuery('#checkout_saveShippingMethodButtonAlternate').show();
+                jQuery('#checkout_select_store_pickup_container').show();
+
+                if (localStorage.newCheckoutProspectRole == 'prospect-light' && localStorage.newCheckoutRunningProcess == 'processCheckoutAsLoggedInUser') {
+                    jQuery('#new_address_button').click();
+                }
+            }
+
+            if (localStorage.newCheckoutShippingMethod == 'container') {
+                console.log('CHECKPOINT progress.phtml #005');
+                jQuery('#container-shipping-selected').show();  // show container select liste in first step
+                jQuery('#shipping-form-container-choice').show();
+                jQuery('#shipping-form-container').show();
+                jQuery('#checkout-step-payment').hide();
+                jQuery('#checkout-step-shipping').show();
+                jQuery('#co-shipping-form').hide();
+                jQuery('#shipping-form-inpost-choice').hide();
+            }
+
+            if (localStorage.newCheckoutShippingMethod == 'inpost') {
+                console.log('CHECKPOINT progress.phtml #006');
+                jQuery('#container-shipping-selected').show();
+                jQuery('#shipping-form-container-choice').hide();
+                jQuery('#shipping-form-container').show();
+                jQuery('#shipping-form-inpost-choice').show();
+                jQuery('#checkout-step-payment').hide();
+                jQuery('#checkout-step-shipping').show();
+                jQuery('#co-shipping-form').hide();
+
+                if (localStorage.newCheckoutProspectRole == 'prospect-light' && localStorage.newCheckoutRunningProcess == 'processCheckoutAsLoggedInUser') {
+                    jQuery('#new_address_button').click();
+                }
+            }
+
+            jQuery('#opc-shipping').css('height', '100%');
+        }
+
+        function resetDisplayElementsToStepThree() {
+            console.log('checkout.onpage.progress.phtml : resetDisplayElementsToStepThree()');
+
+            jQuery('#step_one_progress_circle').html('&#10112;');
+            jQuery('#step_one_progress_circle').addClass('checkout_progress_link');
+            jQuery('#step_one_progress_circle').addClass('checkout_progress_color_active');
+            jQuery('#step_one_two_progress_circle_line').addClass('checkout_progress_hr_line_active');
+            jQuery('#step_two_progress_circle').html('&#10113;');
+            jQuery('#step_two_progress_circle').addClass('checkout_progress_link');
+            jQuery('#step_two_progress_circle').addClass('checkout_progress_color_active');
+            jQuery('#step_two_three_progress_circle_line').addClass('checkout_progress_hr_line_active');
+            jQuery('#step_three_progress_circle').html('&#10124;');
+            jQuery('#step_three_progress_circle').removeClass('checkout_progress_color_inactive');
+            jQuery('#step_three_progress_circle').addClass('checkout_progress_color_active');
+            jQuery('#step_three_progress_circle').removeClass('checkout_progress_link ');
+            jQuery('#step_three_four_progress_circle_line').removeClass('checkout_progress_hr_line_active ');
+            jQuery('#step_four_progress_circle').removeClass('checkout_progress_color_active ');
+            jQuery('#checkout-step-shipping').hide();
+            jQuery('#checkout_tab_header_shipping_method').removeClass('checkout_step_active_tab');
+            jQuery('#checkout_tab_header_shipping_method').addClass('checkout_step_inactive_tab');
+            jQuery('#checkout_tab_header_shipping').removeClass('checkout_step_active_tab');
+            jQuery('#checkout_tab_header_shipping').addClass('checkout_step_inactive_tab');
+            jQuery('#checkout_tab_header_payment').removeClass('checkout_step_inactive_untouched_tab');
+            jQuery('#checkout_tab_header_payment').addClass('checkout_step_active_tab');
+
+            jQuery('#checkout-step-payment').show();
+
+            <?php if (Mage::getStoreConfig('ec/config/active')) : ?>
+                        if (localStorage.trackingQuoteItems) {
+                            trackAnalyticsCheckoutStep('checkoutPaymentMethod', 'Payment Method', 3, 'order_payment', JSON.parse(localStorage.trackingQuoteItems));
+                        }
+            <?php endif ?>
+
+            localStorage.checkoutShippingStep = 'three';
+            jQuery('#checkout_savePaymentMethodButtonContinue').show();
+            jQuery('#opc-shipping').css('height', '50px');
+        }
+
+        console.log('checkout.onpage.progress.phtml SUCCESFULLY LOADED');
+
+        if (localStorage.newCheckoutProcessCurrentStep == 'opc-shipping_method') {
+            console.log('checkout.onpage.progress.phtml : Setting OPC Section: Shipping Method');
+            resetDisplayElementsToStepOne();
+        }
+
+        if (localStorage.newCheckoutProcessCurrentStep == 'opc-billing') {
+            console.log('checkout.onpage.progress.phtml : Setting OPC Section: Billing');
+            resetDisplayElementsToStepTwo();
+        }
+
+        if (localStorage.newCheckoutProcessCurrentStep == 'opc-shipping') {
+            console.log('checkout.onpage.progress.phtml : Setting OPC Section: Shipping');
+            resetDisplayElementsToStepTwo();
+        }
+
+        if (localStorage.newCheckoutProcessCurrentStep == 'opc-payment') {
+            console.log('checkout.onpage.progress.phtml : Setting OPC Section: Payment');
+            resetDisplayElementsToStepThree();
+        }
+
+        if (localStorage.newCheckoutProcessCurrentStep == 'opc-review') {
+            console.log('checkout.onpage.progress.phtml : Last Step -> OPC Review()');
+
+            jQuery('#step_one_progress_circle').html('&#10112;');
+            jQuery('#step_one_progress_circle').addClass('checkout_progress_link');
+            jQuery('#step_one_progress_circle').addClass('checkout_progress_color_active');
+            jQuery('#step_one_two_progress_circle_line').addClass('checkout_progress_hr_line_active');
+            jQuery('#step_two_progress_circle').html('&#10113;');
+            jQuery('#step_two_progress_circle').addClass('checkout_progress_link');
+            jQuery('#step_two_progress_circle').addClass('checkout_progress_color_active');
+            jQuery('#step_two_three_progress_circle_line').addClass('checkout_progress_hr_line_active');
+            jQuery('#step_three_progress_circle').html('&#10114;');
+            jQuery('#step_three_progress_circle').addClass('checkout_progress_link');
+            jQuery('#step_three_progress_circle').addClass('checkout_progress_color_active');
+            jQuery('#step_three_four_progress_circle_line').addClass('checkout_progress_hr_line_active');
+            jQuery('#step_four_progress_circle').addClass('checkout_progress_color_active');
+            jQuery('#checkout-step-payment').hide();
+            jQuery('#checkout_tab_header_payment').removeClass('checkout_step_active_tab');
+            jQuery('#checkout_tab_header_payment').addClass('checkout_step_inactive_tab');
+            jQuery('#checkout_tab_header_review').removeClass('checkout_step_inactive_untouched_tab');
+            jQuery('#checkout_tab_header_review').addClass('checkout_step_active_tab');
+
+            <?php if (intval(Mage::getStoreConfig('schrack/tools/order_review_timeout')) > 0) : ?>
+                setTimeout(function() {
+                    window.location.reload(1);
+                }, <?php echo (intval(Mage::getStoreConfig('schrack/tools/order_review_timeout')) * 60 * 1000); ?>);
+            <?php endif; ?>
+        }
+
+        jQuery('#step_one_progress_circle').unbind('click');
+        jQuery('#step_one_progress_circle').on('click', function () {
+            jQuery('#checkout_saveBillingButtonContinue').show();
+            if (jQuery('#step_one_progress_circle').hasClass('checkout_progress_link')) {
+                console.log('progress number 1 clicked');
+                jQuery('#co-billing-form').hide();
+
+                jQuery('#checkout_stock_inventory_location_schrackpickup').css({'display' : 'none'});
+                jQuery('#checkout_saveShippingMethodButtonContinue').text('<?php echo $this->__('Continue') ?>');
+                jQuery('#shipping-form-container').css({'display' : 'none'});
+                localStorage.newCheckoutProcessLastUpdateTime = Math.floor(Date.now() / 1000);
+                localStorage.newCheckoutProcessCurrentStep = 'opc-shipping_method';
+                checkout.accordion.openSection('opc-shipping_method');
+                jQuery('#checkout_tab_header_shipping').removeClass('checkout_step_active_tab');
+                jQuery('#checkout_tab_header_shipping').removeClass('checkout_step_inactive_tab ');
+                jQuery('#checkout_tab_header_shipping').addClass('checkout_step_inactive_untouched_tab');
+                jQuery('#checkout_tab_header_payment').removeClass('checkout_step_active_tab');
+                jQuery('#checkout_tab_header_payment').removeClass('checkout_step_inactive_tab ');
+                jQuery('#checkout_tab_header_payment').addClass('checkout_step_inactive_untouched_tab');
+                jQuery('#checkout_tab_header_review').removeClass('checkout_step_active_tab');
+                jQuery('#checkout_tab_header_review').removeClass('checkout_step_inactive_tab ');
+                jQuery('#checkout_tab_header_review').addClass('checkout_step_inactive_untouched_tab');
+                jQuery('#checkout_tab_header_shipping_method').removeClass('checkout_step_inactive_tab');
+                jQuery('#checkout_tab_header_shipping_method').addClass('checkout_step_active_tab');
+                resetDisplayElementsToStepOne();
+                return false;
+            }
+        });
+
+        jQuery('#step_two_progress_circle').unbind('click');
+        jQuery('#step_two_progress_circle').on('click', function () {
+            jQuery('#checkout_saveBillingButtonContinue').show();
+            if (jQuery(this).hasClass('checkout_progress_link')) {
+                console.log('progress number 2 clicked');
+                localStorage.newCheckoutProcessLastUpdateTime = Math.floor(Date.now() / 1000);
+                localStorage.newCheckoutProcessCurrentStep = 'opc-shipping';
+                checkout.accordion.openSection('opc-shipping');
+                jQuery('#checkout_tab_header_payment').removeClass('checkout_step_active_tab');
+                jQuery('#checkout_tab_header_payment').removeClass('checkout_step_inactive_tab ');
+                jQuery('#checkout_tab_header_payment').addClass('checkout_step_inactive_untouched_tab');
+                jQuery('#checkout_tab_header_review').removeClass('checkout_step_active_tab');
+                jQuery('#checkout_tab_header_review').removeClass('checkout_step_inactive_tab ');
+                jQuery('#checkout_tab_header_review').addClass('checkout_step_inactive_untouched_tab');
+                jQuery('#checkout_tab_header_shipping').removeClass('checkout_step_inactive_tab');
+                jQuery('#checkout_tab_header_shipping').addClass('checkout_step_active_tab');
+                resetDisplayElementsToStepTwo();
+                return false;
+            }
+        });
+
+        jQuery('#step_three_progress_circle').unbind('click');
+        jQuery('#step_three_progress_circle').on('click', function () {
+            if (jQuery(this).hasClass('checkout_progress_link')) {
+                console.log('progress number 3 clicked');
+                localStorage.newCheckoutProcessLastUpdateTime = Math.floor(Date.now() / 1000);
+                localStorage.newCheckoutProcessCurrentStep = 'opc-payment';
+                checkout.accordion.openSection('opc-payment');
+                jQuery('#checkout_tab_header_review').removeClass('checkout_step_active_tab');
+                jQuery('#checkout_tab_header_review').removeClass('checkout_step_inactive_tab ');
+                jQuery('#checkout_tab_header_review').addClass('checkout_step_inactive_untouched_tab');
+                jQuery('#checkout_tab_header_payment').removeClass('checkout_step_inactive_tab');
+                jQuery('#checkout_tab_header_payment').addClass('checkout_step_active_tab');
+                resetDisplayElementsToStepThree();
+                return false;
+            }
+        });
+
+        jQuery('#checkout_tab_header_shipping_method').unbind('click');
+        jQuery('#checkout_tab_header_shipping_method').on('click', function () {
+            jQuery('#checkout_saveBillingButtonContinue').show();
+            if (jQuery(this).hasClass('checkout_step_inactive_tab')) {
+                console.log('progress tab #1 clicked');
+                jQuery('#co-billing-form').hide();
+
+                jQuery('#checkout_stock_inventory_location_schrackpickup').css({'display' : 'none'});
+                jQuery('#checkout_saveShippingMethodButtonContinue').text('<?php echo $this->__('Continue') ?>');
+                localStorage.newCheckoutProcessLastUpdateTime = Math.floor(Date.now() / 1000);
+                localStorage.newCheckoutProcessCurrentStep = 'opc-shipping_method';
+                checkout.accordion.openSection('opc-shipping_method');
+                jQuery('#checkout_tab_header_shipping').removeClass('checkout_step_active_tab');
+                jQuery('#checkout_tab_header_shipping').removeClass('checkout_step_inactive_tab ');
+                jQuery('#checkout_tab_header_shipping').addClass('checkout_step_inactive_untouched_tab');
+                jQuery('#checkout_tab_header_payment').removeClass('checkout_step_active_tab');
+                jQuery('#checkout_tab_header_payment').removeClass('checkout_step_inactive_tab ');
+                jQuery('#checkout_tab_header_payment').addClass('checkout_step_inactive_untouched_tab');
+                jQuery('#checkout_tab_header_review').removeClass('checkout_step_active_tab');
+                jQuery('#checkout_tab_header_review').removeClass('checkout_step_inactive_tab ');
+                jQuery('#checkout_tab_header_review').addClass('checkout_step_inactive_untouched_tab');
+                jQuery('#checkout_tab_header_shipping_method').removeClass('checkout_step_inactive_tab');
+                jQuery('#checkout_tab_header_shipping_method').addClass('checkout_step_active_tab');
+
+                jQuery('#shipping-form-container-choice').hide();
+                resetDisplayElementsToStepOne();
+                return false;
+            }
+        });
+
+        jQuery('#checkout_tab_header_shipping').unbind('click');
+        jQuery('#checkout_tab_header_shipping').on('click', function () {
+            jQuery('#checkout_saveBillingButtonContinue').show();
+            if (jQuery(this).hasClass('checkout_step_inactive_tab')) {
+                console.log('progress tab #2 clicked');
+                localStorage.newCheckoutProcessLastUpdateTime = Math.floor(Date.now() / 1000);
+                localStorage.newCheckoutProcessCurrentStep = 'opc-shipping';
+                checkout.accordion.openSection('opc-shipping');
+                jQuery('#checkout_tab_header_payment').removeClass('checkout_step_active_tab');
+                jQuery('#checkout_tab_header_payment').removeClass('checkout_step_inactive_tab ');
+                jQuery('#checkout_tab_header_payment').addClass('checkout_step_inactive_untouched_tab');
+                jQuery('#checkout_tab_header_review').removeClass('checkout_step_active_tab');
+                jQuery('#checkout_tab_header_review').removeClass('checkout_step_inactive_tab ');
+                jQuery('#checkout_tab_header_review').addClass('checkout_step_inactive_untouched_tab');
+                jQuery('#checkout_tab_header_shipping').removeClass('checkout_step_inactive_tab');
+                jQuery('#checkout_tab_header_shipping').addClass('checkout_step_active_tab');
+                resetDisplayElementsToStepTwo();
+                return false;
+            }
+        });
+
+        jQuery('#checkout_tab_header_payment').unbind('click');
+        jQuery('#checkout_tab_header_payment').on('click', function () {
+            if (jQuery(this).hasClass('checkout_step_inactive_tab')) {
+                console.log('progress tab #3 clicked');
+                localStorage.newCheckoutProcessLastUpdateTime = Math.floor(Date.now() / 1000);
+                localStorage.newCheckoutProcessCurrentStep = 'opc-payment';
+                checkout.accordion.openSection('opc-payment');
+                jQuery('#checkout_tab_header_review').removeClass('checkout_step_active_tab');
+                jQuery('#checkout_tab_header_review').removeClass('checkout_step_inactive_tab ');
+                jQuery('#checkout_tab_header_review').addClass('checkout_step_inactive_untouched_tab');
+                jQuery('#checkout_tab_header_payment').removeClass('checkout_step_inactive_tab');
+                jQuery('#checkout_tab_header_payment').addClass('checkout_step_active_tab');
+                resetDisplayElementsToStepThree();
+                return false;
+            }
+        });
+
+        var realLoggedInUser = localStorage.customerLoggedInEmail;
+
+        if ( localStorage.actAsACustomer == 1 || (typeof realLoggedInUser == 'string' && realLoggedInUser.match(/live.schrack.com/i)) ) {
+            var systemContactMail = localStorage.customerLoggedInEmail;
+            var wwsCustomerIdArr = systemContactMail.match(/\d+/g).map(Number);
+            var wwsCustomerId = wwsCustomerIdArr[0];
+            var loggedInAsACustomerSuffix = "<?php echo $this->__('Is Logged In As Customer'); ?>" + ' ' + wwsCustomerId + ' ';
+            var loggedInAsACustomerSuffixButton = '<a href="<?php echo $this->getUrl('customer/account/unactAsuser'); ?>" class="logout_act_as_customer">' + '<?php echo $this->__('Logout As A Customer'); ?>' + '</a>';
+
+            jQuery('#showActAsACustomerEmailFieldCheckout').show();
+            jQuery('#showActAsACustomerEmailCheckout').html(localStorage.actAsACustomerRealEmail + ' ' + loggedInAsACustomerSuffix + ' ' + loggedInAsACustomerSuffixButton);
+        } else {
+            jQuery('#showActAsACustomerEmailFieldCheckout').hide();
+            jQuery('#showActAsACustomerEmailCheckout').html('');
+        }
+
+        jQuery('#showActAsACustomerEmailCheckout').on('click', function() {
+            localStorage.actAsACustomer = 0;
+            localStorage.actAsACustomerRealEmail = '';
+        });
+
+    });
+
+    //]]>
+</script>
+<!-- app/design/frontend/schrack/schrackresponsive/template/checkout/onepage/progress.phtml (end) -->

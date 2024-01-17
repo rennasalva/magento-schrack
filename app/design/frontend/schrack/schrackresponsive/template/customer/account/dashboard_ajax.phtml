@@ -1,0 +1,517 @@
+<!-- app/design/frontend/schrack/schrackresponsive/template/customer/account/dashboard_ajax.phtml (start) -->
+
+<?php
+    $promotionBookHelper = Mage::helper('schrackcustomer/promotionbook');
+    $promotionBookStuff = $promotionBookHelper->getPromotionbookLinksAndImages();
+    $ajaxLoaderPath = $this->getSkinUrl('schrackdesign/Public/Images/download_ajax_loader.gif');
+    $cartButtonImagePath = $this->getSkinUrl('schrackdesign/Public/Images/rwd/cartIconWht.png');
+
+    if (Mage::getStoreConfig('ec/config/active')) $trackingEnabled = 'enabled'; else $trackingEnabled = 'disabled';
+?>
+
+<style>
+    .sliderBoxItem {
+        width: 210px !important;
+        margin-right: 25px !important;
+        padding: 15px 10px !important;
+    }
+
+    .view_accessories .bx-controls-direction a.bx-next {
+        right: 7px !important;
+    }
+
+    .latest_purchased_slider_ajax_gif_container {
+        float: left !important;
+        width: 143px !important;
+        margin-top: -7px !important;
+        display: block !important;
+        height: 30px !important;
+    }
+    
+    .latest_purchased_slider_ajax_gif {
+        width: 20px !important;
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+        margin-top: 5px;
+    }
+
+    .last_purchased_slider_price_container {
+        float: left;
+        margin-top: -2px !important;
+        margin-bottom: -18px !important;
+        margin-left: 14%;
+        height: 30px !important;
+    }
+
+    .last_purchased_slider_price_currency {
+        float: left;
+        font-size: 14px !important;
+    }
+
+    .last_purchased_slider_price {
+        color: #005b9f;
+        font-size: 14px !important;
+        float: left;
+        margin-left: 4px;
+    }
+
+    .last_purchased_slider_price_unit {
+        float: left;
+        font-size: 14px !important;
+    }
+
+    .last_purchased_slider_qty {
+        float: left !important;
+        margin-left: 24%;
+        width: 40px;
+        text-align: center !important;
+        color: #898989 !important;
+        font-size: 16px !important;
+        font-weight: bold !important;
+        padding: 0 !important;
+        border: 1px solid #888;
+        height: 25px !important;
+    }
+
+    .last_purchased_slider_cart {
+        float: left !important;
+        margin-left: 10px;
+        padding: 0;
+        border: none;
+        width: 47px;
+        height: 25px;
+    }
+
+    .last_purchased_slider_cart:after {
+        height: 25px !important;
+    }
+
+    .last_purchased_slider_qty_cart_container {
+        margin-top: 10px;
+    }
+
+    .cartButtonImage {
+        width: 20px !important;
+        margin-left: 15px !important;
+    }
+
+    ul.product-list-slide-list li .imgBox {
+        height: 140px !important;
+        margin-bottom: -25px !important;
+    }
+
+    .slider_latest_purchased_text_link_container {
+        height: 84px !important;
+        overflow: hidden !important;
+    }
+
+    .latest_purchased_text_link {
+        font-size: 16px !important;
+        line-height: 18px !important;
+    }
+
+    @media (min-width: 1px) and (max-width: 320px) {
+        #content {
+            width: 97% !important;
+        }
+    }
+
+    @media (min-width: 321px) and (max-width: 360px) {
+        #content {
+            width: 96% !important;
+        }
+    }
+
+    @media (min-width: 361px) and (max-width: 410px) {
+        #content {
+            width: 96% !important;
+        }
+    }
+
+    @media (min-width: 411px) and (max-width: 460px) {
+        #content {
+            width: 96% !important;
+        }
+    }
+
+    @media (min-width: 461px) and (max-width: 480px) {
+        #content {
+            width: 98% !important;
+        }
+    }
+
+    @media (min-width: 481px) and (max-width: 560px) {
+        #content {
+            width: 98% !important;
+        }
+    }
+
+    @media (min-width: 561px) and (max-width: 639px) {
+        #content {
+            width: 98% !important;
+        }
+    }
+
+    @media (min-width: 640px) and (max-width: 767px) {
+        #content {
+            width: 98% !important;
+        }
+    }
+
+    @media (min-width: 768px) and (max-width: 768px) {
+        #content {
+            width: 98% !important;
+        }
+    }
+
+    @media (min-width: 769px) and (max-width: 992px) {
+    }
+</style>
+
+
+<h1 class="hidden-xs hidden-sm"><?php echo $this->__('My Account') ?></h1>
+<h1 class="hidden-md hidden-lg headingBg marginT15 text-center"><?php echo $this->__('My Account') ?></h1>
+<?php echo $this->getMessagesBlock()->getGroupedHtml() ?>
+<?php if (count($promotionBookStuff) > 0) : ?>
+    <section class="slider hidden-xs hidden-sm">
+        <div id="kab_slider" class="deshboadSliderCont">
+            <ul class="deshboardSlider">
+                <?php foreach ($promotionBookStuff as $promotionBookPdfAndImage) : ?>
+                    <li>
+                        <a target="_blank" href="<?php echo $promotionBookPdfAndImage['pdf_link']; ?>">
+                            <img border="0" src="<?php echo $promotionBookPdfAndImage['image_link']; ?>">
+                        </a>
+                    </li>
+                <?php endforeach; ?>
+            </ul>
+        </div>
+    </section>
+<?php endif; ?>
+<script type="text/javascript">
+
+    var skuListOfLatestPurchasedSlider = new Object();
+    var ajaxCallLatestPurchaseSliderFinished = false;
+    var foundExistingOrders = false;
+
+	if(getParameterByName('excludeAjaxCall') == null) {	// Added by Nagarro for exclude AJAX call for performance testing
+		setOverlayLoader();
+		jQuery.ajax({
+			url: BASE_URL + 'sd/AjaxDispatcher/dashboard/',
+			method: 'get'
+		}).done(function (data) {
+			jQuery('#content').append(data);
+			jQuery.ajax(ajaxUrl, {
+				'dataType': 'json',
+				'type': 'POST',
+				'data': {
+					'form_key': '<?php echo Mage::getSingleton('core/session')->getFormKey(); ?>',
+					'getLastPurchasedProducts': {x: 'x'},
+				},
+				'success': function (data) {
+					var parsedData = data.getLastPurchasedProducts.result;
+					var htmlData = '';
+					jQuery.each(parsedData, function (i, item) {
+					    if (typeof parsedData[i].sku !== 'undefined') {
+                            foundExistingOrders = true;
+                        }
+                        var validProduct = true;
+                        if (parsedData[i].statuslocal == 'strategic_no' ||
+                            parsedData[i].statuslocal == 'unsaleable' ||
+                            parsedData[i].statuslocal == 'gesperrt' ||
+                            parsedData[i].statuslocal == 'tot') {
+                            validProduct = false;
+                        }
+                        skuListOfLatestPurchasedSlider[parsedData[i].sku] = parsedData[i].sku;
+						htmlData += '<li class="slide product-item sliderBoxItem">';
+                        htmlData += '<div class="product-name actionIcon latestPurchasedItemActionButtons">';
+                        htmlData += '<div class="latestPurchasedSkuHeader">' + parsedData[i].sku + '</div>';
+                        htmlData += '<span class="glyphicon glyphicon-pushpin blueTxt"';
+                        htmlData += ' id="parlistdropdownbtn-' + parsedData[i].sku + '" data-toggle="dropdown"';
+                        htmlData += ' aria-haspopup="true" aria-expanded="true"';
+                        htmlData += ' title="<?php echo $this->__('Add to Partslist')?>" style="cursor:pointer;">';
+                        htmlData += '</span>';
+                        htmlData += '<ul class="dropdown-list dropdown-menu partslist_dropdown_menu"';
+                        htmlData += ' id="ulDropdownElementLatestPurchased_' + parsedData[i].sku + '"';
+                        htmlData += ' aria-labelledby="parlistdropdownbtn-' + parsedData[i].sku + '">';
+                        htmlData += '</ul>';
+                        htmlData += '</div>';
+                        htmlData += '<div class="imgBox">';
+                        htmlData += '<a class="previewImageHover product-image last_purchased_product track_last_purchased_sku"';
+                        htmlData += ' data-sku="' + parsedData[i].sku + '"';
+                        htmlData += ' data-preview-path="' + parsedData[i].image + '"';
+                        htmlData += ' href="' + parsedData[i].url + '" title="' + parsedData[i].name + '">';
+                        htmlData += '<img data-src="' + parsedData[i].image + '" class="lazy"';
+                        htmlData += ' src="' + parsedData[i].image + '"';
+                        htmlData += ' alt="' + parsedData[i].name + '" />';
+                        htmlData += '</a>';
+                        htmlData += '</div>';
+                        htmlData += '<div class="slider_latest_purchased_text_link_container">';
+                        htmlData += '<a href="' + parsedData[i].url + '" title="' + parsedData[i].name + '"';
+                        htmlData += ' class="latest_purchased_text_link track_last_purchased_sku"';
+                        htmlData += ' data-sku="' + parsedData[i].sku + '">' + parsedData[i].name;
+                        htmlData += '</a>';
+                        htmlData += '</div>';
+                    if (validProduct == true) {
+/* Start Price-Tag */   htmlData += '<div class="last_purchased_slider_price_container"';
+                        htmlData += ' id="last_purchased_slider_price' + parsedData[i].sku + '"';
+                        htmlData += ' data-sku="' + parsedData[i].sku + '">';
+                        htmlData += '<div class="latest_purchased_slider_ajax_gif_container">';
+                        htmlData += '<img class="latest_purchased_slider_ajax_gif" src="<?php echo $ajaxLoaderPath ?>" >';
+                        htmlData += '</div>';
+                        htmlData += '<div style="clear: both !important;"></div>';
+/* End Price-Tag */     htmlData += '</div>';
+                        htmlData += '<div style="clear: both !important;"></div>';
+/* Start Qty/Cart */    htmlData += '<div class="last_purchased_slider_qty_cart_container" >';
+                        htmlData += '<input type="text" id="last_purchased_slider_qty' + parsedData[i].sku + '"';
+                        htmlData += ' class="last_purchased_slider_qty qty-' + parsedData[i].sku + '" data-sku="' + parsedData[i].sku + '">';
+                        htmlData += '<button id="addtocart-' + parsedData[i].sku + '" class="bttn-sm last_purchased_slider_cart"';
+                        htmlData += ' data-sku="' + parsedData[i].sku + '">';
+                        htmlData += '<img class="addToCartImage loading cartButtonImage"';
+                        htmlData += ' src="<?php echo $cartButtonImagePath; ?>"';
+                        htmlData += ' data-was-processed="true"></button>';
+/* End Qty/Cart */      htmlData += '</div>'
+                    } else {
+                        htmlData += '<div style="color: #aaa;">' + Translator.translate('NOT AVAILABLE') + '</div>';
+                    }
+                        htmlData += '<input type="hidden" id="sliderItemData' + parsedData[i].sku + '"';
+                        htmlData += ' data-name="' + parsedData[i].name + '"';
+                        htmlData += ' data-category="' + parsedData[i].category + '">';
+                        htmlData += '</li>';
+					});
+
+					jQuery('#latestpurproduct').html(htmlData);
+
+                    var previewImageHover = jQuery("a.previewImageHover");
+                    // Namespace events to make sure that no matter what, we only have the listener once
+                    previewImageHover.off('mouseenter.preview').on('mouseenter.preview', function(e) {
+                        this.t = this.title;
+                        this.title = "";
+                        var c = (this.t != "") ? "<br/><span class='previewImageText'>" + this.t : "</span>";
+                        jQuery("body").append("<p id='previewImageHover'><img style='display: block; margin-left: auto; margin-right: auto;' src='"+ jQuery(this).attr('data-preview-path') +"' alt='" + Translator.translate('Product Thumbnail Itself') + "' />"+ c +"</p>");
+                        jQuery("#previewImageHover")
+                            .css("top",(e.pageY - xOffset) + "px")
+                            .css("left",(e.pageX + yOffset) + "px")
+                            .css("opacity", imageOpacity)
+                            .fadeIn();
+                    });
+                    previewImageHover.off('mouseleave.preview').on('mouseleave.preview', function(e) {
+                        this.title = this.t;
+                        jQuery("#previewImageHover").remove();
+                    });
+                    previewImageHover.off('mousemove.preview').on('mousemove.preview', function(e) {
+                        jQuery("#previewImageHover")
+                            .css("opacity", imageOpacity)
+                            .css("top",(e.pageY - xOffset) + "px")
+                            .css("left",(e.pageX + yOffset) + "px");
+                    });
+
+                    jQuery.each(parsedData, function (i, item) {
+                        var configObject = new Object();
+                        configObject.partListData            = partListData;
+                        configObject.mageProductEntityId     = parsedData[i].id;
+                        configObject.productSku              = parsedData[i].sku;
+                        configObject.destinationElementClass = 'latestPurchasedItemActionButtons';
+                        configObject.destinationDropdownId   = 'ulDropdownElementLatestPurchased_' + parsedData[i].sku;
+                        configObject.trackingFeatureSource   = 'my account latest purchased slider';
+                        buildHTMLForPartslistSelection(configObject);
+                    });
+
+					//Latest Purchase Product Slider
+					jQuery('.latest_products').bxSlider({
+						auto: false,
+						pager: false,
+						slideWidth: 200,
+						minSlides: 1,
+						maxSlides: 5,
+						slideMargin: 10,
+                        moveSlides: 1,
+                        hideControlOnEnd: true,
+						infiniteLoop: false
+					});
+
+					jQuery(".track_last_purchased_sku").on('click', function() {
+					    var sku = jQuery(this).attr('data-sku');
+
+                        var trackingData                 = new Object();
+                        trackingData.trackingEnabled     = globalTRACKING_ENABLED;
+                        trackingData.pageType            = 'my account overview';
+                        trackingData.affectedSku         = sku;
+                        //trackingData.price             = dataProductPrice;
+                        trackingData.currencyCode        = globalCURRENCY_CODE;
+                        trackingData.trackingSource      = 'last purchased product slider';
+                        trackingData.typoUrl             = globalTYPO_URL;
+                        trackingData.shopCategoryAjaxUrl = globalSHOP_CATEGORY_AJAX_URL;
+                        trackingData.formKey             = globalFORM_KEY;
+                        trackingData.crmUserId           = globalCRM_USER_ID;
+                        trackingData.customerType        = globalCUSTOMER_TYPE;
+                        trackingData.accountCrmId        = globalACCOUNT_CRM_ID;
+                        trackingData.position            = 1;
+
+                        trackProductClick(trackingData);
+					});
+
+                    jQuery('.last_purchased_slider_cart').on('click', function() {
+                        qtyAddToCart(this);
+                    });
+
+                    jQuery('.last_purchased_slider_qty').keyup( function(e) {
+                        if ( e.keyCode == 13 ) {
+                            var sku = jQuery(this).data('sku');
+                            var that = jQuery('#addtocart-' + sku);
+                            qtyAddToCart(that);
+                        }
+                    });
+
+                    if (foundExistingOrders == true) {
+					    jQuery('#latestslidercontainer').show();
+                    }
+					unsetOverlayLoader();
+
+                    ajaxCallLatestPurchaseSliderFinished = true;
+				}
+			});
+		});
+	}
+
+    function qtyAddToCart ( that ) {
+        var lastDefaultMinPurchasedQuantity;
+
+        var sku = jQuery(that).attr('data-sku');
+        lastDefaultMinPurchasedQuantity = jQuery('#price_unit_last_puchased' + sku).val();
+        var insertedQuantityOfLastPurchasedSlider = jQuery('#last_purchased_slider_qty' + sku).val();
+        var selectedQuantityLatestPurchased = 0;
+
+        if (insertedQuantityOfLastPurchasedSlider > 0) {
+            selectedQuantityLatestPurchased = insertedQuantityOfLastPurchasedSlider;
+        } else {
+            selectedQuantityLatestPurchased = lastDefaultMinPurchasedQuantity;
+            jQuery('#last_purchased_slider_qty' + sku).val(lastDefaultMinPurchasedQuantity);
+        }
+
+        // TODO : Add to cart (sku + qty)
+        jQuery('ul.messages').empty();
+        jQuery('ul.errors').empty();
+        jQuery.ajax(ajaxUrl, {
+            'dataType' : 'json',
+            'type': 'POST',
+            'data': {
+                'form_key' : '<?php echo Mage::getSingleton('core/session')->getFormKey(); ?>',
+                'setAddToCartFromSlider' : {'data' : {'sliderClass' : 'latest_products', 'sku' : sku, 'quantity' : selectedQuantityLatestPurchased, 'drum' : ''}}
+            },
+            'success': function (data) {
+                unsetOverlayLoader();
+                var parsedData = data;
+                var result = parsedData.setAddToCartFromSlider.result;
+                if(result.showPopup == true) {	// Open Inquiry Popup
+                    jQuery('#quantitywarningpopup').html(result.popupHtml);
+                    jQuery('#quantitywarningpopupBtn').click();
+                } else {
+                    jQuery("html, body").animate({ scrollTop: 0 }, "slow");
+                    console.log('ScrollTop #58');
+                    if(result.numberOfDifferentItemsInCart){
+                        jQuery('.MyCart').append('<div id="cartNoBxItemCount" class="cartNoBx">'+result.numberOfDifferentItemsInCart+'</'+'div'+'>');
+                    }
+                    var newQuantityDetected = false;
+                    if (result.data.newQty && result.data.newQty > 0) {
+                        jQuery('#last_purchased_slider_qty' + sku).val(result.data.newQty);
+                        selectedQuantityLatestPurchased = result.data.newQty;
+                        newQuantityDetected = true;
+                    }
+
+                    var messageArray = result.data.messages;
+                    if(result.result.indexOf("SUCCESS") == -1){
+                        appendMessageUl(messageArray, 'messages', 'error-msg', 'glyphicon glyphicon-exclamation-sign');
+                        console.log('appendMessageUl #20');
+                    } else {
+                        if (newQuantityDetected == false) {
+                            var sliderItemName     = jQuery('#sliderItemData' + sku).attr('data-name');
+                            var sliderItemCategory = jQuery('#sliderItemData' + sku).attr('data-category');
+                            var trackingData = new Object();
+                            trackingData.trackingEnabled = globalTRACKING_ENABLED;
+                            trackingData.pagetype        = 'my account overview';
+                            trackingData.sku             = sku;
+                            trackingData.name            = sliderItemName;
+                            //trackingData.price           = jQuery('.addToCartLink').attr("data-price");
+                            trackingData.category        = sliderItemCategory;
+                            trackingData.currencyCode    = globalCURRENCY_CODE;
+                            trackingData.quantity        = selectedQuantityLatestPurchased;
+
+                            // Writing some EE product values to locaStorage:
+                            localStorage.setItem('trackingData_pagetype', trackingData.pagetype);
+                            localStorage.setItem('trackingData_name', trackingData.name);
+                            localStorage.setItem('trackingData_category', trackingData.category );
+                            localStorage.setItem('trackingData_featureSrc', 'Slider Latest Purchased Product');
+
+                            addToCartTracking(trackingData, 'Slider Latest Purchased Product');
+                        }
+                        appendMessageUl(messageArray, 'messages', 'success-msg', 'glyphicon glyphicon-ok');
+                        console.log('appendMessageUl #21');
+                    }
+                }
+            },
+            'error': function (data) {
+                var parsedData = data;
+                //debugger;
+            }
+        });
+    }
+
+    jQuery(document).ready(function() {
+
+        <?php /* remove unnecessary padding to get a bigger clickable area */ ?>
+        jQuery('.bx-pager').css('padding-top','0px');
+
+        function getProductPricesForSlider() {
+            var get_product_prices_service_url = BASE_URL + '/onlinetools/commonTools/getProductPrices';
+            jQuery.ajax(get_product_prices_service_url, {
+                'dataType': 'json',
+                'type': "POST",
+                'data': { 'skuList' : skuListOfLatestPurchasedSlider },
+                'success' : function(responseData) {
+                    var parsedData = responseData;
+                    jQuery.each(parsedData, function (sku, recordset) {
+                        var currencyClass  = "last_purchased_slider_price_currency";
+                        var priceClass     = "last_purchased_slider_price";
+                        var priceUnitClass = "last_purchased_slider_price_unit";
+
+                        var currency        = recordset.currency;
+                        var price           = recordset.price;
+                        var priceunitPerQty = "/" + recordset.priceunit + ' ' + recordset.qtyunit;
+                        var priceUnit       = recordset.priceunit;
+
+                        var sliderPriceCurrencyHtml = '<span class="' + currencyClass + '">' + currency + '</span>';
+                        var sliderPriceHtml         = '<span class="' + priceClass + '">' + price + '</span>';
+                        var sliderPriceUnitHtml = '<span class="' + priceUnitClass + '">' + priceunitPerQty + '</span>';
+
+                        var priceUnitHtml = '<input type="hidden" id="price_unit_last_puchased' + sku + '"';
+                        priceUnitHtml    += ' value="' + priceUnit + '">';
+
+                        var resultPriceString = priceUnitHtml;
+                        resultPriceString    += sliderPriceCurrencyHtml + sliderPriceHtml + sliderPriceUnitHtml;
+
+                        if (recordset.qtyunit.length > 5) {
+                            jQuery('#last_purchased_slider_price' + sku).css('margin-left', '0');
+                        }
+
+                        jQuery('#last_purchased_slider_price' + sku).text('');
+                        jQuery('#last_purchased_slider_price' + sku).html(resultPriceString);
+                    });
+                },
+                'error': function (data) {
+                    var parsedData = data;
+                    //debugger;
+                }
+            });
+        }
+
+        var checkSliderResponse = setInterval( function() {
+            if(ajaxCallLatestPurchaseSliderFinished == true) {
+                getProductPricesForSlider();
+                clearInterval(checkSliderResponse);
+            }
+        }, 1000);
+
+    });
+</script>
+<!-- app/design/frontend/schrack/schrackresponsive/template/customer/account/dashboard_ajax.phtml (end) -->

@@ -1,0 +1,88 @@
+<!-- app/design/frontend/schrack/schrackresponsive/template/customer/account/documents/detailsearch.phtml (start) -->
+
+<script type="text/javascript">
+    var dashSrchTrigger = '';
+</script>
+
+<style>
+    #textsearch {
+        font-size: 16px !important;
+    }
+    #listingSearchIcon {
+        background: #00589d !important;
+        color: #fff !important;
+    }
+
+    @media (min-width: 1px) and (max-width: 992px) {
+        .my_account_detailsearch_content_wrapper {
+            margin-right: 16px !important;
+        }
+    }
+</style>
+
+
+<div id="my_account_detailsearch_wrapper" class="my_account_detailsearch_content_wrapper">
+    <h1><?php echo $this->__('Detail Search') ?></h1>
+    <form action="<?php echo $this->getUrl('*/*/*') ?>" method="get" id="documents_form">
+        <div class="row info-box three-d">
+            <div class="col-xs-12 posRel">
+                <div class="row fulltext-search">
+                    <div class="col-xs-12 columns">
+                        <div class="row hide-for-print">
+                            <div class="col-xs-8 col-sm-10 col-md-10">
+                                <div class="input-group serchIcon">
+                                <?php
+                                    $params = Mage::getSingleton('customer/session')->getData('documentParams');
+                                    Mage::getSingleton('customer/session')->setData('documentParams', array());
+                                    $searchString = empty($params['detailSrcTxt']) ? '' : $params['detailSrcTxt'];
+                                ?>
+                                    <input value="<?php echo $searchString; ?>" id="textsearch" class="form-control borderR0" type="text" name="text" data-func="detailssearchAction" placeholder="<?php echo $this->__('Order/Offer Data, Names, Addresses, Article IDs'); ?>" tabindex="1" >
+                                    <span class="input-group-addon" id="listingSearchIcon" tabindex="2"><span class="glyphicon glyphicon-search"></span></span> </div>
+                            </div>
+                            <div class="col-xs-4 col-sm-2 col-md-2 marginB10">
+                                <div class="">
+                                    <a href="javascript:void(0)" class="btn pull-right btn-default filter-btn marginT0" id="filterMenu"><?php echo $this->__('Filter') ?> <span class="filter-btn-icon"></span></a>
+                                    <div id="dashFilterContainer" class="dropdown-menu filterPopup" tabindex="-5">
+                                        <?php echo $this->getChildHtml('documents_filter') ?>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <?php echo $this->getChildHtml('documents_results') ?>
+    </form>
+</div>
+
+
+<script type="text/javascript">//<![CDATA[
+    jQuery(function () {
+<?php $_locale = explode('_', Mage::app()->getLocale()->getLocaleCode()); ?>
+        jQuery(".date-picker").datepicker(jQuery.datepicker.regional['<?php echo $_locale[0]; ?>']);
+    });
+
+    jQuery(document).ready(function () {
+
+        jQuery('#listingSearchIcon').on('click', function() {
+            var searchtextContent = jQuery('#textsearch').val();
+            var defaultSearchText = '<?php echo $this->__('Order/Offer Data, Names, Addresses, Article IDs'); ?>';
+            if (searchtextContent == '' || searchtextContent == defaultSearchText) {
+                // Do not track !
+            } else {
+                console.log('Tracked From Detailsearch');
+                trackUserDetailDocumentSearch(searchtextContent);
+            }
+        });
+
+        if (jQuery(window).width() < 993) {
+            jQuery('#breadcrumb_block').removeClass('breadcrumb_custom');
+            jQuery('#breadcrumb_block').addClass('breadcrumb_my_account');
+        }
+
+    });
+
+
+//]]></script>
+<!-- app/design/frontend/schrack/schrackresponsive/template/customer/account/documents/detailsearch.phtml (end) -->

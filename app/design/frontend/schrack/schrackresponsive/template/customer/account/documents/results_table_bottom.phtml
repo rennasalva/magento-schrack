@@ -1,0 +1,152 @@
+<!-- app\design\frontend\schrack\schrackresponsive\template\customer\account\documents\results_table_bottom.phtml (start) -->
+<?php
+$_imgCartUrl = $this->getSkinUrl('images/cart_raute1.png');
+$_imgPdfUrl = $this->getSkinUrl('images/application_pdf.png');
+$_partslistHelper = Mage::helper('schrackwishlist/partslist');
+$_customer = $this->getCurrentCustomer();
+$_useMDoc = Mage::getStoreConfig('schrack/mdoc/use_mdoc');
+$ajaxLoaderGifPath = $this->getSkinUrl('schrackdesign/Public/Images/download_ajax_loader.gif');
+
+$sessionCustomerId = Mage::getSingleton('customer/session')->getCustomer()->getId();
+$aclRoleId = Mage::getModel('customer/customer')->load($sessionCustomerId)->getSchrackAclRoleId();
+$isProjectant = Mage::helper('schrack/acl')->isProjectantRoleId($aclRoleId);
+?>
+
+
+<script type="text/javascript">//<![CDATA[
+
+    var partslist = new ListRequestManager.List('<?php echo $_partslistHelper->getBaseUrl() ?>');
+    var partslistFE = new ListRequestManager.Frontend(partslist, ListRequestManager.Document);
+    var cart = new ListRequestManager.List('<?php echo $this->getUrl('checkout/cart/') ?>', true);
+    cart.setDocumentBatchAddUrl('<?php echo $this->getUrl('customer/account/batchAddDocumentsToCart/') ?>');
+    var cartFE = new ListRequestManager.Frontend(cart, ListRequestManager.Document);
+
+    //]]></script>
+
+<?php if ($this->getDocuments()->count() > 0): ?>
+    <div class="row-fine body">
+        <div class="col-xs-1 list-checkbox">
+            <span class="checkbox-container">
+                <input type="checkbox" onClick="setAllCheckboxes('rowId<?php echo $this->getClassId() ?>', this);"/>
+            </span>
+        </div>
+        <div class="col-xs-4 list-actions">
+            <?php if ($_customer->isAllowed('customerOrder', 'order') && !$this->isOfferList() && !$isProjectant): ?>
+                <button class="bttn-md addtocart" title="<?php echo $this->__('Add to Cart') ?>" onclick="cartFE.addCheckedItemsToList('rowId<?php echo $this->getClassId() ?>', 'documentId', 'type', false);
+                                    return false;"><?php echo $this->__('Add to Cart') ?></button>
+            <?php endif; ?>  
+        </div>
+        <div class="col-xs-3">
+            <?php if (Mage::getSingleton('customer/session')->isLoggedIn()) : ?>
+                <div class="button-label-container">
+                    <div class=" middle-align-container">
+                        <select class="form-control dropdown-menu partslist" title="<?php echo $this->__('Add to partslist') ?>">
+                            <option></option>
+                            <option class="add-to-new-partslist no-auto-activate" onClick="partslistFE.addCheckedItemsToNewList('<?php echo $this->__('New partslist') ?>', 'rowId<?php echo $this->getClassId() ?>', 'documentId', 'type');"><?php echo $this->__('Add to new partslist') ?></option>
+                            <?php if ($_partslistHelper->getPartslistCount() > 0): ?>
+                                <?php $activePl = $_partslistHelper->getActiveOrFirstPartslist(); ?>
+                                <option onClick="setOverlayLoader('listArea', '<?php echo $ajaxLoaderGifPath; ?>');
+                                                    partslistFE.addCheckedItemsToList(<?php echo $activePl->getId() ?>, 'rowId<?php echo $this->getClassId() ?>', 'documentId', 'type', false);" title="<?php echo $activePl->getDescription() ?>"><?php echo $this->__('Add to %s', $activePl->getDescription()) ?></option>
+                            <?php else: ?>
+                                <?php $activePl = null; ?>
+                            <?php endif; ?>
+                            <?php foreach ($_partslistHelper->getPartslists() as $pl): ?>
+                                <?php if ($activePl === null || $pl->getId() !== $activePl->getId()): ?>
+                                    <option onClick="setOverlayLoader('listArea', '<?php echo $ajaxLoaderGifPath; ?>');
+                                                            partslistFE.addCheckedItemsToList(<?php echo $pl->getId() ?>, 'rowId<?php echo $this->getClassId() ?>', 'documentId', 'type', false);" title="<?php echo $pl->getDescription() ?>"><?php echo $this->__('Add to %s', $pl->getDescription()) ?></option>
+                                <?php endif; ?>
+                            <?php endforeach; ?>
+                        </select>
+                        <?php echo $this->__('Add to partslist') ?>
+                    </div></div>
+            <?php endif; ?>
+        </div>
+        <div class="col-xs-3">
+            <?php if ($_useMDoc && !$isProjectant) : ?>
+                <button class="bttn-md print selection-print-button" title="Print">
+                    <div class="middle-align-container">
+                        <?php echo $this->__('Print') ?>
+                    </div>
+                </button>
+            <?php endif; ?>
+        </div>
+    </div>
+    <?php if ($this->getDocuments()->count() > 0): ?>
+        <div class="row toolbar after-list">
+            <?php echo $this->getChildHtml('html_pager2') ?>
+        </div>
+    <?php endif; ?>
+    <script type="text/javascript">//<![CDATA[
+
+        jQuery(document).ready(function () {
+
+            function openUrl(url, itemId) {
+                var request = jQuery.ajax(url,
+                        {
+                            method: 'get',
+                            success: function (response) {
+                                window.location.href = url;
+                            }.bind(this),
+                            error: function (response) {
+                                // console.log(response);
+                                // console.log(response.responseText);
+                                // Info message that no item is selected for print action:
+                                // showOverlayMessage('error', '<?php echo $this->__('Can not retrieve document.') ?>', '');
+                                alert('<?php echo $this->__('Can not retrieve document.') ?>');
+                                return;
+                            }
+                        });
+                return false;
+            }
+
+
+            function printOnlyCheckedDocuments(baseUrl) {
+                try {
+                    var rowIdClass;
+                    if (arguments.length === 2)
+                        rowIdClass = arguments[1];
+                    else
+                        rowIdClass = 'rowId';
+                    var rows = jQuery('.' + rowIdClass + ':checked');
+                    if (rows.length === 0) {
+                        // Info message that no item is selected for print action:
+                        // showOverlayMessage('error', '<?php echo $this->__('Please select an entry from the list, by selecting at least one checkbox first.') ?>', '');
+                        alert('<?php echo $this->__('Please select an entry from the list, by selecting at least one checkbox first.') ?>');
+                        return;
+                    }
+                    rows.each(function (i, e) {
+                        var id = jQuery(this).prop('id');
+                        var rowId = id.split('-')[1];
+                        var documentId = jQuery('#documentId-' + rowId).val();
+                        var type = jQuery('#type-' + rowId).val();
+                        var orderId = jQuery('#orderId-' + rowId).val();
+                        var itemId = jQuery('#itemId-' + rowId).val();
+
+                        if (documentId && type && orderId) {
+                            setTimeout(function () {
+                                openUrl(baseUrl + 'documentId/' + documentId + '/type/' + type + '/id/' + orderId, itemId);
+                            }, (i + 1) * 2000);  // 1000 ms delay between to next AJAX call
+                        }
+                    });
+                } catch (e) {
+                    // Info message that print action can not be executed (+ detailled error message):
+                    // showOverlayMessage('error', e, '');
+                    alert(e);
+                }
+                return false;
+            }
+
+            jQuery('select.dropdown-menu').dropdown({activateOnClick: false});
+
+            jQuery('.selection-print-button').on('click', function () {
+                //jQuery('#notice-message-container-overview').hide();
+                printOnlyCheckedDocuments('<?php echo $this->getDownloadUrl() ?>', 'rowId<?php echo $this->getClassId() ?>');
+                return false;
+            })
+
+
+        });
+
+        //]]></script>
+<?php endif; ?>
+<!-- app\design\frontend\schrack\schrackresponsive\template\customer\account\documents\results_table_bottom.phtml (end) -->

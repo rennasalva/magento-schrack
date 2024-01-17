@@ -1,0 +1,1829 @@
+<!-- app/design/frontend/schrack/schrackresponsive/template/checkout/onepage/shipping.phtml (start) -->
+
+<?php
+// @var $this Schracklive_SchrackCheckout_Block_Onepage_Shipping
+    $emailData         = "";
+    $telephoneData     = "";
+    $defaultShippingId = "";
+    $lastnameData      = "";
+    $userName          = '';
+    $customer = $this->getCustomer();
+    if ($customer) {
+        $customerType      = $customer->getSchrackCustomerType(); // ProspectTypes: 'light-prospect' / 'full-prospect'
+        $emailData         = $customer->getEmail();
+        $telephoneData     = $customer->getSchrackTelephone();
+        $lastnameData      = $customer->getLastname();
+        $defaultShipping   = $customer->getDefaultShippingAddress();
+        $userName          = $customer->getName();
+        $userPhone         = str_replace('+','',$telephoneData);
+        if ($defaultShipping) {
+            $defaultShippingId = $defaultShipping->getData('entity_id');
+        }
+    }
+
+    $prospectFull  = false;
+    $prospectLight = false;
+    $showAddressTypeSelect = true;
+
+    if ($customerType == 'light-prospect') {
+        $prospectLight = true;
+        $showAddressTypeSelect = false;
+    }
+
+    if ($customerType == 'full-prospect') {
+        $prospectFull = true;
+        $showAddressTypeSelect = false;
+    }
+
+    $quoteCustomerType = Mage::getSingleton('checkout/session')->getQuote()->getSchrackCustomertype();
+    if (stristr($quoteCustomerType, 'Prospect') || $quoteCustomerType == 'guest') {
+        $showAddressTypeSelect = false;
+    }
+
+    $_requestReceivers = $this->getRequestreceivers();
+    $customerIsLoggedIn = $this->helper('customer')->isLoggedIn();
+
+    $localeCode = strtolower(Mage::getStoreConfig('schrack/general/country'));
+
+    $deliveryAddressData = null;
+    if (Mage::helper('ids')->isIdsSession()) {
+        Mage::log('IDS Session detected', null, "ids.log");
+        if (Mage::helper('ids')->getIdsDeliveryAddressData()) {
+            $deliveryAddressData = Mage::helper('ids')->getIdsDeliveryAddressData();
+        }
+    } else {
+        Mage::log('No IDS Session detected', null, "ids.log");
+    }
+    //Mage::log($deliveryAddressData, null, "ids.log");
+?>
+
+<style>
+    .info_ids_address_data {
+        color: red;
+        font-weight: bold;
+        font-size: 14px;
+        text-align: center;
+    }
+    .plusIcon {
+        width: 4%;
+        float: left;
+        padding-top: 4px;
+        font-weight: bold !important;
+        font-size: 18px !important;
+        margin-left: 10px !important;
+    }
+
+    .required-sign {
+        color: red !important;
+    }
+
+    .checkout-shipping-selectaddress {
+        color: #005B9F !important;
+        margin-left: 10px !important;
+        margin-right: 10px !important;
+    }
+
+    .validate-select {
+        width: 99.2% !important;
+    }
+
+    #shipping-buttons-container {
+        width: 100% !important;
+    }
+
+    #shipping-form-container {
+        margin-left: 2% !important;
+        margin-right: 2% !important;
+        margin-top: 15px !important;
+        margin-bottom: 15px !important;
+    }
+
+    #inpostHeader {
+        background-color: #EEE;
+        border: 2px solid #D6D6D6;
+        border-radius: 6px;
+    }
+
+    .checkoutHeadlineContainer {
+        margin-left: 10px;
+        margin-top: 10px;
+        font-size: 1.3em;
+        color: #005B9F;
+    }
+
+    .checkoutHeadlineInpost {
+        margin-left: 10px;
+        margin-top: 10px;
+        font-size: 1.3em;
+        color: #005B9F;
+    }
+
+    #shipping-address-select {
+        height: 50px  !important;
+        color: #005B9F !important;
+        padding-left: 5px !important;
+        width: 100% !important;
+        margin-top: 14px !important;
+    }
+
+    .label_address_select {
+        margin-left: 12px !important;
+        font-size: 1.3em !important;
+        color: #005B9F !important;
+        margin-top: 14px !important;
+    }
+
+    #new_address_button {
+        margin-top: 25px !important;
+        margin-bottom: 19px !important;
+        height: 51px !important;
+        width: 172px !important;
+        color: white !important;
+        background: #005B9F;
+        margin-left: 9px !important;
+    }
+
+    #new_address_button_text {
+        font-size: 1.2em !important;
+    }
+
+    #fieldsetVATIdentificationNumberLegendShipping {
+        color: black !important;
+        width: 30% !important;
+        float: left !important;
+        margin-left: 16% !important;
+        margin-bottom: 20px !important;
+        height: 255px !important;
+        margin-top: 26px !important;
+    }
+
+    .saveShippingButton {
+        width: 139px !important;
+        margin-left: auto !important;
+        margin-right: 37px !important;
+        margin-top: 10px !important;
+    }
+
+    .inpostGuestContinueButton {
+        width: 139px !important;
+        margin-left: auto !important;
+        margin-right: 37px !important;
+        margin-top: 10px !important;
+    }
+
+    .shipping-fieldlists-container {
+        max-height: 100% !important;
+    }
+
+    #common_shipping_fieldsets_container {
+        /* background: yellow; */
+    }
+
+    #fieldsetCompanyData {
+        color: black !important;
+        width: 350px !important;
+        float: left !important;
+        margin-right: 2px !important;
+        margin-bottom: 0 !important;
+        margin-top: 14px !important;
+        margin-left: 16% !important;
+        height: 195px !important;
+    }
+
+    #fieldsetEmailAddress {
+        color: black !important;
+        width: 100% !important;
+        float: left !important;
+        margin-bottom: 21px !important;
+        margin-top: 14px !important;
+    }
+
+    #fieldsetPostcodeLegendShipping {
+        color: black !important;
+        width: 350px !important;
+        float: left !important;
+        margin-left: 57px !important;
+        margin-bottom: 0 !important;
+        margin-top: 13px !important;
+        height: 87px !important;
+    }
+
+    #fieldsetStreet {
+        color: black !important;
+        width: 350px !important;
+        float: left !important;
+        margin-bottom: 0 !important;
+        margin-top: 13px !important;
+        margin-left: 56px !important;
+        height: 87px !important;
+    }
+
+    #fieldsetCityShipping {
+        color: black !important;
+        width: 350px !important;
+        float: left !important;
+        margin-left: 16% !important;
+        margin-right: 25px !important;
+        margin-top: 10px !important;
+        height: 87px !important;
+    }
+
+    #fieldsetShippingAdressType {
+        color: black !important;
+        width: 350px !important;
+        float: left !important;
+        margin-left: 16% !important;
+        margin-right: 25px !important;
+        margin-top: 10px !important;
+        height: 87px !important;
+    }
+
+    #fieldsetShippingAdressPhone {
+        color: black !important;
+        width: 350px !important;
+        float: left !important;
+        margin-left: 36px !important;
+        margin-right: 25px !important;
+        margin-top: 10px !important;
+        height: 87px !important;
+    }
+
+    #fieldsetCountryShipping {
+        color: #000000 !important;
+        width: 350px !important;
+        float: left !important;
+        height: 87px !important;
+        margin-top: 10px !important;
+        margin-left: 36px !important;
+    }
+
+    #phone_address_contact {
+        width: 92%;
+        border: 1px solid #ccc;
+        padding-left: 5px;
+        height: 28px;
+    }
+
+    #inpostContinueButton{
+        background-color: #fff;
+        margin-top: -15px;
+    }
+
+    #inpostGuestContinueButton{
+        background-color: #fff;
+        margin-top: -15px;
+    }
+
+    #inpostCompletePhoneNumber {
+        padding-top: 10px;
+        padding-left: 20px;
+        font-size: 18px;
+        line-height: 24px;
+        font-weight: 500;
+    }
+
+    #completePhoneNumber {
+        font-family: sans-serif;
+        font-size: 16px;
+        font-weight: 600;
+        color: #404041;
+        margin-left: 23px;
+    }
+
+    #phoneCountryCode {
+        color: #8e8e8e;
+        width: 40px;
+        margin-bottom: 10px;
+    }
+    /* Inpost phone number*/
+    #phonePrefix {
+        height: 30px;
+        width: 60px;
+        color: #373737;
+        background-color: #f3f3f3;
+    }
+
+    #phoneNumber {
+        color: #373737;
+        margin-left: 3px;
+    }
+
+    .checkout_saveShippingMethodButtonAlternate {
+        width: 223px;
+        margin-bottom: 14px;
+        margin-left: 62%;
+    }
+
+    #container-address-select {
+        color: #005B9F;
+        margin-top: 20px;
+        width: 100%;
+        height: 46px;
+        padding-left: 28px;
+        margin-bottom: 24px;
+
+    }
+
+    @media (min-width: 200px) and (max-width: 637px) {
+        .checkout_saveShippingMethodButtonAlternate {
+            margin-left: 25%;
+        }
+        #fieldsetEmailAddress {
+            width: 100% !important;
+        }
+        #fieldsetCompanyData {
+            margin-left: 0 !important;
+            width: 100% !important;
+        }
+        #fieldsetStreet {
+            margin-left: 0 !important;
+            width: 100% !important;
+        }
+        #fieldsetPostcodeLegendShipping {
+            margin-top: 3px !important;
+            margin-left: 0 !important;
+            width: 100% !important;
+        }
+        #fieldsetCityShipping {
+            margin-left: 0 !important;
+            width: 100% !important;
+        }
+        #fieldsetShippingAdressType {
+            margin-left: 0 !important;
+            width: 100% !important;
+        }
+        #fieldsetShippingAdressPhone {
+            margin-left: 0 !important;
+            width: 100% !important;
+        }
+        #fieldsetCountryShipping {
+            margin-left: 0 !important;
+            width: 100% !important;
+            height: 61px !important;
+        }
+        #fieldsetVATIdentificationNumberLegendShipping {
+            width: 100% !important;
+            height: 100% !important;
+            margin-left: 0 !important;
+            margin-top: 0 !important;
+            margin-bottom: 0 !important;
+            padding-left: 3px !important;
+            padding-right: 3px !important;
+        }
+    }
+
+    @media (min-width: 637px) and (max-width: 740px) {
+        #fieldsetEmailAddress {
+            width: 350px !important;
+            margin-left: 26% !important;
+        }
+        #fieldsetCompanyData {
+            margin-left: 26% !important;
+        }
+        #fieldsetStreet {
+            margin-left: 26% !important;
+        }
+        #fieldsetPostcodeLegendShipping {
+            margin-top: 3px !important;
+            margin-left: 26% !important;
+        }
+        #fieldsetCityShipping {
+            margin-left: 26% !important;
+        }
+        #fieldsetShippingAdressType {
+            margin-left: 26% !important;
+        }
+        #fieldsetShippingAdressPhone {
+             margin-left: 26% !important;
+        }
+        #fieldsetCountryShipping {
+            margin-left: 26% !important;
+        }
+        #fieldsetVATIdentificationNumberLegendShipping {
+            width: 350px !important;
+            margin-left: 26% !important;
+        }
+    }
+
+    @media (min-width: 741px) and (max-width: 992px) {
+        #fieldsetEmailAddress {
+            width: 350px !important;
+            margin-left: 26% !important;
+        }
+        #fieldsetCompanyData {
+            margin-left: 26% !important;
+        }
+        #fieldsetStreet {
+            margin-left: 26% !important;
+        }
+        #fieldsetPostcodeLegendShipping {
+            margin-top: 3px !important;
+            margin-left: 26% !important;
+        }
+        #fieldsetCityShipping {
+            margin-left: 26% !important;
+        }
+        #fieldsetShippingAdressType {
+            margin-left: 26% !important;
+        }
+        #fieldsetShippingAdressPhone {
+            margin-left: 26% !important;
+        }
+        #fieldsetCountryShipping {
+            margin-left: 26% !important;
+        }
+        #fieldsetVATIdentificationNumberLegendShipping {
+            width: 350px !important;
+            margin-left: 26% !important;
+        }
+    }
+
+    @media (min-width: 992px) and (max-width: 1098px) {
+        #fieldsetEmailAddress {
+            width: 350px !important;
+            margin-left: 12% !important;
+        }
+        #fieldsetCompanyData {
+            margin-left: 12% !important;
+        }
+        #fieldsetCityShipping {
+            margin-left: 12% !important;
+        }
+        #fieldsetShippingAdressType {
+            margin-left: 12% !important;
+        }
+        #fieldsetPostcodeLegendShipping {
+            margin-left: 12% !important;
+        }
+        #fieldsetVATIdentificationNumberLegendShipping {
+            width: 350px !important;
+            margin-left: 12% !important;
+        }
+    }
+
+    @media (min-width: 1099px) and (max-width: 1126px) {
+        #fieldsetEmailAddress {
+            width: 350px !important;
+            margin-left: 16% !important;
+        }
+        #fieldsetCompanyData {
+            margin-left: 16% !important;
+        }
+        #fieldsetCityShipping {
+            margin-left: 16% !important;
+        }
+        #fieldsetShippingAdressType {
+            margin-left: 16% !important;
+        }
+        #fieldsetPostcodeLegendShipping {
+            margin-left: 16% !important;
+        }
+    }
+
+    @media (min-width: 1127px) and (max-width: 1264px) {
+        #fieldsetEmailAddress {
+            width: 350px !important;
+            margin-left: 56px !important;
+        }
+        #fieldsetCompanyData {
+            margin-left: 12% !important;
+        }
+        #fieldsetCityShipping {
+            margin-left: 12% !important;
+        }
+        #fieldsetShippingAdressType {
+            margin-left: 12% !important;
+        }
+        #fieldsetPostcodeLegendShipping {
+            margin-left: 56px !important;
+        }
+    }
+
+    @media (min-width: 1265px) and (max-width: 3000px) {
+        #fieldsetEmailAddress {
+            width: 350px !important;
+            margin-left: 56px !important;
+        }
+        #fieldsetCompanyData {
+            margin-left: 16% !important;
+        }
+        #fieldsetCityShipping {
+            margin-left: 16% !important;
+        }
+        #fieldsetShippingAdressType {
+            margin-left: 16% !important;
+        }
+        #fieldsetPostcodeLegendShipping {
+            margin-top: 3px !important;
+        }
+    }
+
+    @media (min-width: 1px) and (max-width: 392px) {
+        .fa-phone{
+            display: block !important;
+        }
+        #inpostCompletePhoneNumber {
+            padding-top:20px;
+        }
+        #phoneNumber {
+            margin-top: 5px;
+            color: #373737;
+        }
+    }
+    @media (min-width: 1px) and (max-width: 475px) {
+        .fa-phone{
+            display: block !important;
+        }
+    }
+    @media (min-width: 1px) and (max-width: 637px) {
+        #inpostContinueButton{
+            padding-top: 15px;
+        }
+    }
+</style>
+<div id="shipping-form-container">
+    <!-- Delivery Address -->
+    <form id="co-shipping-form" action="">
+        <?php echo $this->getBlockHtml('formkey'); ?>
+        <input type="hidden" id="hidden_email" value="<?php echo $emailData; ?>">
+        <input type="hidden" id="hidden_telephone" value="<?php echo $telephoneData; ?>">
+        <input type="hidden" id="hidden_lastname" value="<?php echo $lastnameData; ?>">
+        <input type="hidden" id="hidden_default_shipping_id" value="<?php echo $defaultShippingId; ?>">
+
+        <div class="box-content">
+
+            <ul class="form-list shipping-fieldlists-container">
+                <?php if ($this->customerHasAddresses() && $prospectLight == false): ?>
+                   <li class="wide">
+                       <?php if ($this->mayUseNewAddress()): ?>
+                           <div for="shipping-address-select" class="label_address_select"><?php echo $this->__('Select a shipping address from your address book or enter a new address.') ?></div>
+                       <?php else: ?>
+                           <div for="shipping-address-select" class="label_address_select"><?php echo $this->__('Select a shipping address from your address book.') ?></div>
+                       <?php endif; ?>
+                       <div class="input-box checkout-shipping-selectaddress">
+                           <?php echo $this->getAddressesHtmlSelect('shipping') ?>
+                       </div>
+                   </li>
+                <?php endif ?>
+                    <div id="fieldAreaShipping"></div>
+                    <div id="shipping-new-address-form" <?php if ($this->customerHasAddresses()): ?> style="display:none;"<?php endif ?>>
+                        <div class="adressFieldset">
+                            <input type="hidden" name="shipping[address_id]" value="<?php echo $this->getAddress()->getId() ?>" id="shipping:address_id" />
+                            <ul>
+                                <li class="fields">
+                                    <?php
+                                        // app/design/frontend/schrack/default/template/customer/widget/addressname.phtml
+                                        $completeHTMLElements = $this->getLayout()->createBlock('schrackcustomer/widget_addressname')->setObject($this->getAddress())->setFieldIdFormat('shipping:%s')->setFieldNameFormat('shipping[%s]')->setFieldParams('onchange="shipping.setSameAsBilling(false)"')->toHtml();
+                                        $completeHTMLElements = str_replace('onchange="shipping.setSameAsBilling(false)"', '', $completeHTMLElements); // Removes inline onchange event from input field
+                                        $completeHTMLElements = preg_replace('/value="*"/', '', $completeHTMLElements);  // Removes value from input field
+                                        //echo $completeHTMLElements;
+                                    ?>
+                                </li>
+                                <li id="common_shipping_fieldsets_container" class="fields">
+                                    <div id="fieldsetCompanyData">
+                                        <div style="border-bottom: none; margin-bottom: 0;"><em class="required-sign"> *</em> <?php echo $this->__('Company') ?>&nbsp;&nbsp;</div>
+                                        <div class="fields" style="margin-bottom: 15px;">
+                                            <div for="shipping:lastname" class="required"></div>
+                                            <div class="input-box">
+                                                <input style="width: 100% !important;" type="text" id="shipping:lastname" name="shipping[lastname]" value="" title="<?php echo $this->__('Company') ?>" class="input-text required-entry" maxlength="30" />
+                                            </div>
+                                        </div>
+                                        <div class="fields">
+                                            <div class="input-box">
+                                                <input style="width: 100% !important; margin-top: 24px !important;" type="text" id="shipping:company" name="shipping[company]" value="" title="<?php echo $this->__('Company') ?>" class="input-text" maxlength="30" />
+                                            </div>
+                                        </div>
+                                        <div class="fields" style="margin-top: 12px;">
+                                            <div class="customHeightDistance"></div>
+                                            <div for="shipping:firstname"><?php echo $this->__('ContactPerson'); ?></div>
+                                            <div class="input-box">
+                                                <input style="width: 100% !important;" type="text" id="shipping:firstname" name="shipping[firstname]" value="<?php echo $userName ?>" title="<?php echo $this->__('ContactPerson') ?>" class="input-text" maxlength="30" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <?php if(!$this->isCustomerLoggedIn()): ?>
+                                        <div id="fieldsetEmailAddress">
+                                            <div style="border-bottom: none; margin-bottom: 0;"><em  class="required-sign"> *</em> <?php echo $this->__('Email Address') ?>&nbsp;&nbsp;</div>
+                                            <div class="fields">
+                                                <div for="shipping:email" class="required"></div>
+                                                <div class="input-box">
+                                                    <input style="width: 100% !important;" type="text" name="shipping[email]" id="shipping:email" value="" title="<?php echo $this->__('Email Address') ?>" class="input-text validate-email required-entry" maxlength="30" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    <?php endif ?>
+
+                                    <div id="fieldsetStreet">
+                                        <div style="border-bottom: none; margin-bottom: 0;"><em class="required-sign"> *</em> <?php echo $this->__('Street Address') ?>&nbsp;&nbsp;</div>
+                                        <div class="fields">
+                                            <div for="shipping:street1" class="required"></div>
+                                            <div class="input-box">
+                                                <input style="width: 100% !important;" type="text" name="shipping[street][]" id="shipping:street1" value="" title="<?php echo $this->__('Street Address') ?>" class="input-text required-entry" maxlength="30"/>
+                                            </div>
+                                        </div>
+                                        <?php for ($_i=2, $_n=$this->helper('customer/address')->getStreetLines(); $_i<=$_n; $_i++): ?>
+                                            <div class="fields">
+                                                <div for="shipping:street1" class="required"></div>
+                                                <div class="input-box">
+                                                    <input style="width: 100% !important;" type="text" name="shipping[street]" id="shipping:street<?php echo $_i?>" value="" title="<?php echo $this->__('Street Address') . $_i ?>" class="input-text required-entry" maxlength="30"/>
+                                                </div>
+                                            </div>
+                                        <?php endfor ?>
+                                    </div>
+
+                                    <div id="fieldsetPostcodeLegendShipping">
+                                        <div style="border-bottom: none; margin-bottom: 0;" id="postcodeLegendShipping"><em class="required-sign"> *</em> <?php echo $this->__('Zip/Postal Code') ?>&nbsp;&nbsp;</div>
+                                        <div class="fields">
+                                            <div for="shipping:postcode" class="required"></div>
+                                            <div class="input-box">
+                                                <input style="width: 100% !important;" type="text" name="shipping[postcode]" id="shipping:postcode" value="" title="<?php echo $this->__('Zip/Postal Code') ?>" class="input-text validate-zip-international required-entry" maxlength="10" />
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div style="clear: both;"></div>
+                                    <div id="fieldsetCityShipping">
+                                        <div style="border-bottom: none; margin-bottom: 0;"><em class="required-sign"> *</em> <?php echo $this->__('City') ?>&nbsp;&nbsp;</div>
+                                        <div class="fields">
+                                            <div for="shipping:city" class="required"></div>
+                                            <div class="input-box">
+                                                <input style="width: 100% !important;" type="text" name="shipping[city]" id="shipping:city" value="" title="<?php echo $this->__('City') ?>" class="input-text required-entry" maxlength="30" />
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <?php if(false): ?>
+                                        <div class="field">
+                                            <div class="customHeightDistance"></div>
+                                            <div for="shipping:region" class="required"><em>*</em><?php echo $this->__('State/Province') ?></div>
+                                            <div class="input-box">
+                                                <select id="shipping:region_id" name="shipping[region_id]" title="<?php echo $this->__('State/Province') ?>" class="validate-select" style="display:none;">
+                                                    <option value=""><?php echo $this->__('Please select region, state or province') ?></option>
+                                                </select>
+                                                <script type="text/javascript">
+                                                    //<![CDATA[
+                                                    $('shipping:region_id').setAttribute('defaultValue',  "<?php echo $this->getAddress()->getRegionId() ?>");
+                                                    //]]>
+                                                </script>
+                                                <input type="text" id="shipping:region" name="shipping[region]" value="" title="<?php echo $this->__('State/Province') ?>" class="input-text" style="display:none;" />
+                                            </div>
+                                        </div>
+                                    <?php endif ?>
+
+                                    <div id="fieldsetCountryShipping">
+                                        <div style="border-bottom: none; margin-bottom: 0;"><em class="required-sign""> *</em> <?php echo $this->__('Country') ?>&nbsp;&nbsp;</div>
+                                        <div class="fields">
+                                            <div for="shipping:country_id" class="required"></div>
+                                            <div class="input-box">
+                                                <?php if(!Mage::getStoreConfig('schrack/vatcheck/contry_selectable')): ?>
+                                                    <?php if ($prospectFull || $prospectLight) : ?>
+                                                        <?php // Case 1: Prospect Order: ?>
+                                                        <input type="hidden" id="shipping:country_id" name="shipping[country_id]" value="<?php echo Mage::helper('core')->getDefaultCountry(); ?>" />
+                                                        <input type="text" value=" <?php echo Mage::app()->getLocale()->getCountryTranslation(Mage::helper('core')->getDefaultCountry()) ?>" style="width: 100% !important; background: #d3d3d3" readonly="readonly" />
+                                                    <?php else : ?>
+                                                        <?php if ($customerIsLoggedIn) : ?>
+                                                            <?php // Case 2: Normal Customer Order: ?>
+                                                            <?php echo str_replace('onchange="shipping.setSameAsBilling(false);">', '', $this->getCountryHtmlSelect('shipping')); ?>
+                                                        <?php else : ?>
+                                                            <?php // Case 3: Guest Order or New Register Prospect: ?>
+                                                            <input type="hidden" id="shipping:country_id" name="shipping[country_id]" value="<?php echo Mage::helper('core')->getDefaultCountry(); ?>" />
+                                                            <input type="text" value=" <?php echo Mage::app()->getLocale()->getCountryTranslation(Mage::helper('core')->getDefaultCountry()) ?>" style="width: 100% !important; background: #d3d3d3" readonly="readonly" />
+                                                        <?php endif ?>
+                                                    <?php endif ?>
+                                                <?php else : ?>
+                                                    <?php echo str_replace('onchange="shipping.setSameAsBilling(false);">', '', $this->getCountryHtmlSelect('shipping')); ?>
+                                                <?php endif ?>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div style="clear: both;"></div>
+                                    <div id="fieldsetShippingAdressType">
+                                        <?php if ($showAddressTypeSelect) : ?>
+                                            <div style="border-bottom: none; margin-bottom: 0;">
+                                                <em class="required-sign"> *</em>
+                                                <?php echo $this->__('Address Type') ?>&nbsp;&nbsp;
+                                            </div>
+                                            <div class="fields">
+                                                <div for="shipping:schrack_address_type" class="required"></div>
+                                                <div class="input-box">
+                                                    <?php echo $this->helper('customer')->getTypeHtmlSelect(null,
+                                                      'shipping[schrack_address_type]',
+                                                      'shipping:schrack_address_type',
+                                                      'Address Type',
+                                                      'validate-select',
+                                                      'checkout'); ?>
+                                                </div>
+                                            </div>
+                                        <?php endif; ?>
+                                    </div>
+
+                                    <div id="fieldsetShippingAdressPhone">
+                                        <div style="border-bottom: none; margin-bottom: 0;"><?php echo $this->__('PhoneAddressContact') ?>&nbsp;&nbsp;</div>
+                                        <div class="fields">
+                                            <div for="shipping:schrack_address_phone"></div>
+                                            <div class="input-box">
+                                                <div class="plusIcon">+</div>
+                                                <input type="tel" name="shipping[phone_address_contact]" id="phone_address_contact" value="<?php echo $userPhone ?>" maxlength="30" />
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <?php
+                                        $customer_vat_number = '';
+                                        $css_hide = '';
+                                        if ($customer && $customerType == 'full-prospect' && $this->isCustomerLoggedIn()) {
+                                            $customer_vat_number = $customer->getAccount()->getVatIdentificationNumber();
+                                            $css_hide = ' display: none';
+                                        }
+                                    ?>
+                                    <div id="fieldsetVATIdentificationNumberLegendShipping">
+                                        <?php if (Mage::getStoreConfig('schrack/new_self_registration/triggerLocalVat')) : ?>
+                                            <div id="vat_identification_number_local_selector">
+                                                <input type="radio" name="vat_special_shipping" value="vat_normal" checked="checked" /> <?php echo $this->__('VAT Normal') ?><br>
+                                                <input type="radio" name="vat_special_shipping" value="vat_local" /> <?php echo $this->__('VAT Local') ?>
+                                            </div>
+                                        <?php endif; ?>
+                                        <div id="vat_identification_number-field" style="margin-top: 10px;<?php echo $css_hide; ?>">
+                                            <?php if (Mage::getStoreConfig('schrack/vatcheck/required')): ?>
+                                                <div for="vat_identification_number"
+                                                     style="color: #000;"
+                                                     class="required"><em class="required-sign"> *</em>
+                                                    <?php echo $this->__('VAT Identification Number') ?>
+                                                </div>
+                                            <?php else: ?>
+                                                <div for="vat_identification_number"
+                                                     style="<?php echo $css_hide; ?>">
+                                                    <?php echo $this->__('VAT Identification Number') ?>
+                                                </div>
+                                            <?php endif; ?>
+                                            <div class="input-box">
+                                                <input
+                                                 type="text"
+                                                 style="width: 100% !important;<?php echo $css_hide; ?>"
+                                                 name="vat_identification_number"
+                                                 id="vat_identification_number"
+                                                 value="<?php echo $customer_vat_number; ?>"
+                                                 title=""
+                                                 class="textInput input-text<?php if (Mage::getStoreConfig('schrack/vatcheck/required')) echo ' required-entry'; ?>" />
+                                            </div>
+                                            <div id="resultingErrorMessageVATShipping" style="position: absolute; font-size: 1em; color: red; margin-top: -61px; margin-left: 0px; width: 410px;"></div>
+                                        </div>
+                                        <div id="company-registration-number-field" style="margin-top: 10px;">
+                                            <?php if (Mage::getStoreConfig('schrack/vatcheck/comregrequired')): ?>
+                                                <div for="company_registration_number" style="color: #000;" class="required"><em class="required-sign"> *</em>
+                                                    <?php echo $this->__('Company Registration Number') ?>
+                                                </div>
+                                            <?php else: ?>
+                                                <div for="company_registration_number">
+                                                    <?php echo $this->__('Company Registration Number') ?>
+                                                </div>
+                                            <?php endif ?>
+                                            <div class="input-box">
+                                                <input type="text" style="width: 100% !important;" name="company_registration_number" id="company_registration_number" maxlength="14" value="" title="<?php echo $this->__('Company Registration Number') ?>" class="textInput input-text<?php if (Mage::getStoreConfig('schrack/vatcheck/comregrequired')) echo ' required-entry'; ?>" />
+                                            </div>
+                                        </div>
+                                        <div id="website-field" style="margin-top: 10px;">
+                                            <div for="homepage"><?php echo $this->__('Website') ?></div>
+                                            <div class="input-box">
+                                                <input type="text" style="width: 100% !important;" name="homepage" id="homepage" value="" title="<?php echo $this->__('Website') ?>" class="textInput input-text" />
+                                            </div>
+                                        </div>
+                                        <div class="field" style="margin-top: 10px;">
+                                            <div for="shipping:telephone_company"><?php echo $this->__('Telephone Company') ?></div>
+                                            <div class="input-box">
+                                                <div class="plusIcon">+</div>
+                                                <input style="width: 93%; padding-left: 5px; height: 28px;" type="tel" name="shipping[telephone_company]" id="shipping:telephone_company" value="" title="<?php echo $this->__('Telephone Company') ?>" class="input-text" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div style="clear: both;"></div>
+                                </li> <!-- check if its in right position -->
+
+                                <?php if(false): ?>
+                                        <li class="fields">
+                                            <div class="field">
+                                                <div for="shipping:telephone"><?php echo $this->__('Telephone') ?></div>
+                                                <div class="input-box">
+                                                    <input type="tel" name="shipping[telephone]" id="shipping:telephone" value="" title="<?php echo $this->__('Telephone') ?>" class="input-text" />
+                                                </div>
+                                            </div>
+                                            <div class="field">
+                                                <div for="shipping:fax"><?php echo $this->__('Fax') ?></div>
+                                                <div class="input-box">
+                                                    <input type="tel" name="shipping[fax]" id="shipping:fax" value="" title="<?php echo $this->__('Fax') ?>" class="input-text" />
+                                                </div>
+                                            </div>
+                                        </li>
+                                    <?php endif ?>
+                                    <p style="float: left; width: 120px; margin-left: 33px; margin-top: 20px; color: #000;" class="required"><b><?php echo $this->__('* Required Fields') ?></b></p>
+
+
+                                <?php if ($this->isCustomerLoggedIn() && $this->customerHasAddresses()):?>
+                                    <!-- <li class="control"><input type="checkbox" name="shipping[save_in_address_book]" value="1" title="<?php //echo $this->__('Save in address book') ?>" id="shipping:save_in_address_book" onchange="shipping.setSameAsBilling(false);"<?php //if ($this->getAddress()->getSaveInAddressBook()):?> checked="checked"<?php //endif;?> class="checkbox" /><label for="shipping:save_in_address_book" style="display:inline">&nbsp;<?php //echo $this->__('Save in address book') ?></label></li> -->
+                                    <li class="no-display">
+                                        <p>
+                                            <?php //echo $this->__('This new address will be saved in the address book'); ?>
+                                        </p>
+                                    </li>
+                                    <input type="hidden" name="shipping[save_in_address_book]" value="1" />
+                                <?php endif;?>
+                            </ul>
+                        <br/>
+                        </div>
+                        <?php if ( $_requestReceivers && $_requestReceivers->count() > 0 ):?>
+                            <li>
+                                <div class="input-box">
+                                    <label for="billing:receiver"><?php echo $this->__('Receiver')?>&nbsp;<em class="required-sign"> *</em></label><br/>
+                                    <select id="billing:receiver" name="billing[receiver]">
+                                        <?php foreach ($_requestReceivers as $receiver):?>
+                                            <option value="<?php echo $receiver->getId()?>"><?php echo $receiver->getName()?></option>
+                                        <?php endforeach;?>
+                                    </select>
+                                </div>
+                            </li>
+                        <?php endif;?>
+                        <br/>
+
+                    </div>
+            </ul>
+            <?php if (!$this->isCustomerLoggedIn() || !($this->getCustomer()->isContact() || $this->getCustomer()->isProspect())): ?>
+                <?php if (false): ?>
+                    <p class="required"><?php echo $this->__('* Required Fields') ?></p>
+                <?php endif;?>
+            <?php endif;?>
+        </div>
+        <?php if ($deliveryAddressData) : ?>
+            <div class="info_ids_address_data"><?php echo $this->__('The Data Source Of The Above Data Was IDS!'); ?></div>
+        <?php endif; ?>
+        <div class="buttons-set" id="shipping-buttons-container">
+            <div>
+                <?php if (!$this->isCustomerLoggedIn() || !($this->getCustomer()->isContact() || $this->getCustomer()->isProspect())): ?>
+                <?php endif;?>
+                <?php if ($this->mayUseNewAddress()): ?>
+                    <div>
+                        <button type="button" id="new_address_button" title="<?php echo $this->__('New Address') ?>" style="cursor: auto;">
+                            <span id="new_address_button_text"><?php echo $this->__('New Address') ?></span>
+                        </button>
+                    </div>
+                <?php endif; ?>
+            </div>
+            <button type="button" class="bttn-lg saveShippingButton" title="<?php echo $this->__('Continue') ?>">
+                <span id="shipping-please-wait" class="please-wait" style="display:none;float:left;padding-left:20px;text-align:left;background:url('<?php echo $this->getSkinUrl('images/opc-ajax-loader.gif') ?>') left center no-repeat;">&nbsp;</span>
+                <?php echo $this->__('Continue') ?>
+            </button>
+        </div>
+        <div class="customHeightDistance"></div>
+    </form>
+
+    <!-- Container Address -->
+    <div id="shipping-form-container-choice" style="display: none">
+        <?php
+            $containerActive = Mage::getStoreConfig('carriers/schrackcontainer/active');
+            if ($containerActive) {
+                //  wws container data
+                $wsdl = Mage::getStoreConfig('schrack/wws/wsdl');
+                $wwsID = Mage::getSingleton('customer/session')->getCustomer()->_data['schrack_wws_customer_id'];
+
+                $ctry_code = Mage::getStoreConfig('shipping/origin/country_id');
+                $sender_id = Mage::getStoreConfig('schrack/wws/sender_id');
+
+                if (stristr($wsdl, 'test')) {
+                    $test_or_live = 'Test_';
+                } else {
+                    $test_or_live = '';
+                }
+
+                $checkoutSession = Mage::getSingleton('checkout/session');
+                $skuNumber = array();
+
+                $request = array(
+                    'ctry_code' => $test_or_live . $ctry_code,
+                    'sender_id' => $test_or_live . $sender_id,
+                    'tt_item' => [
+
+                    ],
+                    'CustomerNumber' => $wwsID
+                );
+
+                // pushing skus into array
+                foreach ( $checkoutSession->getQuote()->getAllVisibleItems() as $item ) {
+                    $product = $item->getProduct()->getData();
+                    $sku = $product['sku'];
+
+                    $request['tt_item'][] = ['ItemId' => $sku];
+                }
+
+                $options = array(
+                    'schrack_system' => 'wws',
+                );
+                $options['schrack_log_transfer'] = true;
+
+                $soap = Mage::helper('schrack/soap')->createClient($wsdl, $options);
+                $response = $soap->__call('get_valid_container', $request);
+
+                $getContainer = $response['tt_container'];
+                $containerAddr = array();
+
+                foreach ($getContainer as $value) {
+                    $id = $value->ID;
+                    $containerAddr[$id] = $value->Name1 . ': ' . $value->Name2 . '; ' . $value->Str . ', ' . $value->Zip . ' ' . $value->City;
+                }
+                #var_dump($response);
+
+                $buttonModus = 'block';
+                echo "<div id='container-shipping-selected' >";
+                    if(!$containerAddr) {
+                        echo
+                            "<ul class='message'
+                                <li class='infoBoxDelayMessage'>
+                                    <span>Sorry, no container available!</span>
+                                </li>
+                            </ul>";
+                        $buttonModus = 'none';
+                    } else {
+                        echo "<div id='container-address' class='container-address' >
+                            <div class='checkoutHeadlineContainer'>PickUp Station für Abholung auswählen</div>
+                            <select id='container-address-select' class='address-select' name='container_id' title=''>";
+                                foreach ($containerAddr as $id => $addr) {
+                                    echo "<option value='$id'>$addr</option>";
+                                }
+                            echo "</select>
+                        </div>";
+                    }
+                echo "</div>";
+
+                echo "<div id='step-2-shipping-buttons-container' class='inpostPhoneNumber'>
+                    <button type='button' class='bttn-lg saveShippingButton' style='display:$buttonModus;'>
+                        <span id='shipping-please-wait' 
+                              class='please-wait' 
+                              style='display:none;float:left;
+                                     padding-left:20px;text-align:left;
+                                     background:url("; echo $this->getSkinUrl('images/opc-ajax-loader.gif'). ") left center no-repeat;'>&nbsp;
+                        </span> ";
+                        echo $this->__('Continue') . "
+                    </button>
+                </div>
+                <div class='customHeightDistance'></div>";
+            }
+        ?>
+    </div>
+
+    <!--Pickup Address end of Container-->
+
+    <!--InPost Address Frame -->
+    <div id="shipping-form-inpost-choice" hidden>
+        <?php
+            $inpostActive = Mage::getStoreConfig('carriers/schrackinpost/active');
+            if ($inpostActive && Mage::getStoreConfig('schrack/general/country') == 'pl') {
+                // wws inpost data
+                $inpostKey = Mage::getStoreConfig('carriers/schrackinpost/key');
+                $inpostUrl = Mage::getStoreConfig('carriers/schrackinpost/url');
+
+                //  country code + phonePrefixes
+                $phonePrefixes = Mage::getStoreConfig('carriers/schrackinpost/phonePrefix');
+                $phoneCountryCode = Mage::getStoreConfig('carriers/schrackinpost/countryCode');
+                $prefix = explode(",", $phonePrefixes);
+                sort($prefix);
+
+                //  extract customer contact mobile number
+                $customerPhoneNumber =  $customer->getSchrackMobilePhone();
+                $withoutCountryCode = trim($customerPhoneNumber, $phoneCountryCode);
+                $contactPrefix = substr($withoutCountryCode,0, 3);
+                $contactPhoneNumber = substr($withoutCountryCode,3);
+
+                //  Api call
+                $ch = curl_init();
+                curl_setopt($ch, CURLOPT_URL, $inpostUrl);
+                curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+                $inpostResponse = curl_exec($ch);
+                $inpostResponse = json_decode($inpostResponse);
+                curl_close($ch);
+
+                #var_dump($_SERVER['PHP_SELF']);
+
+                //  Phone number with prefixes and check
+                echo "<div id='inpostHeader'>
+                    <div id='inpostHeadline' class='checkoutHeadlineInpost' style='margin-left: 0px;'></div>
+                    <form id='inpostCompletePhoneNumber' action='#' method='POST'>
+                        <div class='fa fa-phone' style='float: left; margin-top: 3px; margin-left: 3px;'></div>
+                        <div id='completePhoneNumber'>Phone number <span class='red'>*</span></div>
+                        <input id='phoneCountryCode' value='$phoneCountryCode' name='inpost_countrycode' readonly />
+                        <select id='phonePrefix' name='inpost_prefix' title=''>";
+                            foreach ($prefix as $pre) {
+                                if($pre == $contactPrefix) {
+                                    echo "<option selected value='$pre'>$pre</option>";
+                                } else {
+                                    echo "<option value='$pre'>$pre</option>";
+                                }
+                            }
+                        echo "</select>";
+
+                        echo "<input id='phoneNumber' name='inpost_phoneNumber' type='tel' maxlength='6'  
+                                     placeholder='Phone Number' required value='$contactPhoneNumber' />
+                        <input id='phoneNumberOkButton' type='button' value='OK' name='inpost_submit' style='color: #373737;' />" .
+
+                        "<div id='errorMessage' hidden style='color: red'></div>
+                    </form>
+                </div>";
+
+                //  Inpost frame
+                echo "<div id='inpost-shipping-selected' hidden>" .
+                    "<div id='container-address' class='container-address' style='height: 600px; margin-bottom: 46px'>
+                        <inpost-geowidget 
+                            id='inpostLocation'
+                            onpoint='afterPointSelected' 
+                            token='$inpostKey' language='pl' 
+                            config='parcelCollect'>
+                        </inpost-geowidget>
+                    </div>";
+
+//                    Continue Button
+                    echo
+                        "<div id='inpostContinueButton'>
+                            <button id='checkSelectionButton' type='button' class='bttn-lg saveShippingButton' style='display: none'>
+                                <span id='shipping-please-wait' 
+                                      class='please-wait' 
+                                      style='display:none;float:left;
+                                             padding-left:20px;text-align:left;
+                                             background:url("; echo $this->getSkinUrl('images/opc-ajax-loader.gif'). ") left center no-repeat;'>&nbsp;
+                                </span> " .
+                                    $this->__('Continue') . "
+                            </button>
+                        </div>";
+                    echo
+                        "<div id='inpostGuestContinueButton'>
+                            <button id='guestCheckSelectionButton' type='button' class='bttn-lg inpostGuestContinueButton' style='display: none'>" .
+                                $this->__('Continue') . "
+                            </button>
+                        </div>";
+                    echo "<div class='customHeightDistance'></div>
+                </div>";
+            }
+        ?>
+    </div>
+
+</div>
+
+<script type="text/javascript">
+//<![CDATA[
+    //  Inpost evaluation
+    //  Header translation
+    let trans = Translator.translate('Choose your Inpost Station');
+    jQuery("#inpostHeadline").text(trans);
+
+    //  Inpost phone number validation
+    let inpost_phone_input = "";
+    let phoneCountryCode = <?= $phoneCountryCode ?? '+48' ?>;
+    let phoneNumberPrefix = "";
+    let phoneNumber = "";
+    let check = false;
+    let pattern = new RegExp("^[0-9]{6}$");
+    let store_id = "";
+    localStorage.inpostCheckPhoneNumber = false;
+    // check phone number
+    function checkPhoneNumber(numberPrefix, numberToCheck) {
+        check = pattern.test(numberToCheck);
+
+        if(check) {
+            localStorage.inpostCheckPhoneNumber = true;
+            jQuery("#inpost-shipping-selected").show();
+            localStorage.inpostPhoneNumber = numberPrefix + numberToCheck;
+        } else {
+            localStorage.inpostCheckPhoneNumber = false;
+            jQuery("#errorMessage").text("Please enter the right phone number.");
+            jQuery("#errorMessage").show();
+            jQuery("#errorMessage").fadeOut(5000);
+            jQuery("#inpost-shipping-selected").hide();
+        }
+    }
+
+    async function inpostData () {
+        store_id = await localStorage.newCheckoutWwsIdInpost;
+        //  Get phone number
+        jQuery("#phoneNumberOkButton").on("click", function() {
+            phoneNumberPrefix = jQuery("#phonePrefix").val();
+            phoneNumber = jQuery("#phoneNumber").val();
+            checkPhoneNumber(phoneNumberPrefix, phoneNumber);
+
+            localStorage.inpostContactPhoneInput = "+" + phoneCountryCode + phoneNumberPrefix + phoneNumber;
+            inpost_phone_input = "+" + phoneCountryCode + phoneNumberPrefix + phoneNumber;
+
+            let inpostPhoneObj = {
+                'inpost_country_code': phoneCountryCode,
+                'inpost_prefix': phoneNumberPrefix,
+                'inpost_phone': phoneNumber,
+                'inpost_store_id': store_id
+            };
+            // inpost phone number send to be
+            jQuery.ajax({
+                url: '<?php echo $this->getUrl('checkout/onepage/saveShipping'); ?>',
+                type: 'POST',
+                dataType: 'json',
+                data: inpostPhoneObj,
+                success: function(data, msg, status) {
+                    // console.log("INPOST INPUT DATA: ", data);
+                    // console.log("INPOST INPUT MSG: ", msg);
+                    // console.log("INPOST INPUT STATUS : ", status);
+                },
+                error: function(err) {
+                    console.log("INPUT ERROR: ", err)
+                }
+            });
+        });
+    }
+    inpostData();
+
+    //  Getting selected location ID from inpost
+    let showButton = "";
+    // button if guest or not
+    let guestButton = "";
+
+    //  Obtain the location ID from inpost map
+    function afterPointSelected(point) {
+        localStorage.newCheckoutWwsIdInpost = point.name;
+        let guest_inpost = localStorage.newCheckoutProcessCurrentRole;
+
+        if(guest_inpost == "prospect-user" || guest_inpost == "guest") {
+            showButton = document.getElementById("guestCheckSelectionButton");
+            guestButton = "inpostGuestContinueButton";
+        } else {
+            showButton = document.getElementById("checkSelectionButton");
+            guestButton = "inpostContinueButton";
+        }
+
+        if(localStorage.newCheckoutWwsIdInpost && localStorage.newCheckoutWwsIdInpost > '' && localStorage.inpostCheckPhoneNumber == "true") {
+            showButton.style.display = 'block';
+            document.getElementById(guestButton).scrollIntoView();
+        }
+    }
+
+    jQuery('#guestCheckSelectionButton').on('click', function() {
+
+        jQuery('#inpostHeader, #inpost-shipping-selected').hide();
+        jQuery('#opc-billing').show();
+    });
+
+    <?php if ( Mage::helper('geoip')->mayPerformCheckout() ):?>
+        var shipping = new Shipping('co-shipping-form', '<?php echo $this->getUrl('checkout/onepage/getAddress') ?>address/', '<?php echo $this->getUrl('checkout/onepage/saveShipping') ?>',
+        '<?php echo $this->getUrl('checkout/onepage/shippingMethod') ?>');
+    <?php else:?>
+        var shipping = new Shipping('co-shipping-form', '<?php echo $this->getUrl('checkout/onepage/getAddress') ?>address/', '<?php echo $this->getUrl('checkout/onepage/saveShipping') ?>',
+        '<?php echo $this->getUrl('checkout/onepage/review') ?>');
+    <?php endif;?>
+        var shippingForm = new VarienForm('co-shipping-form');
+
+    if ( typeof(jQuery('#shipping-address-select')) !== 'undefined' ) {
+        jQuery('#shipping-address-select').change(function() {
+            shipping.newAddress(!jQuery('#shipping-address-select').val());
+            if (!jQuery('#shipping-address-select').val()) {
+                jQuery('#new_address_button').hide();
+                jQuery('#or_label').hide();
+            } else {
+                jQuery('#new_address_button').show();
+                jQuery('#or_label').show();
+            }
+
+            jQuery('#shipping\\:city').val('');
+            jQuery('#shipping\\:street1').val('');
+            jQuery('#shipping\\:postcode').val('');
+        });
+    }
+
+jQuery(document).ready(function() {
+        console.log('checkout.onpage.shipping.phtml SUCCESFULLY LOADED');
+
+        jQuery('#step_one_progress_circle').html('&#10112;');
+        jQuery('#step_one_progress_circle').addClass('checkout_progress_link');
+        jQuery('#step_one_two_progress_circle_line').addClass('checkout_progress_hr_line_active');
+        jQuery('#step_two_progress_circle').addClass('checkout_progress_color_active');
+
+        jQuery('#shipping\\:country_id').css('height', '30px');
+        jQuery('#shipping\\:schrack_address_type').css('height', '30px');
+        jQuery('#shipping\\:schrack_address_type').css('border-color', 'rgb(169, 169, 169)');
+        jQuery('#shipping\\:schrack_address_type').css('color', '#000)');
+
+    if (jQuery('#hidden_default_shipping_id').val() != '') {
+        var defaultShippingId = jQuery('#hidden_default_shipping_id').val();
+        jQuery('#shipping-address-select option[value=' + defaultShippingId + ']').attr('selected','selected');
+    }
+
+    var localeCode = '<?php echo $localeCode; ?>';
+
+    // Prevent enter illegal character(s) by CHANGE or PASTE :
+    jQuery('#shipping\\:telephone').bind('keydown change paste',function(e) {
+        setTimeout(function(){
+                jQuery('#shipping\\:telephone').val(jQuery('#shipping\\:telephone').val().replace(/["';\[\]<>\x00-\x09\x0B\x0C\x0E-\x1F\xE2\x7F\n\r]/g, ""));
+            }, 50
+        );
+    });
+
+    // Prevent enter illegal character(s) by CHANGE or PASTE :
+    jQuery('#shipping\\:fax').bind('keydown change paste',function(e) {
+        setTimeout(function(){
+                jQuery('#shipping\\:fax').val(jQuery('#shipping\\:fax').val().replace(/["';\[\]<>\x00-\x09\x0B\x0C\x0E-\x1F\xE2\x7F\n\r]/g, ""));
+            }, 50
+        );
+    });
+
+    // Prevent enter illegal character(s) by CHANGE or PASTE :
+    jQuery('#shipping\\:telephone_company').bind('keydown change paste',function(e) {
+        setTimeout(function(){
+                jQuery('#shipping\\:telephone_company').val(jQuery('#shipping\\:telephone_company').val().replace(/["';\[\]<>\x00-\x09\x0B\x0C\x0E-\x1F\xE2\x7F\n\r]/g, ""));
+            }, 50
+        );
+
+    });
+
+    // Prevent enter illegal character(s) by CHANGE or PASTE :
+    jQuery('#shipping\\:lastname').bind('keydown change paste',function(e) {
+        setTimeout(function(){
+                jQuery('#shipping\\:lastname').val(jQuery('#shipping\\:lastname').val().replace(/["';\[\]<>\x00-\x09\x0B\x0C\x0E-\x1F\xE2\x7F\n\r]/g, ""));
+            }, 50
+        );
+    });
+
+    // Prevent enter illegal character(s) by CHANGE or PASTE :
+    jQuery('#shipping\\:company').bind('keydown change paste',function(e) {
+        setTimeout(function(){
+                jQuery('#shipping\\:company').val(jQuery('#shipping\\:company').val().replace(/["';\[\]<>\x00-\x09\x0B\x0C\x0E-\x1F\xE2\x7F\n\r]/g, ""));
+            }, 50
+        );
+    });
+
+    // Prevent enter illegal character(s) by CHANGE or PASTE :
+    jQuery('#shipping\\:firstname').bind('keydown change paste',function(e) {
+        setTimeout(function(){
+                jQuery('#shipping\\:firstname').val(jQuery('#shipping\\:firstname').val().replace(/["';\[\]<>\x00-\x09\x0B\x0C\x0E-\x1F\xE2\x7F\n\r]/g, ""));
+            }, 50
+        );
+    });
+
+    // Prevent enter illegal character(s) by CHANGE or PASTE :
+    jQuery('#shipping\\:email').bind('keydown change paste',function(e) {
+        setTimeout(function(){
+                jQuery('#shipping\\:email').val(jQuery('#shipping\\:email').val().replace(/["';\[\]<>\x00-\x09\x0B\x0C\x0E-\x1F\xE2\x7F\n\r]/g, ""));
+            }, 50
+        );
+    });
+
+    // Prevent enter illegal character(s) by CHANGE or PASTE :
+    jQuery('#shipping\\:street1').bind('keydown change paste',function(e) {
+        setTimeout(function(){
+                jQuery('#shipping\\:street1').val(jQuery('#shipping\\:street1').val().replace(/["';\[\]<>\x00-\x09\x0B\x0C\x0E-\x1F\xE2\x7F\n\r]/g, ""));
+            }, 50
+        );
+    });
+
+    // Prevent enter illegal character(s) by CHANGE or PASTE :
+    jQuery('#shipping\\:postcode').bind('keydown change paste',function(e) {
+        setTimeout(function(){
+                jQuery('#shipping\\:postcode').val(jQuery('#shipping\\:postcode').val().replace(/["';\[\]<>\x00-\x09\x0B\x0C\x0E-\x1F\xE2\x7F\n\r]/g, ""));
+            }, 50
+        );
+    });
+
+    // Prevent enter illegal character(s) by CHANGE or PASTE :
+    jQuery('#shipping\\:city').bind('keydown change paste',function(e) {
+        setTimeout(function(){
+                jQuery('#shipping\\:city').val(jQuery('#shipping\\:city').val().replace(/["';\[\]<>\x00-\x09\x0B\x0C\x0E-\x1F\xE2\x7F\n\r]/g, ""));
+            }, 50
+        );
+    });
+
+    // Prevent enter illegal character(s) by CHANGE or PASTE :
+    jQuery('#vat_identification_number').bind('keydown change paste',function(e) {
+        setTimeout(function(){
+                jQuery('#vat_identification_number').val(jQuery('#vat_identification_number').val().replace(/["';\[\]<>\x00-\x09\x0B\x0C\x0E-\x1F\xE2\x7F\n\r]/g, ""));
+            }, 50
+        );
+    });
+
+    // Prevent enter illegal character(s) by CHANGE or PASTE :
+    jQuery('#company_registration_number').bind('keydown change paste',function(e) {
+        setTimeout(function(){
+                jQuery('#company_registration_number').val(jQuery('#company_registration_number').val().replace(/["';\[\]<>\x00-\x09\x0B\x0C\x0E-\x1F\xE2\x7F\n\r]/g, ""));
+            }, 50
+        );
+    });
+
+    // Prevent enter illegal character(s) by CHANGE or PASTE :
+    jQuery('#homepage').bind('keydown change paste',function(e) {
+        setTimeout(function(){
+                jQuery('#homepage').val(jQuery('#homepage').val().replace(/["';\[\]<>\x00-\x09\x0B\x0C\x0E-\x1F\xE2\x7F\n\r]/g, ""));
+            }, 50
+        );
+    });
+
+    function ignoreInvalidPhoneCharacters (elementId) {
+        console.log('catched');
+        var telCoValue = jQuery('#' + elementId).val();
+        var telCoValueLength = telCoValue.length;
+        var checkedValue = '';
+        var allowedCharacters = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', ' ', '+', '-'];
+        for (var i = 0; i < telCoValueLength; i++) {
+            if (jQuery.inArray(telCoValue[i], allowedCharacters) != -1) {
+                checkedValue = checkedValue + telCoValue[i];
+            }
+        }
+        jQuery('#' + elementId).val(checkedValue);
+
+        telCoValue = checkedValue;
+        telCoValue = telCoValue.replace(/ /g,'');
+        telCoValue = telCoValue.replace(/\+0000/, '+');
+        telCoValue = telCoValue.replace(/\+000/, '+');
+        telCoValue = telCoValue.replace(/\+00/, '+');
+        telCoValue = telCoValue.replace(/\+0/, '+');
+        telCoValue = telCoValue.replace(/\+/g, '');
+        telCoValueLength = telCoValue.length;
+
+        if (telCoValueLength >= 0 && telCoValueLength <= 3) {
+            telCoValue = '+' + telCoValue;
+        } else if (telCoValueLength > 3 && telCoValueLength <= 6) {
+            telCoValue = '+' + telCoValue.substring(0, 2) + ' ' + telCoValue.substring(2, telCoValueLength);
+        } else if (telCoValueLength > 6 && telCoValueLength <= 10) {
+            telCoValue = '+' + telCoValue.substring(0, 2) + ' ' + telCoValue.substring(2, 6) + ' ' + telCoValue.substring(6, telCoValueLength) ;
+        } else if (telCoValueLength > 10 && telCoValueLength <= 14) {
+            telCoValue = '+' + telCoValue.substring(0, 2) + ' ' + telCoValue.substring(2, 6) + ' ' + telCoValue.substring(6, 10) + ' ' + telCoValue.substring(10, telCoValueLength) ;
+        } else if (telCoValueLength > 14 && telCoValueLength <= 18) {
+            telCoValue = '+' + telCoValue.substring(0, 2) + ' ' + telCoValue.substring(2, 6) + ' ' + telCoValue.substring(6, 10) + ' ' + telCoValue.substring(10, 14) + ' ' + telCoValue.substring(14, telCoValueLength) ;
+        } else if (telCoValueLength > 18) {
+            telCoValue = '+' + telCoValue.substring(0, 2) + ' ' + telCoValue.substring(2, 6) + ' ' + telCoValue.substring(6, 10) + ' ' + telCoValue.substring(10, 14) + ' ' + telCoValue.substring(14, 18) + ' ' + telCoValue.substring(18, telCoValueLength) ;
+        }
+
+        jQuery('#' + elementId).val(telCoValue);
+
+    }
+
+    jQuery('#shipping\\:telephone').on('keyup', function() {
+        //ignoreInvalidPhoneCharacters('shipping\\:telephone');
+    });
+
+    jQuery('#shipping\\:fax').on('keyup', function() {
+        //ignoreInvalidPhoneCharacters('shipping\\:fax');
+    });
+
+    jQuery('#shipping\\:telephone_company').on('keyup', function() {
+        //ignoreInvalidPhoneCharacters('shipping\\:telephone_company');
+    });
+
+    var setOverlayLoaderShipping = function() {
+        // Set overlay for
+        jQuery('#fieldAreaShipping').css({  "position": "absolute",
+            "height": "100%",
+            "width": "100%",
+            "background": "url(<?php echo $this->getSkinUrl('schrackdesign/Public/Images/download_ajax_loader.gif'); ?>) no-repeat center center",
+            "top": "-15px",
+            "left": "0",
+            "opacity": "0.4",
+            "z-index": "99"});
+        }
+
+    var checkUIDShipping = function () {
+        var checkData = {
+            'vat_identification_number' : jQuery('#vat_identification_number').val(),
+            'email' : jQuery('#hidden_email').val(),
+            'name1' : jQuery('#billing\\:lastname').val(),
+            'name2' : jQuery('#billing\\:company').val(),
+            'name3' : jQuery('#billing\\:firstname').val(),
+            'schrack_telephone' : jQuery('#hidden_telephone').val(),
+        }
+        var ad_street   = jQuery('#shipping\\:street1').val();
+        var ad_postcode = jQuery('#shipping\\:postcode').val();
+        var ad_city     = jQuery('#shipping\\:city').val();
+        var ad_country  = jQuery('#shipping\\:country_id').val();
+        var needsValidation = true;
+        if (ad_street == "" && ad_postcode == "" && ad_city == "") {
+            needsValidation = false;
+        }
+        if (jQuery('input[name="vat_special_shipping"]') && jQuery('input[name="vat_special_shipping"]:checked').val() == 'vat_local') {
+            // Don't check VAT intensively (just execute normal success actions)!
+            jQuery('#fieldAreaShipping').removeAttr('style');
+            jQuery('#vat_identification_number').removeClass('validation-failed');
+            if (needsValidation == true) {
+                deferredAddressValidation('shipping',
+                    ad_street,
+                    ad_postcode,
+                    ad_city,
+                    ad_country,
+                    'shipping_1'
+                );
+            } else {
+                shipping.save();
+            }
+        } else {
+            jQuery.ajax({
+                url: '<?php echo Mage::getUrl('customer/account/checkUid'); ?>',
+                type: 'post',
+                dataType: 'json',
+                data: checkData,
+                success: function(data) {
+                    if (data.errormsg) {
+                        jQuery('#resultingErrorMessageVATShipping').text(data.errormsg);
+                        jQuery('#resultingErrorMessageVATShipping').show();
+                        jQuery('#vat_identification_number').addClass('validation-failed');
+                    } else {
+                        jQuery('#vat_identification_number').removeClass('validation-failed');
+                        if (needsValidation == true) {
+                            deferredAddressValidation('shipping',
+                                ad_street,
+                                ad_postcode,
+                                ad_city,
+                                ad_country,
+                                'shipping_2'
+                            );
+                        } else {
+                            shipping.save();
+                        }
+                    }
+                },
+                error: function (data) {
+                    // console.log('error');
+                },
+                complete: function () {
+                    jQuery('#fieldAreaShipping').removeAttr('style');
+                    //console.log('complete');
+                }
+            });
+        }
+    }
+
+    var checkLocalVATShipping = function () {
+        // Special route for option of local VAT:
+        // Check, if partial HTML-Snippet with radio-buttons existing:
+        if (jQuery('input[name="vat_special_shipping"]')) {
+            if (jQuery('input[name="vat_special_shipping"]:checked').val() == 'vat_local') {
+                // Only check number of characters (= 8) and type of chars (must be integer):
+                if (localeCode == 'sk') {
+                    var reg = new RegExp('^[0-9]{10}$');
+                    var errorMessage = '<?php echo $this->__('Please Enter 10 Numbers'); ?>';
+                } else {
+                    var reg = new RegExp('^[0-9]{8}$');
+                    var errorMessage = '<?php echo $this->__('Please Enter 8 Numbers'); ?>';
+                }
+                if (!reg.test(jQuery('#vat_identification_number').val())) {
+                    if (jQuery('#vat_identification_number').val() != '') {
+                        // Show error and do nothing
+                        jQuery('#resultingErrorMessageVATShipping').text('');
+                        jQuery('#resultingErrorMessageVATShipping').text(errorMessage);
+                        jQuery('#resultingErrorMessageVATShipping').show();
+                        jQuery('#vat_identification_number').addClass('validation-failed');
+                        return false;
+                    }
+                } else {
+                    // Now check form for other issues:
+                    jQuery('#vat_identification_number').removeClass('validation-failed');
+                    jQuery('#resultingErrorMessageVATShipping').text('');
+                    jQuery('#resultingErrorMessageVATShipping').hide();
+                    localStorage.newCheckoutLocalVAT = 1;
+                    return true;
+                }
+            } else {
+                localStorage.newCheckoutLocalVAT = 0;
+                return true;
+            }
+        } else {
+            localStorage.newCheckoutLocalVAT = 0;
+            return true;
+        }
+    }
+
+    jQuery('#new_address_button').click(function() {
+        shipping.newAddress(1);
+        jQuery('#new_address_button').hide();
+        jQuery('#or_label').hide();
+    });
+
+    //localStorage.newCheckoutProcessCurrentStep = 'processCheckoutShipping';
+    if (jQuery('#postcodeLegendShipping').text().indexOf('* *') ) {
+        console.log('#postcodeLegendShipping = ' + jQuery('#postcodeLegendShipping').text());
+    }
+    jQuery('#postcodeLegendShipping').text(jQuery('#postcodeLegendShipping').text().replace('* *','* '));
+
+    if (localStorage.customerNotLoggedIn == "1") {
+        jQuery('#new_address_button').hide();
+        jQuery('#or_label').hide();
+    }
+
+    localStorage.newCheckoutProspectRole = 'none';
+
+<?php if ($customerIsLoggedIn) : ?>
+    localStorage.newCheckoutProcessCurrentRole = 'login-user';
+    localStorage.newCheckoutRunningProcess     = 'processCheckoutAsLoggedInUser';
+    localStorage.customerNotLoggedIn = "0";
+    <?php if ($prospectLight || $prospectFull) : ?>
+        localStorage.newCheckoutProcessCurrentRole = 'prospect-user';
+    <?php else : ?>
+        jQuery('#fieldsetVATIdentificationNumberLegendShipping').css({'display' : 'none'});
+    <?php endif; ?>
+    <?php if ($prospectLight) : ?>
+        localStorage.newCheckoutProspectRole = 'prospect-light';
+    <?php endif; ?>
+    <?php if ($prospectFull) : ?>
+        localStorage.newCheckoutProspectRole = 'prospect-full';
+        jQuery('#new_address_button').hide();
+        jQuery('#or_label').hide();
+    <?php endif; ?>
+<?php else : ?>
+    localStorage.newCheckoutRunningProcess = 'processCheckoutAsNonLoggedInUser';
+    jQuery('#fieldsetVATIdentificationNumberLegendShipping').css({'display' : 'none'});
+    // guest = non-registering-user
+    //localStorage.newCheckoutProcessCurrentRole = 'guest';
+    localStorage.customerNotLoggedIn = "1";
+<?php endif; ?>
+
+    jQuery('.saveShippingButton').on('click', function() {
+        // ----------------- container don't need address validation
+        let shippingMethodCheck = localStorage.shippingMethodCheck;
+
+        if(shippingMethodCheck == "container") {
+            localStorage.newCheckoutWwsIdContainer = jQuery('#container-address-select').val();
+
+            console.log('container address chosen');
+            localStorage.newCheckoutProcessCurrentStep = 'opc-payment';
+            console.log('You are here! - Container');
+            shipping.save();
+            return ;
+        // ----------------- inpost don't need address validation
+        } else if(shippingMethodCheck == "inpost") {
+            if(localStorage.newCheckoutProcessCurrentRole == 'prospect-user') {
+                jQuery('#checkSelectionButton').hide();
+                console.log('inpost location chosen');
+
+                console.log(localStorage.newCheckoutWwsIdInpost);
+                localStorage.newCheckoutProcessCurrentStep = 'opc-payment';
+                console.log('You are here - Inpost!');
+                shipping.save();
+                return ;
+            }
+            jQuery('#checkSelectionButton').hide();
+            console.log('inpost location chosen');
+
+            console.log(localStorage.newCheckoutWwsIdInpost);
+            localStorage.newCheckoutProcessCurrentStep = 'opc-payment';
+            console.log('You are here - Inpost!');
+            shipping.save();
+            return ;
+        }
+
+        // -------------------- address validation for pickup/delivery
+        if (jQuery('#shipping\\:postcode').val() != '') {
+            jQuery('#shipping\\:postcode').removeClass('required-entry');
+            jQuery('#advice-required-entry-shipping\\:postcode').hide();
+
+            var validateShippingPostcode     = jQuery('#shipping\\:postcode').val();
+            var selectedPostcodeCountry      = jQuery('#shipping\\:country_id').val();
+            var selectedPostcodeCountryLower = '';
+            var postcodeRegexes              = <?php echo Mage::helper('geoip')->getZipCodeRegexes()?>;
+            var postcodeRegexesSelection     = '';
+            var regexPostcode                = '';
+
+            if (typeof selectedPostcodeCountry !== 'undefined' && selectedPostcodeCountry != '') {
+                selectedPostcodeCountryLower = selectedPostcodeCountry.toLowerCase();
+            }
+
+            if (selectedPostcodeCountryLower != '') {
+                if (typeof postcodeRegexes[selectedPostcodeCountryLower] !== 'undefined') {
+                    postcodeRegexesSelection = postcodeRegexes[selectedPostcodeCountryLower]
+                }
+            }
+
+            if (postcodeRegexesSelection != '') {
+console.log('Regex-Definition found for selected Country (' + selectedPostcodeCountryLower + '): ' + postcodeRegexesSelection);
+                regexPostcode = new RegExp(postcodeRegexesSelection);
+            } else {
+console.log('NO Regex-Definition found for selected Country (' + selectedPostcodeCountryLower + ')!');
+                regexPostcode = /\w+/;
+            }
+
+            if (regexPostcode.match(validateShippingPostcode) == false) {
+               jQuery('#validate-must-be-zip-shipping\\:postcode').hide();
+               jQuery('#shipping\\:postcode').addClass('validation-failed');
+               jQuery( '<div class="validation-advice" id="validate-must-be-zip-shipping:postcode" ><?php echo $this->__('Please enter a valid zip code.')?></div>' ).insertAfter( "#shipping\\:postcode" );
+               jQuery('#shipping\\:street1').removeClass('validation-failed');
+               jQuery('#advice-required-entry-shipping\\:street1').hide();
+               jQuery('#shipping\\:city').removeClass('validation-failed');
+               jQuery('#advice-required-entry-shipping\\:city').hide();
+               jQuery('#shipping\\:lastname').removeClass('validation-failed');
+               jQuery('#advice-required-entry-shipping\\:lastname').hide();
+               return;
+           } else {
+               jQuery('#validate-must-be-zip-shipping\\:postcode').hide();
+           }
+        } else{
+            jQuery('#validate-must-be-zip-shipping\\:postcode').hide();
+            jQuery('#shipping\\:postcode').addClass('required-entry');
+            jQuery('#advice-required-entry-shipping\\:postcode').show();
+        }
+
+        localStorage.newCheckoutProcessLastUpdateTime = Math.floor(Date.now() / 1000);
+
+        localStorage.newCheckoutProcessVATIdentificationNumber   = jQuery('#vat_identification_number').val();
+        localStorage.newCheckoutProcessCompanyRegistrationNumber = jQuery('#company_registration_number').val();
+        localStorage.newCheckoutProcessName1                     = jQuery('#shipping\\:lastname').val();
+        localStorage.newCheckoutProcessName2                     = jQuery('#shipping\\:company').val();
+        localStorage.newCheckoutProcessName3                     = jQuery('#shipping\\:firstname').val();
+        localStorage.newCheckoutProcessStreet1                   = jQuery('#shipping\\:street1').val();
+        localStorage.newCheckoutProcessPostcode                  = jQuery('#shipping\\:postcode').val();
+        localStorage.newCheckoutProcessCity                      = jQuery('#shipping\\:city').val();
+        localStorage.newCheckoutProcessCountryId                 = jQuery('#shipping\\:country_id').val();
+        localStorage.newCheckoutProcessTelephoneCompany          = jQuery('#shipping\\:telephone_company').val();
+        localStorage.newCheckoutHomepage                         = jQuery('#homepage').val();
+        if (!localStorage.newCheckoutProcessEmail || localStorage.newCheckoutProcessEmail == '') {
+            localStorage.newCheckoutProcessEmail = jQuery('#hidden_email').val();
+        }
+        if (!localStorage.newCheckoutProcessTelephone || localStorage.newCheckoutProcessTelephone == '') {
+            localStorage.newCheckoutProcessTelephone = jQuery('#hidden_telephone').val();
+        }
+        if (!localStorage.newCheckoutProcessPersonLastname || localStorage.newCheckoutProcessPersonLastname == '') {
+            localStorage.newCheckoutProcessPersonLastname = jQuery('#hidden_lastname').val();
+        }
+
+        if (localStorage.newCheckoutProcessCurrentRole == 'guest' || localStorage.newCheckoutProcessSpecialAction == 'full-register-prospect-application') {
+            function checkPhonenumberMinCountryData(elementId, required) {
+                var pattRegexCountry = /^\+{0,1}([1-9]\d*)[0-9]{4,17}(-\d+)?$/;
+                var result           = false;
+                var htmlElementValue = jQuery('#' + elementId).val();
+                htmlElementValue     = htmlElementValue.replace(/\s/g,''); // Remove all whitespaces
+
+                if (htmlElementValue) {
+                    if(htmlElementValue.match(pattRegexCountry)) {
+                        result = true;
+                    }
+                }
+
+                if (result == false) {
+                    jQuery('#' + elementId).removeClass();
+                    jQuery('#' + elementId).val('');
+                    if (required == true) {
+                        jQuery('#' + elementId).addClass('input-text required required-entry validation-failed');
+                    } else {
+                        jQuery('#' + elementId).addClass('input-text validation-failed');
+                    }
+
+                } else {
+                    jQuery('#' + elementId).removeClass();
+                    if (required == true) {
+                        jQuery('#' + elementId).addClass('input-text required required-entry validation-passed');
+                    } else {
+                        jQuery('#' + elementId).addClass('input-text validation-passed');
+                    }
+                }
+
+                jQuery('#' + elementId).css({'color' : 'black'});
+
+                return result;
+            }
+
+            if (jQuery('#billing\\:telephone').length) {
+                checkPhonenumberMinCountryData('billing\\:telephone', true);
+            }
+            if (jQuery('#billing\\:fax').length) {
+                checkPhonenumberMinCountryData('billing\\:fax', false);
+            }
+            if (jQuery('#billing\\:telephone_company').length) {
+                checkPhonenumberMinCountryData('billing\\:telephone_company', false);
+            }
+        }
+
+        var ad_street   = jQuery('#shipping\\:street1').val();
+        var ad_postcode = jQuery('#shipping\\:postcode').val();
+        var ad_city     = jQuery('#shipping\\:city').val();
+        var ad_country  = jQuery('#shipping\\:country_id').val();
+
+        var needsValidation = true;
+        if (ad_street == "" && ad_postcode == "" && ad_city == "") {
+            needsValidation = false;
+        }
+
+        <?php if (Mage::getStoreConfig('schrack/vatcheck/enabled') && $prospectLight == true): ?>
+        if (localStorage.newCheckoutProspectRole == 'prospect-light') {
+            jQuery('#resultingErrorMessageVATShipping').text('');
+            if (jQuery('#vat_identification_number').val() != '') {
+                jQuery('#vat_identification_number').removeClass('validation-failed');
+                jQuery('#advice-required-entry-vat_identification_number').remove();
+                if (jQuery('#shipping\\:lastname').val() != '') {
+                    jQuery('#shipping\\:lastname').removeClass('validation-failed');
+                    jQuery('#advice-required-entry-shipping\\:lastname').remove();
+                }
+                if (jQuery('#shipping\\:street1').val() != '') {
+                    jQuery('#shipping\\:street1').removeClass('validation-failed');
+                    jQuery('#advice-required-entry-shipping\\:street1').remove();
+                }
+                if (jQuery('#shipping\\:postcode').val() != '') {
+                    jQuery('#shipping\\:postcode').removeClass('validation-failed');
+                    jQuery('#advice-required-entry-shipping\\:postcode').remove();
+                }
+                if (jQuery('#shipping\\:city').val() != '') {
+                    jQuery('#shipping\\:city').removeClass('validation-failed');
+                    jQuery('#advice-required-entry-shipping\\:city').remove();
+                }
+
+                if (checkLocalVATShipping()) {
+                    setOverlayLoaderShipping();
+                    checkUIDShipping();
+                }
+            } else {
+                console.log('Succesfully saved Shipping #1');
+
+                if (localStorage.newCheckoutProspectRole == 'prospect-light') {
+                    //localStorage.newCheckoutProcessCurrentStep = 'opc-shipping_method';
+                    // Maybe here must be set some new condition ???? : --> Guck dir den Fall (Redmine) von Kathi nochmal an
+                    localStorage.newCheckoutProcessCurrentStep = 'opc-payment';
+                } else {
+                    localStorage.newCheckoutProcessCurrentStep = 'opc-payment';
+                }
+                if (needsValidation == true) {
+                    deferredAddressValidation('shipping',
+                        ad_street,
+                        ad_postcode,
+                        ad_city,
+                        ad_country,
+                        'shipping_3'
+                    );
+                } else {
+                    shipping.save();
+                }
+            }
+        } else {
+            console.log('Succesfully saved Shipping #2');
+            localStorage.newCheckoutProcessCurrentStep = 'opc-payment';
+            if (needsValidation == true) {
+                deferredAddressValidation('shipping',
+                    ad_street,
+                    ad_postcode,
+                    ad_city,
+                    ad_country,
+                    'shipping_4'
+                );
+            } else {
+                shipping.save();
+            }
+        }
+        <?php else: ?>
+            console.log('Succesfully saved Shipping #3');
+            localStorage.newCheckoutProcessCurrentStep = 'opc-payment';
+            if (needsValidation == true) {
+                deferredAddressValidation('shipping',
+                    ad_street,
+                    ad_postcode,
+                    ad_city,
+                    ad_country,
+                    'shipping_5'
+                );
+            } else {
+                shipping.save();
+            }
+        <?php endif; ?>
+    });
+
+     if (localStorage.newCheckoutProspectRole == 'prospect-light') {
+        jQuery('#fieldsetStreet').css({'margin-top' : '14px'});
+     }
+
+    jQuery('#phone_address_contact').on('keyup paste', function() {
+        removeForbiddenPhoneFieldCharacters('phone_address_contact');
+    });
+
+    jQuery('#shipping\\:telephone_company').on('keyup paste', function() {
+        removeForbiddenPhoneFieldCharacters('shipping\\:telephone_company');
+    });
+
+    <?php if ($deliveryAddressData) : ?>
+        setTimeout(function() {
+        <?php if (isset($deliveryAddressData['company_name'])) : ?>
+            jQuery('#shipping\\:lastname').val('<?php echo $deliveryAddressData['company_name']; ?>');
+        <?php endif; ?>
+        <?php if (isset($deliveryAddressData['company_name2'])) : ?>
+            jQuery('#shipping\\:company').val('<?php echo $deliveryAddressData['company_name2']; ?>');
+        <?php endif; ?>
+        <?php if (isset($deliveryAddressData['contact_person'])) : ?>
+            jQuery('#shipping\\:firstname').val('<?php echo $deliveryAddressData['contact_person']; ?>');
+        <?php endif; ?>
+        <?php if (isset($deliveryAddressData['contact_phone'])) : ?>
+            jQuery('#phone_address_contact').val('<?php echo $deliveryAddressData['contact_phone']; ?>');
+        <?php endif; ?>
+        <?php if (isset($deliveryAddressData['street'])) : ?>
+            jQuery('#shipping\\:street1').val('<?php echo $deliveryAddressData['street']; ?>');
+        <?php endif; ?>
+        <?php if (isset($deliveryAddressData['postcode'])) : ?>
+            jQuery('#shipping\\:postcode').val('<?php echo $deliveryAddressData['postcode']; ?>');
+        <?php endif; ?>
+        <?php if (isset($deliveryAddressData['city'])) : ?>
+            jQuery('#shipping\\:city').val('<?php echo $deliveryAddressData['city']; ?>');
+        <?php endif; ?>
+        jQuery('#shipping\\:country_id')
+            .val('<?php echo strtoupper(Mage::getStoreConfig('schrack/general/country')); ?>')
+            .change();
+        }, 1000);
+        setTimeout(function() {
+            jQuery('#new_address_button').click();
+        }, 1000);
+    <?php endif; ?>
+
+});
+
+//]]>
+</script>
+<!-- app/design/frontend/schrack/schrackresponsive/template/checkout/onepage/shipping.phtml (end) -->

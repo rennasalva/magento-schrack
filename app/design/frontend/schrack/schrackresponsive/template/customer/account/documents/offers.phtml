@@ -1,0 +1,115 @@
+<!-- app/design/frontend/schrack/schrackresponsive/template/customer/account/documents/offers.phtml (start) -->
+<?php
+$_sessionParams = Mage::getSingleton('customer/session')->getData('documentParams');
+$promotionBookHelper = Mage::helper('schrackcustomer/promotionbook');
+$promotionBookStuff = $promotionBookHelper->getPromotionbookLinksAndImages();
+?>
+
+<style>
+    #textsearch {
+        font-size: 16px !important;
+    }
+    #listingSearchIcon {
+        background: #00589d !important;
+        color: #fff !important;
+    }
+
+    @media (min-width: 1px) and (max-width: 992px) {
+        .my_account_offers_content_wrapper {
+            margin-right: 16px !important;
+        }
+    }
+
+    @media (max-width: 767px) and (min-width: 300px) {
+        .deshboadSliderCont .bx-viewport li img {
+            height: 100%;
+            margin-top: 4px;
+        }
+    }
+</style>
+
+<div id="my_account_offers_wrapper" class="my_account_offers_content_wrapper">
+    <h1><?php echo $this->__('My Offers') ?></h1>
+    <!-- BOC Promotion Banner  -->
+    <?php if (count($promotionBookStuff) > 0) : ?>
+        <section class="slider hide-for-print">
+            <div id="kab_slider" class="deshboadSliderCont">
+                <ul class="deshboardSlider">
+                    <?php foreach ($promotionBookStuff as $promotionBookPdfAndImage) : ?>
+                        <li>
+                            <a target="_blank" href="<?php echo $promotionBookPdfAndImage['pdf_link']; ?>">
+                                <img border="0" src="<?php echo $promotionBookPdfAndImage['image_link']; ?>">
+                            </a>
+                        </li>
+                    <?php endforeach; ?>
+                </ul>
+            </div>
+        </section>
+    <?php endif; ?>
+    <!-- EOC Promotion Banner  -->
+    <div class="row info-box three-d marginT15">
+        <div class="col-xs-12 posRel">
+            <div class="row fulltext-search">
+                <div class="col-xs-12 columns">
+                    <div class="row hide-for-print">
+                        <div class="col-xs-8 col-sm-10 col-md-10">
+                            <div class="input-group serchIcon">
+                                <?php
+                                $_textDefault = $this->__('Order/Offer Data, Names, Addresses, Article IDs');
+                                $_text = Mage::helper('schrackcore/array')->arrayDefault($_sessionParams, 'text', $_textDefault);
+                                ?>
+                                <input id="textsearch" class="form-control borderR0" type="text" name="text" data-func="offersAction" placeholder="<?php echo $this->__('search in offers'); ?>" tabindex="1" >
+                                <span class="input-group-addon" id="listingSearchIcon" tabindex="2"><span class="glyphicon glyphicon-search"></span></span> </div>
+                        </div>
+                            <div class="col-xs-4 col-sm-2 col-md-2 marginB10">
+                             <a href="javascript:void(0)" class="btn pull-right btn-default filter-btn marginT0" id="filterMenu"><?php echo $this->__('Filter') ?> <span class="filter-btn-icon"></span></a>
+                            <div id="dashFilterContainer" class="dropdown-menu filterPopup" tabindex="-5">
+                                <?php echo $this->getChildHtml('documents_filter') ?>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <?php echo $this->getChildHtml('documents_results') ?>
+    <div id="ordernowpopup" class="product-warning" title="<?php echo $this->__('Accept offer'); /* ### */ ?>"></div>
+</div>
+
+
+<script type="text/javascript">//<![CDATA[
+
+    jQuery(document).ready(function () {
+        localStorage.mediaDownloadSourceDetail = "My Account Offers";
+
+        if (jQuery(window).width() < 993) {
+            jQuery('#breadcrumb_block').removeClass('breadcrumb_custom');
+            jQuery('#breadcrumb_block').addClass('breadcrumb_my_account');
+        }
+    });
+
+    jQuery(function () {
+<?php $_locale = explode('_', Mage::app()->getLocale()->getLocaleCode()); ?>
+        jQuery(".date-picker").datepicker(jQuery.datepicker.regional['<?php echo $_locale[0]; ?>']);
+    });
+
+    var orderNow = function (orderNumber) {
+        jQuery.ajax("<?php echo Mage::helper('schrackcore/url')->getUrlWithCurrentProtocol('customer/account/orderNow'); ?>", {
+            'success': function (data) {
+                var datax = JSON.parse(data);
+                if (datax.html) {
+                    jQuery('#ordernowpopup').html(datax.html);
+                    jQuery('#ordernowpopup').dialog({
+                        'modal': true,
+                        'width': '450px'
+                    });
+                }
+            },
+            'type': 'POST',
+            'data': {'orderNo': orderNumber}
+        });
+        return false;
+    };
+
+//]]></script>
+<!-- app/design/frontend/schrack/schrackresponsive/template/customer/account/documents/offers.phtml (end) -->

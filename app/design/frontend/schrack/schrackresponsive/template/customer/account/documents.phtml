@@ -1,0 +1,21 @@
+<?php
+$_imgCartUrl = $this->getSkinUrl('images/cart_raute1.png');
+$_imgPdfUrl = $this->getSkinUrl('images/application_pdf.png');
+?>
+
+<div id="reset-container">    
+    <div class="sizing-vertical-larger">
+        <div class="page-title align-left">
+            <h1><span><?php echo $this->__('My Account Overview') ?></span></h1>
+        </div>
+        <div class="linear-box sizing-vertical-larger align-left">
+            <h2><span><?php echo $this->__('Welcome, %s.', $this->htmlEscape($this->getCustomerFullName())) ?></span></h2>	
+            <p>
+                <?php echo $this->__('Über Ihre persönliche Kontoverwaltung können Sie Ihre persönlichen Daten verwalten und ändern, und haben jederzeit Einsicht in Ihre Bestellungen und Belege.') ?>
+            </p>
+        </div>
+    </div>
+
+    <?php echo $this->getChildHtml('documents_results') ?>
+
+</div>

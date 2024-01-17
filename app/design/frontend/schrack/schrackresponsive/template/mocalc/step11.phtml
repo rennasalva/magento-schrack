@@ -1,0 +1,43 @@
+<!-- app/design/frontend/schrack/schrackresponsive/template/mocalc/step11.phtml (start) -->
+<?php
+    $data = $this->getMoData();
+    $step = Mage::registry(Schracklive_MoCalc_Helper_Data::REGISTRY_STEP_KEY);
+
+    $accs = $this->getPossibleOptionalAccessories();
+    $current = $data['optional_accessories'];
+?>
+
+    <table style="width: 100%">
+        <tr>
+            <td style="width:3%"></td>
+            <td style="width:12%"></td>
+            <td style="width:75%"></td>
+            <td style="width:10%"></td>
+        </tr>
+        <?php foreach ( $accs as $acc ) : ?>
+            <tr>
+                <td>
+                    <input type="checkbox" id="<?php echo $acc['part_number'] ?>" name="input[]" value="<?php echo $acc['part_number'] ?>" <?php echo isset($current[$acc['part_number']]) ? 'checked' : '' ?>/>
+                </td>
+                <td class="partnumber">
+                    <?php echo $acc['part_number'] ?>
+                </td>
+                <td>
+                    <?php echo $acc['description']; ?>
+                </td>
+                <td class="price">
+                    <?php echo $acc['price']; ?>
+                </td>
+            </tr>
+        <?php endforeach; ?>
+    </table>
+
+<script type="text/javascript">
+    //<![CDATA[
+    jQuery(document).ready(function() {
+        jQuery('#step-header-chapter').text("<?php echo $this->__('Additional accessories') ?>");
+        jQuery('#step-header-page').text("");
+    });
+    //]]>
+</script>
+<!-- app/design/frontend/schrack/schrackresponsive/template/mocalc/step11.phtml (end) -->

@@ -1,0 +1,1378 @@
+<!-- app/design/frontend/schrack/schrackresponsive/template/persistent/customer/form/register.phtml (start) -->
+
+<?php
+/**
+ * Create account form template
+ *
+ * @see Schracklive_SchrackCustomer_Block_Form_Register
+ */
+if ($this->getHadError()) {
+    $accordionStyle = "";
+} else {
+    $accordionStyle = "display:none;";
+}
+$_helper = $this->helper('schrackcustomer');
+$customer = Mage::getModel("customer/customer");
+$_directoryHelper = $this->helper('directory');
+$isZipCodeOptional = $_directoryHelper->isZipCodeOptional(Mage::helper('core')->getDefaultCountry());
+
+$tooltipJsUrl = Mage::getStoreConfig('web/secure/base_skin_url') . 'frontend/schrack/default/schrackdesign/Public/Javascript/wz_tooltip/wz_tooltip.js';
+
+// Possible Values are:
+// 'self_registration_not_available' --> no self registration available (only typo form available)
+// 'self_registration_with_typo'     --> typo-form + light registration
+// 'new_self_registration_form'      --> complete new form (full + light prospect)
+
+$selfRegistrationOptions = Mage::getStoreConfig('schrack/new_self_registration/new_self_registration_options');
+$showFullSelfRegisterButton = true;
+if ($selfRegistrationOptions == 'self_registration_with_typo' || $selfRegistrationOptions == 'new_light_self_registration_form') {
+    // Typo form is only used as fallback:
+    $showFullSelfRegisterButton = false;
+}
+
+$localeCode = strtolower(Mage::getStoreConfig('schrack/general/country'));
+
+?>
+
+<style>
+    #opc-contact:hover {
+        cursor: pointer;
+    }
+    #opc-base:hover {
+        cursor: pointer;
+    }
+    #opc-address:hover {
+        cursor: pointer;
+    }
+    #telephone_company {
+        float: left !important;
+        width: 95% !important;
+    }
+    #leading_plus_icon {
+        padding-top: 10px;
+        font-size: 18px;
+        font-weight: 700;
+        float: left !important;
+        width: 5% !important;
+    }
+    #agreement-light-user-terms-registration {
+        float:left;
+    }
+    #agreement-user-terms-full-registration {
+        float:left;
+    }
+</style>
+
+<input type="hidden" id="registerOnlyForm" value="raw" />
+<input type="hidden" id="registerOnlyFormCheckitFlag" value="no" />
+
+<?php
+if (  $selfRegistrationOptions == 'self_registration_with_typo' ||
+      $selfRegistrationOptions == 'new_self_registration_form' ||
+      $selfRegistrationOptions == 'new_light_self_registration_form') :
+?>
+
+    <?php // --------------------------- NEW SELF-REGISTRATION PROCESS ---------------------------- ?>
+    <script type="text/javascript" src="<?php echo $tooltipJsUrl; ?>"></script>
+
+    <div class="mainContent col-xs-12">
+    	<div class="loginCont">
+            <h1><a href="<?php echo $this->getUrl('customer/account/login'); ?>"><span class="glyphicon glyphicon-arrow-left"></span></a> <?php echo $this->__('Create Account') ?></h1>
+            <script type="text/javascript" src="<?php echo $this->getJsUrl('varien/accordion.js') ?>"></script>
+            <?php echo $this->getChildHtml('form_fields_before')?>
+            <?php echo $this->getMessagesBlock()->getGroupedHtml() ?>
+            <form id="form-validate">
+                <?php /*Nagarro : Added form key */ ?>
+                <input type="hidden" name="form_key" value="<?php echo Mage::getSingleton('core/session')->getFormKey() ?>" />
+                <ul class="opc opcLRMinMrg" id="checkoutSteps">
+                    <li id="opc-contact" class="sloped-box section allow active">                        
+                        <div class="step-title box-content">
+                            <h2 id="personal-information-selector"><?php echo $this->__('Personal Information') ?>
+                            <span class="glyphicon glyphicon-menu-down pull-right arrow-icon"></span>
+                            </h2>
+                        </div>
+                        <div id="opc-contact-content">
+                            <div  id="register-step-contact" class="step a-item formContianer">
+                                    <input type="hidden" id="schrack_salutatory" name="schrack_salutatory">
+                                    <div class="hdCont">
+						<p><?php echo $this->__('Required Fields'); ?>*</p>
+					</div>
+					<ul>
+                                        <li>
+                                            <div class="row">
+                                                <?php $_gender = $this->getLayout()->createBlock('customer/widget_gender') ?>
+                                                <?php if ($_gender->isEnabled()): ?>
+                                                    <?php echo $_gender->setGender($this->getFormData()->getGender())->toHtml() ?>
+                                                <?php endif ?>
+                                            </div>
+                                        </li>
+                                        <li class="noHead">
+                                            <div class="row">
+                                                <div class="col-xs-12">
+                                                    <div class="row">
+                                                        <?php echo $this->getLayout()->createBlock('customer/widget_name')->setObject($this->getFormData())->toHtml() ?>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </li>
+                                        <li>
+                                            <div class="row">
+                                                    <div class="col-xs-12 col-sm-6"><input type="text" placeholder="<?php echo $this->__('Department') ?>" name="schrack_department" id="schrack_department" value="<?php echo $this->htmlEscape($this->getFormData()->getData('schrack_department')) ?>" title="<?php echo $this->__('Department') ?>" class="input-text form-control" /></div>
+                                                    <div class="col-xs-12 col-sm-6">
+                                                        <input type="text" name="email" id="email_address" style="position: absolute; margin-top: -1000000px;" />
+                                                        <input type="text" name="pseudonym" id="pseudonym" value="<?php echo $this->htmlEscape($this->getFormData()->getEmail()) ?>" title="<?php echo $this->__('Email Address') ?>" class="input-text required-entry form-control" />
+
+                                                        <!-- input type="text" name="pseudonym" id="pseudonym" value="<?php echo $this->htmlEscape($this->getFormData()->getEmail()) ?>" title="<?php echo $this->__('Email Address') ?>" class="input-text validate-email required-entry form-control" / -->
+
+                                                        <input type="hidden" id="email_former_address" value=""/>
+                                                        <div id="resultingErrorMessageEMAIL" class="validation-advice"></div>
+                                            </div>
+                                        </li>
+                                        
+                                        <?php $_dob = $this->getLayout()->createBlock('customer/widget_dob') ?>
+                                        <?php if ($_dob->isEnabled() && false): ?>
+                                        <li>
+                                            <div class="row">
+                                                <div class="col-xs-12 col-sm-6"><?php echo $_dob->setDate($this->getFormData()->getDob())->toHtml() ?></div>
+                                            </div>
+                                        </li>
+                                        <?php endif ?>
+                                        
+                                        <?php echo $this->getLayout()->createBlock('schrackcustomer/widget_phonenumber')->setObject($customer)->toHtml() ?>
+
+                                        <li>
+                                            <div class="row">
+                                                <div class="col-xs-12 col-sm-6">
+                                                    <input type="password" placeholder="* <?php echo $this->__('Password') ?>" name="schrack_password" id="schrack_password" title="<?php echo $this->__('New Password') ?>" class="input-text form-control password-check" />
+                                                </div>
+                                                <div class="col-xs-12 col-sm-6">
+                                                    <input type="password" placeholder="* <?php echo $this->__('Confirm Password') ?>" name="schrack_password_confirmation" id="schrack_password_confirmation" title="<?php echo $this->__('Confirm New Password') ?>" class="input-text form-control password-equal-check" />
+                                                </div>
+                                            </div>
+                                        </li>
+
+										<li class="hide">
+                                                <h3><?php echo $this->__('Profile Picture'); ?></h3>
+                                        </li>
+                                        <li class="hide">
+                                            <div class="row">
+                                                    <div class="col-xs-12 col-sm-6">
+                                                        <input type="file" title="<?php echo $this->__('Profile Picture'); ?>" name="profile_picture" id="profile_picture" />
+                                                    </div>
+                                                <div class="col-xs-12 col-sm-6">
+                                                    <input id="profile_picture_checkbox" type="checkbox" value="profile_picture"/>
+                                                    <span><?php echo $this->__('Acceptance of privacy settings (picture rights)'); ?></span>
+                                                </div>
+                                            </div>                                                
+                                        </li>  
+                                        <?php if (Mage::getStoreConfig('schrack/new_self_registration/triggerNewsletterForProspects')): ?>
+                                        <li>
+                                            <input type="hidden" id="newsletter" name="newsletter" value="<?php if (Mage::getStoreConfig('schrack/new_self_registration/triggerNewsletterForProspectsDefaultSetting')) : ?>1<?php else :?>0<?php endif; ?>">
+                                            <input id="newsletter_checkbox" type="checkbox" value="newsletter" <?php if (Mage::getStoreConfig('schrack/new_self_registration/triggerNewsletterForProspectsDefaultSetting')) : ?> checked="checked" <?php endif; ?>>
+                                             <span><?php echo $this->__('Agree Newsletter Checkbox Text'); ?></span>
+                                        </li>
+                                        <?php endif; ?>
+                               
+                                    <?php if ($showFullSelfRegisterButton) : ?>
+                                    <li class="clearfix posRel">
+                                        <a href="javascript:void(0)" id="get-full-customer-status" class="internal-link"><span style="display: none; background: url('<?php echo $this->getSkinUrl('images/opc-ajax-loader.gif') ?>') left center no-repeat;"></span>
+                                            <?php echo $this->__('Complete Full Registration') ?></a>
+                                        
+                                        <span class="glyphicon glyphicon-info-sign info-icon infoIconPos blueTxt" id="full-registration-icon" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true"></span>
+                                        <div class="popupBox dropdown-menu" aria-labelledby="full-registration-icon" id="get-full-customer-description">
+                                            <ul>
+                                                <li class="hd"><?php echo $this->__('Get Full Customer Description1'); ?></li>
+                                                <li><i class="fa fa-plus-circle" style="color: #00589D"></i>&nbsp;<?php echo $this->__('Get Full Customer Description2'); ?></li>  
+                                                <li><i class="fa fa-plus-circle" style="color: #00589D"></i>&nbsp;<?php echo $this->__('Get Full Customer Description3'); ?></li>
+                                                <li><i class="fa fa-plus-circle" style="color: #00589D"></i>&nbsp;<?php echo $this->__('Get Full Customer Description4'); ?></li>
+                                                <li><i class="fa fa-plus-circle" style="color: #00589D"></i>&nbsp;<?php echo $this->__('Get Full Customer Description5'); ?></li>
+                                                <li><i class="fa fa-plus-circle" style="color: #00589D"></i>&nbsp;<?php echo $this->__('Get Full Customer Description6'); ?></li>
+                                                <li><i class="fa fa-plus-circle" style="color: #00589D"></i>&nbsp;<?php echo $this->__('Get Full Customer Description7'); ?></li>
+                                                <li><i class="fa fa-plus-circle" style="color: #00589D"></i>&nbsp;<?php echo $this->__('Get Full Customer Description8'); ?></li>
+                                            </ul>                               
+                                        </div>
+                                        
+                                    </li>                                    
+                                    <?php endif; ?>
+						
+                                    <li><?php echo $this->__('or'); ?></li>
+                                    <li id="student-status-checkbox-container">
+                                        <input type="checkbox" id="student_status_checkbox" name="student_status_checkbox" value="1" title="<?php echo $this->__('I Am Student'); ?>" class="">
+                                        <span><?php echo $this->__('I Am Student'); ?></span>
+                                        <input type="hidden" id="student_status" name="student_status" value="" />
+                                    </li>
+
+                                    <?php if (intval(Mage::getStoreConfig('schrack/dsgvo/activateRegistrationCheckboxAGB')) == 1) : ?>
+                                        <li id="agreement-light-checkbox-container">
+                                            <input type="checkbox" id="agreement-light-registration" name="agreement_light_registration" value="1" title="<?php echo strip_tags ($this->__('Schrack AGB Checkbox Confirm Text')); ?>" class="">
+                                            <span><?php echo $this->__('Schrack AGB Checkbox Confirm Text'); ?></span>
+                                        </li>
+                                    <?php endif; ?>
+
+                                    <?php if (intval(Mage::getStoreConfig('schrack/dsgvo/activateRegistrationCheckboxDataProtection')) == 1) : ?>
+                                        <li id="agreement-light-dataprotection-checkbox-container">
+                                            <input type="checkbox" id="agreement-light-dataprotection-registration" name="agreement_light_dataprotection_registration" value="1" title="<?php echo strip_tags ($this->__('Schrack DataProtection Checkbox Confirm Text')); ?>" class="">
+                                            <span><?php echo $this->__('Schrack DataProtection Checkbox Confirm Text'); ?></span>
+                                        </li>
+                                    <?php endif; ?>
+
+                                    <?php if (intval(Mage::getStoreConfig('schrack/dsgvo/activateRegistrationCheckboxDSGVO')) == 1) : ?>
+                                        <li id="agreement-light-dsgvo-checkbox-container">
+                                            <input type="checkbox" id="agreement-light-dsgvo-registration" name="agreement_light_dsgvo_registration" value="1" title="<?php echo strip_tags ($this->__('Schrack DSGVO Checkbox Confirm Text')); ?>" class="">
+                                            <span><?php echo $this->__('Schrack DSGVO Checkbox Confirm Text'); ?></span>
+                                        </li>
+                                    <?php endif; ?>
+
+                                    <?php if (intval(Mage::getStoreConfig('schrack/dsgvo/activateRegistrationCheckboxUserTerms')) == 1) : ?>
+                                        <?php
+                                            $typo_url = Mage::getStoreConfig('schrack/typo3/typo3url');
+                                            $typo_page_id_suffix = Mage::getStoreConfig('schrack/typo3/terms_of_use_service_url');
+                                            $use_of_terms_url = $typo_url . $typo_page_id_suffix;
+                                        ?>
+                                        <li id="agreement-light-user-terms-checkbox-container">
+                                            <input type="checkbox" id="agreement-light-user-terms-registration" name="agreement_light_user-terms_registration" value="1" title="<?php echo strip_tags ($this->__('Schrack User Terms Checkbox Confirm Text')); ?>" class="">
+                                            <div style="margin-left: 3px; float: left; margin-top: 2px;">
+                                                <?php echo $this->__('Schrack User Terms Checkbox Confirm Text'); ?>
+                                                <a href="<?php echo $use_of_terms_url; ?>" target="_blank">
+                                                    <?php echo $this->__('Schrack User Terms Link Text'); ?>
+                                                </a>
+                                            </div>
+                                            <div style="clear: both"></div>
+                                        </li>
+                                    <?php endif; ?>
+
+                                    <li class="clearfix posRel">
+                                        <a href="javascript:void(0)" id="get-light-customer-status" class="internal-link blue"><span style="display: none; float: left; padding-left: 20px; text-align: left; background: url('<?php echo $this->getSkinUrl('images/opc-ajax-loader.gif') ?>') left center no-repeat;"></span>
+                                        <?php echo $this->__('Finish Light Registration') ?>
+                                        </a>
+                                        <span class="glyphicon glyphicon-info-sign info-icon infoIconPos blueTxt"id="light-registration-icon" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true"></span>
+                                        <div class="popupBox dropdown-menu" aria-labelledby="light-registration-icon" id="get-light-customer-description">
+                                            <ul>
+                                                <li class="hd"><?php echo $this->__('Get Light Customer Description0'); ?></li>
+                                                <li><?php echo $this->__('Get Light Customer Description1'); ?></li>                                                
+                                            </ul>
+                                        </div>
+                                    </li>
+					</ul>
+				</div>
+                        </div>
+                    </li>
+                    <div id="fieldArea"></div>
+                    <li id="opc-base" class="sloped-box section allow active" style="display: none;">
+                        <div class="step-title box-content">
+                            <h2 id="company-information-selector" class="hdAcord"><?php echo $this->__('Company Information') ?>
+                            <span class="glyphicon glyphicon-menu-down pull-right arrow-icon"></span>
+                            </h2>
+                        </div>
+                        <div id="opc-base-content">
+                            <div id="register-step-base" class="step a-item formContianer col-xs-12">
+						<div class="hdCont">
+						<h2><?php echo $this->__('Company Information') ?></h2>
+						<p><?php echo $this->__('Required Fields'); ?>*</p>
+					</div>
+					<ul>
+                                            <input type="hidden" name="success_url" value="<?php echo $this->getSuccessUrl() ?>" />
+                                            <input type="hidden" name="error_url" value="<?php echo $this->getErrorUrl() ?>" />
+						<li>
+							<div class="row">
+								<div class="col-xs-12 col-sm-6"><input type="text" name="name1" id="name1" maxlength="30" value="<?php echo $this->htmlEscape($this->getFormData()->getData('name1')) ?>" placeholder="<?php echo $this->__('Company Name1') ?>*" title="<?php echo $this->__('Name') ?>" class="textInput input-text required-entry form-control" /></div>
+								<div class="col-xs-12 col-sm-6"><input type="text" name="name2" id="name2" maxlength="30" value="<?php echo $this->htmlEscape($this->getFormData()->getData('name2')) ?>" placeholder="<?php echo $this->__('Company Name2') ?>" title="<?php echo $this->__('Name') ?>" class="textInput input-text form-control" /></div>
+							</div>
+						</li>
+						<li>
+							<div class="row">
+								<div class="col-xs-12 col-sm-6"><input type="text" name="name3" id="name3" maxlength="30" value="<?php echo $this->htmlEscape($this->getFormData()->getData('name3')) ?>"  placeholder="<?php echo $this->__('Contact person / mobile number') ?>" title="<?php echo $this->__('Name') ?>" class="textInput input-text form-control" /></div>
+								<div class="col-xs-12 col-sm-6"><input type="text" name="company_registration_number" id="company_registration_number" maxlength="14" value="<?php echo $this->htmlEscape($this->getFormData()->getData('company_registration_number')) ?>" placeholder="<?php echo $this->__('Company Registration Number') ?>" title="<?php echo $this->__('Company Registration Number') ?>" class="form-control textInput input-text<?php echo ((Mage::getStoreConfig('schrack/vatcheck/comregrequired')) ? ' required-entry' : '') ?>" /></div>
+							</div>
+						</li>
+						<li>
+							<div class="row">
+								<div class="col-xs-12 col-sm-6"><input type="text" name="homepage" id="homepage" value="<?php echo $this->htmlEscape($this->getFormData()->getData('homepage')) ?>" placeholder="<?php echo $this->__('Website') ?>" title="<?php echo $this->__('Website') ?>" class="textInput input-text form-control" /></div>
+								<div class="col-xs-12 col-sm-6">
+                                    <span id="leading_plus_icon">+</span>
+								    <input type="text"
+								           name="telephone_company"
+								             id="telephone_company"
+								          value=""
+								          title="<?php echo $this->__('Telephone Company') ?>"
+								          class="textInput input-text form-control" />
+								    </div>
+                                    <div style="clear: both;"></div>
+							</div>
+						</li>
+                                                <li>
+                                                        <div class="row">
+                                                            <div class="col-xs-12 col-sm-6">
+                                                                <input type="text" name="vat_identification_number" id="vat_identification_number" value="<?php echo $this->htmlEscape($this->getFormData()->getData('vat_identification_number')) ?>" placeholder="<?php echo $this->__('VAT Identification Number') ?><?php echo ((Mage::getStoreConfig('schrack/vatcheck/required')) ? '*' : '') ?>" title="<?php echo $this->__('VAT Identification Number') ?>" class="form-control textInput input-text<?php echo ((Mage::getStoreConfig('schrack/vatcheck/required')) ? ' required-entry' : '') ?>" />
+                                                                <div id="resultingErrorMessageVAT" class="validation-advice"></div>
+                                                            </div>
+                                                             <?php if(Mage::getStoreConfig('schrack/new_self_registration/triggerLocalVat')) : ?>
+                                                                <div class="col-xs-12 col-sm-6" id="vat_identification_number_local_selector">
+                                                                    <input type="hidden" id="special_route_for_vat_check" value="select_special_route_for_vat_check">
+                                                                    <input type="radio" name="vat_special" value="vat_normal" checked="checked"> <?php echo $this->__('VAT Normal') ?>&nbsp;&nbsp;&nbsp;
+                                                                    <input type="radio" name="vat_special" value="vat_local"> <?php echo $this->__('VAT Local') ?>
+                                                                </div>
+                                                            <?php endif; ?>
+                                                        </div>
+                                                </li>
+                                                <li>
+                                                    <a href="javascript:void(0)" id="next-step-to-address" class="internal-link" ><span style="display:none;float:left;padding-left:20px;text-align:left;background:url('<?php echo $this->getSkinUrl('images/opc-ajax-loader.gif') ?>') left center no-repeat;"></span><?php echo $this->__('Continue') ?></a>
+                                                </li>
+                                                
+					</ul>
+				</div>
+                        </div>
+                    </li>
+
+                    <li id="opc-address" class="sloped-box section allow active" style="display: none;">
+                        <div class="step-title box-content">
+                            <h2 id="billing-addressdata-selector" class="hdAcord"><?php echo $this->__('Billing Address') ?>
+                            <span class="glyphicon glyphicon-menu-down pull-right arrow-icon"></span>
+                            </h2>
+                        </div>
+                        <div id="opc-address-content">
+                            <div id="register-step-address" class="step a-item formContianer col-xs-12">
+						<div class="hdCont">
+						<h2><?php echo $this->__('Billing Address') ?></h2>
+						<p><?php echo $this->__('Required Fields'); ?>*</p>
+					</div>
+					<ul>
+						<li>
+							<div class="row">
+								<div class="col-xs-12 col-sm-6"><input type="text" name="street" id="street" value="<?php echo $this->htmlEscape($this->getFormData()->getStreet()) ?>" placeholder="<?php echo $this->__('Street Address') ?>*" title="<?php echo $this->__('Street Address') ?>" maxlength="30" class="textInput input-text form-control" /></div>
+								<div class="col-xs-12 col-sm-6"><input type="text" name="postcode" id="postcode" value="<?php echo $this->htmlEscape($this->getFormData()->getPostcode()) ?>" placeholder="<?php echo $this->__('Zip/Postal Code') ?>*" title="<?php echo $this->__('Zip/Postal Code') ?>" class="textInput input-text form-control" /></div>
+							</div>
+						</li>
+						<li>
+							<div class="row">
+								<div class="col-xs-12 col-sm-6"><input type="text" name="city" id="city" value="<?php echo $this->htmlEscape($this->getFormData()->getCity()) ?>" placeholder="<?php echo $this->__('City') ?>*" title="<?php echo $this->__('City') ?>" maxlength="30" class="textInput input-text form-control" /></div>
+								<div class="col-xs-12 col-sm-6">
+                                    <?php if(!Mage::getStoreConfig('schrack/vatcheck/contry_selectable')): ?>
+                                        <input type="hidden" id="country_id" name="country_id" value="<?php echo Mage::helper('core')->getDefaultCountry(); ?>">
+
+                                        <div id="billing-country-preselected" class="form-control">
+                                            <?php echo $this->__('Country') ?> : <?php echo Mage::app()->getLocale()->getCountryTranslation(Mage::helper('core')->getDefaultCountry()) ?>
+                                        </div>
+                                    <?php else : ?>
+                                        <input type="hidden" id="country_id" name="country_id" value="<?php echo Mage::helper('core')->getDefaultCountry(); ?>">
+                                        <div id="billing-country" class="form-control">
+                                            <?php echo $this->getCountryHtmlSelect() ?>
+                                        </div>
+                                    <?php endif ?>
+                                </div>
+							</div>
+						</li>
+						<li class="paddingTB10Mob">
+                            <?php if (intval(Mage::getStoreConfig('schrack/dsgvo/activateRegistrationCheckboxAGB')) == 1) : ?>
+                                <div id="agreement-checkbox-container">
+                                    <input type="checkbox" id="agreement-full-registration" name="agreement_full_registration" value="1" title="<?php echo $this->__('Checkout Terms and Conditions Complete Title'); ?>" >
+                                    <span ><?php echo $this->__('Checkout Terms and Conditions Complete'); ?></span>
+                                </div>
+                            <?php endif; ?>
+
+                            <?php if (intval(Mage::getStoreConfig('schrack/dsgvo/activateRegistrationCheckboxDataProtection')) == 1) : ?>
+                                <div id="agreement-dataprotection-checkbox-container">
+                                    <input type="checkbox" id="agreement-dataprotection-full-registration" name="agreement_dataprotection_full_registration" value="1" title="<?php echo strip_tags($this->__('Schrack DataProtection Checkbox Confirm Text')); ?>">
+                                    <span ><?php echo $this->__('Schrack DataProtection Checkbox Confirm Text'); ?></span>
+                                </div>
+                            <?php endif; ?>
+
+                            <?php if (intval(Mage::getStoreConfig('schrack/dsgvo/activateRegistrationCheckboxDSGVO')) == 1) : ?>
+                                <div id="agreement-dsgvo--checkbox-container">
+                                    <input type="checkbox" id="agreement-dsgvo-full-registration" name="agreement-dsgvo-full_registration" value="1" title="<?php echo strip_tags($this->__('Schrack DSGVO Checkbox Confirm Text')); ?>">
+                                    <span ><?php echo $this->__('Schrack DSGVO Checkbox Confirm Text'); ?></span>
+                                </div>
+                            <?php endif; ?>
+
+                            <?php if (intval(Mage::getStoreConfig('schrack/dsgvo/activateRegistrationCheckboxUserTerms')) == 1) : ?>
+                                <?php
+                                    $typo_url = Mage::getStoreConfig('schrack/typo3/typo3url');
+                                    $typo_page_id_suffix = Mage::getStoreConfig('schrack/typo3/terms_of_use_service_url');
+                                    $use_of_terms_url = $typo_url . $typo_page_id_suffix;
+                                ?>
+                                <li id="agreement-user-terms--checkbox-container">
+                                    <input type="checkbox" id="agreement-user-terms-full-registration" name="agreement-user-terms-full_registration" value="1" title="<?php echo strip_tags ($this->__('Schrack User Terms Checkbox Confirm Text')); ?>" class="">
+                                    <div style="margin-left: 3px; float: left; margin-top: 2px;">
+                                        <?php echo $this->__('Schrack User Terms Checkbox Confirm Text'); ?>
+                                        <a href="<?php echo $use_of_terms_url; ?>" target="_blank">
+                                            <?php echo $this->__('Schrack User Terms Link Text'); ?>
+                                        </a>
+                                    </div>
+                                    <div style="clear: both"></div>
+                                </li>
+                            <?php endif; ?>
+
+						</li>
+						<li>
+                            <?php if( Mage::getStoreConfig('carriers/schrackpickup/active') == 1 ) : ?>
+                                <!-- <button onclick="showNextStep('opc-pickup');" class="button-red small gray" type="button"><span style="display:none;float:left;padding-left:20px;text-align:left;background:url('<?php echo $this->getSkinUrl('images/opc-ajax-loader.gif') ?>') left center no-repeat;"></span><?php echo $this->__('Continue') ?></button> -->
+                                <a href="javascript:void(0)" id="finish-register" class="internal-link black" type="button"><span style="display:none;float:left;padding-left:20px;text-align:left;background:url('<?php echo $this->getSkinUrl('images/opc-ajax-loader.gif') ?>') left center no-repeat;"></span><?php echo $this->__('Finish Register') ?></a>
+                            <?php else: ?>
+                                <a href="javascript:void(0)" id="finish-register" class="internal-link black" type="button"><span style="display:none;float:left;padding-left:20px;text-align:left;background:url('<?php echo $this->getSkinUrl('images/opc-ajax-loader.gif') ?>') left center no-repeat;"></span><?php echo $this->__('Finish Register') ?></a>
+                            <?php endif ?>
+                        </li>
+                        <input type="hidden" name="default_billing" value="1" />
+                        <input type="hidden" name="default_shipping" value="1" />
+					</ul>
+				</div>
+                        </div>
+                    </li>
+                    <?php if( Mage::getStoreConfig('carriers/schrackpickup/location') == 'Hier sollte als Wert eine 1 oder 0 rein (momentan deaktiviert)' ) : ?>
+                        <li id="opc-password" class="sloped-box section allow active">
+                            <div class="step-title box-content">
+                                <h2 class="legend linkFinger"><?php echo $this->__('Default Pickup Location') ?></h2>
+                            </div>
+                            <div id="register-step-pickup" class="step a-item" style="<?php echo $accordionStyle ?>">
+                                <div class="fieldset" style="margin:0 15px 0px 15px;">
+                                    <ul class="form-list">
+                                        <?php $_helper->getWarehouseRadioOptions('<li>', '</li>');?>
+                                    </ul>
+                                </div>
+                                <div id="base-buttons-container" class="buttons-set">
+                                    <button onclick="showNextStep('opc-contact');" class="button-red small gray" type="button"><span style="display:none;float:left;padding-left:20px;text-align:left;background:url('<?php echo $this->getSkinUrl('images/opc-ajax-loader.gif') ?>') left center no-repeat;"></span><?php echo $this->__('Continue') ?></button>
+                                </div>
+                            </div>
+                        </li>
+                    <?php endif ?>
+                    <?php if( Mage::getStoreConfig('carriers/schrackpickup/active') == 'Hier sollte als Wert eine 1 oder 0 rein (momentan deaktiviert)' ) : ?>
+                        <li id="opc-pickup" class="sloped-box section allow active">
+                            <div class="step-title box-content">
+                                <h2 class="legend linkFinger"><?php echo $this->__('Default Pickup Location') ?></h2>
+                            </div>
+                            <div id="register-step-pickup" class="step a-item" style="<?php echo $accordionStyle ?>">
+                                <div class="fieldset" style="margin:0 15px 0px 15px;">
+                                    <ul class="form-list">
+                                        <?php $_helper->getWarehouseRadioOptions('<li>', '</li>');?>
+                                    </ul>
+                                </div>
+                                <div id="base-buttons-container" class="buttons-set">
+                                    <button onclick="showNextStep('opc-contact');" class="button-red small gray" type="button"><span style="display:none;float:left;padding-left:20px;text-align:left;background:url('<?php echo $this->getSkinUrl('images/opc-ajax-loader.gif') ?>') left center no-repeat;"></span><?php echo $this->__('Continue') ?></button>
+                                </div>
+                            </div>
+                        </li>
+                    <?php endif ?>
+                    <li id="opc-finish" style="display: none;">
+                        <h2 style="font-weight: bold !important;"><?php echo $this->__('Thank You For Register Text') ?></h2>
+                        <div id="register-finish-text" class="step a-item">
+                            <p style="font-weight: bold !important;">
+                                <?php echo $this->__('Finished Register Text'); ?>
+                            </p>
+                        </div>
+                    </li>
+                    <li id="opc-finish-light" style="display: none;">
+                        <h2 style="font-weight: bold !important;"><?php echo $this->__('Thank You For Register Text') ?></h2>
+                        <div id="register-finish-text" class="step a-item">
+                            <p style="font-weight: bold !important;">
+                                <?php echo $this->__('Finished Register Text'); ?>
+                            </p>
+                        </div>
+                    </li>
+                </ul>
+                <input id="request-type" name="request-type" type="hidden" value="selfRegistration">
+                <input id="request-type-definition" name="request-type-definition" type="hidden" value="">
+            </form>
+    </div>
+	</div>
+    
+    <div id="resultingErrorMessage" style="border: 1px solid lightgrey; background: lightgrey; padding: 3px; color: red; margin-left: 54px !important; width: 764px; margin-top: -146px; position: absolute; font-weight: bold; font-size: 0.9em; display: none;"></div>
+
+
+    <script type="text/javascript">
+        //<![CDATA[
+        var dataForm = new VarienForm('form-validate', true);
+        var accordion = new Accordion('checkoutSteps', '.step-title', true);
+        var jsdebug = 0;
+        <?php if ($this->getRequest()->getParam('jsdebug') == 1) : ?>
+            jsdebug = 1;
+            console.log(">>> JS-Debug-Mode ENABLED <<<");
+        <?php endif; ?>
+        accordion.openSection('opc-contact');
+        //accordion.openSection('opc-base');
+        //jQuery('#opc-base').show();
+        //jQuery('#opc-base-content').show();
+
+        jQuery('#telephone_company').on('keyup paste change', function() {
+            removeForbiddenPhoneFieldCharacters('telephone_company');
+        });
+
+        function registerAnalyticsTracking(registerType) {
+            if (registerType == 'light') {
+                if (dataLayer) {
+                    dataLayer.push({
+                        'event': 'registrationtype_set',
+                        'registrationtype': 'Light Registration'
+                    });
+                    dataLayer.push({
+                        'event': 'conversionLightRegistration'
+                    });
+                }
+            }
+
+            if (registerType == 'full') {
+                if (dataLayer) {
+                    dataLayer.push({
+                        'event': 'registrationtype_set',
+                        'registrationtype': 'Full Registration'
+                    });
+                    dataLayer.push({
+                        'event': 'conversionFullRegistration'
+                    });
+                }
+            }
+        }
+
+        function tryFullRegistration() {
+            if (jsdebug == 1) console.log('opc-finish methods reached!');
+            jQuery('#required-description1').remove();
+            jQuery('#personal-information-selector').hide();
+            jQuery('#company-information-selector').hide();
+            jQuery('#billing-addressdata-selector').hide();
+            jQuery('#opc-address-content').hide();
+            jQuery('#opc-finish').show();
+            if (jsdebug == 1) console.log('submit form with complete data (full registration)');
+            jQuery.ajax({
+                url: '<?php echo $this->getPostActionUrl() ?>',
+                type: 'post',
+                dataType: 'json',
+                data: jQuery('form#form-validate').serialize(),
+                success: function(data) {
+                    if (jsdebug == 1) console.log('AJAX account call success');
+
+                    // Analytics Tracking of FULL-Registration:
+                    registerAnalyticsTracking('full')
+                },
+                error: function (data) {
+                    if (jsdebug == 1) console.log('AJAX account call error');
+                },
+                complete: function () {
+                    if (jsdebug == 1) console.log('AJAX account call complete');
+                }
+            });
+        }
+
+        function checkAddressByService() {
+            console.log('Now can check address, after all needed fields are filled out');
+            var streetInput      = jQuery('#street').val();
+            var cityInput        = jQuery('#city').val();
+            var postcodeInput    = jQuery('#postcode').val();
+            var countryCodeInput = jQuery('#country_id').val();
+
+            var resultAddressValidation = deferredAddressValidation(
+                'registration',
+                streetInput,
+                postcodeInput,
+                cityInput,
+                countryCodeInput,
+                'registration only page'
+            );
+        }
+
+        function showNextStep(id) {
+            if (jsdebug == 1) console.log('showNextStep: ' + id);
+            if (dataForm.validator.validate()) {
+                if (id == 'finish-light-registration') {
+                    jQuery.ajax({
+                        url: '<?php echo $this->getPostActionUrl() ?>',
+                        type: 'post',
+                        dataType: 'json',
+                        data: jQuery('form#form-validate').serialize(),
+                        success: function(data) {
+                            if (data.errormsg) {
+                                jQuery('#resultingErrorMessage').text(data.errormsg);
+                                jQuery('#resultingErrorMessage').show();
+                            } else {
+                                jQuery('#required-description1').remove();
+                                jQuery('#personal-information-selector').hide();
+                                jQuery('#opc-contact-content').hide();
+                                jQuery('#opc-finish-light').show();
+                                accordion.openSection('opc-finish-light');
+                            }
+
+                            // Analytics Tracking of LIGHT-Registration:
+                            registerAnalyticsTracking('light')
+                        },
+                        error: function (data) {
+                            if (jsdebug == 1) console.log('AJAX account call error');
+                        },
+                        complete: function () {
+                            if (jsdebug == 1) console.log('AJAX account call complete');
+                        }
+                    });
+                } else {
+                    if(id == 'opc-base') {
+                        //jQuery('#required-description1').css({'margin-top': '-282px', 'margin-left' : '734px'});
+                        jQuery('#opc-contact-content').hide();
+                        jQuery('#company-information-selector').show();
+                        jQuery('#opc-base').show();
+                        jQuery('#telephone_company').val(jQuery("#schrack_telephone").val());
+                        jQuery('#opc-base-content').show();
+                         jQuery('#personal-information-selector').addClass('hdAcord');
+                    }
+                    if(id == 'opc-address') {
+                        if (jsdebug == 1) console.log('opc-address methods reached!');
+                        if (jQuery('input[name="vat_special"]') && jQuery('input[name="vat_special"]:checked').val() == 'vat_local') {
+                            if (jsdebug == 1) console.log('vat_special methods reached!');
+                            // Don't check VAT intensively (just execute normal success actions)!
+                            //jQuery('#required-description1').css({'margin-top': '-282px', 'margin-left' : '734px'});
+                            jQuery('#opc-base-content').hide();
+                            jQuery('#billing-addressdata-selector').show();
+                            jQuery('#opc-address').show();
+                            jQuery('#opc-address-content').show();
+                        } else {
+                        <?php if (Mage::getStoreConfig('schrack/vatcheck/enabled')): ?>
+                            if (jsdebug == 1) console.log('vat_normal methods reached!');
+                            if (jQuery('#vat_identification_number').val() != '') {
+                                jQuery.ajax({
+                                    url: '<?php echo Mage::getUrl('customer/account/checkUid'); ?>',
+                                    type: 'post',
+                                    dataType: 'json',
+                                    data: jQuery('form#form-validate').serialize(),
+                                    success: function(data) {
+                                        if (data.errormsg) {
+                                            jQuery('#register-step-base').show();
+                                            jQuery('#resultingErrorMessageVAT').text(data.errormsg);
+                                            jQuery('#resultingErrorMessageVAT').show();
+                                        } else {
+                                            //jQuery('#required-description1').css({'margin-top': '-282px', 'margin-left' : '734px'});
+                                            jQuery('#opc-base-content').hide();
+                                            jQuery('#billing-addressdata-selector').show();
+                                            jQuery('#opc-address').show();
+                                            jQuery('#opc-address-content').show();
+                                        }
+                                    },
+                                    error: function (data) {
+                                        if (jsdebug == 1) console.log('AJAX checkuid call error');
+                                    },
+                                    complete: function () {
+                                        jQuery('#fieldArea').removeAttr('style');
+                                        if (jsdebug == 1) console.log('AJAX checkuid call complete');
+                                    }
+                                });
+                            } else {
+                                if (jsdebug == 1) console.log('AJAX checkuid not executed route 1 (vat check enabled)');
+                                //jQuery('#required-description1').css({'margin-top': '-282px', 'margin-left' : '734px'});
+                                jQuery('#opc-base-content').hide();
+                                jQuery('#billing-addressdata-selector').show();
+                                jQuery('#opc-address').show();
+                                jQuery('#opc-address-content').show();
+                                jQuery('#fieldArea').removeAttr('style');
+                            }
+                        <?php else : ?>
+                            if (jsdebug == 1) console.log('AJAX checkuid not executed route 2 (vat check disabled)');
+                            //jQuery('#required-description1').css({'margin-top': '-282px', 'margin-left' : '734px'});
+                            jQuery('#opc-base-content').hide();
+                            jQuery('#billing-addressdata-selector').show();
+                            jQuery('#opc-address').show();
+                            jQuery('#opc-address-content').show();
+                        <?php endif; ?>
+                        }
+                    }
+                    if (id == 'opc-finish') {
+                        // TODO : Address Validation
+                        checkAddressByService();
+                    }
+                    accordion.openSection(id);
+
+                    if (id == 'opc-address') {
+                        setTimeout( function(){
+                                if (jsdebug == 1) console.log('setTimeout function reached');
+                                jQuery('#street').addClass('required-entry');
+                                jQuery('#postcode').addClass('validate-must-be-zip');
+                                <?php if (!$isZipCodeOptional) : ?>
+                                    jQuery('#postcode').addClass('required-entry');
+                                <?php endif; ?>
+                                jQuery('#city').addClass('required-entry');
+                                jQuery('#agreement-full-registration').addClass('required required-entry');
+                                jQuery('#agreement-dataprotection-full-registration').addClass('required required-entry');
+                                jQuery('#agreement-dsgvo-full-registration').addClass('required required-entry');
+                            }, 500);
+                    }
+                }
+            } else {
+                jQuery('#fieldArea').removeAttr('style');
+            }
+        }
+
+        Validation.add('validate-must-be-zip', '<?php echo $this->__('Please enter the zip/postal code.')?>', function(text) {
+            var countryId = '<?php echo Mage::helper('core')->getDefaultCountry()?>';
+            if ( jQuery('select[name="country_id"]').size() ) {
+                countryId = jQuery('select[name="country_id"]').val().toLowerCase();
+            }
+            return validateZipCode(countryId, text);
+        });
+
+        //
+        Validation.add('password-check','<?php echo $this->__("The new password must have at least 8 characters and must contain at least one digit and one letter."); ?>',function(text) {
+            if ( text.length < 8 )
+                return false;
+            if ( ! text.match(/[a-z]/i) )
+                return false;
+            if ( ! text.match(/[0-9]/) )
+                return false;
+            return true;
+        });
+
+        Validation.add('password-equal-check','<?php echo $this->__("Please make sure your passwords match."); ?>',function(text) {
+            ref = jQuery('#schrack_password').val();
+            return text == ref;
+        });
+
+        function ignoreInvalidEntries(checkElement) {
+            var uncheckedValue = checkElement.val();
+            var checkedValue = '';
+            var allowedCharacters = [' '];
+            var triggerCleanedValue = false;
+
+            for (var i = 0; i < uncheckedValue.length; i++) {
+                if (jQuery.inArray(uncheckedValue[i], allowedCharacters) == -1) {
+                    checkedValue = checkedValue + uncheckedValue[i];
+                } else {
+                    triggerCleanedValue = true;
+                }
+            }
+
+            if (triggerCleanedValue == true) {
+                checkElement.val(checkedValue);
+            }
+        }
+
+        function cleanWrongEmailAddress () {
+            var emailInputString = jQuery('#pseudonym').val();
+            var emailFormerInputString = jQuery('#email_former_address').val();
+            var filteredResultString = "";
+            if (emailInputString != emailFormerInputString) {
+                filteredResultString = emailInputString.replace(/[^A-Z0-9@!#$%&'*+-/=?^_`{|}~]+/ig, "");
+                jQuery('#pseudonym').val(filteredResultString);
+                jQuery('#email_former_address').val(filteredResultString);
+            }
+        }
+
+        jQuery(document).ready(function(){
+
+            var checkedAGB = false;
+            var checkedDataprotection = false;
+            var checkedDSGVO = false;
+
+            jQuery('#country').on('change', function() {
+                var selectCountry = jQuery('#country').val();
+                if(selectCountry !== '') {
+                    jQuery('#country_id').val(selectCountry);
+                }
+            });
+
+
+            <?php if (intval(Mage::getStoreConfig('schrack/dsgvo/activateRegistrationCheckboxAGB')) == 1) : ?>
+                jQuery("#agreement-full-registration").on('click', function () {
+                    if (jQuery('#agreement-full-registration').prop('checked') === true) {
+                        checkedAGB = true;
+                    } else {
+                        checkedAGB = false;
+                    }
+                    releaseFullRegistrationSendButton();
+                });
+            <?php else: ?>
+                checkedAGB = true;
+                releaseFullRegistrationSendButton();
+            <?php endif; ?>
+
+            <?php if (intval(Mage::getStoreConfig('schrack/dsgvo/activateRegistrationCheckboxDataProtection')) == 1) : ?>
+                jQuery("#agreement-dataprotection-full-registration").on('click', function () {
+                    if (jQuery('#agreement-dataprotection-full-registration').prop('checked') === true) {
+                        checkedDataprotection = true;
+                    } else {
+                        checkedDataprotection = false;
+                    }
+                    releaseFullRegistrationSendButton();
+                });
+            <?php else : ?>
+                checkedDataprotection = true;
+                releaseFullRegistrationSendButton();
+            <?php endif; ?>
+
+            <?php if (intval(Mage::getStoreConfig('schrack/dsgvo/activateRegistrationCheckboxDSGVO')) == 1) : ?>
+                jQuery("#agreement-dsgvo-full-registration").on('click', function () {
+                    if (jQuery('#agreement-dsgvo-full-registration').prop('checked') === true) {
+                        checkedDSGVO = true;
+                    } else {
+                        checkedDSGVO = false;
+                    }
+                    releaseFullRegistrationSendButton();
+                });
+            <?php else : ?>
+                checkedDSGVO = true;
+                releaseFullRegistrationSendButton();
+            <?php endif; ?>
+
+
+            function releaseFullRegistrationSendButton() {
+                if (checkedAGB == true && checkedDataprotection == true && checkedDSGVO == true) {
+                    jQuery('#finish-register').removeClass('black');
+                } else {
+                    jQuery('#finish-register').addClass('black');
+                }
+            }
+
+            var localeCode = '<?php echo $localeCode; ?>';
+            // jQuery('label').remove(); // not the foggiest idea what that was for... %-)
+
+            // Repaur styling issues (css):
+            //jQuery('#gender').css({'float' : 'left', 'margin-top': '-22px', 'margin-left' : '150px', 'border' : '1px solid grey', 'border-radius' : '4px'});
+
+            //jQuery('#prefix').css({'margin-top': '12px', 'padding-left' : '6px', 'border' : '1px solid grey', 'border-radius' : '4px'});
+            jQuery('#prefix').attr('placeholder', '<?php echo $this->__('Prefix') ?>');
+
+            //jQuery('#firstname').css({'margin-top': '12px', 'padding-left' : '6px', 'border' : '1px solid grey', 'border-radius' : '4px'});
+            jQuery('#firstname').attr('placeholder', '* <?php echo $this->__('First Name')?>').focus();
+            jQuery('#firstname').addClass('required-entry');
+
+            //jQuery('#lastname').css({'margin-top': '12px', 'padding-left' : '6px', 'border' : '1px solid grey', 'border-radius' : '4px'});
+            jQuery('#lastname').attr('placeholder', '* <?php echo $this->__('Last Name')?>');
+            jQuery('#lastname').addClass('required-entry');
+
+            //jQuery('#pseudonym').css({'margin-left' : '2px','margin-top': '12px', 'padding-left' : '6px', 'border' : '1px solid grey', 'border-radius' : '4px'});
+            jQuery('#pseudonym').attr('placeholder', '* <?php echo $this->__('Email Address') ?>');
+            // Normal Browsers:
+            var marginLeftInternetExplorerFullReg = '-823px';
+            <?php if ($showFullSelfRegisterButton) : ?>
+            var marginLeftInternetExplorerLightReg = '-357px';
+            <?php else : ?>
+            var marginLeftInternetExplorerLightReg = '-821px';
+            <?php endif; ?>
+            var marginLeftNextToBillingAddress = '-118px';
+            var marginLeftFinishRegister = '-279px';
+
+            if(navigator.userAgent.toLowerCase().indexOf("msie") != -1) {
+                marginLeftInternetExplorerFullReg = '38px';
+                if (localeCode == 'ru' || localeCode == 'sa') {
+                    marginLeftInternetExplorerLightReg = '40px';
+                } else {
+                    marginLeftInternetExplorerLightReg = '506px';
+                }
+                marginLeftNextToBillingAddress = '740px';
+                marginLeftFinishRegister = '579px';
+            }
+
+            // Only check for IE 11 :
+            if (Object.hasOwnProperty.call(window, "ActiveXObject") && !window.ActiveXObject) {
+                marginLeftInternetExplorerFullReg = '38px';
+                if (localeCode == 'ru' || localeCode == 'sa') {
+                    marginLeftInternetExplorerLightReg = '40px';
+                } else {
+                    marginLeftInternetExplorerLightReg = '506px';
+                }
+                marginLeftNextToBillingAddress = '740px';
+                marginLeftFinishRegister = '579px';
+            }
+
+
+            //jQuery('#next-step-to-address').css({'position' : 'absolute', 'margin-left' : marginLeftNextToBillingAddress, 'margin-top' : '218px'});
+            //jQuery('#finish-register').css({'position' : 'absolute', 'margin-left' : marginLeftFinishRegister, 'margin-top' : '194px'});
+
+
+            jQuery('#next-step-to-address').on('click', function(e) {
+                if (jsdebug == 1) console.log('next-step-to-address clicked');
+                jQuery('#resultingErrorMessageVAT').hide();
+                e.preventDefault();
+                <?php if (Mage::getStoreConfig('schrack/vatcheck/enabled')): ?>
+                // Special route for option of local VAT:
+                // Check, if partial HTML-Snippet with radio-buttons existing:
+                if (jQuery('input[name="vat_special"]')) {
+                    if (jQuery('input[name="vat_special"]:checked').val() == 'vat_local') {
+                        // Only check number of characters (= 8) and type of chars (must be integer):
+                       if (localeCode == 'sk') {
+                           var reg = new RegExp('^[0-9]{10}$');
+                           var errorMessage = '<?php echo $this->__('Please Enter 10 Numbers'); ?>';
+                       } else {
+                           var reg = new RegExp('^[0-9]{8}$');
+                           var errorMessage = '<?php echo $this->__('Please Enter 8 Numbers'); ?>';
+                       }
+                       if (!reg.test(jQuery('#vat_identification_number').val())) {
+                           if (jQuery('#vat_identification_number').val() != '') {
+                            // Show error and do nothing
+                                jQuery('#advice-required-entry-vat_identification_number').remove();
+                                jQuery('#vat_identification_number').addClass('validation-failed');
+                                jQuery('#resultingErrorMessageVAT').text('');
+                                jQuery('#resultingErrorMessageVAT').text(errorMessage);
+                                jQuery('#resultingErrorMessageVAT').show();
+                                return false;
+                           }
+                       } else {
+                        // Now check form for other issues:
+                        jQuery('#vat_identification_number').removeClass('validation-failed');
+                        jQuery('#resultingErrorMessageVAT').text('');
+                        jQuery('#resultingErrorMessageVAT').hide();
+                        showNextStep('opc-address');
+                       }
+                    } else {
+                        setOverlayLoader();
+                    }
+                } else {
+                    setOverlayLoader();
+                }
+                <?php endif; ?>
+                showNextStep('opc-address');
+            });
+
+            var checkEmailDoubletteRegister = function (step) {
+                //jQuery('#advice-required-entry-billing\\:email').text('');
+                var checkData = {
+                    'email' : jQuery('#pseudonym').val()
+                };
+                jQuery.ajax({
+                    url: '<?php echo Mage::getUrl('customer/account/checkCommonEmail'); ?>',
+                    type: 'post',
+                    dataType: 'json',
+                    data: checkData,
+                    success: function(data) {
+                        if (data.errormsg) {
+                            if (jsdebug == 1) console.log('AJAX checkEmailDoublette error on succes');
+                            jQuery('#resultingErrorMessageEMAIL').text(data.errormsg);
+                            jQuery('#resultingErrorMessageEMAIL').show();
+                            jQuery('#pseudonym').addClass('validation-failed');
+                        } else {
+                            jQuery('#pseudonym').removeClass('validation-failed');
+                            showNextStep(step);
+                        }
+                    },
+                    error: function (data) {
+                        if (jsdebug == 1) console.log('AJAX checkEmailDoublette error');
+                    },
+                    complete: function () {
+                        if (jsdebug == 1) console.log('AJAX checkEmailDoublette complete');
+                        jQuery('#fieldArea').removeAttr('style');
+                    }
+                });
+            }
+
+            jQuery('#get-light-customer-status').on('click', function(e) {
+                e.preventDefault();
+                checkEmailFirst(continueToLightRegistration);
+            });
+
+            jQuery('#get-full-customer-status').on('click', function(e) {
+                e.preventDefault();
+                checkEmailFirst(continueToFullRegistration);
+            });
+
+            jQuery('#finish-register').on('click', function() {
+                console.log('finish');
+                jQuery('#request-type-definition').val('full-registration');
+                showNextStep('opc-finish');
+            });
+
+            function removeDelayedRequiredClasses() {
+                jQuery('#street').removeClass('required-entry');
+                jQuery('#postcode').removeClass('validate-must-be-zip');
+                jQuery('#postcode').removeClass('required-entry');
+                jQuery('#city').removeClass('required-entry');
+
+                jQuery('#agreement-full-registration').removeClass('required-entry');
+                jQuery('#agreement-full-registration').removeClass('required');
+
+                <?php if (intval(Mage::getStoreConfig('schrack/dsgvo/activateRegistrationCheckboxDataProtection')) == 1) : ?>
+                    jQuery('#agreement-dataprotection-full-registration').removeClass('required-entry');
+                    jQuery('#agreement-dataprotection-full-registration').removeClass('required');
+                <?php endif; ?>
+
+                <?php if (intval(Mage::getStoreConfig('schrack/dsgvo/activateRegistrationCheckboxDSGVO')) == 1) : ?>
+                    jQuery('#agreement-dsgvo-full-registration').removeClass('required-entry');
+                    jQuery('#agreement-dsgvo-full-registration').removeClass('required');
+                <?php endif; ?>
+            }
+
+            jQuery('#personal-information-selector').on('click', function() {
+                removeDelayedRequiredClasses()
+                jQuery('#personal-information-selector').removeClass('hdAcord');
+                //jQuery('#required-description1').css({'margin-top': '-433px', 'margin-left' : '38px'});
+                jQuery('#opc-contact-content').show();
+                jQuery('#company-information-selector').hide();
+                jQuery('#opc-base-content').hide();
+                jQuery('#billing-addressdata-selector').hide();
+                jQuery('#opc-address-content').hide();
+            });
+
+            jQuery('#company-information-selector').on('click', function() {
+                removeDelayedRequiredClasses()
+
+                jQuery('#opc-contact-content').hide();
+                jQuery('#opc-base-content').show();
+                jQuery('#opc-address-content').hide();
+                jQuery('#billing-addressdata-selector').hide();
+            });
+
+            jQuery('#billing-addressdata-selector').on('click', function() {
+                removeDelayedRequiredClasses()
+
+                jQuery('#opc-contact-content').hide();
+                jQuery('#opc-base-content').hide();
+                jQuery('#opc-address-content').show();
+            });
+
+            var setOverlayLoader = function() {
+                // Set overlay for
+                jQuery('#fieldArea').css({  "position": "absolute",
+                    "height": "100%",
+                    "width": "100%",
+                    "background": "url(<?php echo $this->getSkinUrl('schrackdesign/Public/Images/download_ajax_loader.gif'); ?>) no-repeat center center",
+                    "top": "-15px",
+                    "left": "0",
+                    "opacity": "0.4",
+                    "z-index": "99"});
+            }
+
+            jQuery('#vat_identification_number_local_selector').on('click', function() {
+                if (jQuery('[name=vat_special]:checked').val() == 'vat_normal') {
+                    jQuery('#vat_identification_number').attr('placeholder', '<?php if (Mage::getStoreConfig('schrack/vatcheck/required')): ?>* <?php endif; ?><?php echo $this->__('VAT Identification Number') ?>');
+                }
+            });
+            jQuery('#vat_identification_number_local_selector').on('click', function() {
+                if (jQuery('[name=vat_special]:checked').val() == 'vat_local') {
+                    jQuery('#vat_identification_number').attr('placeholder', '<?php if (Mage::getStoreConfig('schrack/vatcheck/required')): ?>* <?php endif; ?><?php echo $this->__('VAT Identification Number Local Placeholder') ?>');
+                }
+            });
+
+            var s4y_salut_format = new Object();
+            // AT
+            s4y_salut_format['de_AT_1'] = "Sehr geehrter Herr %title% %last_name%";
+            s4y_salut_format['de_AT_2'] = "Sehr geehrte Frau %title% %last_name%";
+            // BA
+            s4y_salut_format['bs_BA_1'] = 'Poštovani gospodine %title% %last_name%';
+            s4y_salut_format['bs_BA_2'] = 'Poštovaai gospođo %title% %last_name%';
+            // BE
+            s4y_salut_format['nl_NL_1'] = "Geachte heer %last_name%";
+            s4y_salut_format['nl_NL_2'] = "Geachte mevrouw %last_name%";
+            // BG
+            s4y_salut_format['bg_BG_1'] = "Уважаеми господин %last_name%";
+            s4y_salut_format['bg_BG_2'] = "Уважаема госпожо %last_name%";
+            // CO
+            s4y_salut_format['en_GB_1'] = "Dear Mr. %last_name%";
+            s4y_salut_format['en_GB_2'] = "Dear Ms. %last_name%";
+            // CZ
+            s4y_salut_format['cs_CZ_1'] = 'Vážený Pane %title% %last_name%';
+            s4y_salut_format['cs_CZ_2'] = 'Milá Paní %title% %last_name%';
+            // DE
+            s4y_salut_format['de_DE_1'] = "Sehr geehrter Herr %title% %last_name%";
+            s4y_salut_format['de_DE_2'] = "Sehr geehrte Frau %title% %last_name%";
+            // HR
+            s4y_salut_format['hr_HR_1'] = "Poštovani gospodine %title% %last_name%";
+            s4y_salut_format['hr_HR_2'] = "Poštovana gospodo %title% %last_name%";
+            // HU
+            s4y_salut_format['hu_HU_1'] = "Tisztelt %title% %last_name% Úr!";
+            s4y_salut_format['hu_HU_2'] = "Tisztelt %title% %last_name% Asszony!";
+            // PL
+            s4y_salut_format['pl_PL_1'] = "Szanowny Panie %last_name%";
+            s4y_salut_format['pl_PL_2'] = "Szanowna Pani %last_name%";
+            // RO
+            s4y_salut_format['ro_RO_1'] = "Stimate domnule %last_name%";
+            s4y_salut_format['ro_RO_2'] = "Stimata doamna %last_name%";
+            // RS
+            s4y_salut_format['sr_RS_1'] = "Poštovani gospodine %title% %last_name%";
+            s4y_salut_format['sr_RS_2'] = "Poštovana gospodo %title% %last_name%";
+            // RU
+            s4y_salut_format['ru_RU_1'] = "Уважаеми господин %last_name%";
+            s4y_salut_format['ru_RU_2'] = "Уважаема госпожо %last_name%";
+            // SA
+            s4y_salut_format['ar_SA_1'] = "Dear Mr. %last_name%";
+            s4y_salut_format['ar_SA_2'] = "Dear Ms. %last_name%";
+            // SI
+            s4y_salut_format['sl_SI_1'] = 'Spoštovani gospod %title% %last_name%';
+            s4y_salut_format['sl_SI_2'] = 'Spoštovana gospa %title% %last_name%';
+            // SK
+            s4y_salut_format['sk_SK_1'] = "Vážený pán %title% %last_name%";
+            s4y_salut_format['sk_SK_2'] = "Vážená pani %title% %last_name%";
+
+            // Don't know where used:
+            s4y_salut_format['fr_FR_1'] = "Monsieur %last_name%";
+            s4y_salut_format['fr_FR_2'] = "Madame %last_name%";
+            s4y_salut_format['sl_SL_1'] = "Spoštovani gospod %title% %last_name%";
+            s4y_salut_format['sl_SL_2'] = "Spoštovana gospa %title% %last_name%";
+            s4y_salut_format['cs_CS_1'] = "Vážený Pane %title% %last_name%";
+            s4y_salut_format['cs_CS_2'] = "Milá Paní %title% %last_name%";
+            s4y_salut_format['sr_SR_1'] = "Poštovani gospodine %title% %last_name%";
+            s4y_salut_format['sr_SR_2'] = "Poštovana gospodo %title% %last_name%";
+
+
+            function s4y_gen_salutatory() {
+                var language = "<?php echo Mage::app()->getLocale()->getLocaleCode();?>";
+
+                var s4y_gender = jQuery("#gender").val();
+                var s4y_salutatory;
+
+                if (s4y_gender == "1") {
+                    s4y_salutatory = s4y_salut_format[language + "_1"];
+                } else {
+                    s4y_salutatory = '';
+                }
+
+                if (s4y_gender == "2") {
+                    s4y_salutatory = s4y_salut_format[language + "_2"];
+                }
+
+                s4y_salutatory = s4y_salutatory.replace(/undefined/g, "");
+                if (jQuery("#prefix").length) {
+                    s4y_salutatory = s4y_salutatory.replace("%title%", jQuery("#prefix").val());
+                } else {
+                    s4y_salutatory = s4y_salutatory.replace("%title%", '');
+                }
+                s4y_salutatory = s4y_salutatory.replace("%first_name%", jQuery("#firstname").val());
+                s4y_salutatory = s4y_salutatory.replace("%last_name%", jQuery("#lastname").val());
+                s4y_salutatory = s4y_salutatory.replace("  ", " ");
+
+                jQuery("#schrack_salutatory").val(s4y_salutatory);
+            }
+
+            jQuery('#gender, #lastname, #firstname, #prefix').change(function() {
+                s4y_gen_salutatory();
+            });
+
+            jQuery('#newsletter_checkbox').on('click', function() {
+                if (jQuery('#newsletter_checkbox').prop('checked') == true) {
+                    jQuery('#newsletter').val('1');
+                } else {
+                    jQuery('#newsletter').val('0');
+                }
+            });
+
+            jQuery('#student_status_checkbox').on('click', function() {
+                if (jQuery('#student_status_checkbox').prop('checked') == true) {
+                    jQuery('#student_status').val('1');
+                } else {
+                    jQuery('#student_status').val('0');
+                }
+            });
+
+            if (jQuery('#middlename').length) {
+                jQuery('#middlename').remove();
+            }
+            if ( jQuery('#suffix').length) {
+                jQuery('#suffix').remove();
+            }
+
+        
+            jQuery("#profile_picture").click(function (e) {
+                if (jQuery('#profile_picture_checkbox').is(':checked')) {
+                    return true; 
+                }else{
+                    e.preventDefault();
+                    alert('<?php echo 'Acceptance of privacy settings (picture rights)'; ?>');
+                }                
+            });
+            jQuery("#profile_picture_checkbox").click(function (e) {
+                if (jQuery('#profile_picture_checkbox').is(':checked')) {
+                    jQuery('#profile_picture').addClass('required-entry');
+                }else{
+                    jQuery('#profile_picture').removeClass('required-entry');
+                }                
+            });
+			// Set tabindex to all element of forms
+			jQuery('#form-validate :input,select,a').each(function (i) { if (this.type != "hidden") { jQuery(this).attr('tabindex', i + 1); } });
+
+            // Prevent enter illegal character(s) by CHANGE or PASTE :
+            jQuery('#street').bind('keydown change paste',function(e) {
+                setTimeout(function(){
+                        jQuery('#street').val(jQuery('#street').val().replace(/["';\[\]<>\x00-\x09\x0B\x0C\x0E-\x1F\xE2\x7F\n\r]/g, ""));
+                    }, 50
+                );
+            });
+
+            // Prevent enter illegal character(s) by CHANGE or PASTE :
+            jQuery('#postcode').bind('keydown change paste',function(e) {
+                setTimeout(function(){
+                        jQuery('#postcode').val(jQuery('#postcode').val().replace(/["';\[\]<>\x00-\x09\x0B\x0C\x0E-\x1F\xE2\x7F\n\r]/g, ""));
+                    }, 50
+                );
+            });
+
+            // Prevent enter illegal character(s) by CHANGE or PASTE :
+            jQuery('#city').bind('keydown change paste',function(e) {
+                setTimeout(function(){
+                        jQuery('#city').val(jQuery('#city').val().replace(/["';\[\]<>\x00-\x09\x0B\x0C\x0E-\x1F\xE2\x7F\n\r]/g, ""));
+                    }, 50
+                );
+            });
+
+            // Prevent enter illegal character(s) by CHANGE or PASTE :
+            jQuery('#vat_identification_number').bind('keydown change paste',function(e) {
+                setTimeout(function(){
+                        jQuery('#vat_identification_number').val(jQuery('#vat_identification_number').val().replace(/["';\[\]<>\x00-\x09\x0B\x0C\x0E-\x1F\xE2\x7F\n\r]/g, ""));
+                        jQuery('#vat_identification_number').val(jQuery('#vat_identification_number').val().replace(/ /g, ""));
+                    }, 50
+                );
+            });
+
+            // Prevent enter illegal character(s) by CHANGE or PASTE :
+            jQuery('#telephone_company').bind('keydown change paste',function(e) {
+                setTimeout(function(){
+                        jQuery('#telephone_company').val(jQuery('#telephone_company').val().replace(/["';\[\]<>\x00-\x09\x0B\x0C\x0E-\x1F\xE2\x7F\n\r]/g, ""));
+                    }, 50
+                );
+            });
+
+            // Prevent enter illegal character(s) by CHANGE or PASTE :
+            jQuery('#homepage').bind('keydown change paste',function(e) {
+                setTimeout(function(){
+                        jQuery('#homepage').val(jQuery('#homepage').val().replace(/["';\[\]<>\x00-\x09\x0B\x0C\x0E-\x1F\xE2\x7F\n\r]/g, ""));
+                    }, 50
+                );
+            });
+
+            // Prevent enter illegal character(s) by CHANGE or PASTE :
+            jQuery('#company_registration_number').bind('keydown change paste',function(e) {
+                setTimeout(function(){
+                        jQuery('#company_registration_number').val(jQuery('#company_registration_number').val().replace(/["';\[\]<>\x00-\x09\x0B\x0C\x0E-\x1F\xE2\x7F\n\r]/g, ""));
+                    }, 50
+                );
+            });
+
+            // Prevent enter illegal character(s) by CHANGE or PASTE :
+            jQuery('#name1').bind('keydown change paste',function(e) {
+                setTimeout(function(){
+                        jQuery('#name1').val(jQuery('#name1').val().replace(/["';\[\]<>\x00-\x09\x0B\x0C\x0E-\x1F\xE2\x7F\n\r]/g, ""));
+                    }, 50
+                );
+            });
+
+            // Prevent enter illegal character(s) by CHANGE or PASTE :
+            jQuery('#name2').bind('keydown change paste',function(e) {
+                setTimeout(function(){
+                        jQuery('#name2').val(jQuery('#name2').val().replace(/["';\[\]<>\x00-\x09\x0B\x0C\x0E-\x1F\xE2\x7F\n\r]/g, ""));
+                    }, 50
+                );
+            });
+
+            // Prevent enter illegal character(s) by CHANGE or PASTE :
+            jQuery('#name3').bind('keydown change paste',function(e) {
+                setTimeout(function(){
+                        jQuery('#name3').val(jQuery('#name3').val().replace(/["';\[\]<>\x00-\x09\x0B\x0C\x0E-\x1F\xE2\x7F\n\r]/g, ""));
+                    }, 50
+                );
+            });
+
+
+            // Prevent enter illegal character(s) by CHANGE or PASTE :
+            jQuery('#pseudonym').bind('keydown change paste',function(e) {
+                setTimeout(function(){
+                        jQuery('#pseudonym').val(jQuery('#pseudonym').val().replace(/["';\[\]<>\x00-\x09\x0B\x0C\x0E-\x1F\xE2\x7F\n\r]/g, ""));
+                    }, 50
+                );
+            });
+
+            // Prevent enter illegal character(s) by CHANGE or PASTE :
+            jQuery('#schrack_department').bind('keydown change paste',function(e) {
+                setTimeout(function(){
+                        jQuery('#schrack_department').val(jQuery('#schrack_department').val().replace(/["';\[\]<>\x00-\x09\x0B\x0C\x0E-\x1F\xE2\x7F\n\r]/g, ""));
+                    }, 50
+                );
+            });
+
+            // Prevent enter illegal character(s) by CHANGE or PASTE :
+            jQuery('#firstname').bind('keydown change paste',function(e) {
+                setTimeout(function(){
+                        jQuery('#firstname').val(jQuery('#firstname').val().replace(/["';\[\]<>\x00-\x09\x0B\x0C\x0E-\x1F\xE2\x7F\n\r]/g, ""));
+                   }, 50
+                );
+            });
+
+            // Prevent enter illegal character(s) by CHANGE or PASTE :
+            jQuery('#lastname').bind('keydown change paste',function(e) {
+                setTimeout(function(){
+                        jQuery('#lastname').val(jQuery('#lastname').val().replace(/["';\[\]<>\x00-\x09\x0B\x0C\x0E-\x1F\xE2\x7F\n\r]/g, ""));
+                    }, 50
+                );
+            });
+
+        });
+
+        var __continueFunction = null;
+
+        function checkEmailFirst ( continueFunction ) {
+            __continueFunction = continueFunction;
+            var email = jQuery('#pseudonym').val();
+            jQuery('#email-error').remove();
+            vaildateEmail(email, checkEmailCallback);
+        }
+
+        function checkEmailCallback ( data ) {
+            if ( data.validateEmailAddress.result.is_valid && typeof __continueFunction == 'function' ) {
+                __continueFunction();
+            } else {
+                jQuery('#pseudonym').after('<div class="validation-advice" id="email-error">' + data.validateEmailAddress.result.message + '</div>');
+            }
+
+        }
+
+        function continueToLightRegistration () {
+            jQuery('#registerOnlyFormCheckitFlag').val('yes');
+            checkMinimumPhoneExistent('<?php echo $this->__('Please enter a valid number in this field'); ?>');
+
+            jQuery('#resultingErrorMessage').hide();
+            cleanWrongEmailAddress();
+            <?php if (intval(Mage::getStoreConfig('schrack/dsgvo/activateRegistrationCheckboxAGB')) == 1) : ?>
+            jQuery('#agreement-light-registration').addClass('required required-entry');
+            <?php endif; ?>
+
+            <?php if (intval(Mage::getStoreConfig('schrack/dsgvo/activateRegistrationCheckboxDataProtection')) == 1) : ?>
+            jQuery('#agreement-light-dataprotection-registration').addClass('required required-entry');
+            <?php endif; ?>
+
+            <?php if (intval(Mage::getStoreConfig('schrack/dsgvo/activateRegistrationCheckboxDSGVO')) == 1) : ?>
+            jQuery('#agreement-light-dsgvo-registration').addClass('required required-entry');
+            <?php endif; ?>
+
+            <?php if (intval(Mage::getStoreConfig('schrack/dsgvo/activateRegistrationCheckboxUserTerms')) == 1) : ?>
+            jQuery('#agreement-light-user-terms-registration').addClass('required required-entry');
+            <?php endif; ?>
+
+            jQuery('#request-type-definition').val('light-registration');
+            jQuery('#resultingErrorMessageEMAIL').text('');
+            if (jQuery('#pseudonym').val() != '') {
+                jQuery('#advice-required-entry-email_address').remove();
+                showNextStep('finish-light-registration');
+            } else {
+                if (jQuery('#registerOnlyForm').val() == 'validPhone') {
+                    showNextStep('finish-light-registration');
+                }
+            }
+        }
+
+        function continueToFullRegistration () {
+            jQuery('#registerOnlyFormCheckitFlag').val('yes');
+            checkMinimumPhoneExistent('<?php echo $this->__('Please enter a valid number in this field'); ?>');
+
+            cleanWrongEmailAddress();
+            <?php if (intval(Mage::getStoreConfig('schrack/dsgvo/activateRegistrationCheckboxAGB')) == 1) : ?>
+            jQuery('#advice-required-entry-agreement-light-registration').remove();
+            jQuery('#agreement-light-registration').removeClass('required required-entry');
+            <?php endif; ?>
+
+            <?php if (intval(Mage::getStoreConfig('schrack/dsgvo/activateRegistrationCheckboxDataProtection')) == 1) : ?>
+            jQuery('#advice-required-entry-agreement-light-dataprotection-registration').remove();
+            jQuery('#agreement-light-dataprotection-registration').removeClass('required required-entry');
+            <?php endif; ?>
+
+            <?php if (intval(Mage::getStoreConfig('schrack/dsgvo/activateRegistrationCheckboxDSGVO')) == 1) : ?>
+            jQuery('#advice-required-entry-agreement-light-dsgvo-registration').remove();
+            jQuery('#agreement-light-dsgvo-registration').removeClass('required required-entry');
+            <?php endif; ?>
+
+            <?php if (intval(Mage::getStoreConfig('schrack/dsgvo/activateRegistrationCheckboxUserTerms')) == 1) : ?>
+            jQuery('#advice-required-entry-agreement-light-user-terms-registration').remove();
+            jQuery('#agreement-light-user-terms-registration').removeClass('required required-entry');
+            <?php endif; ?>
+
+            jQuery('#resultingErrorMessageEMAIL').text('');
+            if (jQuery('#pseudonym').val() != '') {
+                jQuery('#advice-required-entry-email_address').remove();
+                showNextStep('opc-base');
+            } else {
+                if (jQuery('#registerOnlyForm').val() == 'validPhone') {
+                    jQuery('#personal-information-selector').addClass('hdAcord');
+                    showNextStep('opc-base');
+                }
+            }
+        }
+        //]]>
+    </script>
+
+<?php endif; ?>
+<!-- app/design/frontend/schrack/schrackresponsive/template/persistent/customer/form/register.phtml (end) -->

@@ -1,0 +1,38 @@
+<!-- app/design/frontend/schrack/schrackresponsive/template/tools/index.phtml (start) -->
+<?php
+    $magentoBaseUrl = Mage::getBaseUrl();   //  https://test-at.schrack.com/shop/
+    $urlArray = parse_url($magentoBaseUrl); //  "https" ["host"]=> string(19) "test-at.schrack.com" ["path"]=> string(6) "/shop/
+    $typoToolsUrl = $urlArray['scheme'] . '://' . $urlArray['host'] . '/tools/';
+?>
+
+<h1>Online Tools</h1>
+
+<ul>
+    <?php if ( Mage::getStoreConfig('schrack/customertools/enable_lightning_protection_calculator') == '1' ) : ?>
+        <li>
+            <a href="<?php echo $magentoBaseUrl . 'onlinetools/schrackProtect'; ?>"><?php echo $this->__('Lightning Protection Calculator'); ?></a>
+        </li>
+    <?php endif ?>
+    <?php if ( Mage::getStoreConfig('schrack/customertools/enable_intercom_calculator') == '1' ) : ?>
+        <li>
+            <a href="<?php echo $magentoBaseUrl . 'onlinetools/intercomCalculator'; ?>"><?php echo $this->__('Intercom Calculator'); ?></a>
+        </li>
+    <?php endif ?>
+    <?php if ( Mage::getStoreConfig('schrack/customertools/enable_easylan_configurator') == '1' ) : ?>
+        <li>
+            <a href="<?php echo $magentoBaseUrl . 'onlinetools/schrackLWL'; ?>"><?php echo $this->__('Easylan Configurator'); ?></a>
+        </li>
+    <?php endif ?>
+    <?php if ( Mage::getStoreConfig('schrack/customertools/enable_distribution_board_configurator') == '1' ) : ?>
+        <li>
+            <a href="<?= $magentoBaseUrl . 'onlinetools/distributionBoard'?>" ><?= $this->__('Schrack Module 2000 Configurator') ?></a>
+        </li>
+    <?php endif ?>
+</ul>
+
+<br/>
+
+<h1><?php echo $this->__('More Tools from Schrack Technik'); ?></h1>
+<div><?php echo $this->__('In addition to our online tools, we also offer you other digital tools that are available for download.'); ?></div>
+<a href="<?php echo $typoToolsUrl; ?>"><?php echo $this->__('All Tools'); ?></a>
+<!-- app/design/frontend/schrack/schrackresponsive/template/tools/index.phtml (end) -->
