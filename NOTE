@@ -45,3 +45,9 @@ Varien_Data_Form_Element_Multiselect
  $V49538645 = strrev(strrev('gzinflate'));
  echo $V49538645;
  echo "<br />";
+
+ verificare module EAV DIFFERENCE
+
+ sostituiti tutti i moduli google
+ verificare GoogleAnalytics
+ verificare GooglBase

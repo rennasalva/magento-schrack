@@ -19,36 +19,48 @@
  * needs please refer to http://www.magento.com for more information.
  *
  * @category    Mage
- * @package    Mage_GoogleAnalytics
+ * @package    Mage_Install
  * @copyright  Copyright (c) 2006-2020 Magento, Inc. (http://www.magento.com)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
-
 /**
- * Google Analytics system config source type
+ * Download Magento core modules and updates choice (online, offline)
  *
- * @category    Mage
- * @package    Mage_GoogleAnalytics
+ * @author      Magento Core Team <core@magentocommerce.com>
  */
-class Mage_GoogleAnalytics_Model_System_Config_Source_Type
+class Mage_Install_Block_Download extends Mage_Install_Block_Abstract
 {
-    /**
-     * Get available options
-     *
-     * @return array
-     */
-    public function toOptionArray()
+    public function __construct()
     {
-        return array(
-            array(
-                'value' => Mage_GoogleAnalytics_Helper_Data::TYPE_UNIVERSAL,
-                'label' => Mage::helper('googleanalytics')->__('Universal Analytics')
-            ),
-            array(
-                'value' => Mage_GoogleAnalytics_Helper_Data::TYPE_ANALYTICS,
-                'label' => Mage::helper('googleanalytics')->__('Google Analytics')
-            )
-        );
+        parent::__construct();
+        $this->setTemplate('install/download.phtml');
+    }
+
+    /**
+     * Retrieve locale data post url
+     *
+     * @return string
+     */
+    public function getPostUrl()
+    {
+        return $this->getUrl('*/*/downloadPost');
+    }
+
+    public function getNextUrl()
+    {
+        return Mage::getModel('install/wizard')
+            ->getStepByName('download')
+                ->getNextUrl();
+    }
+
+    public function hasLocalCopy()
+    {
+        $dir = Mage::getConfig()->getModuleDir('etc', 'Mage_Adminhtml');
+        if ($dir && file_exists($dir)) {
+            return true;
+        }
+        return false;
     }
 }
+
