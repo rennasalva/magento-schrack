@@ -51,3 +51,6 @@ Varien_Data_Form_Element_Multiselect
  sostituiti tutti i moduli google
  verificare GoogleAnalytics
  verificare GooglBase
+
+
+ Item.pgp sale metodo _initOldFieldsMap
