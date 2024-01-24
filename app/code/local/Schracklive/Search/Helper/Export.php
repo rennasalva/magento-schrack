@@ -1192,7 +1192,7 @@ class Schracklive_Search_Helper_Export extends Mage_Core_Helper_Abstract
         // @todo check for broken URL
         if ($key == 'solrserver') {
             $this->solrUrl = Mage::getStoreConfig('schrack/solr/' . $key, $this->store);
-            if ($this->solrUrl{strlen($this->solrUrl) - 1} != '/') {
+            if ($this->solrUrl[strlen($this->solrUrl) - 1] != '/') {
                 $this->solrUrl .= '/';
             }
         }

@@ -164,7 +164,8 @@ class MageDeveloper_TYPO3connect_Helper_Data extends Mage_Core_Helper_Abstract
 			
 			reset($arr);
 			
-			while(list($Akey,$AVal)=each($arr)) {
+//			while(list($Akey,$AVal)=each($arr)) {
+            foreach ($arr as $Akey =>$AVal){
 				if (is_array($AVal)) {
 					$this->secGPArray($arr[$Akey]);
 				} else {

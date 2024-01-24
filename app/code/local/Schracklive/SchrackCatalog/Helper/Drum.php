@@ -71,11 +71,12 @@ class Schracklive_SchrackCatalog_Helper_Drum {
 	 * @return array
 	 */
 	public function sortDrums($drums, $prop, $order = 'asc') {
-		$comparer = (strtolower($order) === 'desc') ?
-			"return \$a->getData('{$prop}') > \$b->getData('{$prop}') ? 1 : -1;" :
-			"return \$a->getData('{$prop}') > \$b->getData('{$prop}') ? -1 : 1;";
-		usort($drums, create_function('$a, $b', $comparer));
-
+		//$comparer = (strtolower($order) === 'desc') ?
+//			"return \$a->getData('{$prop}') > \$b->getData('{$prop}') ? 1 : -1;" :
+//			"return \$a->getData('{$prop}') > \$b->getData('{$prop}') ? -1 : 1;";
+		//usort($drums, create_function('$a, $b', $comparer));
+        $comparer = (strtolower($order) === 'desc') ? (($a->getData('{$prop}') > $b->getData('{$prop}') ? 1 : -1) : (($a->getData('{$prop}') > $b->getData('{$prop}')) ? -1 : 1);
+		usort($drums,fn($a,$b)=>$comparer);
 		return $drums;
 	}
 

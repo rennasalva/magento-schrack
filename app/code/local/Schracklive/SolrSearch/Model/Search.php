@@ -225,7 +225,7 @@ class Schracklive_SolrSearch_Model_Search extends Mage_Core_Model_Abstract {
 				/** @var Mage_Eav_Model_Config $eavConfig */
 				$eavConfig = Mage::getSingleton("eav/config");
 				$facets = explode(',', $currentCategory->getSchrackFacetList());
-				$eavConfig->preloadAttributes('catalog_product', $facets);
+				//$eavConfig->preloadAttributes('catalog_product', $facets);
 				$categoryFacets = array();
 				foreach ($facets as $facet) {
 					$categoryFacets[$facet.'_facet'] = $eavConfig->getAttribute('catalog_product', $facet)->getFrontendLabel();

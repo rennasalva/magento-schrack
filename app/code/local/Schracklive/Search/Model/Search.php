@@ -474,7 +474,7 @@ class Schracklive_Search_Model_Search extends Mage_Core_Model_Abstract
                 $facetList = $category->getSchrackFacetList();
                 if ($facetList) {
                     $facets = explode(',', $facetList);
-                    $eavConfig->preloadAttributes('catalog_product', $facets);
+                   //$eavConfig->preloadAttributes('catalog_product', $facets);
                     foreach ($facets as $facet) {
                         if ($facet) {
                             $categoryFacets[$facet] = $eavConfig->getAttribute('catalog_product', $facet)->getFrontendLabel();
